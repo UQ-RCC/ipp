@@ -1,0 +1,458 @@
+<div class="container">
+
+  <!-- Page Heading/Breadcrumbs -->
+  <div class="row">
+      <div class="col-lg-12">
+          <h1 class="page-header">Job Submit
+          </h1>
+          <ol class="breadcrumb">
+              <li><a href="index.jsp">Home</a>
+              </li>
+              <li class="active">Job Submit</li>
+          </ol>
+      </div>
+  </div>
+
+  <div id="job-submit" ng-controller="JobSubmitCtrl" ng-cloak layout="column" layout-xs="column">
+    <div ng-if="loading">
+      <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+    </div>
+    <div layout="row">
+        <div flex=40 layout="column" layout-margin>
+          <div ui-grid="selectedFilesGridOptions" ui-grid-selection class="smallGrid"></div>
+          <div layout="column" align="center">
+            <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="openSelectionDialog($event, 'fileselect')">
+              Select Individual Files
+            </md-button>
+            <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="openSelectionDialog($event, 'folderselect')">
+              Select Folders
+            </md-button>
+            <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="removeSelected()">
+              Remove Selected
+            </md-button>
+            <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="removeAll()">
+              Clear All
+            </md-button> 
+          </div>
+            
+          <md-input-container>
+            <label>Output Folder</label>
+            <input type="text" ng-model="preference.output" />
+          </md-input-container>
+          <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="openSelectionDialog($event, 'outputfolder')">Choose Output Folder</md-button>
+        </div>
+
+        <div flex layout-margin>
+            <md-tabs class="md-primary md-hue-1" md-dynamic-height md-border-bottom>
+              <!-- ==== Main ==============-->
+              <md-tab label="Main" layout-align="center">
+                <md-content layout-padding>
+                  <div layout="column" layout-align="center center">
+                    <md-checkbox aria-label="generatePSF" ng-model=preference.generatePsf ng-disabled=false>
+                      Generate PSF
+                    </md-checkbox>
+                  </div>
+                  <md-divider ></md-divider>
+                  <div layout="row" layout-align="space-between center" layout-padding>
+                    <span>Lateral spacing(nm/pixel)</span>
+                    <input ng-disabled="preference.readSpacing" ng-model="preference.lateralSpacing">
+                  </div>
+                  <div layout="row" layout-align="space-between center" layout-padding>
+                    <span>Axial spacing(nm/slice)</span>
+                    <input ng-disabled="preference.readSpacing" ng-model="preference.axialSpacing">
+                  </div>
+                  <div layout="column" layout-align="center center">
+                    <md-checkbox aria-label="readspacing" ng-model="preference.readSpacing">
+                      Read spacing from metadata 
+                    </md-checkbox>
+                  </div>
+                  <div layout="row" layout-align="space-around center">
+                    <div>X: {{ selectedItem.x }}</div>
+                    <div>Y: {{ selectedItem.y }}</div>
+                    <div>Z: {{ selectedItem.z }}</div>
+                    <div>C: {{ selectedItem.c }}</div>
+                    <div>T: {{ selectedItem.t }}</div>
+                  </div>
+                  <md-divider ></md-divider>
+
+                  <!-- GeneratePSFModel selected -->
+                  <div ng-if="preference.generatePsf == true">
+                    <div layout="row" layout-align="space-between center" class="div-normal-height">
+                      <span>PSF Model</span>
+                      <md-select ng-model=preference.psfModel>
+                        <md-option ng-value="modType" ng-repeat="modType in psfModelTypes" ng-selected="$first">
+                          {{ modType.label }}
+                        </md-option>
+                      </md-select>
+                    </div>
+                    <div layout="row" layout-align="space-between center" class="div-normal-height">
+                      <span>Objective NA</span>
+                      <input type="number" ng-model="preference.NA" />
+                    </div>
+                    <div layout="row" layout-align="space-between center" class="div-normal-height">
+                        <span >Objective immersion refractive index </span>
+                        <input type="number" ng-model="preference.RI" />
+                       <md-select  ng-model="preference.riPresetSelected" ng-change="riPresetChanged()">
+                        <md-option ng-value="preset" ng-repeat="preset in riPresets" ng-selected="$first">
+                          {{ preset.label }}
+                        </md-option>
+                      </md-select>
+                    </div>
+                    <div layout="row" layout-align="space-between center" class="div-normal-height">
+                        <span>Sample medium refractive index</span>
+                        <input type="number" ng-model="preference.ns" />
+                       <md-select ng-model="preference.nsPresetSelected" ng-change="nsPresetChanged()">
+                        <md-option ng-value="preset" ng-repeat="preset in nsPresets" ng-selected="$first">
+                          {{ preset.label }}
+                        </md-option>
+                      </md-select>
+                    </div>
+
+                    <div ng-if="preference.psfType.value === 3" layout="row" layout-align="space-between center" class="div-normal-height">
+                      <span>Light sheet illumination NA</span>
+                      <input type="number" ng-disabled="true" ng-model="preference.lightSheetIlluminationNA" />
+                    </div>
+
+                    <div layout="row" layout-align="space-between center" class="div-normal-height">
+                      <span>Illumination Type</span>
+                      <md-select ng-model=preference.psfType ng-change="psfTypeChange()">
+                        <md-option ng-value="APsfType" ng-repeat="APsfType in psfTypes" ng-selected="$first"> 
+                          {{ APsfType.label }}
+                        </md-option>
+                      </md-select>
+                    </div>
+                  </div>
+
+                  <!-- GeneratePSFModel not selected -->
+                  <div ng-if="preference.generatePsf == false">
+                    <div layout="row" layout-align="space-between center" class="div-normal-height">
+                      <md-input-container>
+                        <label>PSF file</label>
+                        <input type="text" ng-model="preference.psfFile" />
+                      </md-input-container>
+                      <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="loadPsf()">Load PSFs</md-button>  
+                    </div>
+                      <div layout="row" layout-align="space-between center" layout-padding>
+                      <span>PSF Lateral spacing(nm/pixel)</span>
+                      <input ng-disabled="preference.readPsfSpacing" ng-model="preference.psfLateralSpacing">
+                    </div>
+                    <div layout="row" layout-align="space-between center" layout-padding>
+                      <span>PSF Axial spacing(nm/slice)</span>
+                      <input ng-disabled="preference.readPsfSpacing" ng-model="preference.psfAxialSpacing">
+                    </div>
+                    <div layout="column" layout-align="center center">
+                      <md-checkbox aria-label="readPsfSpacing" ng-model="preference.readPsfSpacing">
+                        Read spacing from metadata 
+                      </md-checkbox>
+                    </div>
+                    <!-- TODO: what is disstillDSF-->
+                    <div layout="column" layout-align="center center">
+                      <md-checkbox aria-label="disstillPsf" ng-disabled="true">
+                        Disstill PSFs
+                      </md-checkbox>
+                    </div>
+                  </div>
+
+                  <md-divider ></md-divider>
+                  <div layout="column" layout-align="space-around center">
+                    <table ng-if="selectedItem && selectedItem.channels" layout-align="center">
+                      <thead>
+                      <tr>
+                          <th></th>
+                          <th style="text-align: center">Iterations</th>
+                          <th style="text-align: center" ng-if="preference.generatePsf">Emission Wavelength(mm)</th>
+                          <th ng-if="preference.backgroundType === 'Manual'" style="text-align: center">Background</th>
+                          <th ng-if="preference.psfType.value == 1" style="text-align: center">Backprojected pinhole radius(nm)</th>
+                        </tr>
+                      </thead>
+                       <tbody>
+                         <tr ng-repeat="channel in selectedItem.channels" style="text-align: center; cellpadding:20px;">
+                          <td>{{ channel.name }}</td>
+                          <td>
+                              <input type="number" name="input" ng-model=channel.iterations min="0" max="999">
+                          </td>
+                          <td ng-if="preference.generatePsf" style="text-align: center">
+                            <input type="number" name="input" ng-model=channel.wavelength>
+                          </td>
+
+                          <td ng-if="preference.backgroundType === 'Manual'" style="text-align: center">
+                            <input type="number" name="input" ng-model=channel.background>
+                          </td>
+
+                          <td ng-if="preference.psfType.value === 1" style="text-align: center">
+                            <input type="number" name="input" ng-model=channel.pinhole>
+                          </td>
+
+                         </tr>
+
+                       </tbody>
+                    </table>
+                  </div>
+                  <div layout="row" layout-align="space-between center" class="div-normal-height">
+                    <span>Background correction</span>
+                    <md-select ng-model="preference.backgroundType">
+                      <md-option value="None" ng-selected="true">None</md-option>
+                      <md-option value="0.01">1%</md-option>
+                      <md-option value="0.05">5%</md-option>
+                      <md-option value="0.1">10%</md-option>
+                      <md-option value="0.25">25%</md-option>
+                      <md-option value="Manual">Manual</md-option>
+                    </md-select>
+                  </div>
+                </md-content>
+              </md-tab>
+              <!-- ==== Noise Surpression ==============-->
+              <md-tab label="Noise Surpression">
+              		<md-card>
+                		<md-card-title>
+                    	 <md-card-title-text>
+                      	  <span class="md-subhead">Regularization</span>
+                    	 </md-card-title-text>
+                  	</md-card-title>
+                                
+                		<div layout="row" layout-align="space-between center" class="div-normal-height">
+                      <span>Regularization Type</span>
+                      <md-select ng-model="preference.regularizationType">
+                        <md-option ng-value="regType" ng-repeat="regType in regularizationType" ng-selected="$first">
+                          {{ regType.label }}
+                        </md-option>
+                      </md-select>
+                    </div>
+                    <div ng-if="preference.regularizationType.label === 'Entropy'">
+                      <md-checkbox aria-label="automaticRegularization" ng-model="preference.automaticRegularizationScale">
+                        Automatic regularization scale factor
+                      </md-checkbox>
+                      <div layout="row" layout-align="space-between center" class="div-normal-height">
+                          <span> Regularization scale factor (µ) </span>
+                          <input type="number" ng-disabled="preference.automaticRegularizationScale" ng-model="preference.regularization" />
+                      </div>
+                      <div>
+                        Note: Larger scale factor = less regularization
+                      </div>
+                    </div>
+              		</md-card>
+
+                  <md-card>
+                		<md-card-title>
+                		  <md-card-title-text>
+                		    <span class="md-subhead">Pre-filter</span>
+                		  </md-card-title-text>
+                		</md-card-title>  
+                    <div layout="row" layout-align="space-between center" class="div-normal-height">
+                      <span>Pre-filter type</span>
+                      <md-select ng-model="preference.prefilter">
+                        <md-option ng-value="preFilterT" ng-repeat="preFilterT in preFilterTypes" ng-selected="$first">
+                          {{ preFilterT.label }}
+                        </md-option>
+                      </md-select>
+                    </div>
+                  </md-card>
+
+              		<md-card>
+                		<md-card-title>
+                		  <md-card-title-text>
+                		    <span class="md-subhead">Post-filter</span>
+                		  </md-card-title-text>
+                		</md-card-title> 
+                    <div layout="row" layout-align="space-between center" class="div-normal-height">
+                      <span>Post-filter type</span>
+                      <md-select ng-model="preference.postfilter">
+                        <md-option ng-value="postFilterT" ng-repeat="postFilterT in postFilterTypes" ng-selected="$first">
+                          {{ postFilterT.label }}
+                        </md-option>
+                      </md-select>
+                    </div>
+              		</md-card>
+
+                </md-content>
+              </md-tab>
+              <!-- ==== Advanced ==============-->
+          		<md-tab label="Advanced">
+          			<md-card>
+          				<md-card-title>
+          					<md-card-title-text>
+          						<span class="md-subhead">Blind</span>
+          					</md-card-title-text>
+          				</md-card-title>					
+          				<div layout="column" layout-align="center center">
+          					<md-checkbox aria-label="blinddeconvolution" ng-model='preference.blindDeconvolution'>
+          					 Use blind deconvolution
+          					</md-checkbox>
+          				</div>
+          			</md-card>
+
+          			<md-card>
+          				<md-card-title>
+          					<md-card-title-text>
+          						<span class="md-subhead">Padding and Tiling</span>
+          					</md-card-title-text>
+          				</md-card-title>
+          				<div layout="column" layout-align="space-around center">
+          					<table layout-align="center">
+          						<thead>
+          						<tr>
+          							<th></th>
+          							<th style="text-align: center">Padding</th>
+          							<th style="text-align: center">Tiles</th>
+          							</tr>
+          						</thead>
+          						<tbody>
+          						<tr style="text-align: center; cellpadding:20px;">
+          							<td>X</td>
+          							<td>
+          								<input type="number" name="Xpaddinginput" ng-model="preference.padding.x">
+          							</td>
+          							<td style="text-align: center">
+          								<input type="number" name="Xtileinput" ng-model="preference.tiling.x">
+          							</td>
+          						</tr>
+          						<tr style="text-align: center; cellpadding:20px;">
+          							<td>Y</td>
+          							<td>
+          								<input type="number" name="Ypaddinginput" ng-model="preference.padding.y">
+          							</td>
+          							<td style="text-align: center">
+          								<input type="number" name="Ytileinput" ng-model="preference.tiling.y">
+          							</td>
+          						</tr>
+          						<tr style="text-align: center; cellpadding:20px;">
+          							<td>Z</td>
+          							<td>
+          								<input type="number" name="Zpaddinginput" ng-model="preference.padding.z">
+          							</td>
+          							<td style="text-align: center">
+          								<input type="number" name="Ztileinput" ng-model="preference.tiling.z">
+          							</td>
+          						</tr>
+          						</tbody>
+          					</table>
+          				</div>
+          			</md-card>
+          			<md-card>
+          				<md-card-title>
+          					<md-card-title-text>
+          						<span class="md-subhead">Output format</span>
+          					</md-card-title-text>
+          				</md-card-title>
+          				<div ng-disabled="true" layout="row" layout-align="space-between center" class="div-normal-height">
+                    <span>Scaling</span>
+                    <md-select ng-model="preference.scaling">
+                      <md-option ng-value="scalingT" ng-repeat="scalingT in scalingType" ng-selected="$first">
+                        {{ scalingT.label }}
+                      </md-option>
+                    </md-select>
+          				</div>
+          				<div layout="row" layout-align="space-between center" class="div-normal-height">
+          					<span>File format</span>
+                    <md-select ng-model="preference.fileformat">
+                      <md-option ng-value="fileFormatT" ng-repeat="fileFormatT in fileFormatType" ng-selected="$first">
+                        {{ fileFormatT.label }}
+                      </md-option>
+                    </md-select>
+          				</div>
+          				<div layout="row" layout-align="space-between center" class="div-normal-height">
+          					<span>Stack split</span>
+                    <md-select ng-model="preference.split" ng-disabled="true">
+                      <md-option ng-value="splitChannelT" ng-repeat="splitChannelT in splitChannelType" ng-selected="$first">
+                        {{ splitChannelT.label }}
+                      </md-option>
+                    </md-select>
+          				</div>
+          				<div layout="row" layout-align="space-between center" class="div-normal-height">
+          					<span>Split starting index</span>
+                    <md-select ng-model="preference.splitIdx" ng-disabled="true">
+                      <md-option ng-value="splitStartingIndexT" ng-repeat="splitStartingIndexT in splitStartingIndexType" ng-selected="$first">
+                        {{ splitStartingIndexT.label }}
+                      </md-option>
+                    </md-select>
+          				</div>
+          			</md-card>
+          			<md-card>
+          				<md-card-title>
+          					<md-card-title-text>
+          						<span class="md-subhead">Other</span>
+          					</md-card-title-text>
+          				</md-card-title>
+          				<div layout="column" layout-align="center center">
+          					<md-checkbox aria-label="swapZ_T" ng-model="preference.swapZT">
+          					 Swap Z and T dimensions
+          					</md-checkbox>
+          					<md-checkbox aria-label="swapPSFZ_T" ng-model="preference.swapPsfZT" ng-disabled="preference.generatePsf">
+          					 Swap PSF Z and T dimensions
+          					</md-checkbox>
+          				</div>
+          				<div layout="row" layout-align="center center" class="div-normal-height">
+          					<md-checkbox aria-label="saveiter">Save every</md-checkbox>
+          					<input type="number" ng-disabled="true" ng-value="0" min="0" max="999">iterations
+          				</div>
+          				<div layout="column" layout-align="center center">
+          					<md-button md-no-ink class="md-primary" ng-value="reset" ng-click="resetPreference()">
+                      Reset preferences to defaults     
+                    </md-button>
+          				</div>
+          			</md-card>
+          		</md-tab>
+
+              <!-- ==== LLSM ==============-->
+              <!-- This is not being used -->
+              <md-tab ng-disabled="true" label="LLSM">
+                <md-content class="md-padding">
+          			<div layout="column" layout-align="left center">
+          				<md-checkbox aria-label="deskewPSF">Deskew PSF</md-checkbox>
+          				<md-checkbox aria-label="deskewDataset">Deskew Dataset</md-checkbox>
+          				<md-checkbox aria-label="autoPSF">Automatically Determine PSF background and subtract from PSF and dataset</md-checkbox>
+          			</div>
+          			<md-divider ></md-divider>
+          			<div layout="row" layout-align="space-between center" layout-padding>
+          				<span>Mannually Determine PSF background and subtract from PSF and dataset</span>
+          				<input ng-value="">
+          			</div>
+          			<div layout="row" layout-align="space-between center" layout-padding>
+          				<span>Deskew Angle (degrees)</span>
+          				<input type="number" min="0" max="999" ng-value="32.8">
+          			</div>
+          			<div layout="row" layout-align="space-between center" layout-padding>
+          				<span>Clip Pixels (X)</span>
+          				<input type="number" ng-value="0" min="0" max="999">
+          			</div>
+          			<div layout="row" layout-align="space-between center" layout-padding>
+          				<span>Clip Pixels (Y)</span>
+          				<input type="number" ng-value="0" min="0" max="999">
+          			</div>
+          			<div layout="row" layout-align="space-between center" layout-padding>
+          				<span>Clip Pixels (Z)</span>
+          				<input type="number" ng-value="0" min="0" max="999">
+          			</div>
+              </md-content>
+            </md-tab>
+            <!-- ==== Devices ==============-->
+            <md-tab label="Devices">
+          		<md-content class="md-padding">
+                <div layout="row" layout-align="space-between center" layout-padding>
+                  <span>Number of instances</span>
+                  <input type="number" min="1" max="10" ng-model="preference.numberOfParallelJobs">
+                </div>
+                <div layout="row" layout-align="space-between center" layout-padding>
+                  <span>Memory per job (MB)</span>
+                  <input type="number" ng-model="preference.mem" min="1000" max="999">
+                </div>
+                <div layout="row" layout-align="space-between center" layout-padding>
+                  <span>Number of GPUs per job</span>
+                  <input ng-disabled="true" type="number" ng-model="preference.gpus" min="1" max="2">
+                </div>
+              </md-content>
+            </md-tab>
+    </md-tabs>
+  </div>
+    </div>
+    <div layout="row" layout-align="center">
+      <md-button class="md-raised md-primary" ng-click="submit(true)"  ng-disabled="loading">Submit</md-button>
+      <md-button class="md-raised md-primary" ng-click="submit(false)"  ng-disabled="loading">Test</md-button>
+      <md-button class="md-raised md-primary" ng-click="openSelectionDialog($event, 'newtemplate')"  ng-disabled="loading">Save Template</md-button>
+      <md-button class="md-raised md-primary" ng-click="openSelectionDialog($event, 'loadtemplate')"  ng-disabled="loading">Load Template</md-button>      
+    </div>
+
+
+
+  </div>
+</div>

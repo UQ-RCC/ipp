@@ -1,0 +1,23 @@
+/* app css stylesheet */
+
+.view-container > md-content.md-default-theme {
+  background-color: #f6f6f6;
+}
+
+.user-details {
+  font-size: small;
+}
+
+.facility-heading {
+  font-size: large;
+}
+
+.grid {
+    width: 100%;
+    height: 200px;
+}
+
+.smallGrid {
+    width: 100%;
+    height: 100px;
+}
