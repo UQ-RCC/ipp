@@ -70,7 +70,7 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
             // Gets the session data and redirects to the login screen if the user is not logged in
             sessionInfoResource.get({}).$promise.then(function (sessionData) {
                 if (sessionData.has_oauth_access_token !== "true") {
-                    $location.path("/system-selector");
+                    $location.path("/langingpage");
                     return;
                 }
                 document.getElementById("myCarousel").style.display="none";
