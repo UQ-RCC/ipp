@@ -1,0 +1,25 @@
+// Citation (eSpace)
+//
+// Format of publication citations fed from eSpace. Markup dictated by eSpace system.
+//
+
+.citation {
+  color: $citation-color;
+  display: block;
+  padding-bottom: 0.65em;
+  margin-bottom: 0.65em;
+  .citation_title:before {
+    display: block;
+    content: " ";
+  }
+  .citation_author_name, .author_id_link {
+  }
+  .citation_date {
+    color: $body-font-color;
+  }
+  .citation_title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    font-style: normal;
+  }
+}

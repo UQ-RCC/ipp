@@ -10,60 +10,43 @@ angular.module('strudelWeb.partials', ['ngRoute', 'ngResource'])
             $routeProvider.when('/support', {templateUrl: 'partials/contact.html', controller: 'TextCtrl'});
             $routeProvider.when('/accesspolicy', {templateUrl: 'partials/accesspolicy.html', controller: 'TextCtrl'});
             $routeProvider.when('/faq', {templateUrl: 'partials/faq.html', controller: 'TextCtrl'});
-            $routeProvider.when('/full-width',{templateUrl: 'partials/full-width.html',controller:'TextCtrl'});
-            $routeProvider.when('/sidebar',{templateUrl: 'partials/sidebar.html',controller:'TextCtrl'});
     }])
 
-    .controller('ErrorCtrl', ['$scope', '$rootScope', '$window', '$resource', '$mdMedia', '$interval', '$location', '$mdDialog','settings',
-        function ($scope, $rootScope, $window, $resource, $mdMedia, $interval, $location, $mdDialog,settings) {
+    .controller('ErrorCtrl', ['$scope', '$rootScope', '$mdMedia',
+        function ($scope, $rootScope, $mdMedia) {
 
 
         }])
 
-    .controller('TextCtrl',['$scope', '$rootScope', '$window', '$resource', '$mdMedia', '$interval', '$location','settings',
-        function ($scope, $rootScope, $window, $resource, $mdMedia, $interval, $location, settings, $anchorScroll) {
+    .controller('TextCtrl',['$scope', '$rootScope', '$mdMedia', '$location',
+        function ($scope, $rootScope, $mdMedia, $location) {
             document.getElementById("myCarousel").style.display="none";
             //document.getElementById("myFooter").style.visibility="hidden";
+            var path = $location.path().replace(/\//g,'') + "-btn";
+            document.getElementById("myCarousel").style.display="none";
+            document.getElementById("joblistmgr").className="menu__link";
+            document.getElementById("jobsubmitmgr").className="menu__link";
+
+            ["home-btn", "about-btn", "faq-btn", "contact-btn", "accesspolicy-btn"].forEach(function(item){
+                if(item == path){
+                    document.getElementById(item).className="menu__link active";
+                }
+                else{
+                    document.getElementById(item).className="menu__link";
+                }
+            })
         }])
 
     .controller('ContactCtrl',['$scope', '$http','$rootScope', '$window', '$resource', '$mdMedia', '$interval', '$location','$mdDialog','settings',
         function ($scope, $http,$location,$mdDialog) {
             document.getElementById("myCarousel").style.display="none";
-            //document.getElementById("myFooter").style.visibility="hidden";
-
-            $scope.result = 'hidden';
-            $scope.resultMessage;
-            $scope.formData; //formData is an object holding the name, email, subject, and message
-            $scope.submitButtonDisabled = false;
-            $scope.submitted = false; //used so that form errors are shown only after the form has been submitted
-            $scope.submit = function(contactform) {
-                $scope.submitted = true;
-                $scope.submitButtonDisabled = true;
-                if (contactform.$valid) {
-                    $http({
-                        method  : 'POST',
-                        url     : window.location.origin+"/contact_me.php",
-                        data    : $.param($scope.formData),  //param method from jQuery
-                        headers : { 'Content-Type': 'application/x-www-form-urlencoded' }  //set the headers so angular passing info as form data (not request payload)
-                    }).success(function(data){
-                        console.log(data);
-                        if (data.success) { //success comes from the return json object
-
-                            $scope.submitButtonDisabled = true;
-                            $scope.resultMessage = data.message;
-                            $scope.result='bg-success';
-                        } else {
-                            $scope.submitButtonDisabled = false;
-                            $scope.resultMessage = data.message;
-                            $scope.result='bg-danger';
-                        }
-                    });
-                } else {
-                    $scope.submitButtonDisabled = false;
-                    $scope.resultMessage = 'Failed <img src="http://www.chaosm.net/blog/wp-includes/images/smilies/icon_sad.gif" alt=":(" class="wp-smiley">  Please fill out all the fields.';
-                    $scope.result='bg-danger';
-                }
-            }
+            document.getElementById("home-btn").className="menu__link";
+            document.getElementById("about-btn").className="menu__link";
+            document.getElementById("faq-btn").className="menu__link";
+            document.getElementById("contact-btn").className="menu__link active";
+            document.getElementById("accesspolicy-btn").className="menu__link";
+            document.getElementById("joblistmgr").className="menu__link";
+            document.getElementById("jobsubmitmgr").className="menu__link";
 
         }])
 

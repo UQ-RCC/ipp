@@ -1,0 +1,166 @@
+// University profile content type
+// Specific to the employability.uq.edu.au site
+
+.university-profile {
+  &__title {}
+
+  // Overview
+  &__city {
+    display: inline-block;
+    border-right: 1px solid #ccc;
+    padding-right: 0.5rem;
+    margin-right: 0.3rem;
+    &:before {
+      @include fa-icon();
+      content: '\f041'; // .fa-map-marker
+      margin-right: 0.7rem;
+    }
+    // Nested drupal generated div
+    div {
+      display: inline;
+    }
+    & + .panel-separator {
+      display: none;
+    }
+  }
+  &__country {
+    display: inline-block;
+  }
+  &__website {
+    margin: 1rem 0;
+    word-wrap: break-word;
+  }
+  &__languages {
+    .pane-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0;
+    }
+    // Used so terms are rendered as plain text rather than Separated, which makes them links.
+    .field-item {
+      display: inline-block;
+      & + .field-item {
+        &:before {
+          content: ', ';
+        }
+      }
+    }
+  }
+  &__description {}
+  &__teaser-image {
+    text-align: center;
+    @media #{$medium-up} {
+      float: right;
+      max-width: 50%;
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    &.university-profile__teaser-image--is-u21 {
+      position: relative;
+      @media #{$medium-up} {
+        margin-bottom: 2rem;
+      }
+      &:before {
+        content: '';
+        display: block;
+        width: 4rem;
+        height: 4rem;
+        background: url('../images/logo-universitas21.jpg') no-repeat 0 0;
+        background-size: 100%;
+        position: absolute;
+        bottom: 0.5rem;
+        right: 0.5rem;
+      }
+    }
+  }
+  &__u21-link {
+    @media #{$medium-up} {
+      float: right;
+      clear: right;
+      margin-top: -2.5rem;
+    }
+  }
+  &__campuses {
+    clear: both;
+    .accordion {
+      margin-bottom: -1px;
+    }
+  }
+  &__semester-dates {
+    .accordion {
+      margin-bottom: -1px;
+    }
+  }
+  &__additional-info {}
+  &__testimonials {
+    .pager-load-more a {
+      &:before {
+        @include fa-icon();
+        content: '\f196'; // .fa-plus-square-o
+        margin-right: 0.7rem;
+      }
+    }
+  }
+
+  // Academic matters
+  &__fte {}
+  &__study-level {}
+  &__min-requirements {}
+  &__course-restrictions {
+    .accordion {
+      margin-bottom: -1px;
+    }
+  }
+  &__disciplines {
+    .accordion {
+      margin-bottom: -1px;
+    }
+  }
+  &__course-catalogue {
+    .accordion {
+      margin-bottom: -1px;
+    }
+  }
+  &__additional-academic-info {}
+
+  // Housing and finance
+  &__housing {
+    .accordion {
+      margin-bottom: -1px;
+    }
+  }
+  &__host-uni-insurance {}
+  &__living-costs {}
+  &__uqsec-funding {}
+  &__host-uni-scholarships {}
+  &__insurance {}
+
+  // Visa and travel
+  &__visa-info-disclaimer {}
+  &__travel-advice {}
+
+  .page__header {
+    margin-bottom: 0;
+  }
+
+  // Force all h2's to match accordion heading size for consistency.
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  // Force in spacing between headings and content above to overcome the pane-separator divs that panels inserts
+  // between each field.
+  .panel-separator + .pane-entity-field {
+    .pane-title {
+      margin-top: 2.5rem;
+    }
+  }
+}
+
+// Teaser specific styles
+.university-profile--teaser {
+  .university-profile__summary {
+    margin-top: 0.5rem;
+  }
+}

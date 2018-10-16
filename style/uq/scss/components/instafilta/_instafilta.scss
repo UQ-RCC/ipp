@@ -1,0 +1,42 @@
+// instafilta styles
+
+.instafilta {
+  position: relative;
+  margin: 1rem 0;
+  label {
+    font-weight: 300;
+    .icon {
+      position: absolute;
+      left: 0.65rem;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+  .instafilta__input {
+    width: 100%;
+    padding-left: 2rem;
+  }
+
+  &--keyline {
+    background: #fff;
+    border-bottom: 1px solid #f2f2f2;
+    margin-bottom: 1rem;
+    .instafilta__input {
+      border: none;
+      box-shadow: none;
+      font-size: 1.2rem;
+      font-weight: 200;
+      padding-top: 0;
+      padding-bottom: 0;
+      &:focus {
+        background: none;
+      }
+    }
+    label {
+      .icon {
+        left: 0;
+        font-size: 1.2rem;
+      }
+    }
+  }
+}

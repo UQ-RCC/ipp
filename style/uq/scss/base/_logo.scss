@@ -1,0 +1,21 @@
+.uq-logo {
+  color: #fff;
+  width: 126px;
+  height: 36px;
+  display: block;
+  padding: 0;
+  margin: 0;
+  background: url('https://static.uq.net.au/v3/logos/corporate/uq-logo-white.png') no-repeat 0 0;
+  background: url('https://static.uq.net.au/v3/logos/corporate/uq-logo-white.svg') no-repeat 0 0;
+  background-size: 100%;
+  @include hide-text();
+
+  @media #{$medium-up} {
+    width: 150px;
+    height: 43px;
+  }
+  @media #{$large-up} {
+    width: 178px;
+    height: 51px;
+  }
+}

@@ -1,0 +1,11 @@
+// Search form for elastic search
+
+.search-form {
+  fieldset {
+    border: 0;
+  }
+  &__search-field {
+    width: 100% !important;
+  }
+  &__submit {}
+}

@@ -12,7 +12,14 @@ angular.module('strudelWeb.landingpage', ['ngRoute', 'ngResource'])
     .controller('LandingPageCtrl', ['$scope', '$rootScope', '$window', '$resource', '$mdMedia', '$interval', '$location', 'settings',
         function ($scope, $rootScope, $window, $resource, $mdMedia, $interval, $location, settings) {
             document.getElementById("myCarousel").style.display="block";
-            document.getElementById("myFooter").style.visibility="visible";
+            document.getElementById("home-btn").className="menu__link active";
+            document.getElementById("about-btn").className="menu__link";
+            document.getElementById("faq-btn").className="menu__link";
+            document.getElementById("contact-btn").className="menu__link";
+            document.getElementById("accesspolicy-btn").className="menu__link";
+            document.getElementById("joblistmgr").className="menu__link";
+            document.getElementById("jobsubmitmgr").className="menu__link";
+
             var sessionInfoResource = $resource(settings.URLs.apiBase + settings.URLs.sessionInfo);
             sessionInfoResource.get({}).$promise.then(function (sessionData) {
                 if (sessionData.has_oauth_access_token !== "true") {

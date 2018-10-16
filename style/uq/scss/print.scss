@@ -1,0 +1,139 @@
+// Header and navigation
+.site-header {
+  background: #fff;
+  border-bottom: 1px solid #555;
+}
+.site-header__global-menu, .site-header__site-search, .navigation {
+  display: none;
+}
+.uq-logo {
+  background: transparent url(https://static.uq.net.au/v3/logos/corporate/uq-logo-colour.png) no-repeat 0 0 !important;
+  background: rgba(0, 0, 0, 0) url(https://static.uq.net.au/v3/logos/corporate/uq-logo-colour.svg) no-repeat 0 0 !important;
+  background-size: 100%;
+  content: url(https://static.uq.net.au/v3/logos/corporate/uq-logo-colour.png) !important;
+  -webkit-print-color-adjust: exact;
+}
+
+.site-title {
+  color: #000;
+  a {
+    color: #000!important;
+    &:after {
+      content: ""!important;
+    }
+  }
+  .show-for-small-only {
+    display: none;
+  }
+}
+
+// Footer
+.site-footer {
+  background: #fff;
+  color: #000!important;
+  border-top: 1px solid #555;
+  a {
+    color: #000!important;
+  }
+}
+.site-footer__emergency-contact, .site-footer__footer {
+  display: none;
+}
+
+// Page header
+.page__header {
+  background: #fff;
+}
+
+// Prevent titles from printing at the bottom of a page
+h2, h3 {
+  page-break-after: avoid;
+}
+
+// Ensure articles are printed as separate pages
+article {
+  page-break-before: always;
+}
+
+// Prevent lists and images from being split across 2 pages
+ul, ol, img {
+  page-break-inside: avoid;
+}
+
+// Print urls for linked text
+a[href]:after {
+  content: " (" attr(href) ")";
+  font-size: 0.875rem;
+}
+
+// Don't print urls for anchor links or tabs
+a[href^="#"]:after,
+a[href].tabs__link:after,
+a[href^="https://www.addthis.com"]:after,
+.breadcrumb-home a[href]:after,
+.article__teaser-image a[href]:after {
+  content: "";
+}
+
+// Cards
+.card {
+  height: auto!important;
+  page-break-inside: avoid;
+}
+
+// Panes
+.pane {
+  height: auto!important;
+  margin-bottom: 0;
+  page-break-inside: avoid;
+  &__title {
+    page-break-after: avoid;
+  }
+}
+
+// Notices
+.notice {
+  page-break-inside: avoid;
+}
+
+// Hide side menu
+.layout-region__right .vertical-menu {
+  display: none;
+}
+
+// Accordions
+.accordion {
+  &__item {
+    page-break-inside: avoid;
+    display: inline-block;
+    width: 100%;
+  }
+  &__content {
+    display: block;
+  }
+}
+
+// Dark tint backgrounds
+.hero-banner--dark-tint:before, .section--dark-tint:before, .dark-tint:before, .content-column-block:before {
+  background: none;
+}
+
+// Grid of links
+.grid-menu__link div, .grid-menu a div {
+  display: inline;
+}
+
+// Tabs
+.tabs, .tabs--foundation {
+  .tabs-content__tab-page, .tab__content {
+    visibility: visible;
+    height: auto;
+    position: relative;
+    overflow: visible;
+  }
+
+  // Drupal editor tabs
+  &.primary {
+    display: none;
+  }
+}

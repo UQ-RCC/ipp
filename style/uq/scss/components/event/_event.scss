@@ -1,0 +1,121 @@
+// Event content type
+
+.event {
+  &__title {
+  }
+  &__summary {
+
+  }
+  &__description {
+
+  }
+  &__teaser-image {
+    max-height: 11rem;
+    overflow: hidden;
+  }
+  &__hero-image {
+
+  }
+  &__contacts {
+
+  }
+  &__register-link {
+
+  }
+  &__registration-date {
+
+  }
+  &__payment-description {
+  }
+  &__event-sessions {
+
+  }
+}
+
+// Node page layout
+.event-page {
+  .event {
+    &-contact {
+      margin-bottom: 1rem;
+      &__display-name {
+        font-weight: 500;
+      }
+    }
+    // Single session on event page
+    &__session--single {
+      .panel-separator {
+        display: none;
+      }
+    }
+  }
+  .page__content {
+    margin-bottom: 2rem;
+  }
+  // Single session on event page
+  .event-session__date {
+    display: inline-block;
+  }
+}
+
+// Teaser viewmode
+.event--teaser {
+  .event {
+    &__title {
+      @media #{$small-only} {
+        font-size: 1.2rem;
+      }
+    }
+    &__type {
+      font-weight: 400;
+      font-size: 0.875rem;
+    }
+    &__summary {
+      margin-top: 0;
+    }
+  }
+}
+
+// Compact viewmode
+.event--compact {
+  .event {
+    &__title {
+      margin-bottom: 0;
+      @media #{$small-only} {
+        font-size: 1.2rem;
+      }
+    }
+    &__wrapper {
+      display: table;
+      table-layout: fixed;
+    }
+    &__content {
+      display: table-cell;
+      vertical-align: middle;
+      overflow: visible;
+    }
+    &__media {
+      display: table-cell;
+      padding-right: 1rem;
+      vertical-align: middle;
+    }
+    &__teaser-image {
+      width: 110px;
+    }
+    &__type {
+      color: #777;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// Hero banner variant for event page
+.hero-banner--event-page {
+  margin-bottom: 1.5rem !important;
+}
+
+// Scaling when in small columns
+.large-3, .large-4 {
+  .event__title {
+    font-size: 1.2rem;
+  }
+}

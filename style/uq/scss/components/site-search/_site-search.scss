@@ -1,0 +1,80 @@
+//
+// Site Search
+//
+
+.site-header__site-search {
+  @media #{$small-only} {
+    @include element-invisible();
+  }
+  
+  @media #{$medium-only} {
+    @include element-invisible();
+  }
+
+  @media #{$large-up} {
+    padding: 1rem 1rem 0 0;
+    @include grid-column(
+      $columns:4,
+      $last-column:true,
+      $collapse:true,
+      $float:right
+    );
+  }
+}
+
+.site-search__title {
+  @include element-invisible();
+}
+
+.site-search__form {
+  margin: 0;
+  padding: 0;
+  float:right;
+
+  .site-search__fieldset {
+    margin: 0;
+    padding: 0;
+    border: none;
+    width: 100%;
+  }
+
+  .site-search__legend {
+    @include element-invisible();
+  }
+
+  .site-search__input {
+    float: left;
+    height: 1.65rem;
+    line-height: 1.65rem;
+    border-width: 0;
+    margin: 0;
+    &, &:focus {
+      border-width: 0;
+      transition: none;
+      box-shadow: none;
+      color: #333;
+      background: white;
+    }
+    &:hover {
+      color: #333;
+      background: white;
+    }
+  }
+
+  .site-search__query {
+    width: 14rem;
+    font-size: 0.85rem;
+    padding: 0 0 0 0.3rem;
+  }
+
+  .site-search__submit {
+    width: 1.65rem;
+    padding: 0;
+    cursor: pointer;
+    font-family: 'FontAwesome';
+  }
+
+  .site-search__query:focus + .site-search__submit {
+    color: #333;
+  }
+}

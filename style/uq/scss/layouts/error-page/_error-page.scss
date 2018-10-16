@@ -1,0 +1,19 @@
+//
+// Error page for 404/403 page
+//
+
+.page-error {
+
+  .page__title, .page__content, .page__error-messages {
+    @include grid-row();
+  }
+
+  .page__header {
+    padding-top: 2rem;
+  }
+
+  .page__error-messages {
+    padding-bottom: 2.5rem;
+  }
+
+}

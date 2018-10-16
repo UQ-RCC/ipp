@@ -1,0 +1,84 @@
+// Team content type
+
+// Common element styles
+.team {
+  &__title {
+  }
+  &__description {
+  }
+  &__phone {
+  }
+  &__email {
+  }
+  &__location {
+  }
+  &__members {
+  }
+  &__members-description {
+  }
+  &__leader {
+  }
+}
+
+// Project page specific styles
+.team-page {
+  .team {
+    &__description {
+    }
+    &__members {
+      border-top: 1px solid #ccc;
+      margin-top: 1.5rem;
+      padding-top: 0.5rem;
+      .team__members-title, & .pane-title {
+        @extend .vertical-list__title;
+      }
+      &-group {
+        // Separates multiple groups of people
+        @extend .vertical-list;
+        @extend .vertical-list--ruled;
+        .team__member, .person--teaser {
+          @extend .vertical-list__item;
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+        .person__display-name {
+          font-size: 1.125rem;
+        }
+      }
+    }
+  }
+}
+
+// Teaser specific styles
+.team--teaser {
+  .team__title {
+    margin-bottom: 0;
+    & + .team__phone, & + .team__email {
+      margin-top: 0.5rem;
+    }
+    @media #{$small-only} {
+      font-size: 1.2rem;
+    }
+  }
+  .team__email a, .team__phone a {
+    color: $team-teaser-action-links;
+  }
+}
+
+// Compact specific styles
+.team--compact {
+  .team__title {
+    margin-bottom: 0;
+    @media #{$small-only} {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+// Scaling when in small columns
+.large-3, .large-4 {
+  .team__title {
+    font-size: 1.2rem;
+  }
+}

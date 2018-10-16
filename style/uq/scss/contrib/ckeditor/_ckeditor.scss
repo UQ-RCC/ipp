@@ -1,0 +1,28 @@
+// Panel pages using IPE don't use the uq_admin theme.
+// Linkit autocomplete changes text to white on white on hover, so need to accommodate that.
+.cke_dialog_ui_input_text {
+  #autocomplete {
+    border: 1px solid $table-border-color;
+    .reference-autocomplete {
+      padding: 1px 2px;
+      &:hover {
+        background: $link-hover-color;
+        color: #fff;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+// ckeditor styles to ensure wysiwyg is clean and readable
+.cke_ltr, .cke_wysiwyg_frame html, .cke_editable, .cke_contents_ltr {
+  padding: 0;
+  margin: 0;
+  background-color: #fff !important;
+  background-image: none !important;
+}
+
+.cke_contents_ltr {
+  padding: 20px 10px 10px 10px;
+  margin: 0;
+}

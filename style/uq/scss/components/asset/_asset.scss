@@ -1,0 +1,99 @@
+// Asset content type
+
+.asset {
+  &__type {
+  }
+  &__owner {
+  }
+  &__asset-list {
+    margin: 1rem 0;
+  }
+}
+
+// Page specific styles
+.asset-page {
+  .asset {
+    &__type, &__last-updated, &__owner {
+      float: left;
+      font-size: 0.875rem;
+      margin-left: 0.75rem;
+      padding-left: 0.75rem;
+      border-left: 1px solid $asset-border-color;
+      margin-bottom: 1rem;
+      .panel-pane__title, .panel-pane__content {
+        display: inline-block;
+      }
+    }
+    &__type {
+      font-style: italic;
+      border-left: none;
+      margin-left: 0;
+      padding-left: 0;
+    }
+  }
+  .page__content {
+    margin-bottom: 2rem;
+  }
+}
+
+// Teaser viewmode
+.asset--teaser {
+  .asset {
+    &__title {
+      margin-bottom: 0;
+      font-size: 1.2rem;
+      @media #{$medium-up} {
+        font-size: 1.5rem;
+      }
+    }
+    &__type {
+      font-weight: 400;
+      font-size: 0.875rem;
+      display: inline;
+    }
+    &__last-updated {
+      font-size: 0.875rem;
+      display: inline;
+      margin-left: 0.75rem;
+      padding-left: 0.75rem;
+      border-left: 1px solid $asset-border-color;
+    }
+    &__description {
+      p {
+        margin-top: 0;
+      }
+    }
+  }
+}
+
+// Compact specific styles
+.asset--compact {
+  .asset {
+    &__title {
+      margin-bottom: 0;
+      font-size: 1.2rem;
+      @media #{$medium-up} {
+        font-size: 1.4rem;
+      }
+    }
+    &__type {
+      font-weight: 400;
+      font-size: 0.875rem;
+      display: inline;
+    }
+    &__last-updated {
+      font-size: 0.875rem;
+      display: inline;
+      margin-left: 0.75rem;
+      padding-left: 0.75rem;
+      border-left: 1px solid $asset-border-color;
+    }
+  }
+}
+
+// Scaling when in small columns
+.large-3, .large-4 {
+  .asset__title {
+    font-size: 1.2rem;
+  }
+}

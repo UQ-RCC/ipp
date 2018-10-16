@@ -1,0 +1,6 @@
+// Provide grid component for panels admin layouts
+@import 'global/variables';
+@import 'foundation/components/grid';
+
+// contrib overrides
+@import 'contrib/panels/panels_admin_ui';

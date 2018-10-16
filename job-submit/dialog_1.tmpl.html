@@ -1,0 +1,38 @@
+<md-dialog aria-label="Choose A folder" style="width: 80%; height: 60%">
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2 ng-if="dialogmode=='fileselect'">Select files</h2>
+        <h2 ng-if="dialogmode=='folderselect'">Select folders</h2>
+        <h2 ng-if="dialogmode=='outputfolder'">Choose output folder</h2>
+        <h2 ng-if="dialogmode=='newtemplate'">Save template</h2>
+        <h2 ng-if="dialogmode=='loadtemplate'">Load existing template</h2>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <md-input-container ng-if="['outputfolder', 'newtemplate', 'folderselect'].includes(dialogmode)">
+        <label ng-if="dialogmode=='outputfolder'">New folder</label>
+        <label ng-if="dialogmode=='newtemplate'">New template</label>
+        <input type="text" id="dialog-input"/>
+      </md-input-container>
+      <label ng-if="dialogmode=='fileselect'">File select</label>
+      <label ng-if="dialogmode=='folderselect'">Folder select</label>      
+      <label ng-if="dialogmode=='outputfolder'">Directories</label>
+      <label ng-if="dialogmode=='newtemplate'">Existing templates</label>
+      <label ng-if="dialogmode=='loadtemplate'">Existing templates</label>
+      <br/>
+      <div ui-grid="dialogGridOptions" ui-grid-tree-view ui-grid-selection style="height:50%"></div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+      <md-button ng-click="answer(getSelected())">
+        Done
+      </md-button>
+      <span flex></span>
+
+      <md-button ng-click="cancel()">
+        Cancel
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

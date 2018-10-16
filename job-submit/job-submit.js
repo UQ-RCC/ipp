@@ -74,10 +74,18 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                     return;
                 }
                 document.getElementById("myCarousel").style.display="none";
+                document.getElementById("home-btn").className="menu__link";
+                document.getElementById("about-btn").className="menu__link";
+                document.getElementById("faq-btn").className="menu__link";
+                document.getElementById("contact-btn").className="menu__link";
+                document.getElementById("accesspolicy-btn").className="menu__link";
                 document.getElementById("login").style.display="none";
                 document.getElementById("logout-btn").style.display="block";
                 document.getElementById("joblistmgr").style.display="block";
+                document.getElementById("joblistmgr").className="menu__link";
                 document.getElementById("jobsubmitmgr").style.display="block";
+                document.getElementById("jobsubmitmgr").className="menu__link active";
+
                 $scope.session = sessionData; 
                 accessTokenResource.get({}).$promise.then(
                     function (token) {
@@ -417,14 +425,14 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                     $scope.gridApi = gridApi;
                     if (['fileselect', 'folderselect', 'outputfolder'].includes($scope.dialogmode)){
                         $scope.gridApi.treeBase.on.rowExpanded($scope, function(row) {
-			    console.log("get folder....");
+                            console.log("get folder....");
                             getFolder(row.entity.path);
                         });                        
                     }
-		    else{
-			console.log("invoe @ on Register API");
-			getAvailableTemplates();
-		    }
+        		    else{
+            			console.log("invoe @ on Register API");
+            			getAvailableTemplates();
+        		    }
                 };
             
                 var writeoutNode = function( childArray, currentLevel, dataArray ){
@@ -445,7 +453,8 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                         });
                     }   
                 };
-                var getFolder = function(path){ 
+                var getFolder = function(path){
+                    console.log("Loading:" + path) 
                     accessTokenResource.get({}).$promise.then(
                         function (token) {
                             var accessToken = token.access_token
@@ -455,7 +464,13 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                                     'access_token': accessToken
                                    }).$promise.then(
                                      function(returnData){
+                                        console.log(returnData);
                                         var data = returnData.commandResult;
+                                        if(data == null){
+                                            $scope.loading = false;
+                                            $rootScope.$broadcast("notify", "Error loading:" + path + ". You probably do not have permission");
+                                            return;
+                                        }                                            
                                         data.forEach(function(element) {
                                             element.children = [];
                                             element.type = 'f';
@@ -485,7 +500,11 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                                         };
                                         $scope.gridApi.core.notifyDataChange(uiGridConstants.dataChange.OPTIONS);
                                     }
-                                )
+                                ),
+                                function (error) {
+                                    $scope.loading = false;
+                                    $rootScope.$broadcast("notify", "Error loading:" + path + ". You probably do not have permission");
+                                }
                             }
                         },                          
                         function (error) {
@@ -520,7 +539,9 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                 }
 
                 console.log("get folder or templates here...");
-                if(['fileselect', 'outputfolder', 'folderselect'].includes($scope.dialogmode) )
+                if(['fileselect', 'folderselect'].includes($scope.dialogmode) )
+                    getFolder("/afm01");
+                else if(['outputfolder'].includes($scope.dialogmode) )
                     getFolder(thisScope.userhome);
                 else 
                     getAvailableTemplates();
@@ -780,6 +801,7 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                                            $scope.loading = false;
                                            console.log(data);
                                            $rootScope.$broadcast("notify", "Job submitted");
+                                           $location.path("/job-list");
                                        },
                                        function (error) {
                                            $scope.loading = false;

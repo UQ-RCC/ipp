@@ -1,0 +1,17 @@
+// Date module style overrides
+
+.container-inline-date .form-item, .container-inline-date .form-item input {
+  width: 100%;
+  @media #{$medium-up}{
+    width: auto;
+    max-width: 100%;
+  }
+}
+
+fieldset.date-combo .container-inline-date .date-padding {
+  padding: 0;
+}
+
+fieldset.date-combo .container-inline-date > .form-item {
+  margin-bottom: 0;
+}

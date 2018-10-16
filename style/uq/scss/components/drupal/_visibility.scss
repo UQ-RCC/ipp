@@ -1,0 +1,22 @@
+@import 'foundation/components/visibility';
+//
+// Visibility
+//
+// Source: Drupal, Zen
+
+.element-invisible {
+  @include element-invisible();
+}
+
+.element-hidden {
+  @include element-invisible();
+}
+
+.visually-hidden {
+  @include element-invisible();
+}
+
+// Drupal class to hide elements when javascript enabled
+html.js .js-hide {
+  display: none;
+}

@@ -1,0 +1,34 @@
+// Default styling for all pages
+//
+// Variants
+// .page__header--no-margin - Removes bottom margin from page header for cases where a solid colour section sits directly below it.
+
+.page {
+  &__breadcrumb {
+    padding-bottom: 1rem;
+  }
+  &__header {
+    background-color: $page-header-bg;
+    padding: 2rem 0;
+    margin-bottom: 1.5rem;
+    &--no-margin {
+      margin: 0;
+    }
+    .page__breadcrumb {
+      padding: 0;
+    }
+  }
+  &__body {
+    margin-bottom: 2rem;
+  }
+  &__aside {
+    clear: both;
+    margin-bottom: 2.5rem;
+    padding-top: 1rem;
+    border-top: 2px solid $vertical-list-border;
+
+    p:first-child {
+      margin-top: 0;
+    }
+  }
+}

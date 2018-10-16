@@ -1,0 +1,127 @@
+// Accordion / Toggle style
+//
+// Can be used on either div or ul
+//
+// Variants:
+// .accordion--shaded - Adds a shaded colour to the toggle titles.
+
+.accordion {
+  margin-bottom: 1.5em;
+  border-bottom: 1px solid $accordion-border-color;
+  overflow: hidden;
+  list-style: none;
+  padding: 0;
+
+  // Accordion item
+  &__item {
+    border-top: 1px solid $accordion-border-color;
+  }
+
+  // Accordion title / toggle
+  &__toggle {
+    cursor: pointer;
+    background: #fff;
+    padding: 1em 1em 1em 4rem;
+    margin: 0;
+    text-indent: -2.5rem;
+    position: relative;
+    transition: all ease 0.2s;
+    font-size: 1.2rem;
+    font-weight: 400;
+    @media #{$medium-up} {
+      font-size: 1.5rem;
+    }
+    // Closed state
+    &:before {
+      @include uq-icon;
+      content: "\e800"; // icon-uq-add-circle
+      margin-top: 0.1rem;
+      margin-right: 2.5rem;
+      float: left;
+      font-weight: 100;
+      font-size: 1.2rem;
+      color: $accordion-icon-color;
+      @media #{$medium-up} {
+        margin-top: 0.3rem;
+      }
+    }
+    &:hover {
+      background-color: $accordion-title-bg;
+    }
+    // Active toggle
+    &--active {
+      background: #fff;
+      // Open state
+      &:before {
+        @include uq-icon;
+        content: "\e801"; // icon-uq-minus-circle
+        font-weight: 100;
+        font-size: 1.2rem;
+      }
+      &:hover {
+        background-color: #fff;
+      }
+    }
+  }
+
+  // Accordion content
+  &__content {
+    display: none;
+    padding: 1rem 0;
+    overflow: hidden;
+    word-wrap: break-word;
+    @media #{$medium-up} {
+      padding: 1rem 1.5em;
+    }
+
+    .content {
+      display: inline-block; // Ensure floated content is wrapped properly and doesn't overflow.
+      width: 100%;
+    }
+    // Active content
+    &--active {
+      display: block;
+      overflow: visible!important; // Allows edit cog menu to overflow small accordions.
+    }
+  }
+
+  // Shaded variant
+  &--shaded {
+    .accordion {
+      &__toggle {
+        background: $accordion-title-bg;
+        &--active {
+          background: #fff;
+        }
+        &:hover {
+          background-color: $accordion-title-bg-hover;
+        }
+      }
+    }
+  }
+
+  // Small toggle variant
+  &--secondary {
+    .accordion {
+      &__toggle {
+        font-size: 1.1rem;
+        @media #{$medium-up} {
+          font-size: 1.2rem;
+        }
+      }
+    }
+  }
+
+  // Contextual link region cog position fix
+  .contextual-links-wrapper {
+    top: 0!important;
+  }
+}
+
+// Overrides for when displayed within wysiwyg fields.
+.cke_editable {
+  .accordion__content {
+    display: block!important;
+    border: 1px dashed #f00;
+  }
+}

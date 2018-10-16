@@ -1,0 +1,19 @@
+// Chosen select filter
+
+.chosen-container-multi .chosen-choices {
+  padding: 0.5rem;
+}
+
+.chosen-container-single .chosen-single {
+  padding-top: 5px;
+  padding-bottom: 6px;
+  height: 37px;
+  border-radius: 0;
+  background: #fafafa;
+  & div b {
+    background-position: 0 7px;
+  }
+}
+.chosen-container-active.chosen-with-drop .chosen-single div b {
+  background-position: -18px 7px;
+}

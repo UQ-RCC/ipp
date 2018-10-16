@@ -1,0 +1,8 @@
+//
+// Views Overrides
+//
+
+// Views table style for striped table rows
+.views-table tr.even {
+  background: $table-row-striped-bg;
+}

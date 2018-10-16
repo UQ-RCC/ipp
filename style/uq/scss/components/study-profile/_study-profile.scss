@@ -1,0 +1,56 @@
+// Study profile content type
+
+.study-profile {
+  &__teaser-image {
+    max-height: 11rem;
+    overflow: hidden;
+  }
+}
+
+// Teaser viewmode specific styles
+.study-profile--teaser {
+  .study-profile {
+    &__title {
+      @media #{$small-only} {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
+
+// Compact viewmode
+.study-profile--compact {
+  .study-profile {
+    &__wrapper {
+      display: table;
+      table-layout: fixed;
+    }
+
+    &__content {
+      display: table-cell;
+      vertical-align: middle;
+      overflow: visible;
+    }
+    &__media {
+      display: table-cell;
+      padding-right: 1rem;
+      vertical-align: middle;
+    }
+    &__teaser-image {
+      width: 110px;
+    }
+    &__title {
+      margin-bottom: 0;
+      @media #{$small-only} {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
+
+// Scaling when in small columns
+.large-3, .large-4 {
+  .study-profile__title {
+    font-size: 1.2rem;
+  }
+}

@@ -1,0 +1,100 @@
+.site-header {
+  width: 100%;
+  background-color: $site-header-bg;
+  color: #ccc;
+
+  %links {
+    color: $site-header-link-color;
+  }
+
+  &__content {
+    @include grid-row();
+    padding: 0 0 1.5rem 0;
+    text-align: center;
+    @media #{$small-only} {
+      padding: 1rem 0;
+    }
+  }
+
+  .uq-logo {
+    float: left;
+    @media #{$small-only} {
+      float: none;
+      margin: 0 auto;
+    }
+  }
+
+  .site-title {
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
+    padding: 0.8rem 0 0.8rem 1rem;
+    margin: 0 0 0 1rem;
+    float: left;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.2;
+    @media #{$medium-up} {
+      text-align: left;
+      font-size: 1.275rem;
+    }
+    @media #{$xlarge-up} {
+      font-size: 1.475rem;
+    }
+
+    &__link {
+      color: $site-header-link-color;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+
+    @media #{$small-only} {
+      border: 0;
+      margin: 1rem 0 0 0;
+      padding: 0;
+      float: none;
+      clear: both;
+    }
+
+    // Modify site title if it has a prefix
+    &.has-prefix {
+      font-size: 1rem;
+      @media #{$medium-up} {
+        padding-top: 0.3rem;
+        padding-bottom: 0.3rem;
+        letter-spacing: -0.3px;
+      }
+      @media #{$large-up} {
+        font-size: 1.175rem;
+      }
+      @media #{$xlarge-up} {
+        font-size: 1.275rem;
+      }
+    }
+
+    // Modify site title if it is 2 lines
+    &.has-2-lines {
+      font-size: 1rem;
+      @media #{$medium-up} {
+        padding-top: 0.3rem;
+        padding-bottom: 0.3rem;
+      }
+      @media #{$large-up} {
+        font-size: 1.275rem;
+      }
+      br {
+        @media #{$small-only} {
+          display: none;
+        }
+      }
+    }
+
+    // Site title prefix
+    &__prefix {
+      @media #{$medium-up} {
+        font-size: 1rem;
+        display: block;
+        font-weight: 300;
+      }
+    }
+  }
+}

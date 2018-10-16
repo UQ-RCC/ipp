@@ -1,0 +1,18 @@
+#inception_edit_header {
+  @include grid-row();
+}
+
+#inception_edit_link {
+  padding-top: 0.25rem;
+
+  a {
+    background: $primary-tabs-bg;
+    color: #000;
+    padding: 0.5rem 1rem;
+    margin-right: 0.25rem;
+    &:hover, &:focus {
+      text-decoration: none;
+      background: #ddd;
+    }
+  }
+}

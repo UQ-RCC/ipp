@@ -1,0 +1,73 @@
+//
+// Messages
+//
+// Source: Zen, modified to use uq_standard variables.
+//
+
+.messages {
+  .messages__list {
+    @include grid-row();
+  }
+}
+
+.messages,
+%messages {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  a {
+    text-decoration: underline;
+  }
+}
+
+.messages--status,
+%messages--status {
+  @extend %messages;
+  background-color: $messages-status-bg;
+  border: 1px solid $messages-status-border-color;
+  border-width: 1px 0;
+  color: $messages-status-color;
+}
+
+.messages--warning,
+%messages--warning {
+  @extend %messages;
+  background-color: $messages-warning-bg;
+  border: 1px solid $messages-warning-border-color;
+  border-width: 1px 0;
+  color: $messages-warning-color;
+}
+
+.messages--error,
+%messages--error {
+  @extend %messages;
+  background-color: $messages-error-bg;
+  border: 1px solid $messages-error-border-color;
+  border-width: 1px 0;
+  color: mix(white, $messages-error-bg, 90%);
+  a {
+    color: $messages-error-link-color;
+  }
+}
+
+.messages--error__text,
+%messages--error__text {
+  color: #333;
+}
+
+.messages__list,
+%messages__list {
+  margin: 0;
+}
+
+.messages__item,
+%messages__item {
+  list-style-image: none;
+}
+
+
+// Drupal selectors.
+
+/* Core/module installation error messages. */
+.messages--error p.error {
+  @extend %messages--error__text;
+}

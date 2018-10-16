@@ -1,0 +1,49 @@
+// Drop down list
+
+.drop-down-list {
+  text-align: center;
+  position: relative;
+  .button {
+    text-align: left;
+    width: 20rem;
+    max-width: 100%;
+    &--white {
+      &.dropdown {
+        &:after {
+          border-color: $uq-purple transparent transparent;
+        }
+        &:hover {
+          &:after {
+            border-color: #fff transparent transparent;
+          }
+        }
+      }
+    }
+  }
+  .f-dropdown {
+    z-index: 80;
+    padding: 0.5rem;
+    text-align: left;
+    max-width: 20rem;
+    li {
+      width: 100%;
+      border-top: 1px solid #eee;
+      margin-top: 0.3rem;
+      padding-top: 0.3rem;
+      &:first-child {
+        border-top: 0;
+        margin-top: 0;
+        padding-top: 0;
+      }
+      &:hover {
+        background-color: #fff;
+      }
+      a {
+        display: block;
+        &:hover {
+          background-color: #fff;
+        }
+      }
+    }
+  }
+}

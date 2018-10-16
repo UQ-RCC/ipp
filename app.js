@@ -168,6 +168,7 @@ angular.module('strudelWeb', [
 
         // sign out
         $scope.doSignout = function () {
+            console.log("Signing out");
             endSessionResource.get({}, function () {
                 if(document.getElementById("login").style.display="none")
                 {

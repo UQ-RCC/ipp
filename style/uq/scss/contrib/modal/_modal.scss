@@ -1,0 +1,72 @@
+/* Overrides for Drupal ctools ajax Modal  */
+
+#modalContent {
+  border: none;
+  position: fixed !important;
+  top: 8% !important;
+  bottom: 8% !important;
+  right: 4% !important;
+  left: 4% !important;
+}
+
+#modalBackdrop {
+  background: #000 !important;
+}
+
+/* Limit max width to max row width */
+/* Necessary level of specificity to override Drupal's markup */
+div.ctools-modal-content {
+  width: 100% !important;
+  margin: 0 auto;
+  max-width: $row-width;
+  .modal-header {
+    padding: 0.75rem;
+    border-bottom: 1px solid #ccc;
+    background: #fff;
+    color: #000;
+  }
+  #modal-title {
+    font-weight: 400;
+    font-size: 1rem;
+    color: #000;
+  }
+  .modal-content {
+    width: 100% !important;
+  }
+  #edit-cancel-style {
+    background-color: #fff;
+    color: $link-color;
+    border: 1px solid #c0c0c0;
+  }
+
+  .form-managed-file {
+    width: auto;
+    margin-left: 15em;
+    margin-right: 5em;
+    .file, .form-file {
+      display: inline-block;
+      width: 75%;
+      border: 1px solid #ccc;
+      padding: 1rem;
+    }
+    input#edit-settings-image-remove-button {
+      background-color: $messages-error-bg;
+    }
+  }
+
+  a.filefield-sources-filething-browse {
+    margin-top: 1.25rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem
+  }
+  input + input {
+    margin-left: 0.5em;
+  }
+  a.close {
+    color: $link-color;
+    img {
+      display: none;
+    }
+  }
+}
+

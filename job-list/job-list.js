@@ -27,9 +27,7 @@ angular.module('strudelWeb.job-list', ['ngRoute', 'ngResource'])
             });
             $scope.jobs = [];
             //refresh experiment
-            var jobListRefreshInProgress = false;
-            var jobListRefreshPromise;
-            $scope.refreshCountdown = 1000;
+            var jobListRefreshTimer;
 
             // Gets the session data and redirects to the login screen if the user is not logged in
             sessionInfoResource.get({}).$promise.then(function (sessionData) {
@@ -38,22 +36,36 @@ angular.module('strudelWeb.job-list', ['ngRoute', 'ngResource'])
                     return;
                 }            
                 document.getElementById("myCarousel").style.display="none";
+                document.getElementById("home-btn").className="menu__link";
+                document.getElementById("about-btn").className="menu__link";
+                document.getElementById("faq-btn").className="menu__link";
+                document.getElementById("contact-btn").className="menu__link";
+                document.getElementById("accesspolicy-btn").className="menu__link";
                 document.getElementById("login").style.display="none";
                 document.getElementById("logout-btn").style.display="block";
                 document.getElementById("joblistmgr").style.display="block";
+                document.getElementById("joblistmgr").className="menu__link active";
                 document.getElementById("jobsubmitmgr").style.display="block";
+                document.getElementById("jobsubmitmgr").className="menu__link";
+                
 
                 $scope.session = sessionData;
                 //get the jobs for the first time
-		        accessTokenResource.get({}).$promise.then(
+                jobListRefreshTimer=$interval(function(){
+                                        queryJobs();                   
+                                    },4000); 
+            });
+
+            var queryJobs = function(){
+                accessTokenResource.get({}).$promise.then(
                     function (token) {
                         var accessToken = token.access_token
                         if (accessToken !== "") {
                             getJobsResource.get({'access_token': accessToken}).$promise.then(
                                 function(returnData){
+                                    console.log(returnData);
                                     var data = returnData.commandResult;
                                     $scope.jobs = [];
-                                    // Check the status of each desktop
                                     for (var i = 0; i < data.length; i++) {
                                         (function (jobData) {                                    
                                             $scope.jobs.push({
@@ -66,81 +78,23 @@ angular.module('strudelWeb.job-list', ['ngRoute', 'ngResource'])
                                             });
                                         })(data[i]);
                                     }                            
+                                },//end function data
+                                function (error) {
+                                    $rootScope.$broadcast("notify", "Could not refresh experiment list!");
                                 }
-                            )// end get JobsResource
-                        }//end if
-                    }
-                ); 
-
-            });
-
-            
-            $scope.refreshJobList = function () {
-            	function doRefresh() {
-                    jobListRefreshInProgress = true;
-                    accessTokenResource.get({}).$promise.then(
-                        function (token) {
-                            var accessToken = token.access_token
-                            if (accessToken !== "") {
-                                getJobsResource.get({'access_token': accessToken}).$promise.then(
-                                    function(returnData){
-                                        var data = returnData.commandResult;
-                                        $scope.jobs = [];
-                                        for (var i = 0; i < data.length; i++) {
-                                            (function (jobData) {                                    
-                                                $scope.jobs.push({
-                                                    'jobid': jobData.jobid,
-                                                    'uname': jobData.uname,
-                                                    'status': jobData.status,
-                                                    'nnodes': jobData.nnodes,
-                                                    'remainingWalltime': jobData.remainingWalltime,
-                                                    'selected': false, 
-                                                });
-                                            })(data[i]);
-                                        }                            
-                                    },//end function data
-                                    function (error) {
-                                        $rootScope.$broadcast("notify", "Could not refresh experiment list!");
-                                    }
-                                    ).finally(
-                                        function () {
-                                            jobListRefreshInProgress = false;
-                                            $scope.refreshCountdown = 1000;
-                                            jobListRefreshPromise = $interval(function () {
-                                                if ($scope.refreshCountdown > 0) {
-                                                    $scope.refreshCountdown--;
-                                                }
-                                            }, 30, 100);
-                                            jobListRefreshPromise.then(function () {
-                                                doRefresh();
-                                            });
-
-                                        }
-                                    );
-                            }
+                            )        
                         }
-                    );
-                }
-
-                if (angular.isDefined(jobListRefreshPromise) && !jobListRefreshInProgress) {
-                    $interval.cancel(jobListRefreshPromise);
-                    jobListRefreshPromise = undefined;
-                }
-                if (!jobListRefreshInProgress) {
-                    doRefresh();
-                }
-            };
-
+                    }
+                );
+            }
+            
             // Stop refreshing the experiments if the route changes
             $scope.$on('$destroy', function () {
-                if (jobListRefreshPromise) {
-                    $interval.cancel(jobListRefreshPromise);
+                if (jobListRefreshTimer) {
+                    $interval.cancel(jobListRefreshTimer);
                 }
             });
-            //list experiment is in progress
-            $scope.jobListRefreshInProgress = function(){
-                return jobListRefreshInProgress;
-            }
+            
             
             //kill all seleced jobs
             $scope.killSelectedJob = function(){
@@ -155,8 +109,6 @@ angular.module('strudelWeb.job-list', ['ngRoute', 'ngResource'])
             //$scope.$on('refresh-event', function(event, profileObj) {
             //    refreshJobList();
             //});
-            
-            $scope.refreshJobList();
 
         }])
 

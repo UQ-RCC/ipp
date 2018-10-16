@@ -1,0 +1,186 @@
+// Catalogue
+
+.catalogue {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+
+  // Catalogue index menu
+  &__index, &__index ul.menu {
+    list-style: none;
+    margin: 0 0 1.5rem 0;
+    padding: 0;
+    .index__item, li {
+      background: $catalogue-index-bg;
+      border-bottom: 1px solid white;
+      &:hover {
+        background: darken($catalogue-index-bg, 6);
+      }
+
+      .index-item__link, a {
+        display: block;
+        padding: 1rem 2rem 1rem 1rem;
+        color: $catalogue-index-color;
+        text-decoration: none;
+        position: relative;
+        font-size: 1.2rem;
+        font-weight: 500;
+        margin: 0;
+        @media #{$large-up} {
+          padding: 1.5rem 3rem 1.5rem 1.5rem;
+        }
+        &.active {
+          background: $link-color;
+          color: white;
+        }
+        &:after {
+          @include fa-icon();
+          content: '\f054'; // .fa-chevron-right
+          font-size: 0.6rem;
+          position: absolute;
+          top: 2.2rem;
+          right: 1rem;
+          @media #{$large-up} {
+            right: 1.5rem;
+          }
+        }
+      }
+
+      .index-item__summary {
+        font-size: 0.875rem;
+        padding-top: 0.5rem;
+        display: block;
+        font-weight: 300;
+      }
+    }
+  }
+
+  // Catalogue page
+  &__page {
+    .catalogue__header {
+      padding-bottom: 2rem;
+      .catalogue__title {
+      }
+      .catalogue__summary {
+      }
+    }
+  }
+
+  // A list of items
+  &__list {
+    list-style: none;
+    margin: 1rem 0 0 0;
+    padding: 0;
+    .catalogue-list__title {
+      font-size: 1.5rem;
+      padding: 1rem 0;
+    }
+    &--children {
+      margin: 0 0 2rem 0;
+    }
+  }
+
+  // Items on the catalogue page
+  &__item {
+    border-bottom: 1px dotted #ccc;
+    .item__link {
+      display: block;
+      padding: 1rem 2rem 1rem 1rem;
+      position: relative;
+      @media #{$large-up} {
+        padding: 1.5rem 3rem 1.5rem 1.5rem;
+      }
+      &:hover {
+        text-decoration: none;
+        background-color: $link-color;
+        color: white;
+        .item__meta {
+          color: $catalogue-meta-color;
+        }
+      }
+      // Add external link icon to Catalogue external links that contain the path '/redirect/'
+      &[href*="/redirect/"] {
+        @extend %external;
+      }
+    }
+    .item__title {
+      font-size: 1.2rem;
+      font-weight: 300;
+      margin: 0;
+    }
+    .item__meta {
+      margin-top: 0.2rem;
+      color: #555;
+      .item-meta {
+        &__tag {
+          margin-right: 0.3rem;
+          & + .item-meta__file-info {
+            border-left-width: 1px;
+            border-left-style: solid;
+            border-left-color: inherit;
+            padding-left: 0.5rem;
+          }
+        }
+        &__file-info {
+          margin-right: 0.3rem;
+          font-style: italic;
+        }
+      }
+    }
+
+    // Compact viewmode nodes as catalogue items
+    &--compact {
+      padding: 1rem 2rem 1rem 1rem;
+      @media #{$large-up} {
+        padding: 1.5rem 3rem 1.5rem 1.5rem;
+      }
+      &:hover {
+        text-decoration: none;
+        background-color: $link-color;
+        color: #fff;
+        .item__meta {
+          color: $catalogue-meta-color;
+        }
+        // Target elements with potentially different colors inside compact viewmodes.
+        a, span, p {
+          color: #fff!important;
+          text-decoration: none;
+        }
+      }
+    }
+
+    // Child terms of the catalogue
+    &--child {
+      .item__link {
+        &:after {
+          @include fa-icon();
+          content: '\f054'; // .fa-chevron-right
+          font-size: 0.6rem;
+          position: absolute;
+          top: 50%;
+          right: 1rem;
+          margin-top: -0.3rem;
+          @media #{$large-up} {
+            right: 1.5rem;
+          }
+        }
+      }
+      .item__title {
+      }
+    }
+
+    // Asset type of catalogue item. (files: documents, video, image)
+    &--asset {
+      .item__link {
+        &:after {
+          @include fa-icon();
+          content: '\f019'; // .fa-download
+          font-size: 1.5rem;
+          position: absolute;
+          top: 50%;
+          right: 1rem;
+          margin-top: -0.75rem;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+// Qualification paragraph bundle
+
+.qualification {
+  margin-bottom: 0.7rem;
+  &__degree {
+    font-weight: 400;
+  }
+  &__comma {
+  }
+  &__year {
+    font-weight: 300;
+  }
+  &__major {
+  }
+}

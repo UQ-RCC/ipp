@@ -1,0 +1,3 @@
+// Custom break point used by the main menu to handle tablets in landscape with a resolution that would otherwise be
+// triggered by $large.
+$medium-large-up: "only screen and (min-width:1281px)" !default;

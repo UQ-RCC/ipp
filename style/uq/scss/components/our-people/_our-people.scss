@@ -1,0 +1,19 @@
+.our-people__staff-group {
+  .person-teaser {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #EDEDED;
+    min-height: 140px;
+    .person__display-name {
+      font-size: 1.375rem;
+    }
+  }
+}
+
+// Our People panel page (feature)
+.page-our-people {
+  .person-teaser {
+    .person__display-name {
+      font-size: 1.125rem;
+    }
+  }
+}

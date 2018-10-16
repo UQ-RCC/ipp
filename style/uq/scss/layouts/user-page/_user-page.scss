@@ -1,0 +1,19 @@
+//
+// User login, User profile
+//
+
+.page-user {
+
+  .page__title, .page__content {
+    @include grid-row();
+  }
+
+  .page__header {
+    padding-top: 2rem;
+  }
+
+  .page__content {
+    padding-bottom: 2.5rem;
+  }
+
+}

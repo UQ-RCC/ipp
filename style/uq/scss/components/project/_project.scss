@@ -1,0 +1,146 @@
+// Project
+// Encompasses all kinds of projects
+
+// Common element styles
+.project {
+  &__title {
+  }
+  &__meta {
+  }
+  &__funding-source {
+  }
+  &__start-date {
+  }
+  &__end-date {
+  }
+  &__summary {
+    clear: both;
+  }
+  &__research-area {
+  }
+  &__content {
+  }
+  &__description {
+  }
+  &__members-group {
+    @include grid-row();
+    .person--teaser {
+      padding-bottom: 1.5rem;
+      &:nth-of-type(odd) {
+        clear: left;
+      }
+      @media #{$medium-up}{
+        @include grid-column(6);
+      }
+    }
+  }
+  &__teaser-image {
+    max-height: 11rem;
+    overflow: hidden;
+  }
+}
+
+// Project page specific styles
+.project-page {
+  .project {
+    &__description {
+    }
+    &__members {
+      .project__members-title, & .pane-title {
+        @extend .vertical-list__title;
+      }
+      &-group{
+        /* Separates multiple groups of people */
+        @extend .vertical-list;
+        @extend .vertical-list--ruled;
+        .project__member, .person-teaser {
+          @extend .vertical-list__item;
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+        .person__display-name {
+          font-size: 1.125rem;
+        }
+      }
+    }
+  }
+
+  .project__related-projects {
+    & .pane-title {
+      @extend .vertical-list__title;
+    }
+  }
+
+  .related-project {
+    &__title {
+      font-weight: 400;
+    }
+    &__funding-source {
+      color: #888;
+    }
+  }
+
+  .field-label {
+    font-weight: 700;
+  }
+
+  .page__content {
+    margin-bottom: 2rem;
+  }
+}
+
+// Project teaser
+.project--teaser {
+  .project {
+    &__title {
+      margin-bottom: 0;
+      @media #{$small-only} {
+        font-size: 1.2rem;
+      }
+    }
+    &__start-end-date {
+      float: left;
+      color: #777;
+      & + .project__funding-source {
+        &:before {
+          content: ", ";
+        }
+      }
+    }
+    &__funding-source {
+      color: #777;
+    }
+    &__summary {
+      margin-top: 0.5rem;
+    }
+  }
+}
+
+// Project compact
+.project--compact {
+  .project {
+    &__title {
+      margin-bottom: 0;
+      @media #{$small-only} {
+        font-size: 1.2rem;
+      }
+    }
+    &__start-end-date {
+      color: #777;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// Hero banner variant for project page
+.hero-banner--project-page {
+  margin-bottom: 1.5rem !important;
+}
+
+// Scaling when in small columns
+.large-3, .large-4 {
+  .project__title {
+    font-size: 1.2rem;
+  }
+}

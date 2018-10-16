@@ -1,0 +1,100 @@
+// Related content
+// Entity reference block that displays on some content types in the side column
+
+.related-content {
+  margin-bottom: 2.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid $vertical-list-border;
+  &__title {
+    font-size: 1.475rem;
+  }
+  &__entities {}
+
+  // Content type teaser titles
+  // Catch all content type teaser titles by element rather than maintaining a class list for every content type.
+  .vertical-list__item h3 {
+    font-size: 1.275rem;
+    margin: 0;
+  }
+}
+
+// Tighten up related content when displayed in the sidebar.
+.layout-region__right {
+  .related-content {
+    .vertical-list__item h3 {
+      font-size: 1rem;
+    }
+
+    // Related Basic Page
+    .basic-page--compact {
+      .basic-page__media {
+        display: none;
+      }
+    }
+
+    // Related Structured Page
+    .structured-page--compact {
+      .structured-page__media {
+        display: none;
+      }
+    }
+
+    // Related Event
+    .event--compact {
+      .event__media {
+        display: none;
+      }
+    }
+
+    // Related Event Session
+    .event-session--compact {
+      .event-session__media {
+        display: none;
+      }
+    }
+
+    // Related Student Story
+    .student-story--compact {
+      .student-story__content {
+        height: auto;
+      }
+      .student-story__media {
+        display: none;
+      }
+    }
+
+    // Related Research Profile
+    .research-profile--compact {
+      .research-profile__media {
+        display: none;
+      }
+    }
+
+    // Related Study Profile
+    .study-profile--compact {
+      .study-profile__media {
+        display: none;
+      }
+    }
+
+    // Related Articles
+    .article--compact {
+      .article__content {
+        height: auto;
+      }
+      .article__media {
+        display: none;
+      }
+    }
+
+    // Related Blog posts
+    .blog-post--compact  {
+      .blog-post__content {
+        height: auto;
+      }
+      .blog-post__media {
+        display: none;
+      }
+    }
+  }
+}

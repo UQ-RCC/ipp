@@ -1,0 +1,20 @@
+// Entity form pages
+
+.page-eform {
+  .page__title, .page__content, .page__error-messages {
+    @include grid-row();
+  }
+  .page__header {
+    padding-top: 2rem;
+  }
+  .page__content {
+    margin-bottom: 2rem;
+    min-height: 15rem;
+    .entityform {
+      @include grid-column(12);
+      @media #{$large-up} {
+        @include grid-column(9);
+      }
+    }
+  }
+}

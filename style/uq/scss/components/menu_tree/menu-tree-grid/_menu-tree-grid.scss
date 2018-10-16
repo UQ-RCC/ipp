@@ -1,0 +1,29 @@
+// Category Grid Menu
+
+.menu_tree_grid {
+  &__link {
+    border-bottom: 1px solid #ddd;
+    padding: 1rem;
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: $uq-purple;
+    position: relative;
+    @media #{$medium-up}{
+      height: 5rem;
+    }
+    @media #{$large-up}{
+      height: 6rem;
+    }
+    &:focus, &:hover {
+      text-decoration: none;
+    }
+    &:focus {
+      color: $uq-purple;
+    }
+    &:hover {
+      background: $uq-purple;
+      color: #fff;
+    }
+  }
+}

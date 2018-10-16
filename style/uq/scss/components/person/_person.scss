@@ -1,0 +1,158 @@
+// Person content type
+
+// Common element styles
+.person {
+  &__display-name {
+    display: inline-block;
+  }
+  &__postnominals {
+    display: inline-block;
+    margin-left: 0.5rem;
+  }
+  &__position {
+    // Space multiple positions apart
+    &+ .person__position {
+      margin-top: 0.75rem;
+    }
+  }
+  &__position-title {
+  }
+  &__position-organisation {
+  }
+  &__phone {
+    &:before {
+      @include fa-icon;
+      content: "\f095"; // .fa-phone
+      float: left;
+      margin-top: 0.25rem;
+      margin-right: 0.9rem;
+    }
+  }
+  &__email {
+    &:before {
+      @include fa-icon;
+      content: "\f003"; // .fa-email
+      float: left;
+      margin-top: 0.25rem;
+      margin-right: 0.7rem;
+    }
+  }
+  &__location {
+    padding-left: 1.7rem;
+    &:before {
+      @include fa-icon;
+      content: "\f041"; // .fa-map-marker
+      float: left;
+      margin-top: 0.25rem;
+      margin-left: -1.5rem;
+    }
+  }
+  &__fax {
+    &:before {
+      @include fa-icon;
+      content: "\f1ac"; // .fa-fax
+      float: left;
+      margin-top: 0.25rem;
+      margin-right: 0.7rem;
+    }
+  }
+}
+
+.pane-title {
+  .person__areas-of-responsibility & {
+  }
+}
+
+// Person page specific styles
+.person-page {
+  .person {
+    &__photo {
+      margin-top: 1rem;
+      @media #{$large-up} {
+        margin: 0;
+      }
+    }
+    &__body {
+      margin-bottom: 2rem;
+    }
+    &__researcher-biography {
+      margin-bottom: 2rem;
+    }
+    &__projects {
+      margin-bottom: 2rem;
+    }
+    &__supervisor-info {
+      margin-bottom: 2rem;
+    }
+    &__related-publications {
+      margin-bottom: 2rem;
+      display: inline-block;
+      .citation_author_name, .author_id_link {
+        color: #000;
+      }
+    }
+  }
+  .position__phone {
+    &:before {
+      @include fa-icon;
+      content: "\f095"; // .fa-phone
+      float: left;
+      margin-top: 0.25rem;
+      margin-right: 0.9rem;
+    }
+  }
+  .page__content {
+    margin-bottom: 2rem;
+  }
+}
+
+// Teaser
+.person--teaser {
+  .person {
+    &__display-name {
+      @media #{$small-only} {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
+
+// Compact
+.person--compact {
+  .person {
+    &__display-name {
+      @media #{$small-only} {
+        font-size: 1.2rem;
+      }
+    }
+  }
+  .position {
+    &__title, &__organisation {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// Byline
+.person--byline {
+  .person {
+    &__display-name {
+
+    }
+    &__photo {
+      width: 2rem;
+      height: 2rem;
+      display: inline-block;
+      margin-right: 0.5rem;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+  }
+}
+
+// Scaling when in small columns
+.large-3, .large-4 {
+  .person__display-name {
+    font-size: 1.2rem;
+  }
+}

@@ -1,0 +1,9 @@
+blockquote {
+  font-style: italic;
+  display: inline-block;
+  clear: both;
+  @media #{$medium-up} {
+    display: table;
+    clear: none;
+  }
+}

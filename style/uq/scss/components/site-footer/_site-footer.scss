@@ -1,0 +1,34 @@
+.site-footer {
+  width: 100%;
+  background-color: $site-footer-bg;
+  color: $site-footer-color;
+  font-size: $site-footer-font-size;
+
+  a, %links {
+    color: $site-footer-link-color;
+  }
+
+  .cricos__link {
+    color: $site-footer-color;
+  }
+
+  .site-footer__content {
+    @include grid-row();
+    padding: 2rem 0;
+  }
+  .site-footer__sub-title {
+    font-size: 1.1rem;
+    margin: 0;
+    color: #fff;
+  }
+  .site-footer__emergency-contact {
+    @media #{$small-only} {
+      margin-top: 1rem;
+    }
+  }
+  .site-footer__footer {
+    border-top: 1px solid rgba(255,255,255,0.3);
+    margin-top: 1rem;
+    padding-top: 1rem;
+  }
+}

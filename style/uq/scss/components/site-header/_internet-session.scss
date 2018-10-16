@@ -1,0 +1,23 @@
+// Display a message when user is not logged into broadhop and doesn't have internet access.
+
+.no-internet-message {
+  display: none;
+  padding: 0.5rem;
+  clear: both;
+  background: $messages-warning-bg;
+  border: 1px solid $messages-warning-border-color;
+  color: $messages-warning-color;
+  font-size: 0.875rem;
+}
+
+.has-internet-session {
+  .no-internet-message {
+    display: none;
+  }
+}
+
+.has-not-internet-session {
+  .no-internet-message {
+    display: block;
+  }
+}

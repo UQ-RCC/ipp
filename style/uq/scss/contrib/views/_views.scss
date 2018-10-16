@@ -1,0 +1,22 @@
+// Allow exposed filters on Views to display inline rather than stacked.
+.view--inline-filters {
+  .view-filters {
+    @media #{$small-only} {
+      margin: 0 1rem;
+    }
+  }
+  .views-exposed-widget {
+    @media #{$medium-up} {
+      float: left;
+    }
+    .form-item {
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+    input[type="submit"] {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+      margin-top: 1.3rem;
+    }
+  }
+}
