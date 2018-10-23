@@ -28,22 +28,22 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                     isArray: false
                 }
             });
-            var listFolder = $resource(settings.URLs.serverApiBase + settings.URLs.listFolder , {}, {
+            var listFolder = $resource(settings.URLs.serverApiBase + settings.URLs.listFolderBase64 , {}, {
                 'get': {
                     isArray: false
                 }
             });
-            var filesInfo = $resource(settings.URLs.serverApiBase + settings.URLs.filesInfo, {}, {
+            var filesInfo = $resource(settings.URLs.serverApiBase + settings.URLs.filesInfoBase64, {}, {
                 'get': {
                     isArray: false
                 }
             });
-            var executeMicrovolutionJob = $resource(settings.URLs.serverApiBase + settings.URLs.executeMicrovolution, {}, {
+            var executeMicrovolutionJob = $resource(settings.URLs.serverApiBase + settings.URLs.executeMicrovolutionBase64, {}, {
                 'get': {
                     isArray: false
                 }
             });
-            var testExecute = $resource(settings.URLs.serverApiBase + settings.URLs.testExecution, {}, {
+            var testExecute = $resource(settings.URLs.serverApiBase + settings.URLs.testExecutionBase64, {}, {
                 'get': {
                     isArray: false
                 }
@@ -53,7 +53,7 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                     isArray: false
                 }
             });
-            var saveTemplate = $resource(settings.URLs.serverApiBase + settings.URLs.saveTemplate, {}, {
+            var saveTemplate = $resource(settings.URLs.serverApiBase + settings.URLs.saveTemplateBase64, {}, {
                 'get': {
                     isArray: false
                 }
@@ -129,7 +129,7 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                 'output': '',
                 'folder': '',
                 'psfFile': '',
-                'numberOfParallelJobs': 10,
+                'numberOfParallelJobs': 2,
                 'mem': 5000,
                 'gpus': 2,
                 'regularizationType': {},
@@ -188,7 +188,7 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
             }
             // psfModel
             $scope.psfModelTypes = [
-                {'label': 'BornWolf', 'value': 0},
+                {'label': 'Scalar', 'value': 0},
                 {'label': 'Vectorial', 'value': 1}]
             //regularization
             $scope.regularizationType = [
@@ -276,7 +276,9 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                                     if($scope.selectedFilesGridOptions.data[i].path === selectedItem.path)
                                         isNew = false;
                                 }
-                                if(isNew) selectedList += selectedItem.path + ":";
+                                if(isNew){
+                                    selectedList += selectedItem.path.replace(/ /g, "\ ") + ":";
+                                } 
                             });
                             selectedList = selectedList.slice(0, -1)
                             console.log(selectedList) 
@@ -289,7 +291,7 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                                         $rootScope.$broadcast("notify", "Loading files");  
                                         // if dialogmod is in fileselect or outputfolder
                                         filesInfo.get({
-                                            'fileslist': selectedList,
+                                            'fileslist': btoa(selectedList),
                                             'access_token': accessToken
                                         }).$promise.then(
                                             function(returnData) {
@@ -334,9 +336,10 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                                 if (accessToken !== "") {
                                     $scope.loading = true;  
                                     var formData = getFormData($scope.dialogmode);
-                                    formData['templateName'] = $scope.dialogInput;
-                                    formData['access_token'] = accessToken;
-                                    saveTemplate.get(formData).$promise.then(
+                                    saveTemplate.get({"templateinfo": btoa(JSON.stringify(formData)),
+                                                      "templateName": $scope.dialogInput,
+                                                      "access_token": accessToken
+                                                    }).$promise.then(
                                         function(returnData) {
                                             $scope.loading = false;
                                             $rootScope.$broadcast("notify", "Successfuly save template " + $scope.dialogInput);
@@ -459,8 +462,10 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                         function (token) {
                             var accessToken = token.access_token
                             if (accessToken !== "") {
+                                console.log("Loading:" + path) 
+                                console.log("Loading:" + btoa(path)) 
                                listFolder.get({
-                                    'folderpath': path,
+                                    'folderpath': btoa(path),
                                     'access_token': accessToken
                                    }).$promise.then(
                                      function(returnData){
@@ -633,7 +638,7 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
             */
             var getFormData = function(mode){
                 var selectedFiles = [];
-		var selectedFolders = new Set();
+                var selectedFolders = new Set();
                 $scope.selectedFilesGridOptions.data.forEach( function( item ){
                     var filePath = item.path;
                     selectedFiles.push(filePath);
@@ -644,16 +649,16 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                 if($scope.preference.automaticRegularizationScale){
                     $scope.preference.regularization = -1;
                 }
-		if(mode==='folderselect')
+                if(mode==='folderselect')
                     $scope.preference.folder = Array.from(selectedFolders).join();
                 
-		// get channel data
-		if($scope.selectedItem && $scope.selectedItem.channels){
-			$scope.preference.iterations = []
-			$scope.preference.wavelengths = []
-			$scope.preference.pinholes = []
-			$scope.preference.backgrounds = []
-			$scope.selectedItem['channels'].forEach(function (channel){
+        		// get channel data
+        		if($scope.selectedItem && $scope.selectedItem.channels){
+        			$scope.preference.iterations = []
+        			$scope.preference.wavelengths = []
+        			$scope.preference.pinholes = []
+        			$scope.preference.backgrounds = []
+        			$scope.selectedItem['channels'].forEach(function (channel){
                             $scope.preference.iterations.push(channel['iterations'])
                             $scope.preference.wavelengths.push(channel['wavelength'])
                             $scope.preference.pinholes.push(channel['pinhole'])
@@ -715,18 +720,17 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                    //'access_token': accessToken
                 };
                 console.log(formData);
-		if (isNaN(formData.axSpacing) || isNaN(formData.latSpacing))
-			throw "Lateral Spacing and Axial spacing cannot be null";
-                return formData;
-
-            }
+                if (isNaN(formData.axSpacing) || isNaN(formData.latSpacing))
+                    throw "Lateral Spacing and Axial spacing cannot be null";
+                    return formData;
+                }
 
             /**
             * set form data to preference
             */
             var setFormData = function(data){
-		console.log("Setting form data");
-		console.log(data);
+                console.log("Setting form data");
+                console.log(data);
                 $scope.preference.NA = parseFloat(data.NA);
                 $scope.preference.RI = parseFloat(data.RI);
                 $scope.preference.axialSpacing = parseFloat(data.axialSpacing);
@@ -793,9 +797,16 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                         function (token) {
                             var accessToken = token.access_token
                             if (accessToken !== "") {
-                                formData['access_token'] = accessToken;
+                                var executioninfo = {   "executioninfo": btoa(JSON.stringify(formData)),
+                                    "instances": formData.instances,
+                                    "arrayMax":formData.arrayMax,
+                                    "mem": formData.mem,
+                                    "devices": formData.devices,
+                                    "output": formData.output,
+                                    "access_token": accessToken
+                                }
                                 if(isReal){
-		                   executeMicrovolutionJob.get(formData)
+                                  executeMicrovolutionJob.get(executioninfo)
                                    .$promise.then(
                                        function(data) {
                                            $scope.loading = false;
@@ -809,7 +820,7 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                                        }
                                    );
                                  }else{
-                                    testExecute.get(formData)
+                                    testExecute.get(executioninfo)
                                    .$promise.then(
                                        function(data) {
                                            $scope.loading = false;

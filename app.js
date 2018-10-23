@@ -29,13 +29,17 @@ angular.module('strudelWeb', [
             'home': 'execute/home',
             'listJobs': 'execute/listall',
             'listFolder': 'execute/listfolder',
-            'fileInfo': 'execute/fileinfo',
             'filesInfo': 'execute/filesinfo',
             'testExecution': 'execute/testexecute',
             'loadTemplate': 'execute/loadtemplate',
             'listTemplate': 'execute/listtemplate',
             'saveTemplate': 'execute/savetemplate',
-            'executeMicrovolution': 'execute/executemicrovolution'
+            'executeMicrovolution': 'execute/executemicrovolution',
+            'listFolderBase64': 'execute/listfolderbase64',
+            'filesInfoBase64': 'execute/filesinfobase64',
+            'testExecutionBase64': 'execute/testexecutebase64',
+            'saveTemplateBase64': 'execute/savetemplatebase64',            
+            'executeMicrovolutionBase64': 'execute/executemicrovolutionbase64'  
         },
     })
     .service('APIInterceptor', ['$rootScope', '$location', '$injector', '$timeout', '$log', 'settings',
