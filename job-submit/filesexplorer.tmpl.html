@@ -1,0 +1,97 @@
+<div class="modal-header">
+    <h3 class="modal-title" id="modal-title">{{$ctrl.modalContents.title}}</h3>
+</div>
+<div class="modal-body" id="modal-body">
+  <!-- current path -->
+  <div layout="column">
+    <div layout="column" ng-if="$ctrl.modalContents.mode!='newtemplate' && $ctrl.modalContents.mode!='loadtemplate'">
+      <label>Current Path</label>
+      <div layout=row>
+        <div flex="90" layout="row">
+          <select class="form-control"
+                ng-init="$ctrl.init()" 
+                ng-model="$ctrl.modalContents.currentpath" 
+                ng-change="$ctrl.onPathChange($ctrl.modalContents.currentpath)"
+                ng-options="path for path in $ctrl.modalContents.paths">
+          </select>
+        </div>
+        <br />
+        <div layout="row" layout-align="center center">
+          <md-icon md-svg-src="style/icons/refresh.svg" ng-click="$ctrl.refresh()"></md-icon>
+        </div>
+      </div>
+    </div>
+
+    <div layout-align="start center">
+      <div layout=column ng-if="$ctrl.modalContents.mode=='selectfolders'" flex="30">
+        <label>File Extensions</label> 
+        <select class="form-control"
+              ng-model="$ctrl.modalContents.extension" 
+              ng-options="extension for extension in $ctrl.modalContents.extensions">
+        </select>
+      </div>
+      <div layout=column ng-if="$ctrl.modalContents.mode=='selectoutput'" flex="30">
+        <label>Output folder</label> 
+        <input class="form-control" ng-model="$ctrl.modalContents.newItem"/>
+      </div>
+      <div layout=column ng-if="$ctrl.modalContents.mode=='newtemplate'" flex="30">
+        <label>New Template Name</label> 
+        <input class="form-control" ng-model="$ctrl.modalContents.newItem"/>
+      </div>
+    </div>
+    <md-progress-linear ng-if="$ctrl.isLoading()" md-mode="indeterminate"></md-progress-linear>
+  </div>
+  <br />
+  <!-- main contents -->
+  <div layout="row">
+    <div layout="column" flex="10" ng-if="$ctrl.modalContents.mode!='newtemplate' && $ctrl.modalContents.mode!='loadtemplate'">
+      <!-- a table of shortcuts-->
+      <table border='0'>
+        <caption>Shortcuts</caption>
+        <tbody>
+          <tr ng-repeat="shortcut in $ctrl.modalContents.shortcuts" style="font-size: 17px;">
+            <td ng-disabled="$ctrl.isLoading()" ng-click="$ctrl.shortcut(shortcut.path)">{{ shortcut.label }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div flex="5"></div>
+    <div flex="85" style="height: 350px; overflow: auto;">
+      <table border='0' layout-fill>
+        <thead>
+          <tr>
+            <th></th>
+            <th style="text-align: left">Name</th>
+            <th style="text-align: left">Size</th>
+            <th style="text-align: left">Owner</th>
+            <th style="text-align: left">Group</th>
+            <th>
+              <input type="checkbox" ng-disabled="$ctrl.modalContents.mode!='selectfiles'" ng-model="$ctrl.modalContents.selectAll" ng-click="$ctrl.selectAll()" />
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="item in $ctrl.modalContents.filesFolderList" 
+              style="font-size: 17px; cellpadding:20px; height: 20px;"
+              ng-dblclick="$ctrl.navigate(item)">
+            <td>
+              <md-icon ng-if="item.permission.startsWith('d') || item.permission.startsWith('l')" md-svg-src="style/icons/folder.svg"></md-icon>
+              <md-icon ng-if="item.permission.startsWith('-')" md-svg-src="style/icons/file.svg"></md-icon>
+            </td>
+            <td style="text-align: left">{{ item.name }}</td>
+            <td style="text-align: left">{{ item.size }}</td>
+            <td style="text-align: left">{{ item.owner }}</td>
+            <td style="text-align: left">{{ item.group }}</td>
+            <td>
+              <input type="checkbox" ng-disabled="!$ctrl.itemSelectDisabled(item)" ng-model="item.selected" ng-click="$ctrl.selectItem(item)" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="$ctrl.ok()">Select</button>
+    <button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Cancel</button>
+</div>

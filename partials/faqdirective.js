@@ -5,7 +5,7 @@
  */
 
 angular
-        .module('strudelWeb.faqdirectives', [])
+        .module('microvolution.faqdirectives', [])
         .directive('faqcontent', function () {
             var directive = {};
             directive.restrict = 'E';

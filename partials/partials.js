@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('strudelWeb.partials', ['ngRoute', 'ngResource'])
+angular.module('microvolution.partials', ['ngRoute', 'ngResource'])
 
     .config(['$routeProvider', function ($routeProvider) {
 

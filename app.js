@@ -1,16 +1,17 @@
 'use strict';
 
 // Declare app level module which depends on views, and components
-angular.module('strudelWeb', [
+angular.module('microvolution', [
     'ngMaterial',
     'ngRoute',
     'ui.grid', 
+    'ui.bootstrap',
     'ui.grid.selection',
-    'strudelWeb.job-list',
-    'strudelWeb.job-submit',
-    'strudelWeb.landingpage',
-    'strudelWeb.partials',
-    'strudelWeb.faqdirectives'
+    'microvolution.job-list',
+    'microvolution.job-submit',
+    'microvolution.landingpage',
+    'microvolution.partials',
+    'microvolution.faqdirectives'
 ]).
     config(['$routeProvider', '$httpProvider',
         function ($routeProvider, $httpProvider) {

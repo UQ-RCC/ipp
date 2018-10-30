@@ -4,7 +4,7 @@
 <!--[if IE 8]> <html class="lte-ie8 lt-ie9" lang="en" dir="ltr"> <![endif]-->
 <!--[if lte IE 9]> <html class="lte-ie9" lang="en" dir="ltr"> <![endif]-->
 <!--[if gt IE 9]><!-->
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" dir="ltr" ng-app="strudelWeb">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" dir="ltr" ng-app="microvolution">
 <!--<![endif]-->
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -19,13 +19,23 @@
 <link rel="shortcut icon" href="https://web-publishing.uq.edu.au/sites/all/themes/custom/uq_standard/favicon.ico" type="image/vnd.microsoft.icon" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>IMB Image Processing Portal - The University of Queensland, Australia</title>
-<link type="text/css" rel="stylesheet" href="https://static.uq.net.au/v1/fonts/Roboto/roboto.css" media="all" />
+<!--link type="text/css" rel="stylesheet" href="https://static.uq.net.au/v1/fonts/Roboto/roboto.css" media="all" />
 <style type="text/css" media="all">
 @import url("https://web-publishing.uq.edu.au/sites/all/themes/custom/uq_standard/css/styles.css?olt1wp");
 </style>
 <style type="text/css" media="print">
 @import url("https://web-publishing.uq.edu.au/sites/all/themes/custom/uq_standard/css/print.css?olt1wp");
+</style-->
+
+<style type="text/css" media="all">
+@import url("style/uq/css/styles.css");
 </style>
+<style type="text/css" media="print">
+@import url("style/uq/css/print.css");
+</style>
+
+<link href="style/modal.less" rel="stylesheet/less" type="text/css" />
+<link href="app.css" rel="stylesheet" type="text/css" />
 
 </head>
 <body ng-controller="AppCtrl" class="html front page-home" >
@@ -114,7 +124,7 @@
           <h2 class="section__title">Partners</h2>
         </div>
         <div class="section__content">
-          <p style="text-align:center"><a href="https://rcc.uq.edu.au/"><img alt="Research Computing Centre - UQ" height="120" src="images/rcc-logo.jpg" width="200"></a> <a href="https://imb.uq.edu.au/"><img alt="IMB" height="120" src="images/IMB-logo.png" width="200" style="background-color:black;"></a>&nbsp;<a href="http://www.tern.org.au/"><img alt="TERN" height="120" src="images/tern-logo.png" width="200"> </p>
+          <p style="text-align:center"><a href="https://rcc.uq.edu.au/"><img alt="Research Computing Centre - UQ" height="120" src="images/rcc-logo.jpg" width="200"></a> <a href="https://imb.uq.edu.au/"><img alt="IMB" height="120" src="images/IMB-logo.png" width="200" style="background-color:black;"></a></p>
         </div>
       </div>
     </div>
@@ -173,6 +183,6 @@ $('.carousel').carousel({
 <script src="js/jqBootstrapValidation.js"></script>
 <script src="js/contact_me.js"></script>
 
-
+<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 </body>
 </html>

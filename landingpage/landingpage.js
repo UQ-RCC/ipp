@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('strudelWeb.landingpage', ['ngRoute', 'ngResource'])
+angular.module('microvolution.landingpage', ['ngRoute', 'ngResource'])
 
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/landingpage', {

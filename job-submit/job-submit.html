@@ -9,10 +9,10 @@
         <div flex=40 layout="column" layout-margin>
           <div ui-grid="selectedFilesGridOptions" ui-grid-selection class="smallGrid"></div>
           <div layout="column" align="center">
-            <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="openSelectionDialog($event, 'fileselect')">
+            <md-button ng-controller="ModalCtrl as $ctrl" md-no-ink class="md-primary" style="width:200px;" ng-click="$ctrl.open('selectfiles')">
               Select Individual Files
             </md-button>
-            <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="openSelectionDialog($event, 'folderselect')">
+            <md-button ng-controller="ModalCtrl as $ctrl" md-no-ink class="md-primary" style="width:200px;" ng-click="$ctrl.open('selectfolders')">
               Select Folders
             </md-button>
             <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="removeSelected()">
@@ -23,11 +23,9 @@
             </md-button> 
           </div>
             
-          <md-input-container>
-            <label>Output Folder</label>
-            <input type="text" ng-model="preference.output" />
-          </md-input-container>
-          <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="openSelectionDialog($event, 'outputfolder')">Choose Output Folder</md-button>
+          <label>Output Folder</label>
+          <input type="text" ng-model="preference.output" />
+          <md-button ng-controller="ModalCtrl as $ctrl" md-no-ink class="md-primary" style="width:200px;" ng-click="$ctrl.open('selectoutput')">Choose Output Folder</md-button>
         </div>
 
         <div flex layout-margin>
@@ -57,9 +55,9 @@
                   <div layout="row" layout-align="space-around center">
                     <div>X: {{ selectedItem.x }}</div>
                     <div>Y: {{ selectedItem.y }}</div>
-                    <div>Z: {{ selectedItem.z }}</div>
+                    <div>Z: {{ preference.swapZT ? selectedItem.t: selectedItem.z }}</div>
                     <div>C: {{ selectedItem.c }}</div>
-                    <div>T: {{ selectedItem.t }}</div>
+                    <div>T: {{ preference.swapZT ? selectedItem.z: selectedItem.t }}</div>
                   </div>
                   <md-divider ></md-divider>
 
@@ -436,10 +434,9 @@
     <div layout="row" layout-align="center">
       <md-button class="md-raised md-primary" ng-click="submit(true)"  ng-disabled="loading">Submit</md-button>
       <!--md-button class="md-raised md-primary" ng-click="submit(false)"  ng-disabled="loading">Test</md-button-->
-      <md-button class="md-raised md-primary" ng-click="openSelectionDialog($event, 'newtemplate')"  ng-disabled="loading">Save Template</md-button>
-      <md-button class="md-raised md-primary" ng-click="openSelectionDialog($event, 'loadtemplate')"  ng-disabled="loading">Load Template</md-button>      
+      <md-button ng-controller="ModalCtrl as $ctrl" class="md-raised md-primary" ng-click="$ctrl.open('newtemplate')"  ng-disabled="loading">Save Template</md-button>
+      <md-button ng-controller="ModalCtrl as $ctrl" class="md-raised md-primary" ng-click="$ctrl.open('loadtemplate')"  ng-disabled="loading">Load Template</md-button>   
     </div>
-
 
 
   </div>

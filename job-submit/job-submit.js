@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui.grid.selection', 'ui.grid.treeView'])
+angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui.grid.selection', 'ui.grid.treeView'])
 
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/job-submit', {
@@ -14,13 +14,14 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
         function ($scope, $rootScope, $resource, $interval, $location, 
             $mdDialog, settings, uiGridTreeViewConstants, uiGridConstants) {
             // Resources
-            var sessionInfoResource = $resource(settings.URLs.apiBase + settings.URLs.sessionInfo);
-            var accessTokenResource = $resource(settings.URLs.apiBase + settings.URLs.accessToken, {}, {
+            $scope.sessionInfoResource = $resource(settings.URLs.apiBase + settings.URLs.sessionInfo);
+            $scope.accessTokenResource = $resource(settings.URLs.apiBase + settings.URLs.accessToken, {}, {
                 'get': {
                     isArray: false
                 }
             });
-            
+            //loading
+            $scope.loading = false;
             
             //var endSessionResource = $resource(settings.URLs.apiBase + settings.URLs.logout);
             var getUserHome = $resource(settings.URLs.serverApiBase + settings.URLs.home , {}, {
@@ -33,11 +34,7 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                     isArray: false
                 }
             });
-            var filesInfo = $resource(settings.URLs.serverApiBase + settings.URLs.filesInfoBase64, {}, {
-                'get': {
-                    isArray: false
-                }
-            });
+            
             var executeMicrovolutionJob = $resource(settings.URLs.serverApiBase + settings.URLs.executeMicrovolutionBase64, {}, {
                 'get': {
                     isArray: false
@@ -64,11 +61,8 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                 }
             });
             
-             //loading
-            $scope.loading = false;
-
             // Gets the session data and redirects to the login screen if the user is not logged in
-            sessionInfoResource.get({}).$promise.then(function (sessionData) {
+            $scope.sessionInfoResource.get({}).$promise.then(function (sessionData) {
                 if (sessionData.has_oauth_access_token !== "true") {
                     $location.path("/langingpage");
                     return;
@@ -86,8 +80,8 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                 document.getElementById("jobsubmitmgr").style.display="block";
                 document.getElementById("jobsubmitmgr").className="menu__link active";
 
-                $scope.session = sessionData; 
-                accessTokenResource.get({}).$promise.then(
+                $scope.session = sessionData;
+                /*$scope.accessTokenResource.get({}).$promise.then(
                     function (token) {
                         var accessToken = token.access_token
                         console.log(accessToken);
@@ -95,7 +89,7 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                             $scope.userhome = userData.commandResult[0].home;
                         });
                     }
-                )
+                )*/
 
             });
 
@@ -238,339 +232,7 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                 {'label': '1', 'value': 1}  
             ];
             
-            /********************************************************/
-            /*   dialog */
-            /********************************************************/
-            $scope.dialogmode='fileselect';
-            console.log("mod:" + $scope.dialogmode); 
-            $scope.openSelectionDialog = function(ev, dialogmode){
-                console.log("mod:" + $scope.dialogmode);
-                $scope.dialogmode = dialogmode;
-                //show the dialogue
-                $mdDialog.show({
-                    controller: DialogController,
-                        templateUrl: 'job-submit/dialog.tmpl.html',
-                        parent: angular.element(document.body),
-                        targetEvent: ev,
-                        clickOutsideToClose:false,
-                        fullscreen: true
-                }).then(function(answer) {
-                    console.log("Answer:");
-                    console.log(answer);
-                    if (['fileselect', 'folderselect', 'outputfolder'].includes($scope.dialogmode)){
-                        if(answer.length == 0){
-                            $rootScope.$broadcast("notify", "You have not selected anything");
-                            return;
-                        }
-                        if($scope.dialogmode === 'outputfolder'){
-                            var outputPath = answer[0].path + "/" + $scope.dialogInput;
-                            $scope.preference.output = outputPath;
-                        }
-                        else if( ['folderselect', 'fileselect'].includes($scope.dialogmode)){
-                            $scope.gridApi.selection.selectRow(answer[0]);
-                            $scope.gridApi.grid.refresh();
-                            var selectedList = "";
-                            answer.forEach( function( selectedItem ){
-                                var isNew = true;
-                                for(var i=0; i < $scope.selectedFilesGridOptions.data.length; i++){
-                                    if($scope.selectedFilesGridOptions.data[i].path === selectedItem.path)
-                                        isNew = false;
-                                }
-                                if(isNew){
-                                    selectedList += selectedItem.path.replace(/ /g, "\ ") + ":";
-                                } 
-                            });
-                            selectedList = selectedList.slice(0, -1)
-                            console.log(selectedList) 
-                            // now do things accordingly
-                            accessTokenResource.get({}).$promise.then(
-                                function (token) {
-                                    var accessToken = token.access_token
-                                    if (accessToken !== "") {
-                                        $scope.loading = true;  
-                                        $rootScope.$broadcast("notify", "Loading files");  
-                                        // if dialogmod is in fileselect or outputfolder
-                                        filesInfo.get({
-                                            'fileslist': btoa(selectedList),
-                                            'access_token': accessToken
-                                        }).$promise.then(
-                                            function(returnData) {
-                                                var data = returnData.commandResult;
-                                                if(data.length > 0){
-                                                    data.forEach(function (item){
-                                                        item['name'] = item['path'].split('/').pop();
-                                                        var numOfChannels = parseInt(item['c']);
-                                                        var channels = []
-                                                        for(var i=1; i <=numOfChannels; i++){
-                                                            var channelName = 'Channel ' + i;
-                                                            channels.push({'name': channelName, 'iterations': 10, 
-                                                                           'wavelength': 525, 'pinhole': 0, 'background': 0})
-                                                        }
-                                                        item['channels'] = channels; 
-                                                        $scope.selectedFilesGridOptions.data.push(item);
-                                                    });
-                                                    $scope.gridApi.grid.refresh();
-                                                }
-                                                else
-                                                    $rootScope.$broadcast("notify", "Failed to load " + selectedList);
-                                                $scope.loading = false;
-                                            },
-                                            function (error) {
-                                                $scope.loading = false;
-                                                console.log(error);
-                                                $rootScope.$broadcast("notify", "Error: Problem loading files:" + selectedList);
-                                            }
-                                        );  
-                                    }
-                                }
-                            );
-                        }                      
-                    }// done if
-                    // save new template
-                    if($scope.dialogmode === 'newtemplate'){
-                        if($scope.dialogGridOptions.data.includes($scope.dialogInput))
-                            $rootScope.$broadcast("notify", "Overwriting " + $scope.dialogInput);
-                            accessTokenResource.get({}).$promise.then(
-                            function (token) {
-                                var accessToken = token.access_token
-                                if (accessToken !== "") {
-                                    $scope.loading = true;  
-                                    var formData = getFormData($scope.dialogmode);
-                                    saveTemplate.get({"templateinfo": btoa(JSON.stringify(formData)),
-                                                      "templateName": $scope.dialogInput,
-                                                      "access_token": accessToken
-                                                    }).$promise.then(
-                                        function(returnData) {
-                                            $scope.loading = false;
-                                            $rootScope.$broadcast("notify", "Successfuly save template " + $scope.dialogInput);
-                                        },
-                                        function (error) {
-                                            $scope.loading = false;
-                                            console.log(error);
-                                            $rootScope.$broadcast("notify", "Error: Problem saving template:" + $scope.dialogInput);
-                                        }
-                                    )
-                                }
-                            }
-                        );   
-                    }
-                    // load an existing template
-                    if($scope.dialogmode === 'loadtemplate'){
-                        if(answer.length == 0)
-                            $rootScope.$broadcast("notify", "You have not selected any template");
-                        else{                            
-                            $rootScope.$broadcast("notify", "Loading template:" + answer[0].template);
-                            accessTokenResource.get({}).$promise.then(
-                                function (token) {
-                                    var accessToken = token.access_token
-                                    if (accessToken !== "") {
-                                        $scope.loading = true;    
-                                        loadTemplate.get({
-                                            'templateName': answer[0].template,
-                                            'access_token': accessToken
-                                        }).$promise.then(
-                                            function(returnData) {
-                                                $scope.loading = false;
-                                                var data = returnData.commandResult[0].contents;
-                                                // parse single quote to double quote
-                                                var jsonData = ( new Function("return " + data) )();
-                                                // load the jsonData into the form
-                                                setFormData(jsonData);
-                                            },
-                                            function (error) {
-                                                $scope.loading = false;
-                                                console.log(error);
-                                                $rootScope.$broadcast("notify", "Error: Problem loading template:" + answer[0]);
-                                            }
-                                        )
-                                    }
-                                }
-                            );
-                        }
-                    }
-                }, function() {
-                    console.log("cancelled");
-                });
-            }
-            var thisScope = $scope;
-	        $scope.dialogInput = "";
-            function DialogController($scope, $mdDialog) {
-                $scope.dialogmode = thisScope.dialogmode;
-                $scope.currentData = [];
-                var columnDefs = [];
-                if (['fileselect', 'folderselect', 'outputfolder'].includes($scope.dialogmode)){
-                    columnDefs =  [
-                        { name: 'name', displayName: 'Name', allowCellFocus : false, width: '60%' },
-                        { name: 'size', displayName: 'Size', allowCellFocus : false, width: '5%' },
-                        { name: 'owner', displayName: 'Owner', allowCellFocus : false, width: '10%' },
-                        { name: 'group', displayName: 'Group', allowCellFocus : false, width: '5%' },
-                        { name: 'permission', displayName: 'Permission', allowCellFocus : false, width: '15%' }  
-                    ];
-                }
-                else{
-                    columnDefs =  [
-                        { name: 'template', displayName: 'Template Name', allowCellFocus : false}
-                    ];
-                }
-                var multiSelect = ['fileselect', 'folderselect'].includes($scope.dialogmode);
-                    $scope.dialogGridOptions = {
-                    showTreeExpandNoChildren: false,
-                    enableRowSelection: false,
-                    enableRowHeaderSelection: true,
-                    multiSelect: multiSelect,
-                    noUnselect: false,
-                    data: [],
-                    columnDefs: columnDefs
-                };
-                thisScope.dialogGridOptions = $scope.dialogGridOptions;
-   
-                $scope.dialogGridOptions.onRegisterApi = function( gridApi ) {
-                    $scope.gridApi = gridApi;
-                    if (['fileselect', 'folderselect', 'outputfolder'].includes($scope.dialogmode)){
-                        $scope.gridApi.treeBase.on.rowExpanded($scope, function(row) {
-                            console.log("get folder....");
-                            getFolder(row.entity.path);
-                        });                        
-                    }
-        		    else{
-            			console.log("invoe @ on Register API");
-            			getAvailableTemplates();
-        		    }
-                };
             
-                var writeoutNode = function( childArray, currentLevel, dataArray ){
-                    childArray.forEach( function( childNode ){
-                        childNode.$$treeLevel = currentLevel;
-                        dataArray.push( childNode );
-                        if(childNode.children.length >0)
-                            writeoutNode( childNode.children, currentLevel + 1, dataArray );
-                    });
-                };
-
-                var writeoutData = function(newData, currentElem, path){
-                    if (currentElem.path === path ) 
-                        currentElem.children = newData;
-                    else if (path.startsWith(currentElem.path)){
-                        currentElem.children.forEach(function(element){
-                            writeoutData(newData, element, path);
-                        });
-                    }   
-                };
-                var getFolder = function(path){
-                    console.log("Loading:" + path) 
-                    accessTokenResource.get({}).$promise.then(
-                        function (token) {
-                            var accessToken = token.access_token
-                            if (accessToken !== "") {
-                                console.log("Loading:" + path) 
-                                console.log("Loading:" + btoa(path)) 
-                               listFolder.get({
-                                    'folderpath': btoa(path),
-                                    'access_token': accessToken
-                                   }).$promise.then(
-                                     function(returnData){
-                                        console.log(returnData);
-                                        var data = returnData.commandResult;
-                                        if(data == null){
-                                            $scope.loading = false;
-                                            $rootScope.$broadcast("notify", "Error loading:" + path + ". You probably do not have permission");
-                                            return;
-                                        }                                            
-                                        data.forEach(function(element) {
-                                            element.children = [];
-                                            element.type = 'f';
-                                            if(['d', 'l'].includes(element.permission.charAt(0))){
-                                                element.type = element.permission.charAt(0);
-                                                element.children.push({name: "", children: []})
-                                                // symlink
-                                                if(element.type==='l')
-                                                    element.name = element.name.split("->")[0].trim();
-                                            }
-                                            element.path = path + '/' + element.name
-                                        });
-                                        if($scope.currentData.length == 0)
-                                            $scope.currentData = data;
-                                        else{
-                                            $scope.currentData.forEach(function(element){
-                                                writeoutData(data, element, path);  
-                                            });
-                                        }
-                                        $scope.dialogGridOptions.data = [];
-                                        writeoutNode($scope.currentData, 0, $scope.dialogGridOptions.data );
-                                        $scope.gridApi.grid.refresh();
-                                        // only select files or folder
-                                        $scope.dialogGridOptions.isRowSelectable = function(row){
-                                            // can select either file or folder
-                                            return (['fileselect', 'folderselect'].includes($scope.dialogmode))? row.entity.type === 'f': row.entity.type === 'd';
-                                        };
-                                        $scope.gridApi.core.notifyDataChange(uiGridConstants.dataChange.OPTIONS);
-                                    }
-                                ),
-                                function (error) {
-                                    $scope.loading = false;
-                                    $rootScope.$broadcast("notify", "Error loading:" + path + ". You probably do not have permission");
-                                }
-                            }
-                        },                          
-                        function (error) {
-                            $scope.loading = false;
-                            $rootScope.$broadcast("notify", "Error getting an access token" + error);
-                        }
-                    );                  
-                }
-
-
-                var getAvailableTemplates = function(){
-		            accessTokenResource.get({}).$promise.then(
-                        function (token) {
-                            var accessToken = token.access_token
-                            if (accessToken !== "") {
-                               listTemplate.get({
-                                    'access_token': accessToken
-                                   }).$promise.then(
-                                     function(returnData){
-                                        var data = returnData.commandResult;
-			                            $scope.dialogGridOptions.data = data;
-					                    $scope.gridApi.grid.refresh();
-                                    }
-                                )
-                            }
-                        },                          
-                        function (error) {
-                            $scope.loading = false;
-                            $rootScope.$broadcast("notify", "Error getting an access token" + error);
-                        }
-                    );                  
-                }
-
-                console.log("get folder or templates here...");
-                if(['fileselect', 'folderselect'].includes($scope.dialogmode) )
-                    getFolder("/afm01");
-                else if(['outputfolder'].includes($scope.dialogmode) )
-                    getFolder(thisScope.userhome);
-                else 
-                    getAvailableTemplates();
-                $scope.hide = function() {
-                  $mdDialog.hide();
-                };
-
-                $scope.cancel = function() {
-                  $mdDialog.cancel();
-                };
-
-                $scope.answer = function(answer) {
-                  if(document.getElementById('dialog-input'))
-		       thisScope.dialogInput = document.getElementById('dialog-input').value;
-                  $mdDialog.hide(answer);
-                };
-
-                $scope.getSelected = function(){
-                    return $scope.gridApi.selection.getSelectedRows(); 
-                }
-            }
-
-
-
             /********************************************************************/
             /**  selected files table **/
             $scope.selectedFilesGridOptions = {
@@ -769,19 +431,19 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                 $scope.preference.backgrounds = data.background.split(",").map(Number);
                 $scope.preference.pinholes = data.pinholes.split(",").map(Number);
                 $scope.preference.wavelengths = data.wavelength.split(",").map(Number);
-		// create new selected item
-		var newSelectedItem = {};
-		newSelectedItem.channels = [];
-		for(var i =0; i< $scope.preference.iterations.length; i++){
-			var channel = {};
-			channel.name = "Channel " + (i + 1);
-			channel.iterations = $scope.preference.iterations[i];
-			channel.background = $scope.preference.backgrounds[i];
-			channel.pinhole = $scope.preference.pinholes[i];
-			channel.wavelength = $scope.preference.wavelengths[i];
-			newSelectedItem.channels.push(channel);
-		}
-		$scope.selectedItem = newSelectedItem;
+        		// create new selected item
+        		var newSelectedItem = {};
+        		newSelectedItem.channels = [];
+        		for(var i =0; i< $scope.preference.iterations.length; i++){
+        			var channel = {};
+        			channel.name = "Channel " + (i + 1);
+        			channel.iterations = $scope.preference.iterations[i];
+        			channel.background = $scope.preference.backgrounds[i];
+        			channel.pinhole = $scope.preference.pinholes[i];
+        			channel.wavelength = $scope.preference.wavelengths[i];
+        			newSelectedItem.channels.push(channel);
+        		}
+        		$scope.selectedItem = newSelectedItem;
             }
 
             /**
@@ -793,7 +455,7 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                 $scope.loading = true;
                 try{
                     var formData = getFormData($scope.dialogmode);
-                    accessTokenResource.get({}).$promise.then(
+                    $scope.accessTokenResource.get({}).$promise.then(
                         function (token) {
                             var accessToken = token.access_token
                             if (accessToken !== "") {
@@ -839,7 +501,386 @@ angular.module('strudelWeb.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui
                    $rootScope.$broadcast("notify", "Error: " + err);
                    $scope.loading = false;
                }
-            }
-
-
+            };
+        // when loading is changed
+        $scope.$on('loadingchanged',function(event,loading) {
+            $scope.loading = loading;
+        });
 }]);
+
+
+angular.module('microvolution.job-submit')
+.controller('ModalCtrl', ['$scope', '$rootScope','$resource', 'settings', '$uibModal', '$log', '$document', 
+                function ($scope, $rootScope, $resource, settings, $uibModal, $log, $document) {
+  var filesInfo = $resource(settings.URLs.serverApiBase + settings.URLs.filesInfoBase64, {}, {
+    'get': {
+        isArray: false
+    }
+  });
+  var $ctrl = this;
+  $ctrl.modalContents = {};
+  $ctrl.modalContents.title = "Files Exlorer";
+  $ctrl.modalContents.mode = 'files';
+  $ctrl.open = function (mode) {
+    $ctrl.modalContents.mode = mode;
+    if($ctrl.modalContents.mode == 'selectfiles')
+        $ctrl.modalContents.title = "Select Files";
+    else if($ctrl.modalContents.mode == 'selectfolders')
+        $ctrl.modalContents.title = "Select Folders";
+    else if($ctrl.modalContents.mode == 'selectoutput')
+        $ctrl.modalContents.title = "Select Output Folder";
+    else if($ctrl.modalContents.mode == 'newtemplate')
+        $ctrl.modalContents.title = "Save Template";
+    else if($ctrl.modalContents.mode == 'loadtemplate')
+        $ctrl.modalContents.title = "Select Template";
+    
+        
+    var modalInstance = $uibModal.open({
+      animation: false,
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      templateUrl: 'job-submit/filesexplorer.tmpl.html',
+      controller: 'ModalInstanceCtrl',
+      controllerAs: '$ctrl',
+      size: 'lg',
+      appendTo: null,
+      scope: $scope,
+      preserveScope: true,
+      resolve: {
+        modalContents: function () {
+          return $ctrl.modalContents;
+        }
+      }
+    });
+
+    var changeParentLoading = function(loading){
+        $scope.loading = loading;
+        $scope.$emit('loadingchanged',$scope.loading);  
+    }
+    /*
+    * process the answer
+    */
+    modalInstance.result.then(function (selected) {
+        $ctrl.selected = selected;
+        console.log(selected);
+        if($ctrl.selected==null || $ctrl.selected==""){
+            $rootScope.$broadcast("notify", "You have not selected anything");
+            return;
+        }
+        if($ctrl.modalContents.mode === 'selectoutput'){
+            $scope.preference.output = $ctrl.selected;
+        }
+        else if($ctrl.modalContents.mode === 'selectfiles'){
+            var selectedList = "";
+            $ctrl.selected.forEach(function(item){
+                var isNew = true;
+                for(var i=0; i < $scope.selectedFilesGridOptions.data.length; i++){
+                    if($scope.selectedFilesGridOptions.data[i].path === item.path)
+                        isNew = false;
+                }
+                if(isNew){
+                    selectedList += item.path.replace(/ /g, "\ ") + ":";
+                }
+            });
+            selectedList = selectedList.slice(0, -1)
+            $scope.accessTokenResource.get({}).$promise.then(
+                function (token) {
+                    var accessToken = token.access_token
+                    if (accessToken !== "") {
+                        changeParentLoading(true);
+                        $rootScope.$broadcast("notify", "Loading files");
+                        filesInfo.get({
+                            'fileslist': btoa(selectedList),
+                            'access_token': accessToken
+                        }).$promise.then(
+                            function(returnData) {
+                                var data = returnData.commandResult;
+                                if(data.length > 0){
+                                    data.forEach(function (item){
+                                        item['name'] = item['path'].split('/').pop();
+                                        var numOfChannels = parseInt(item['c']);
+                                        var channels = []
+                                        for(var i=1; i <=numOfChannels; i++){
+                                            var channelName = 'Channel ' + i;
+                                            channels.push({'name': channelName, 'iterations': 10,
+                                                           'wavelength': 525, 'pinhole': 0, 'background': 0})
+                                        }
+                                        item['channels'] = channels;
+                                        $scope.selectedFilesGridOptions.data.push(item);
+                                    });
+                                    $scope.gridApi.grid.refresh();
+                                }
+                                else
+                                    $rootScope.$broadcast("notify", "Failed to load " + selectedList);
+                                changeParentLoading(false);
+                            },
+                            function (error) {
+                                changeParentLoading(false);
+                                console.log(error);
+                                $rootScope.$broadcast("notify", "Error: Problem loading files:" + selectedList);
+                            }
+                        );
+                    }
+                }
+            );
+
+
+        }
+        else if($ctrl.modalContents.mode === 'selectfolders'){
+            console.log()
+
+        }
+        else if($ctrl.modalContents.mode === 'newtemplate'){
+
+        }
+        else if($ctrl.modalContents.mode === 'loadtemplate'){
+
+        }
+
+    }, function () {
+      $log.info('Modal dismissed at: ' + new Date());
+    });
+  };
+}]);
+
+// Please note that $uibModalInstance represents a modal window (instance) dependency.
+// It is not the same as the $uibModal service used above.
+
+angular.module('microvolution.job-submit')
+.controller('ModalInstanceCtrl', ['$scope', '$rootScope', '$uibModalInstance', 'modalContents', '$resource', 'settings',
+    function ($scope, $rootScope, $uibModalInstance, modalContents, $resource, settings) {
+  var $ctrl = this; 
+  $ctrl.modalContents = modalContents;
+  $ctrl.modalContents.loading = false;
+  $ctrl.modalContents.filesFolderList = [];  
+  $ctrl.modalContents.currentpath = "/afm01/Q0703/";
+  $ctrl.modalContents.selectAll = false;
+  $ctrl.modalContents.extensions = ["tif", "nd2", "ims", "sld"];
+  $ctrl.modalContents.extension = "tif";
+  $ctrl.modalContents.newItem = "";
+  $ctrl.modalContents.selectedItems = [];
+  $ctrl.selected = {};
+
+  var listFolder = $resource(settings.URLs.serverApiBase + settings.URLs.listFolderBase64 , {}, {
+    'get': {
+        isArray: false
+    }
+  });
+
+  /**
+  * list dir
+  */
+  var ls = function(newPath, oldPath){
+    if(newPath == null)
+        return;
+    if(!newPath.endsWith("/"))
+        newPath = newPath + "/";
+    $ctrl.modalContents.loading = true;
+    $scope.accessTokenResource.get({}).$promise.then(
+        function (token) {
+            var accessToken = token.access_token
+            if (accessToken !== "") {
+                listFolder.get({
+                    'folderpath': btoa(newPath),
+                    'access_token': accessToken
+                   }).$promise.then(
+                     function(returnData){
+                        //for some reason 500 is considered success :-s
+                        if(returnData.status == 500){
+                            $ctrl.modalContents.loading = false;
+                            $ctrl.modalContents.currentpath = oldPath;
+                            $rootScope.$broadcast("notify", "Error loading:" + newPath + ". You probably do not have permission");
+                            return;
+                        }
+                        var data = returnData.commandResult;
+                        if(data == null){
+                            changeParentLoading(false);
+                            return;
+                        }                                            
+                        data.forEach(function(element) {
+                            element.children = [];
+                            element.type = 'f';
+                            if(['d', 'l'].includes(element.permission.charAt(0))){
+                                element.type = element.permission.charAt(0);
+                                element.children.push({name: "", children: []})
+                                // symlink
+                                if(element.type==='l')
+                                    element.name = element.name.split("->")[0].trim();
+                            }
+                            element.path = newPath + element.name;
+                            element.selected = false;
+                        });
+                        $ctrl.modalContents.filesFolderList = data;
+                        $ctrl.modalContents.loading = false;
+                        $ctrl.modalContents.currentpath = newPath;
+                    }
+                ),
+                function (error) {
+                    console.log("Error: failed to load:" + newPath);
+                    $ctrl.modalContents.loading = false;
+                    $ctrl.modalContents.currentpath = oldPath;
+                    $rootScope.$broadcast("notify", "Error loading:" + newPath + ". You probably do not have permission");
+                }
+            }
+        },                          
+        function (error) {
+            console.log("Error: failed to load:" + newPath);
+            $ctrl.modalContents.loading = false;
+            $ctrl.modalContents.currentpath = oldPath;
+            $rootScope.$broadcast("notify", "Error getting an access token" + error);
+        }
+    );                  
+  };
+
+  var createQuickNavs = function(folderPath){
+    // splitting path into paths
+    var paths = folderPath.split("/");
+    var path = "/";
+    $ctrl.modalContents.paths = [path];
+    paths.forEach(function(item){
+        if(item !=""){
+            path = path + item + "/";
+            $ctrl.modalContents.paths.push(path);
+        }
+    });
+  }
+
+  /*
+  * when change the path
+  */
+  $ctrl.onPathChange = function(newPath){
+    ls($ctrl.modalContents.currentpath, "");
+  };
+
+
+  /*
+  * init the file explorer
+  */
+  $ctrl.init = function(){
+    //default path
+    createQuickNavs($ctrl.modalContents.currentpath);
+    // now move into shotcuts
+    var home = "/clusterdata/";
+    if($scope.session != undefined && $scope.session != null){
+        home = home + $scope.session.uname;
+    }
+    $ctrl.modalContents.shortcuts = [{'label': 'home', 'path': home}, 
+                                     {'label': 'scratch', 'path':'/afm01/scratch/'},
+                                     {'label': 'afm01', 'path':'/afm01/'}
+                                     ];
+    ls($ctrl.modalContents.currentpath, "");
+  };    
+
+
+  $ctrl.refresh = function () {
+    console.log('refresh');
+    ls($ctrl.modalContents.currentpath);
+  };
+
+  $ctrl.isLoading = function () {
+    return $ctrl.modalContents.loading;
+  };
+
+  $ctrl.shortcut = function(shortcutPath){
+    createQuickNavs(shortcutPath);
+    ls(shortcutPath, $ctrl.modalContents.currentpath);
+  };
+
+  /**
+  * only available for files
+  */
+  $ctrl.selectAll = function(status){
+    $ctrl.modalContents.selectedItems = [];
+    $ctrl.modalContents.filesFolderList.forEach(function(item){
+        item.selected = $ctrl.modalContents.selectAll;
+        if(item.selected && item.permission.startsWith('-')){
+            $ctrl.modalContents.selectedItems.push(item);
+        }
+    });
+  };
+
+
+  $ctrl.selectItem = function(item){
+    if(item.selected){
+        $ctrl.modalContents.selectedItems.push(item);
+    }
+    else{
+        $ctrl.modalContents.selectedItems.pop(item);
+    }
+  };
+
+
+  /**
+  * check whether itemSelect should be enabled
+  */
+  $ctrl.itemSelectDisabled = function(item){
+    if($ctrl.modalContents.mode == 'selectfolders')
+        return true;
+    if(item.permission.startsWith('d') || item.permission.startsWith('l')){
+        return ['selectoutput'].includes($ctrl.modalContents.mode);
+    }
+    else if(item.permission.startsWith('-')){
+        return !['selectoutput'].includes($ctrl.modalContents.mode);
+    }
+  };
+  
+  /**
+  * dive into afolder
+  */
+  $ctrl.navigate = function(item){
+    var oldPath = $ctrl.modalContents.currentpath;
+    var newPath = $ctrl.modalContents.currentpath + item.name;
+    createQuickNavs(newPath);
+    ls(newPath, oldPath);
+  };
+
+  $ctrl.ok = function () {
+    if($ctrl.modalContents.mode === 'selectoutput'){
+        $ctrl.selected = $ctrl.modalContents.currentpath + $ctrl.modalContents.newItem;
+    }
+    else if($ctrl.modalContents.mode === 'selectfiles'){
+        $ctrl.selected = $ctrl.modalContents.selectedItems;
+    }
+    else if($ctrl.modalContents.mode === 'selectfolders'){
+        $ctrl.selected = $ctrl.modalContents.currentpath + "*." +$ctrl.modalContents.extension; //folder + exensions
+    }
+    else if($ctrl.modalContents.mode === 'newtemplate'){
+        $ctrl.selected = $ctrl.modalContents.currentpath + $ctrl.modalContents.newItem; //new template
+    }
+    else if($ctrl.modalContents.mode === 'loadtemplate'){
+        $ctrl.selected = $ctrl.modalContents.currentpath + $ctrl.modalContents.selectedItems[0];//template path
+    }
+    $uibModalInstance.close($ctrl.selected);
+  };
+
+  $ctrl.cancel = function () {
+    $uibModalInstance.dismiss('cancel');
+  };
+}]);
+
+// Please note that the close and dismiss bindings are from $uibModalInstance.
+
+angular.module('microvolution.job-submit').component('modalComponent', {
+  templateUrl: 'job-submit/filesexplorer.tmpl.html',
+  bindings: {
+    resolve: '<',
+    close: '&',
+    dismiss: '&'
+  },
+  controller: function () {
+    var $ctrl = this;
+
+    $ctrl.$onInit = function () {
+      $ctrl.modalContents = $ctrl.resolve.modalContents;
+      $ctrl.selected = "";
+    };
+
+    $ctrl.ok = function () {
+      $ctrl.close({$value: $ctrl.selected});
+    };
+
+    $ctrl.cancel = function () {
+      $ctrl.dismiss({$value: 'cancel'});
+    };
+  }
+});

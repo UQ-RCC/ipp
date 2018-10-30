@@ -1,16 +1,19 @@
 'use strict';
 
-angular.module('strudelWeb.job-list', ['ngRoute', 'ngResource'])
+angular.module('microvolution.job-list', ['ngRoute', 'ngResource'])
 
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/job-list', {
             templateUrl: 'job-list/job-list.html',
-            controller: 'JobListCtrl'
+            controller: 'JobListCtrl',
+            controllerAs: 'vm'
         });
     }])
 
-    .controller('JobListCtrl', ['$scope', '$rootScope', '$resource', '$interval', '$location', '$mdSidenav', '$mdMedia', '$mdDialog', 'settings',
-        function ($scope, $rootScope, $resource, $interval, $location, $mdSidenav, $mdMedia, $mdDialog, settings) {
+    .controller('JobListCtrl', ['$scope', '$rootScope', '$resource', 
+        '$interval', '$location', '$mdSidenav', '$mdMedia', '$mdDialog', 'settings',
+        function ($scope, $rootScope, $resource, 
+            $interval, $location, $mdSidenav, $mdMedia, $mdDialog, settings) {
             // Resources
             var sessionInfoResource = $resource(settings.URLs.apiBase + settings.URLs.sessionInfo);
             var accessTokenResource = $resource(settings.URLs.apiBase + settings.URLs.accessToken, {}, {
@@ -110,7 +113,8 @@ angular.module('strudelWeb.job-list', ['ngRoute', 'ngResource'])
             //    refreshJobList();
             //});
 
-        }])
+        }]);
 
 
-;
+
+
