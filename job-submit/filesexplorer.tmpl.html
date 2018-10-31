@@ -4,12 +4,13 @@
 <div class="modal-body" id="modal-body">
   <!-- current path -->
   <div layout="column">
-    <div layout="column" ng-if="$ctrl.modalContents.mode!='newtemplate' && $ctrl.modalContents.mode!='loadtemplate'">
+    <div layout="column">
       <label>Current Path</label>
       <div layout=row>
         <div flex="90" layout="row">
           <select class="form-control"
-                ng-init="$ctrl.init()" 
+                ng-init="$ctrl.init()"
+                ng-disabled="['newtemplate', 'loadtemplate'].includes($ctrl.modalContents.mode)" 
                 ng-model="$ctrl.modalContents.currentpath" 
                 ng-change="$ctrl.onPathChange($ctrl.modalContents.currentpath)"
                 ng-options="path for path in $ctrl.modalContents.paths">
@@ -26,7 +27,7 @@
       <div layout=column ng-if="$ctrl.modalContents.mode=='selectfolders'" flex="30">
         <label>File Extensions</label> 
         <select class="form-control"
-              ng-model="$ctrl.modalContents.extension" 
+              ng-model="$ctrl.modalContents.extension"
               ng-options="extension for extension in $ctrl.modalContents.extensions">
         </select>
       </div>
@@ -35,7 +36,7 @@
         <input class="form-control" ng-model="$ctrl.modalContents.newItem"/>
       </div>
       <div layout=column ng-if="$ctrl.modalContents.mode=='newtemplate'" flex="30">
-        <label>New Template Name</label> 
+        <label>Template Name (without extension)</label> 
         <input class="form-control" ng-model="$ctrl.modalContents.newItem"/>
       </div>
     </div>
@@ -71,7 +72,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="item in $ctrl.modalContents.filesFolderList" 
+          <tr ng-repeat="item in $ctrl.modalContents.filesFolderList"
+              ng-hide="$ctrl.itemHidden(item)" 
               style="font-size: 17px; cellpadding:20px; height: 20px;"
               ng-dblclick="$ctrl.navigate(item)">
             <td>

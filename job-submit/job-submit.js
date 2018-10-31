@@ -50,16 +50,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                     isArray: false
                 }
             });
-            var saveTemplate = $resource(settings.URLs.serverApiBase + settings.URLs.saveTemplateBase64, {}, {
-                'get': {
-                    isArray: false
-                }
-            });
-            var loadTemplate = $resource(settings.URLs.serverApiBase + settings.URLs.loadTemplate, {}, {
-                'get': {
-                    isArray: false
-                }
-            });
+            
             
             // Gets the session data and redirects to the login screen if the user is not logged in
             $scope.sessionInfoResource.get({}).$promise.then(function (sessionData) {
@@ -254,7 +245,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 gridApi.selection.on.rowSelectionChanged($scope,function(row){
                     if(row.isSelected){
                         $scope.selectedItem = row.entity;
-			if($scope.preference.readSpacing && $scope.selectedItem.dr && $scope.selectedItem.dz){
+			            if($scope.preference.readSpacing && $scope.selectedItem.dr && $scope.selectedItem.dz){
                             $scope.preference.lateralSpacing = $scope.selectedItem.dr;
                             $scope.preference.axialSpacing = $scope.selectedItem.dz;
                         }
@@ -298,21 +289,19 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
             /**
             * get the data supplied by the user for this form
             */
-            var getFormData = function(mode){
+            $scope.getFormData = function(mode){
                 var selectedFiles = [];
-                var selectedFolders = new Set();
                 $scope.selectedFilesGridOptions.data.forEach( function( item ){
                     var filePath = item.path;
                     selectedFiles.push(filePath);
                     var extension = filePath.split('.').pop();
-                    var dirname = filePath.match(/(.*)[\/\\]/)[1]||'';
-                    selectedFolders.add(dirname + "/*" + extension);
                 });
+                if(mode==='selectfolders' && $scope.selectedFilesGridOptions.data.length > 0)
+                    $scope.preference.folder = $scope.selectedFilesGridOptions.data[0];
+                
                 if($scope.preference.automaticRegularizationScale){
                     $scope.preference.regularization = -1;
                 }
-                if(mode==='folderselect')
-                    $scope.preference.folder = Array.from(selectedFolders).join();
                 
         		// get channel data
         		if($scope.selectedItem && $scope.selectedItem.channels){
@@ -376,7 +365,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                    'postfilter': $scope.preference.postfilter.value,
                    'blind': toPythonBoolean($scope.preference.blindDeconvolution),
                    'scaling': $scope.preference.scaling.value,
-                   'format': $scope.preference.fileformat.value,
+                   'format': $scope.preference.fileformat.value
                    //'split': $scope.preference.split,
                    //'splitIdx': $scope.preference.splitIdx,
                    //'access_token': accessToken
@@ -390,7 +379,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
             /**
             * set form data to preference
             */
-            var setFormData = function(data){
+            $scope.setFormData = function(data){
                 console.log("Setting form data");
                 console.log(data);
                 $scope.preference.NA = parseFloat(data.NA);
@@ -454,18 +443,26 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
             $scope.submit = function(isReal) {
                 $scope.loading = true;
                 try{
-                    var formData = getFormData($scope.dialogmode);
+                    var formData = $scope.getFormData($scope.dialogmode);
+                    if(formData.output == null || formData.output == ""){
+                        $scope.loading = false;
+                        $rootScope.$broadcast("notify", "You have to choose an output folder");
+                        return;              
+                    }
+
                     $scope.accessTokenResource.get({}).$promise.then(
                         function (token) {
                             var accessToken = token.access_token
                             if (accessToken !== "") {
-                                var executioninfo = {   "executioninfo": btoa(JSON.stringify(formData)),
+                                var executioninfo = {   
+                                    "executioninfo": btoa(JSON.stringify(formData)),
                                     "instances": formData.instances,
                                     "arrayMax":formData.arrayMax,
                                     "mem": formData.mem,
                                     "devices": formData.devices,
                                     "output": formData.output,
-                                    "access_token": accessToken
+                                    "access_token": accessToken,
+                                    "usermail": $scope.session.email
                                 }
                                 if(isReal){
                                   executeMicrovolutionJob.get(executioninfo)
@@ -510,13 +507,31 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
 
 
 angular.module('microvolution.job-submit')
-.controller('ModalCtrl', ['$scope', '$rootScope','$resource', 'settings', '$uibModal', '$log', '$document', 
-                function ($scope, $rootScope, $resource, settings, $uibModal, $log, $document) {
+.controller('ModalCtrl', ['$scope', '$rootScope','$resource', 'settings', '$uibModal', '$log', '$document', '$timeout',
+                function ($scope, $rootScope, $resource, settings, $uibModal, $log, $document, $timeout) {
   var filesInfo = $resource(settings.URLs.serverApiBase + settings.URLs.filesInfoBase64, {}, {
     'get': {
         isArray: false
     }
   });
+
+  var folderInfo = $resource(settings.URLs.serverApiBase + settings.URLs.folderInfoBase64, {}, {
+    'get': {
+        isArray: false
+    }
+  });
+
+  var saveTemplate = $resource(settings.URLs.serverApiBase + settings.URLs.saveTemplateBase64, {}, {
+    'get': {
+        isArray: false
+    }
+  });
+  var loadTemplate = $resource(settings.URLs.serverApiBase + settings.URLs.loadTemplate, {}, {
+    'get': {
+        isArray: false
+    }
+  });
+
   var $ctrl = this;
   $ctrl.modalContents = {};
   $ctrl.modalContents.title = "Files Exlorer";
@@ -562,7 +577,6 @@ angular.module('microvolution.job-submit')
     */
     modalInstance.result.then(function (selected) {
         $ctrl.selected = selected;
-        console.log(selected);
         if($ctrl.selected==null || $ctrl.selected==""){
             $rootScope.$broadcast("notify", "You have not selected anything");
             return;
@@ -608,7 +622,11 @@ angular.module('microvolution.job-submit')
                                         item['channels'] = channels;
                                         $scope.selectedFilesGridOptions.data.push(item);
                                     });
-                                    $scope.gridApi.grid.refresh();
+                                    //not sure why, but this works
+                                    $timeout(function () {
+                                        $scope.gridApi.selection.selectRow($scope.selectedFilesGridOptions.data[0]);
+                                    },
+                                    100);
                                 }
                                 else
                                     $rootScope.$broadcast("notify", "Failed to load " + selectedList);
@@ -627,16 +645,106 @@ angular.module('microvolution.job-submit')
 
         }
         else if($ctrl.modalContents.mode === 'selectfolders'){
-            console.log()
+            $scope.accessTokenResource.get({}).$promise.then(
+                function (token) {
+                    var accessToken = token.access_token
+                    if (accessToken !== "") {
+                        changeParentLoading(true);
+                        $rootScope.$broadcast("notify", "Loading folder");
+                        folderInfo.get({
+                            'folderpath': btoa($ctrl.selected),
+                            'access_token': accessToken
+                        }).$promise.then(
+                            function(returnData) {
+                                var data = returnData.commandResult;
+                                if(data.length > 0){
+                                    data.forEach(function (item){
+                                        item['name'] = item['path'];
+                                        var numOfChannels = parseInt(item['c']);
+                                        var channels = []
+                                        for(var i=1; i <=numOfChannels; i++){
+                                            var channelName = 'Channel ' + i;
+                                            channels.push({'name': channelName, 'iterations': 10,
+                                                           'wavelength': 525, 'pinhole': 0, 'background': 0})
+                                        }
+                                        item['channels'] = channels;
+                                        $scope.selectedFilesGridOptions.data.push(item);
+                                    });
+                                    $timeout(function () {
+                                        $scope.gridApi.selection.selectRow($scope.selectedFilesGridOptions.data[0]);
+                                    },
+                                    100);
 
+                                }
+                                else
+                                    $rootScope.$broadcast("notify", "Failed to load " + $ctrl.selected);
+                                changeParentLoading(false);
+                            },
+                            function (error) {
+                                changeParentLoading(false);
+                                console.log(error);
+                                $rootScope.$broadcast("notify", "Error: Problem loading folder:" + $ctrl.selected);
+                            }
+                        );
+                    }
+                }
+            );
         }
         else if($ctrl.modalContents.mode === 'newtemplate'){
-
+            var templateName = $ctrl.selected;
+            $scope.accessTokenResource.get({}).$promise.then(
+                function (token) {
+                    var accessToken = token.access_token
+                    if (accessToken !== "") {
+                        $scope.loading = true;
+                        var formData = $scope.getFormData($scope.dialogmode);
+                        saveTemplate.get({"templateinfo": btoa(JSON.stringify(formData)),
+                                          "templateName": templateName,
+                                          "access_token": accessToken
+                                        }).$promise.then(
+                            function(returnData) {
+                                $scope.loading = false;
+                                $rootScope.$broadcast("notify", "Successfuly save template " + $scope.dialogInput);
+                            },
+                            function (error) {
+                                $scope.loading = false;
+                                console.log(error);
+                                $rootScope.$broadcast("notify", "Error: Problem saving template:" + $scope.dialogInput);
+                            }
+                        )
+                    }
+                }
+            );
         }
         else if($ctrl.modalContents.mode === 'loadtemplate'){
-
+            var templateName = $ctrl.selected.split(".")[0];
+            $scope.accessTokenResource.get({}).$promise.then(
+                function (token) {
+                    var accessToken = token.access_token
+                    if (accessToken !== "") {
+                        $scope.loading = true;
+                        loadTemplate.get({
+                            'templateName': templateName,
+                            'access_token': accessToken
+                        }).$promise.then(
+                            function(returnData) {
+                                $scope.loading = false;
+                                var data = returnData.commandResult[0].contents;
+                                // parse single quote to double quote
+                                var jsonData = ( new Function("return " + data) )();
+                                // load the jsonData into the form
+                                $scope.setFormData(jsonData);
+                            },
+                            function (error) {
+                                $scope.loading = false;
+                                console.log(error);
+                                $rootScope.$broadcast("notify", "Error: Problem loading template:" + answer[0]);
+                            }
+                        )
+                    }
+                }
+            );
         }
-
     }, function () {
       $log.info('Modal dismissed at: ' + new Date());
     });
@@ -655,8 +763,8 @@ angular.module('microvolution.job-submit')
   $ctrl.modalContents.filesFolderList = [];  
   $ctrl.modalContents.currentpath = "/afm01/Q0703/";
   $ctrl.modalContents.selectAll = false;
-  $ctrl.modalContents.extensions = ["tif", "nd2", "ims", "sld"];
-  $ctrl.modalContents.extension = "tif";
+  $ctrl.modalContents.extensions = ["", "tif", "nd2", "ims", "sld"];
+  $ctrl.modalContents.extension = "";
   $ctrl.modalContents.newItem = "";
   $ctrl.modalContents.selectedItems = [];
   $ctrl.selected = {};
@@ -694,7 +802,7 @@ angular.module('microvolution.job-submit')
                         }
                         var data = returnData.commandResult;
                         if(data == null){
-                            changeParentLoading(false);
+                            $ctrl.modalContents.loading = false;
                             return;
                         }                                            
                         data.forEach(function(element) {
@@ -749,6 +857,7 @@ angular.module('microvolution.job-submit')
   * when change the path
   */
   $ctrl.onPathChange = function(newPath){
+    console.log("path change:" + newPath);
     ls($ctrl.modalContents.currentpath, "");
   };
 
@@ -768,12 +877,15 @@ angular.module('microvolution.job-submit')
                                      {'label': 'scratch', 'path':'/afm01/scratch/'},
                                      {'label': 'afm01', 'path':'/afm01/'}
                                      ];
-    ls($ctrl.modalContents.currentpath, "");
+    if(['loadtemplate', 'newtemplate'].includes($ctrl.modalContents.mode)){
+        createQuickNavs(home + "/.microvolution");
+        ls(home + "/.microvolution", "");
+    }
+    else
+        ls($ctrl.modalContents.currentpath, "");
   };    
 
-
   $ctrl.refresh = function () {
-    console.log('refresh');
     ls($ctrl.modalContents.currentpath);
   };
 
@@ -823,6 +935,20 @@ angular.module('microvolution.job-submit')
         return !['selectoutput'].includes($ctrl.modalContents.mode);
     }
   };
+
+  /**
+  * check whether to hide the table item
+  */
+  $ctrl.itemHidden = function(item){
+    return ($ctrl.modalContents.mode=='selectfolders' 
+            && item.permission.startsWith('-') 
+            && !item.name.endsWith($ctrl.modalContents.extension)) ||
+            (['newtemplate', 'loadtemplate'].includes($ctrl.modalContents.mode) 
+                && !item.name.endsWith("template")
+                );
+  };
+
+  
   
   /**
   * dive into afolder
@@ -845,10 +971,14 @@ angular.module('microvolution.job-submit')
         $ctrl.selected = $ctrl.modalContents.currentpath + "*." +$ctrl.modalContents.extension; //folder + exensions
     }
     else if($ctrl.modalContents.mode === 'newtemplate'){
-        $ctrl.selected = $ctrl.modalContents.currentpath + $ctrl.modalContents.newItem; //new template
+        $ctrl.selected = $ctrl.modalContents.newItem + '.template'; //new template
     }
     else if($ctrl.modalContents.mode === 'loadtemplate'){
-        $ctrl.selected = $ctrl.modalContents.currentpath + $ctrl.modalContents.selectedItems[0];//template path
+        if($ctrl.modalContents.selectedItems.length == 0){
+            $ctrl.selected = null;
+        }
+        else
+            $ctrl.selected = $ctrl.modalContents.selectedItems[0].name;//template path
     }
     $uibModalInstance.close($ctrl.selected);
   };
