@@ -365,9 +365,9 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                    'postfilter': $scope.preference.postfilter.value,
                    'blind': toPythonBoolean($scope.preference.blindDeconvolution),
                    'scaling': $scope.preference.scaling.value,
-                   'format': $scope.preference.fileformat.value
-                   //'split': $scope.preference.split,
-                   //'splitIdx': $scope.preference.splitIdx,
+                   'format': $scope.preference.fileformat.value,
+                   'split': $scope.preference.split,
+                   'splitIdx': $scope.preference.splitIdx,
                    //'access_token': accessToken
                 };
                 console.log(formData);
@@ -521,6 +521,12 @@ angular.module('microvolution.job-submit')
     }
   });
 
+  var psfInfo = $resource(settings.URLs.serverApiBase + settings.URLs.psfInfoBase64, {}, {
+    'get': {
+        isArray: false
+    }
+  });
+
   var saveTemplate = $resource(settings.URLs.serverApiBase + settings.URLs.saveTemplateBase64, {}, {
     'get': {
         isArray: false
@@ -548,6 +554,9 @@ angular.module('microvolution.job-submit')
         $ctrl.modalContents.title = "Save Template";
     else if($ctrl.modalContents.mode == 'loadtemplate')
         $ctrl.modalContents.title = "Select Template";
+    else if($ctrl.modalContents.mode == 'loadpsf')
+        $ctrl.modalContents.title = "Select Psf File";
+    
     
         
     var modalInstance = $uibModal.open({
@@ -745,6 +754,41 @@ angular.module('microvolution.job-submit')
                 }
             );
         }
+        else if($ctrl.modalContents.mode === 'loadpsf'){
+            $scope.preference.psfFile = $ctrl.selected;                
+            $scope.accessTokenResource.get({}).$promise.then(
+                function (token) {
+                    var accessToken = token.access_token
+                    if (accessToken !== "") {
+                        changeParentLoading(true);
+                        $rootScope.$broadcast("notify", "Loading Psf");
+                        psfInfo.get({
+                            'filepath': btoa($ctrl.selected),
+                            'access_token': accessToken
+                        }).$promise.then(
+                            function(returnData) {
+                                if(returnData.commandResult.length>0){
+                                    var data = returnData.commandResult[0];    
+                                    $scope.preference.psfAxialSpacing = parseFloat(data.dz);
+                                    $scope.preference.psfLateralSpacing = parseFloat(data.dr);
+                                }
+                                else{
+                                    $scope.preference.psfAxialSpacing = -1;
+                                    $scope.preference.psfLateralSpacing = -1;
+                                    $rootScope.$broadcast("notify", "Failed to load " + $ctrl.selected);
+                                }
+                                changeParentLoading(false);
+                            },
+                            function (error) {
+                                changeParentLoading(false);
+                                console.log(error);
+                                $rootScope.$broadcast("notify", "Error: Problem loading psf file:" + $ctrl.selected);
+                            }
+                        );
+                    }
+                }
+            );
+        }
     }, function () {
       $log.info('Modal dismissed at: ' + new Date());
     });
@@ -926,14 +970,13 @@ angular.module('microvolution.job-submit')
   * check whether itemSelect should be enabled
   */
   $ctrl.itemSelectDisabled = function(item){
-    if($ctrl.modalContents.mode == 'selectfolders')
+    if(['selectoutput', 'selectfolders'].includes($ctrl.modalContents.mode))
         return true;
-    if(item.permission.startsWith('d') || item.permission.startsWith('l')){
-        return ['selectoutput'].includes($ctrl.modalContents.mode);
+    else if(['selectfiles', 'loadpsf'].includes($ctrl.modalContents.mode)){
+        return (item.permission.startsWith('d') || item.permission.startsWith('l'));
     }
-    else if(item.permission.startsWith('-')){
-        return !['selectoutput'].includes($ctrl.modalContents.mode);
-    }
+    else
+        return false;
   };
 
   /**
@@ -979,6 +1022,13 @@ angular.module('microvolution.job-submit')
         }
         else
             $ctrl.selected = $ctrl.modalContents.selectedItems[0].name;//template path
+    }
+    else if($ctrl.modalContents.mode === 'loadpsf'){
+        if($ctrl.modalContents.selectedItems.length == 0){
+            $ctrl.selected = null;
+        }
+        else
+            $ctrl.selected = $ctrl.modalContents.selectedItems[0].path;//template path
     }
     $uibModalInstance.close($ctrl.selected);
   };

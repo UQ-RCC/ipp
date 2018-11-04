@@ -111,12 +111,12 @@
 
                   <!-- GeneratePSFModel not selected -->
                   <div ng-if="preference.generatePsf == false">
-                    <div layout="row" layout-align="space-between center" class="div-normal-height">
-                      <md-input-container>
+                    <div layout="row">
+                      <div flex="80">
                         <label>PSF file</label>
-                        <input type="text" ng-model="preference.psfFile" />
-                      </md-input-container>
-                      <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="loadPsf()">Load PSFs</md-button>  
+                        <input type="text" ng-model="preference.psfFile" style="width: 100%"/>
+                      </div>
+                      <md-button ng-controller="ModalCtrl as $ctrl" md-no-ink class="md-primary" ng-click="$ctrl.open('loadpsf')">Load PSF</md-button>
                     </div>
                       <div layout="row" layout-align="space-between center" layout-padding>
                       <span>PSF Lateral spacing(nm/pixel)</span>
@@ -134,7 +134,7 @@
                     <!-- TODO: what is disstillDSF-->
                     <div layout="column" layout-align="center center">
                       <md-checkbox aria-label="disstillPsf" ng-disabled="true">
-                        Disstill PSFs
+                        Distill PSFs
                       </md-checkbox>
                     </div>
                   </div>
@@ -330,7 +330,7 @@
           				</div>
           				<div layout="row" layout-align="space-between center" class="div-normal-height">
           					<span>File format</span>
-                    <md-select ng-model="preference.fileformat">
+                    <md-select ng-model="preference.fileformat" ng-disabled="true">
                       <md-option ng-value="fileFormatT" ng-repeat="fileFormatT in fileFormatType" ng-selected="$first">
                         {{ fileFormatT.label }}
                       </md-option>
@@ -338,7 +338,7 @@
           				</div>
           				<div layout="row" layout-align="space-between center" class="div-normal-height">
           					<span>Stack split</span>
-                    <md-select ng-model="preference.split" ng-disabled="true">
+                    <md-select ng-model="preference.split">
                       <md-option ng-value="splitChannelT" ng-repeat="splitChannelT in splitChannelType" ng-selected="$first">
                         {{ splitChannelT.label }}
                       </md-option>

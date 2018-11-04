@@ -85,7 +85,7 @@
             <td style="text-align: left">{{ item.owner }}</td>
             <td style="text-align: left">{{ item.group }}</td>
             <td>
-              <input type="checkbox" ng-disabled="!$ctrl.itemSelectDisabled(item)" ng-model="item.selected" ng-click="$ctrl.selectItem(item)" />
+              <input type="checkbox" ng-disabled="$ctrl.itemSelectDisabled(item)" ng-model="item.selected" ng-click="$ctrl.selectItem(item)" />
             </td>
           </tr>
         </tbody>
