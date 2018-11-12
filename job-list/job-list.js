@@ -47,6 +47,9 @@ angular.module('microvolution.job-list', ['ngRoute', 'ngResource'])
                 document.getElementById("login").style.display="none";
                 document.getElementById("logout-btn").style.display="block";
                 document.getElementById("joblistmgr").style.display="block";
+                document.getElementById("about-btn").style.display="none";
+                document.getElementById("contact-btn").style.display="none";
+                document.getElementById("accesspolicy-btn").style.display="none";
                 document.getElementById("joblistmgr").className="menu__link active";
                 document.getElementById("jobsubmitmgr").style.display="block";
                 document.getElementById("jobsubmitmgr").className="menu__link";

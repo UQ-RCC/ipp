@@ -8,7 +8,7 @@
       <label>Current Path</label>
       <div layout=row>
         <div flex="90" layout="row">
-          <select class="form-control"
+          <select 
                 ng-init="$ctrl.init()"
                 ng-disabled="['newtemplate', 'loadtemplate'].includes($ctrl.modalContents.mode)" 
                 ng-model="$ctrl.modalContents.currentpath" 
@@ -18,7 +18,10 @@
         </div>
         <br />
         <div layout="row" layout-align="center center">
-          <md-icon md-svg-src="style/icons/refresh.svg" ng-click="$ctrl.refresh()"></md-icon>
+            <md-button class="md-no-focus" aria-label="refresh">
+              <md-tooltip md-direction="right">Refresh</md-tooltip>
+              <md-icon md-svg-src="style/icons/refresh.svg" ng-click="$ctrl.refresh()">
+            </md-button>
         </div>
       </div>
     </div>
@@ -26,9 +29,10 @@
     <div layout-align="start center">
       <div layout=column ng-if="$ctrl.modalContents.mode=='selectfolders'" flex="30">
         <label>File Extensions</label> 
-        <select class="form-control"
+        <select
               ng-model="$ctrl.modalContents.extension"
               ng-options="extension for extension in $ctrl.modalContents.extensions">
+              <option value="" disabled selected">Select a file extension</option>
         </select>
       </div>
       <div layout=column ng-if="$ctrl.modalContents.mode=='selectoutput'" flex="30">

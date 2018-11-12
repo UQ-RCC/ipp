@@ -39,7 +39,7 @@ angular.module('microvolution', [
             'listFolderBase64': 'execute/listfolderbase64',
             'filesInfoBase64': 'execute/filesinfobase64',
             'folderInfoBase64': 'execute/folderinfobase64',
-            'psfInfoBase64': 'execute/psfinfobase64',
+            'fileInfoBase64': 'execute/fileinfobase64',
             'testExecutionBase64': 'execute/testexecutebase64',
             'saveTemplateBase64': 'execute/savetemplatebase64',
             'executeMicrovolutionBase64': 'execute/executemicrovolutionbase64'  

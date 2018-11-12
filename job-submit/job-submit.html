@@ -79,34 +79,35 @@
                         <span >Objective immersion refractive index </span>
                         <input type="number" ng-model="preference.RI" />
                        <md-select  ng-model="preference.riPresetSelected" ng-change="riPresetChanged()">
-                        <md-option ng-value="preset" ng-repeat="preset in riPresets" ng-selected="$first">
+                        <md-option ng-value="preset" ng-repeat="preset in riPresets" ng-selected="preset.value == preference.riPresetSelected.value">
                           {{ preset.label }}
                         </md-option>
                       </md-select>
                     </div>
-                    <div layout="row" layout-align="space-between center" class="div-normal-height">
+                    <div layout="row" layout-align="space-between center" class="div-normal-height" ng-if="preference.psfModel.value!=0">
                         <span>Sample medium refractive index</span>
                         <input type="number" ng-model="preference.ns" />
                        <md-select ng-model="preference.nsPresetSelected" ng-change="nsPresetChanged()">
-                        <md-option ng-value="preset" ng-repeat="preset in nsPresets" ng-selected="$first">
-                          {{ preset.label }}
+                        <md-option ng-value="nspreset" ng-repeat="nspreset in nsPresets" ng-selected="nspreset.value == preference.nsPresetSelected.value">
+                          {{ nspreset.label }}
+                        </md-option>
+                      </md-select>
+                    </div>
+                    <div layout="row" layout-align="space-between center" class="div-normal-height">
+                      <span>Illumination Type</span>
+                      <md-select ng-model=preference.psfType ng-change="psfTypeChange()">
+                        <md-option ng-value="APsfType" ng-repeat="APsfType in psfTypes" 
+                                                          ng-selected="APsfType.value==3"> 
+                          {{ APsfType.label }}
                         </md-option>
                       </md-select>
                     </div>
 
                     <div ng-if="preference.psfType.value === 3" layout="row" layout-align="space-between center" class="div-normal-height">
                       <span>Light sheet illumination NA</span>
-                      <input type="number" ng-disabled="true" ng-model="preference.lightSheetIlluminationNA" />
+                      <input type="number" ng-model="preference.lightSheetIlluminationNA" />
                     </div>
 
-                    <div layout="row" layout-align="space-between center" class="div-normal-height">
-                      <span>Illumination Type</span>
-                      <md-select ng-model=preference.psfType ng-change="psfTypeChange()">
-                        <md-option ng-value="APsfType" ng-repeat="APsfType in psfTypes" ng-selected="$first"> 
-                          {{ APsfType.label }}
-                        </md-option>
-                      </md-select>
-                    </div>
                   </div>
 
                   <!-- GeneratePSFModel not selected -->
@@ -118,13 +119,20 @@
                       </div>
                       <md-button ng-controller="ModalCtrl as $ctrl" md-no-ink class="md-primary" ng-click="$ctrl.open('loadpsf')">Load PSF</md-button>
                     </div>
-                      <div layout="row" layout-align="space-between center" layout-padding>
+                    <div layout="row" layout-align="space-around center">
+                      <div>X: {{ preference.psfInfo.x }}</div>
+                      <div>Y: {{ preference.psfInfo.y }}</div>
+                      <div>Z: {{ preference.swapPsfZT ? preference.psfInfo.t: preference.psfInfo.z }}</div>
+                      <div>C: {{ preference.psfInfo.c }}</div>
+                      <div>T: {{ preference.swapPsfZT ? preference.psfInfo.z: preference.psfInfo.t }}</div>
+                    </div>
+                    <div layout="row" layout-align="space-between center" layout-padding>
                       <span>PSF Lateral spacing(nm/pixel)</span>
-                      <input ng-disabled="preference.readPsfSpacing" ng-model="preference.psfLateralSpacing">
+                      <input ng-disabled="preference.readPsfSpacing" ng-model="preference.psfInfo.dr">
                     </div>
                     <div layout="row" layout-align="space-between center" layout-padding>
                       <span>PSF Axial spacing(nm/slice)</span>
-                      <input ng-disabled="preference.readPsfSpacing" ng-model="preference.psfAxialSpacing">
+                      <input ng-disabled="preference.readPsfSpacing" ng-model="preference.psfInfo.dz">
                     </div>
                     <div layout="column" layout-align="center center">
                       <md-checkbox aria-label="readPsfSpacing" ng-model="preference.readPsfSpacing">
@@ -339,7 +347,7 @@
           				<div layout="row" layout-align="space-between center" class="div-normal-height">
           					<span>Stack split</span>
                     <md-select ng-model="preference.split">
-                      <md-option ng-value="splitChannelT" ng-repeat="splitChannelT in splitChannelType" ng-selected="$first">
+                      <md-option ng-value="splitChannelT" ng-repeat="splitChannelT in splitChannelType" ng-selected="splitChannelT.value==0">
                         {{ splitChannelT.label }}
                       </md-option>
                     </md-select>
@@ -414,13 +422,18 @@
             <!-- ==== Devices ==============-->
             <md-tab label="Devices">
           		<md-content class="md-padding">
+                <div layout="row" layout-align="center" layout-padding>
+                  <md-checkbox aria-label="autodetect" ng-disabled="true" ng-model="autoDetect">
+                    Autodetect
+                  </md-checkbox>
+                </div>
                 <div layout="row" layout-align="space-between center" layout-padding>
                   <span>Number of instances</span>
                   <input type="number" min="1" max="10" ng-model="preference.numberOfParallelJobs">
                 </div>
                 <div layout="row" layout-align="space-between center" layout-padding>
                   <span>Memory per job (MB)</span>
-                  <input type="number" ng-model="preference.mem" min="1000" max="999">
+                  <input type="number" ng-model="preference.mem" min="1000" max="20000">
                 </div>
                 <div layout="row" layout-align="space-between center" layout-padding>
                   <span>Number of GPUs per job</span>

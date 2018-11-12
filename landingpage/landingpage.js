@@ -12,6 +12,9 @@ angular.module('microvolution.landingpage', ['ngRoute', 'ngResource'])
     .controller('LandingPageCtrl', ['$scope', '$rootScope', '$window', '$resource', '$mdMedia', '$interval', '$location', 'settings',
         function ($scope, $rootScope, $window, $resource, $mdMedia, $interval, $location, settings) {
             document.getElementById("myCarousel").style.display="block";
+            document.getElementById("about-btn").style.display="block";
+            document.getElementById("contact-btn").style.display="block";
+            document.getElementById("accesspolicy-btn").style.display="block";
             document.getElementById("home-btn").className="menu__link active";
             document.getElementById("about-btn").className="menu__link";
             document.getElementById("faq-btn").className="menu__link";

@@ -61,10 +61,13 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 document.getElementById("myCarousel").style.display="none";
                 document.getElementById("home-btn").className="menu__link";
                 document.getElementById("about-btn").className="menu__link";
-                document.getElementById("faq-btn").className="menu__link";
+                document.getElementById("about-btn").className="menu__link";
                 document.getElementById("contact-btn").className="menu__link";
                 document.getElementById("accesspolicy-btn").className="menu__link";
                 document.getElementById("login").style.display="none";
+                document.getElementById("about-btn").style.display="none";
+                document.getElementById("contact-btn").style.display="none";
+                document.getElementById("accesspolicy-btn").style.display="none";
                 document.getElementById("logout-btn").style.display="block";
                 document.getElementById("joblistmgr").style.display="block";
                 document.getElementById("joblistmgr").className="menu__link";
@@ -72,16 +75,6 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 document.getElementById("jobsubmitmgr").className="menu__link active";
 
                 $scope.session = sessionData;
-                /*$scope.accessTokenResource.get({}).$promise.then(
-                    function (token) {
-                        var accessToken = token.access_token
-                        console.log(accessToken);
-                        getUserHome.get({'access_token': accessToken}).$promise.then(function (userData) {
-                            $scope.userhome = userData.commandResult[0].home;
-                        });
-                    }
-                )*/
-
             });
 
             
@@ -90,15 +83,14 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
             $scope.preference = {
                 'lateralSpacing': 100, // dr Lateral pixel spacing
                 'axialSpacing': 312, //dz Axial pixel spacing
-                'psfLateralSpacing': 100,
-                'psfAxialSpacing': 312,
+                'psfInfo': {'x': -1, 'y':-1, 'z': -1, 'dr': 100, 'dz': 312},
                 'generatePsf': true,
                 'readSpacing': true,
                 'readPsfSpacing': true,
                 'psfModel': 0, //BornWolf or Vectorial
                 'NA': 1.4, // Numerical aperture of the objective. 
                 'ns': 1.33, //Refractive index of the sample's immersion medium
-                'lightSheetIlluminationNA': -1,
+                'lightSheetIlluminationNA': 0.05,
                 'RI': 1.515, //Refractive index of the objective immersion medium
                 'tiling': {'x': 1, 'y': 1, 'z':1},
                 'padding': {'x': 0, 'y': 0, 'z': 0},
@@ -107,15 +99,14 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 'pinholes': null,
                 'wavelengths': null,
                 'iterations': null,
-                'psfType': 0,
-                'lightSheet': {'NA': 'NaN'},
+                'psfType': 3,
                 'swapZT': false,
                 'swapPsfZT': false,
                 'output': '',
                 'folder': '',
                 'psfFile': '',
                 'numberOfParallelJobs': 2,
-                'mem': 5000,
+                'mem': 10000,
                 'gpus': 2,
                 'regularizationType': {},
                 'automaticRegularizationScale': false,
@@ -127,10 +118,11 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 'fileformat': {},
                 'split': 0,
                 'splitIdx': 0,
-                'riPresetSelected': {},
-                'nsPresetSelected': {},
+                'riPresetSelected': {'label': 'Water', 'value': 1.33},
+                'nsPresetSelected': {'label': 'Water', 'value': 1.33}
             };
-
+            // auto detect
+            $scope.autoDetect = false;
             ////// for selection
             // Objective IMmersion Refactive Index presets
             $scope.riPresets = [
@@ -143,7 +135,8 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 {'label': 'Silicone', 'value': 1.41}
             ];
             $scope.riPresetChanged = function(){
-                if($scope.preference.riPresetSelected.value > 0) $scope.preference.RI = $scope.preference.riPresetSelected.value;
+                if($scope.preference.riPresetSelected.value > 0) 
+                    $scope.preference.RI = $scope.preference.riPresetSelected.value;
             };
             // Sample Medium Refactive Index presets
             $scope.nsPresets = [
@@ -157,7 +150,8 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 {'label': '80% Glycerol', 'value': 1.45}
             ];
             $scope.nsPresetChanged = function(){
-                if($scope.preference.nsPresetSelected.value > 0) $scope.preference.ns = $scope.preference.nsPresetSelected.value;
+                if($scope.preference.nsPresetSelected.value > 0) 
+                    $scope.preference.ns = $scope.preference.nsPresetSelected.value;
             };
             // psfType
             $scope.psfTypes = [
@@ -166,6 +160,17 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 {'label': 'Two Photon', 'value': 2},
                 {'label': 'Light Sheet', 'value': 3},  
             ];
+
+            $scope.psfTypeChange = function(){
+                if($scope.preference.psfType.value == 3){
+                    $scope.preference.NA = 1.1;
+                    $scope.preference.riPresetSelected = $scope.riPresets[2];
+                    $scope.preference.nsPresetSelected = $scope.nsPresets[1];
+                    $scope.preference.RI = 1.33;
+                    $scope.preference.ns = 1.33;
+                    $scope.preference.lightSheetIlluminationNA = 0.5;
+                }
+            }
 
             $scope.resetPreference = function(){
                 //resetting ----
@@ -273,14 +278,6 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 $scope.selectedFilesGridOptions.data = [];
             }
 
-            /**
-            * load psf
-            */
-            $scope.loadPsf = function() {
-                console.log('load psf here');
-                // open another window to show
-            }
-
             var toPythonBoolean = function (booleanValue){
                 var s = booleanValue.toString();
                 return s && s[0].toUpperCase() + s.slice(1);
@@ -289,15 +286,12 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
             /**
             * get the data supplied by the user for this form
             */
-            $scope.getFormData = function(mode){
+            $scope.getFormData = function(){
                 var selectedFiles = [];
                 $scope.selectedFilesGridOptions.data.forEach( function( item ){
                     var filePath = item.path;
-                    selectedFiles.push(filePath);
-                    var extension = filePath.split('.').pop();
+                    selectedFiles.push(filePath);                        
                 });
-                if(mode==='selectfolders' && $scope.selectedFilesGridOptions.data.length > 0)
-                    $scope.preference.folder = $scope.selectedFilesGridOptions.data[0];
                 
                 if($scope.preference.automaticRegularizationScale){
                     $scope.preference.regularization = -1;
@@ -328,8 +322,8 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                             $scope.preference.lateralSpacing = $scope.selectedItem.dr;
                             $scope.preference.axialSpacing = $scope.selectedItem.dz;
                         }
-		}
-		var formData = {
+		        }
+		        var formData = {
                    'padding': $scope.preference.padding.x + "," +$scope.preference.padding.y + "," + $scope.preference.padding.z,
                    'tiling': $scope.preference.tiling.x + "," + $scope.preference.tiling.y + "," + $scope.preference.tiling.z,
                    'NA': $scope.preference.NA,
@@ -348,12 +342,17 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                    'output': $scope.preference.output,
                    //'prefFile': 'run.pref',
                    'psfType': $scope.preference.psfType.value,
+                   'lightSheetIlluminationNA': $scope.preference.lightSheetIlluminationNA,
                    //////new stuff here////
-                   'folders': $scope.preference.folder,
                    'latSpacing': $scope.preference.lateralSpacing,
                    'axSpacing': $scope.preference.axialSpacing,
-                   'psfLatSpacing': $scope.preference.psfLateralSpacing,
-                   'psfAxSpacing': $scope.preference.psfAxialSpacing,
+                   'psfX': $scope.preference.psfInfo.x,
+                   'psfY': $scope.preference.psfInfo.y,
+                   'psfZ': $scope.preference.psfInfo.z,
+                   'psfC': $scope.preference.psfInfo.c,
+                   'psfT': $scope.preference.psfInfo.t,
+                   'psfLatSpacing': $scope.preference.psfInfo.dr,
+                   'psfAxSpacing': $scope.preference.psfInfo.dz,
                    'generatePsf': toPythonBoolean($scope.preference.generatePsf),
                    'psfFile': $scope.preference.psfFile,
                    'instances': $scope.preference.numberOfParallelJobs,
@@ -366,46 +365,52 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                    'blind': toPythonBoolean($scope.preference.blindDeconvolution),
                    'scaling': $scope.preference.scaling.value,
                    'format': $scope.preference.fileformat.value,
-                   'split': $scope.preference.split,
-                   'splitIdx': $scope.preference.splitIdx,
+                   'split': $scope.preference.split.value,
+                   'splitIdx': $scope.preference.splitIdx.value,
                    //'access_token': accessToken
                 };
-                console.log(formData);
                 if (isNaN(formData.axSpacing) || isNaN(formData.latSpacing))
                     throw "Lateral Spacing and Axial spacing cannot be null";
-                    return formData;
-                }
+                return formData;
+            }
 
             /**
             * set form data to preference
             */
             $scope.setFormData = function(data){
-                console.log("Setting form data");
-                console.log(data);
+                //console.log("Setting form data");
+                //console.log(data);
                 $scope.preference.NA = parseFloat(data.NA);
                 $scope.preference.RI = parseFloat(data.RI);
-                $scope.preference.axialSpacing = parseFloat(data.axialSpacing);
+                $scope.preference.axialSpacing = parseFloat(data.axSpacing);
                 $scope.preference.backgroundType = data.backgroundType;
                 $scope.preference.blind = data.blind == 'True';
                 $scope.preference.gpus =  parseInt(data.devices);
                 $scope.preference.fileformat = $scope.fileFormatType[parseInt(data.format)];
                 $scope.preference.generatePsf = data.generatePsf == 'True';
                 $scope.preference.numberOfParallelJobs = parseInt(data.instances);
-                $scope.preference.lateralSpacing = parseFloat(data.lateralSpacing);
+                $scope.preference.lateralSpacing = parseFloat(data.latSpacing);
                 $scope.preference.mem = parseInt(data.mem);
                 $scope.preference.ns = parseFloat(data.ns);
                 $scope.preference.postfilter = $scope.postFilterTypes[parseInt(data.postFilter)];
                 $scope.preference.prefilter = $scope.preFilterTypes[parseInt(data.preFilter)];
-                $scope.preference.psfAxialSpacing = parseFloat(data.psfAxSpacing);
                 $scope.preference.psfFile = data.psfFile;
-                $scope.preference.psfLateralSpacing = parseFloat(data.psfLatSpacing);
                 $scope.preference.psfModel = $scope.psfModelTypes[parseInt(data.psfModel)];
                 $scope.preference.psfType = $scope.psfTypes[parseInt(data.psfType)];
+                $scope.preference.lightSheetIlluminationNA = parseFloat(data.lightSheetIlluminationNA);
                 $scope.preference.regularization = parseFloat(data.regularization);
                 $scope.preference.regularizationType = $scope.regularizationType[parseInt(data.regularizationType)];
                 $scope.preference.scaling = $scope.scalingType[parseInt(data.scaling)];
                 $scope.preference.swapPsfZT = data.swapPsfZT == 'True';
                 $scope.preference.swapZT = data.swapZT == 'True';
+                // psf
+                $scope.preference.psfInfo.dz = parseFloat(data.psfAxSpacing);
+                $scope.preference.psfInfo.dr = parseFloat(data.psfLatSpacing);
+                $scope.preference.psfInfo.x = parseInt(data.psfX);
+                $scope.preference.psfInfo.y = parseInt(data.psfY);
+                $scope.preference.psfInfo.z = parseInt(data.psfZ);
+                $scope.preference.psfInfo.c = parseInt(data.psfC);
+                $scope.preference.psfInfo.t = parseInt(data.psfT);
                 //padding and tileing
                 var paddingSplitted = data.padding.split(",");
                 $scope.preference.padding.x = parseInt(paddingSplitted[0]);
@@ -443,13 +448,12 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
             $scope.submit = function(isReal) {
                 $scope.loading = true;
                 try{
-                    var formData = $scope.getFormData($scope.dialogmode);
+                    var formData = $scope.getFormData();
                     if(formData.output == null || formData.output == ""){
                         $scope.loading = false;
                         $rootScope.$broadcast("notify", "You have to choose an output folder");
                         return;              
                     }
-
                     $scope.accessTokenResource.get({}).$promise.then(
                         function (token) {
                             var accessToken = token.access_token
@@ -464,6 +468,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                                     "access_token": accessToken,
                                     "usermail": $scope.session.email
                                 }
+                                console.log(executioninfo);
                                 if(isReal){
                                   executeMicrovolutionJob.get(executioninfo)
                                    .$promise.then(
@@ -521,7 +526,7 @@ angular.module('microvolution.job-submit')
     }
   });
 
-  var psfInfo = $resource(settings.URLs.serverApiBase + settings.URLs.psfInfoBase64, {}, {
+  var fileInfo = $resource(settings.URLs.serverApiBase + settings.URLs.fileInfoBase64, {}, {
     'get': {
         isArray: false
     }
@@ -548,16 +553,22 @@ angular.module('microvolution.job-submit')
         $ctrl.modalContents.title = "Select Files";
     else if($ctrl.modalContents.mode == 'selectfolders')
         $ctrl.modalContents.title = "Select Folders";
-    else if($ctrl.modalContents.mode == 'selectoutput')
+    else if($ctrl.modalContents.mode == 'selectoutput'){
         $ctrl.modalContents.title = "Select Output Folder";
+        if($scope.preference.output == null || $scope.preference.output.trim()=="")
+            $ctrl.modalContents.initialPath = "/afm01/scratch";
+        else{
+            var _pathParts = $scope.preference.output.split("/");
+            $ctrl.modalContents.initialPath = _pathParts.slice(0,-1).join("/");
+            $ctrl.modalContents.initialNewItem = _pathParts.slice(-1)[0];
+        }
+    }
     else if($ctrl.modalContents.mode == 'newtemplate')
         $ctrl.modalContents.title = "Save Template";
     else if($ctrl.modalContents.mode == 'loadtemplate')
         $ctrl.modalContents.title = "Select Template";
     else if($ctrl.modalContents.mode == 'loadpsf')
         $ctrl.modalContents.title = "Select Psf File";
-    
-    
         
     var modalInstance = $uibModal.open({
       animation: false,
@@ -629,7 +640,12 @@ angular.module('microvolution.job-submit')
                                                            'wavelength': 525, 'pinhole': 0, 'background': 0})
                                         }
                                         item['channels'] = channels;
+                                        if(item['z']==1 && item['t']>10){
+                                            $scope.preference.swapZT = true;
+                                        }
                                         $scope.selectedFilesGridOptions.data.push(item);
+                                        if($scope.preference.output.trim() == "")
+                                            $scope.preference.output = item['defaultoutput'];
                                     });
                                     //not sure why, but this works
                                     $timeout(function () {
@@ -677,7 +693,13 @@ angular.module('microvolution.job-submit')
                                                            'wavelength': 525, 'pinhole': 0, 'background': 0})
                                         }
                                         item['channels'] = channels;
+                                        // TODO: this is from James
+                                        // Another way is to swap Z and T for all lattice
+                                        if(item['z']==1 && item['t']>10){
+                                            $scope.preference.swapZT = true;
+                                        }
                                         $scope.selectedFilesGridOptions.data.push(item);
+                                        $scope.preference.output = item['defaultoutput'];
                                     });
                                     $timeout(function () {
                                         $scope.gridApi.selection.selectRow($scope.selectedFilesGridOptions.data[0]);
@@ -706,19 +728,21 @@ angular.module('microvolution.job-submit')
                     var accessToken = token.access_token
                     if (accessToken !== "") {
                         $scope.loading = true;
-                        var formData = $scope.getFormData($scope.dialogmode);
+                        var formData = $scope.getFormData();
+                        console.log("@newtemplate");
+                        console.log(formData);
                         saveTemplate.get({"templateinfo": btoa(JSON.stringify(formData)),
                                           "templateName": templateName,
                                           "access_token": accessToken
                                         }).$promise.then(
                             function(returnData) {
                                 $scope.loading = false;
-                                $rootScope.$broadcast("notify", "Successfuly save template " + $scope.dialogInput);
+                                $rootScope.$broadcast("notify", "Successfuly save template " + templateName);
                             },
                             function (error) {
                                 $scope.loading = false;
                                 console.log(error);
-                                $rootScope.$broadcast("notify", "Error: Problem saving template:" + $scope.dialogInput);
+                                $rootScope.$broadcast("notify", "Error: Problem saving template:" + templateName);
                             }
                         )
                     }
@@ -741,6 +765,7 @@ angular.module('microvolution.job-submit')
                                 var data = returnData.commandResult[0].contents;
                                 // parse single quote to double quote
                                 var jsonData = ( new Function("return " + data) )();
+                                //console.log(jsonData);
                                 // load the jsonData into the form
                                 $scope.setFormData(jsonData);
                             },
@@ -762,19 +787,31 @@ angular.module('microvolution.job-submit')
                     if (accessToken !== "") {
                         changeParentLoading(true);
                         $rootScope.$broadcast("notify", "Loading Psf");
-                        psfInfo.get({
+                        fileInfo.get({
                             'filepath': btoa($ctrl.selected),
                             'access_token': accessToken
                         }).$promise.then(
                             function(returnData) {
                                 if(returnData.commandResult.length>0){
                                     var data = returnData.commandResult[0];    
-                                    $scope.preference.psfAxialSpacing = parseFloat(data.dz);
-                                    $scope.preference.psfLateralSpacing = parseFloat(data.dr);
+                                    $scope.preference.psfInfo.dz = parseFloat(data.dz);
+                                    $scope.preference.psfInfo.dr = parseFloat(data.dr);
+                                    $scope.preference.psfInfo.x = parseFloat(data.x);
+                                    $scope.preference.psfInfo.y = parseFloat(data.y);
+                                    $scope.preference.psfInfo.z = parseFloat(data.z);
+                                    $scope.preference.psfInfo.c = parseFloat(data.c);
+                                    $scope.preference.psfInfo.t = parseFloat(data.t);
+                                    if(data.z == 1 && data.t > 1)
+                                        $scope.preference.swapPsfZT = true;
                                 }
                                 else{
-                                    $scope.preference.psfAxialSpacing = -1;
-                                    $scope.preference.psfLateralSpacing = -1;
+                                    $scope.preference.psfInfo.dz = -1;
+                                    $scope.preference.psfInfo.dr = -1;
+                                    $scope.preference.psfInfo.x = -1;
+                                    $scope.preference.psfInfo.y = -1;
+                                    $scope.preference.psfInfo.z = -1;
+                                    $scope.preference.psfInfo.c = -1;
+                                    $scope.preference.psfInfo.t = -1;
                                     $rootScope.$broadcast("notify", "Failed to load " + $ctrl.selected);
                                 }
                                 changeParentLoading(false);
@@ -804,12 +841,17 @@ angular.module('microvolution.job-submit')
   var $ctrl = this; 
   $ctrl.modalContents = modalContents;
   $ctrl.modalContents.loading = false;
-  $ctrl.modalContents.filesFolderList = [];  
-  $ctrl.modalContents.currentpath = "/afm01/Q0703/";
+  $ctrl.modalContents.filesFolderList = [];
+  if($ctrl.modalContents.initialPath == null || $ctrl.modalContents.initialPath.trim()=="")
+    $ctrl.modalContents.currentpath = "/afm01/Q0703";  
+  else
+    $ctrl.modalContents.currentpath = $ctrl.modalContents.initialPath;    
   $ctrl.modalContents.selectAll = false;
-  $ctrl.modalContents.extensions = ["", "tif", "nd2", "ims", "sld"];
+  $ctrl.modalContents.extensions = ["tif", "nd2", "ims", "sld"];
   $ctrl.modalContents.extension = "";
   $ctrl.modalContents.newItem = "";
+  if($ctrl.modalContents.initialNewItem != null && $ctrl.modalContents.initialNewItem.trim()!="")
+    $ctrl.modalContents.newItem =  $ctrl.modalContents.initialNewItem;    
   $ctrl.modalContents.selectedItems = [];
   $ctrl.selected = {};
 
@@ -997,6 +1039,9 @@ angular.module('microvolution.job-submit')
   * dive into afolder
   */
   $ctrl.navigate = function(item){
+    // do not bother navigating into a file
+    if(item.permission.startsWith('-'))
+        return;
     var oldPath = $ctrl.modalContents.currentpath;
     var newPath = $ctrl.modalContents.currentpath + item.name;
     createQuickNavs(newPath);
@@ -1014,7 +1059,7 @@ angular.module('microvolution.job-submit')
         $ctrl.selected = $ctrl.modalContents.currentpath + "*." +$ctrl.modalContents.extension; //folder + exensions
     }
     else if($ctrl.modalContents.mode === 'newtemplate'){
-        $ctrl.selected = $ctrl.modalContents.newItem + '.template'; //new template
+        $ctrl.selected = $ctrl.modalContents.newItem; //new template
     }
     else if($ctrl.modalContents.mode === 'loadtemplate'){
         if($ctrl.modalContents.selectedItems.length == 0){
