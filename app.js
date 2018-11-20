@@ -11,7 +11,9 @@ angular.module('microvolution', [
     'microvolution.job-submit',
     'microvolution.landingpage',
     'microvolution.partials',
-    'microvolution.faqdirectives'
+    'microvolution.faqdirectives',
+    'microvolution.filesexplorer',
+    'microvolution.services'
 ]).
     config(['$routeProvider', '$httpProvider',
         function ($routeProvider, $httpProvider) {
@@ -44,6 +46,7 @@ angular.module('microvolution', [
             'saveTemplateBase64': 'execute/savetemplatebase64',
             'executeMicrovolutionBase64': 'execute/executemicrovolutionbase64'  
         },
+        'maxRetryOnServerError': 3
     })
     .service('APIInterceptor', ['$rootScope', '$location', '$injector', '$timeout', '$log', 'settings',
         function ($rootScope, $location, $injector, $timeout, $log, settings) {
@@ -88,8 +91,10 @@ angular.module('microvolution', [
                 return response;
             };
         }])
-    .controller('AppCtrl', ['$mdToast', '$rootScope', '$scope', '$interval', '$window', 'settings','$location','$resource',
-        function ($mdToast, $rootScope, $scope, $interval, $window, settings,$location,$resource) {
+    .controller('AppCtrl', ['$mdToast', '$rootScope', '$scope', '$interval', '$window', 
+        'settings','$location', 'SessionInfoFactory', 'EndSessionFactory',
+        function ($mdToast, $rootScope, $scope, $interval, $window, 
+        settings,$location, SessionInfoFactory, EndSessionFactory) {
             $rootScope.$on('notify', function (event, message) {
             $mdToast.show(
                 $mdToast.simple()
@@ -113,10 +118,7 @@ angular.module('microvolution', [
             $scope.toolbarHidden = false;
         });
         
-        var endSessionResource = $resource(settings.URLs.apiBase + settings.URLs.logout);
-
-        // Resources
-        var sessionInfoResource = $resource(settings.URLs.apiBase + settings.URLs.sessionInfo);
+        
         // Starts the login auth flow
         var loginWindow;
         $scope.startLogin = function (service) {
@@ -126,16 +128,16 @@ angular.module('microvolution', [
                 top = screen.height/2 - height/2;
 
             var url = settings.URLs.base + settings.URLs.oauthStart + "?service="+service;
-            loginWindow = $window.open('about:blank', '', "top=" + top + ",left=" + left + ",width="+width+",height="+height); //yi removed
+            loginWindow = $window.open('about:blank', '', 
+                "top=" + top + ",left=" + left + ",width="+width+",height="+height);
             // End any existing sessions before starting a new one
-            endSessionResource.get({}, function() {
+            EndSessionFactory.get({}, function() {
                 loginWindow.location = url;
             });
         };
-        var accessTokenResource = $resource(settings.URLs.apiBase + settings.URLs.accessToken);
         // Called any time the login popup closes
         var onLoginWindowClose = function() {
-            sessionInfoResource.get({}, function(data) {
+            SessionInfoFactory.get({}, function(data) {
                 if (data.has_oauth_access_token === "true") {
                     document.getElementById("login").style.display="none";
                     document.getElementById("logout-btn").style.display="block";
@@ -176,7 +178,7 @@ angular.module('microvolution', [
         // sign out
         $scope.doSignout = function () {
             console.log("Signing out");
-            endSessionResource.get({}, function () {
+            EndSessionFactory.get({}, function () {
                 if(document.getElementById("login").style.display="none")
                 {
                     document.getElementById("login").style.display="inline-block";

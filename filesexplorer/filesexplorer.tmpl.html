@@ -18,10 +18,14 @@
         </div>
         <br />
         <div layout="row" layout-align="center center">
-            <md-button class="md-no-focus" aria-label="refresh">
+            <md-button class="md-no-focus" aria-label="bookmark">
+              <md-tooltip md-direction="right">Bookmark</md-tooltip>
+              <md-icon md-svg-src="style/icons/bookmark.svg" ng-click="$ctrl.addShortcut($ctrl.modalContents.currentpath)">
+            </md-button>
+            <!--md-button class="md-no-focus" aria-label="refresh">
               <md-tooltip md-direction="right">Refresh</md-tooltip>
               <md-icon md-svg-src="style/icons/refresh.svg" ng-click="$ctrl.refresh()">
-            </md-button>
+            </md-button-->
         </div>
       </div>
     </div>

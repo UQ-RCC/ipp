@@ -9,10 +9,10 @@
         <div flex=40 layout="column" layout-margin>
           <div ui-grid="selectedFilesGridOptions" ui-grid-selection class="smallGrid"></div>
           <div layout="column" align="center">
-            <md-button ng-controller="ModalCtrl as $ctrl" md-no-ink class="md-primary" style="width:200px;" ng-click="$ctrl.open('selectfiles')">
+            <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="openFilesExplorer('selectfiles')">
               Select Individual Files
             </md-button>
-            <md-button ng-controller="ModalCtrl as $ctrl" md-no-ink class="md-primary" style="width:200px;" ng-click="$ctrl.open('selectfolders')">
+            <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="openFilesExplorer('selectfolders')">
               Select Folders
             </md-button>
             <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="removeSelected()">
@@ -25,7 +25,7 @@
             
           <label>Output Folder</label>
           <input type="text" ng-model="preference.output" />
-          <md-button ng-controller="ModalCtrl as $ctrl" md-no-ink class="md-primary" style="width:200px;" ng-click="$ctrl.open('selectoutput')">Choose Output Folder</md-button>
+          <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="openFilesExplorer('selectoutput')">Choose Output Folder</md-button>
         </div>
 
         <div flex layout-margin>
@@ -117,7 +117,7 @@
                         <label>PSF file</label>
                         <input type="text" ng-model="preference.psfFile" style="width: 100%"/>
                       </div>
-                      <md-button ng-controller="ModalCtrl as $ctrl" md-no-ink class="md-primary" ng-click="$ctrl.open('loadpsf')">Load PSF</md-button>
+                      <md-button md-no-ink class="md-primary" ng-click="openFilesExplorer('loadpsf')">Load PSF</md-button>
                     </div>
                     <div layout="row" layout-align="space-around center">
                       <div>X: {{ preference.psfInfo.x }}</div>
@@ -446,9 +446,9 @@
     </div>
     <div layout="row" layout-align="center">
       <md-button class="md-raised md-primary" ng-click="submit(true)"  ng-disabled="loading">Submit</md-button>
-      <!--md-button class="md-raised md-primary" ng-click="submit(false)"  ng-disabled="loading">Test</md-button-->
-      <md-button ng-controller="ModalCtrl as $ctrl" class="md-raised md-primary" ng-click="$ctrl.open('newtemplate')"  ng-disabled="loading">Save Template</md-button>
-      <md-button ng-controller="ModalCtrl as $ctrl" class="md-raised md-primary" ng-click="$ctrl.open('loadtemplate')"  ng-disabled="loading">Load Template</md-button>   
+      <md-button class="md-raised md-primary" ng-click="submit(false)"  ng-disabled="loading">Test</md-button>
+      <md-button class="md-raised md-primary" ng-click="openFilesExplorer('newtemplate')"  ng-disabled="loading">Save Template</md-button>
+      <md-button class="md-raised md-primary" ng-click="openFilesExplorer('loadtemplate')"  ng-disabled="loading">Load Template</md-button>   
     </div>
 
 

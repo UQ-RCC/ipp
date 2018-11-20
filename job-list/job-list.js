@@ -5,35 +5,21 @@ angular.module('microvolution.job-list', ['ngRoute', 'ngResource'])
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/job-list', {
             templateUrl: 'job-list/job-list.html',
-            controller: 'JobListCtrl',
-            controllerAs: 'vm'
+            controller: 'JobListCtrl'
         });
     }])
 
-    .controller('JobListCtrl', ['$scope', '$rootScope', '$resource', 
-        '$interval', '$location', '$mdSidenav', '$mdMedia', '$mdDialog', 'settings',
-        function ($scope, $rootScope, $resource, 
-            $interval, $location, $mdSidenav, $mdMedia, $mdDialog, settings) {
-            // Resources
-            var sessionInfoResource = $resource(settings.URLs.apiBase + settings.URLs.sessionInfo);
-            var accessTokenResource = $resource(settings.URLs.apiBase + settings.URLs.accessToken, {}, {
-                'get': {
-                    isArray: false
-                }
-            });
-            //var endSessionResource = $resource(settings.URLs.apiBase + settings.URLs.logout);
+    .controller('JobListCtrl', ['$scope', '$rootScope', '$interval', '$location', 
+        'SessionInfoFactory', 'AccessTokenFactory', 'ListJobsFactory', 'TokenHandler',
+        function ($scope, $rootScope, $interval, $location, 
+            SessionInfoFactory, AccessTokenFactory, ListJobsFactory, TokenHandler) {
             
-            var getJobsResource = $resource(settings.URLs.serverApiBase + settings.URLs.listJobs, {}, {
-                'get': {
-                    isArray: false
-                }
-            });
             $scope.jobs = [];
             //refresh experiment
             var jobListRefreshTimer;
 
             // Gets the session data and redirects to the login screen if the user is not logged in
-            sessionInfoResource.get({}).$promise.then(function (sessionData) {
+            SessionInfoFactory.get({}).$promise.then(function (sessionData) {
 		        if (sessionData.has_oauth_access_token !== "true") {
                     $location.path("/landingpage");
                     return;
@@ -53,43 +39,35 @@ angular.module('microvolution.job-list', ['ngRoute', 'ngResource'])
                 document.getElementById("joblistmgr").className="menu__link active";
                 document.getElementById("jobsubmitmgr").style.display="block";
                 document.getElementById("jobsubmitmgr").className="menu__link";
-                
-
-                $scope.session = sessionData;
-                //get the jobs for the first time
-                jobListRefreshTimer=$interval(function(){
-                                        queryJobs();                   
-                                    },4000); 
+                AccessTokenFactory.get({}).$promise.then(function (tokenData) {
+                    TokenHandler.set(tokenData.access_token);
+                    //get the jobs for the first time
+                    jobListRefreshTimer=$interval(function(){queryJobs();},4000);
+                });
+                 
             });
 
             var queryJobs = function(){
-                accessTokenResource.get({}).$promise.then(
-                    function (token) {
-                        var accessToken = token.access_token
-                        if (accessToken !== "") {
-                            getJobsResource.get({'access_token': accessToken}).$promise.then(
-                                function(returnData){
-                                    console.log(returnData);
-                                    var data = returnData.commandResult;
-                                    $scope.jobs = [];
-                                    for (var i = 0; i < data.length; i++) {
-                                        (function (jobData) {                                    
-                                            $scope.jobs.push({
-                                                'jobid': jobData.jobid,
-                                                'uname': jobData.uname,
-                                                'status': jobData.status,
-                                                'nnodes': jobData.nnodes,
-                                                'remainingWalltime': jobData.remainingWalltime,
-                                                'selected': false, 
-                                            });
-                                        })(data[i]);
-                                    }                            
-                                },//end function data
-                                function (error) {
-                                    $rootScope.$broadcast("notify", "Could not refresh experiment list!");
-                                }
-                            )        
-                        }
+                ListJobsFactory.query().$promise.then(
+                    function(returnData){
+                        console.log(returnData);
+                        var data = returnData.commandResult;
+                        $scope.jobs = [];
+                        for (var i = 0; i < data.length; i++) {
+                            (function (jobData) {                                    
+                                $scope.jobs.push({
+                                    'jobid': jobData.jobid,
+                                    'uname': jobData.uname,
+                                    'status': jobData.status,
+                                    'nnodes': jobData.nnodes,
+                                    'remainingWalltime': jobData.remainingWalltime,
+                                    'selected': false, 
+                                });
+                            })(data[i]);
+                        }                            
+                    },//end function data
+                    function (error) {
+                        $rootScope.$broadcast("notify", "Could not refresh experiment list!");
                     }
                 );
             }
