@@ -209,7 +209,7 @@
                                 
                 		<div layout="row" layout-align="space-between center" class="div-normal-height">
                       <span>Regularization Type</span>
-                      <md-select ng-model="preference.regularizationType" aria-label="regularizationType">
+                      <md-select ng-model="preference.regularizationType" aria-label="regularizationType" ng-change="regTypeChanged()">
                         <md-option ng-value="regType" ng-repeat="regType in regularizationType" ng-selected="regType.value == preference.regularizationType.value">
                           {{ regType.label }}
                         </md-option>
@@ -450,7 +450,7 @@
     </div>
     <div layout="row" layout-align="center">
       <md-button class="md-raised md-primary" ng-click="submit(true)"  ng-disabled="loading">Submit</md-button>
-      <md-button class="md-raised md-primary" ng-click="submit(false)"  ng-disabled="loading">Test</md-button>
+      <!--md-button class="md-raised md-primary" ng-click="submit(false)"  ng-disabled="loading">Test</md-button-->
       <md-button class="md-raised md-primary" ng-click="openFilesExplorer('newtemplate')"  ng-disabled="loading">Save Template</md-button>
       <md-button class="md-raised md-primary" ng-click="openFilesExplorer('loadtemplate')"  ng-disabled="loading">Load Template</md-button>   
     </div>

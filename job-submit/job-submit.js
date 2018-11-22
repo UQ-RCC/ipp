@@ -134,6 +134,13 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 {'label': 'None', 'value': 0},
                 {'label': 'TV', 'value': 1},
                 {'label': 'Entropy', 'value': 2}];
+
+            $scope.regTypeChanged = function(){
+                if($scope.preference.regularizationType.value == 2){
+                    $scope.preference.automaticRegularizationScale = true; 
+                }
+            }
+            
             //prefilter
             $scope.preFilterTypes = [
                 {'label': 'None', 'value': 0},
