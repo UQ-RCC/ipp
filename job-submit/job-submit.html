@@ -65,7 +65,7 @@
                   <div ng-if="preference.generatePsf == true">
                     <div layout="row" layout-align="space-between center" class="div-normal-height">
                       <span>PSF Model</span>
-                      <md-select ng-model=preference.psfModel>
+                      <md-select ng-model=preference.psfModel aria-label="psfmodel">
                         <md-option ng-value="modType" ng-repeat="modType in psfModelTypes" ng-selected="$first">
                           {{ modType.label }}
                         </md-option>
@@ -78,7 +78,8 @@
                     <div layout="row" layout-align="space-between center" class="div-normal-height">
                         <span >Objective immersion refractive index </span>
                         <input type="number" ng-model="preference.RI" />
-                       <md-select  ng-model="preference.riPresetSelected" ng-change="riPresetChanged()">
+                       <md-select  ng-model="preference.riPresetSelected" 
+                       ng-change="riPresetChanged()" aria-label="riPresetSelected">
                         <md-option ng-value="preset" ng-repeat="preset in riPresets" ng-selected="preset.value == preference.riPresetSelected.value">
                           {{ preset.label }}
                         </md-option>
@@ -87,7 +88,8 @@
                     <div layout="row" layout-align="space-between center" class="div-normal-height" ng-if="preference.psfModel.value!=0">
                         <span>Sample medium refractive index</span>
                         <input type="number" ng-model="preference.ns" />
-                       <md-select ng-model="preference.nsPresetSelected" ng-change="nsPresetChanged()">
+                       <md-select ng-model="preference.nsPresetSelected" 
+                       ng-change="nsPresetChanged()" aria-label="nsPresetSelected">
                         <md-option ng-value="nspreset" ng-repeat="nspreset in nsPresets" ng-selected="nspreset.value == preference.nsPresetSelected.value">
                           {{ nspreset.label }}
                         </md-option>
@@ -95,7 +97,8 @@
                     </div>
                     <div layout="row" layout-align="space-between center" class="div-normal-height">
                       <span>Illumination Type</span>
-                      <md-select ng-model=preference.psfType ng-change="psfTypeChange()">
+                      <md-select ng-model=preference.psfType ng-change="psfTypeChange()"
+                      aria-label="psfType">
                         <md-option ng-value="APsfType" ng-repeat="APsfType in psfTypes" 
                                                           ng-selected="APsfType.value==3"> 
                           {{ APsfType.label }}
@@ -184,7 +187,7 @@
                   </div>
                   <div layout="row" layout-align="space-between center" class="div-normal-height">
                     <span>Background correction</span>
-                    <md-select ng-model="preference.backgroundType">
+                    <md-select ng-model="preference.backgroundType" aria-label="backgroundType">
                       <md-option value="None" ng-selected="true">None</md-option>
                       <md-option value="0.01">1%</md-option>
                       <md-option value="0.05">5%</md-option>
@@ -206,8 +209,8 @@
                                 
                 		<div layout="row" layout-align="space-between center" class="div-normal-height">
                       <span>Regularization Type</span>
-                      <md-select ng-model="preference.regularizationType">
-                        <md-option ng-value="regType" ng-repeat="regType in regularizationType" ng-selected="$first">
+                      <md-select ng-model="preference.regularizationType" aria-label="regularizationType">
+                        <md-option ng-value="regType" ng-repeat="regType in regularizationType" ng-selected="regType.value == preference.regularizationType.value">
                           {{ regType.label }}
                         </md-option>
                       </md-select>
@@ -234,8 +237,8 @@
                 		</md-card-title>  
                     <div layout="row" layout-align="space-between center" class="div-normal-height">
                       <span>Pre-filter type</span>
-                      <md-select ng-model="preference.prefilter">
-                        <md-option ng-value="preFilterT" ng-repeat="preFilterT in preFilterTypes" ng-selected="$first">
+                      <md-select ng-model="preference.prefilter" aria-label="prefilter">
+                        <md-option ng-value="preFilterT" ng-repeat="preFilterT in preFilterTypes" ng-selected="preFilterT.value == preference.prefilter.value">
                           {{ preFilterT.label }}
                         </md-option>
                       </md-select>
@@ -250,8 +253,8 @@
                 		</md-card-title> 
                     <div layout="row" layout-align="space-between center" class="div-normal-height">
                       <span>Post-filter type</span>
-                      <md-select ng-model="preference.postfilter">
-                        <md-option ng-value="postFilterT" ng-repeat="postFilterT in postFilterTypes" ng-selected="$first">
+                      <md-select ng-model="preference.postfilter" aria-label="postfilter">
+                        <md-option ng-value="postFilterT" ng-repeat="postFilterT in postFilterTypes" ng-selected="postFilterT.value == preference.postfilter.value">
                           {{ postFilterT.label }}
                         </md-option>
                       </md-select>
@@ -330,32 +333,33 @@
           				</md-card-title>
           				<div ng-disabled="true" layout="row" layout-align="space-between center" class="div-normal-height">
                     <span>Scaling</span>
-                    <md-select ng-model="preference.scaling">
-                      <md-option ng-value="scalingT" ng-repeat="scalingT in scalingType" ng-selected="$first">
+                    <md-select ng-model="preference.scaling" aria-label="scaling">
+                      <md-option ng-value="scalingT" ng-repeat="scalingT in scalingType" 
+                      ng-selected="scalingT.value == preference.scaling.value">
                         {{ scalingT.label }}
                       </md-option>
                     </md-select>
           				</div>
           				<div layout="row" layout-align="space-between center" class="div-normal-height">
           					<span>File format</span>
-                    <md-select ng-model="preference.fileformat" ng-disabled="true">
-                      <md-option ng-value="fileFormatT" ng-repeat="fileFormatT in fileFormatType" ng-selected="$first">
+                    <md-select ng-model="preference.fileformat" aria-label="fileformat">
+                      <md-option ng-value="fileFormatT" ng-repeat="fileFormatT in fileFormatType" ng-selected="fileFormatT.value == preference.fileformat.value">
                         {{ fileFormatT.label }}
                       </md-option>
                     </md-select>
           				</div>
           				<div layout="row" layout-align="space-between center" class="div-normal-height">
           					<span>Stack split</span>
-                    <md-select ng-model="preference.split">
-                      <md-option ng-value="splitChannelT" ng-repeat="splitChannelT in splitChannelType" ng-selected="splitChannelT.value==0">
+                    <md-select ng-model="preference.split" aria-label="split">
+                      <md-option ng-value="splitChannelT" ng-repeat="splitChannelT in splitChannelType" ng-selected="splitChannelT.value == preference.split.value">
                         {{ splitChannelT.label }}
                       </md-option>
                     </md-select>
           				</div>
           				<div layout="row" layout-align="space-between center" class="div-normal-height">
           					<span>Split starting index</span>
-                    <md-select ng-model="preference.splitIdx" ng-disabled="true">
-                      <md-option ng-value="splitStartingIndexT" ng-repeat="splitStartingIndexT in splitStartingIndexType" ng-selected="$first">
+                    <md-select ng-model="preference.splitIdx" aria-label="splitId">
+                      <md-option ng-value="splitStartingIndexT" ng-repeat="splitStartingIndexT in splitStartingIndexType" ng-selected="splitStartingIndexT.value==preference.splitIdx.value">
                         {{ splitStartingIndexT.label }}
                       </md-option>
                     </md-select>
@@ -423,7 +427,7 @@
             <md-tab label="Devices">
           		<md-content class="md-padding">
                 <div layout="row" layout-align="center" layout-padding>
-                  <md-checkbox aria-label="autodetect" ng-disabled="true" ng-model="autoDetect">
+                  <md-checkbox aria-label="autodetect" ng-disabled="true" ng-model="preference.autoDetect">
                     Autodetect
                   </md-checkbox>
                 </div>
@@ -433,7 +437,7 @@
                 </div>
                 <div layout="row" layout-align="space-between center" layout-padding>
                   <span>Memory per job (MB)</span>
-                  <input type="number" ng-model="preference.mem" min="1000" max="20000">
+                  <input type="number" ng-model="preference.mem" min="1000" max="30000">
                 </div>
                 <div layout="row" layout-align="space-between center" layout-padding>
                   <span>Number of GPUs per job</span>

@@ -47,6 +47,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 document.getElementById("jobsubmitmgr").className="menu__link active";
                 $scope.session = sessionData;
                 AccessTokenFactory.get({}).$promise.then(function (tokenData) {
+                    console.log(tokenData.access_token);
                     TokenHandler.set(tokenData.access_token);
                     UserPreferenceFactory.get().$promise.then(
                         function (data) {
@@ -60,47 +61,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                                 }
                             } 
                             else{
-                                $scope.preference = {
-                                    'lateralSpacing': 100, // dr Lateral pixel spacing
-                                    'axialSpacing': 312, //dz Axial pixel spacing
-                                    'psfInfo': {'x': -1, 'y':-1, 'z': -1, 'dr': 100, 'dz': 312},
-                                    'generatePsf': true,
-                                    'readSpacing': true,
-                                    'readPsfSpacing': true,
-                                    'psfModel': 0, //BornWolf or Vectorial
-                                    'NA': 1.4, // Numerical aperture of the objective. 
-                                    'ns': 1.33, //Refractive index of the sample's immersion medium
-                                    'lightSheetIlluminationNA': 0.05,
-                                    'RI': 1.515, //Refractive index of the objective immersion medium
-                                    'tiling': {'x': 1, 'y': 1, 'z':1},
-                                    'padding': {'x': 0, 'y': 0, 'z': 0},
-                                    'backgroundType': 'None',
-                                    'backgrounds': null,
-                                    'pinholes': null,
-                                    'wavelengths': null,
-                                    'iterations': null,
-                                    'psfType': 3,
-                                    'swapZT': false,
-                                    'swapPsfZT': false,
-                                    'output': '',
-                                    'folder': '',
-                                    'psfFile': '',
-                                    'numberOfParallelJobs': 2,
-                                    'mem': 10000,
-                                    'gpus': 2,
-                                    'regularizationType': {},
-                                    'automaticRegularizationScale': false,
-                                    'regularization':-1,
-                                    'prefilter':{},
-                                    'postfilter':{},
-                                    'blindDeconvolution': false,
-                                    'scaling': {},
-                                    'fileformat': {},
-                                    'split': 0,
-                                    'splitIdx': 0,
-                                    'riPresetSelected': {'label': 'Water', 'value': 1.33},
-                                    'nsPresetSelected': {'label': 'Water', 'value': 1.33}
-                                };  
+                                setPreferenceToDefault();
                             } //end else
                         }
                     );
@@ -111,8 +72,6 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
             // selected file
             $scope.selectedItem = null;
     
-            // auto detect
-            $scope.autoDetect = false;
             ////// for selection
             // Objective IMmersion Refactive Index presets
             $scope.riPresets = [
@@ -238,6 +197,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
             $scope.selectedFilesGridOptions.onRegisterApi = function( gridApi ) {
                 $scope.gridApi = gridApi;
                 gridApi.selection.on.rowSelectionChanged($scope,function(row){
+                    console.log("row selection changed");
                     if(row.isSelected){
                         $scope.selectedItem = row.entity;
 			            if($scope.preference.readSpacing && $scope.selectedItem.dr && $scope.selectedItem.dz){
@@ -258,178 +218,23 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                             $scope.selectedFilesGridOptions.data.splice(i, 1);
                     }
                 });
+                savePreference();
             };
 
             /**
             * remove all
             */
             $scope.removeAll = function() {
-                //maybe dialog here ?
                 $scope.selectedFilesGridOptions.data = [];
+                // reset preference
+                setPreferenceToDefault();
+                // save preference
+                savePreference();
             }
 
-            var toPythonBoolean = function (booleanValue){
-                var s = booleanValue.toString();
-                return s && s[0].toUpperCase() + s.slice(1);
-            }
- 
-            /**
-            * get the data supplied by the user for this form
-            */
-            $scope.getFormData = function(){
-                var selectedFiles = [];
-                $scope.selectedFilesGridOptions.data.forEach( function( item ){
-                    var filePath = item.path;
-                    selectedFiles.push(filePath);                        
-                });
-                
-                if($scope.preference.automaticRegularizationScale){
-                    $scope.preference.regularization = -1;
-                }
-                
-        		// get channel data
-        		if($scope.selectedItem && $scope.selectedItem.channels){
-        			$scope.preference.iterations = []
-        			$scope.preference.wavelengths = []
-        			$scope.preference.pinholes = []
-        			$scope.preference.backgrounds = []
-        			$scope.selectedItem['channels'].forEach(function (channel){
-                            $scope.preference.iterations.push(channel['iterations'])
-                            $scope.preference.wavelengths.push(channel['wavelength'])
-                            $scope.preference.pinholes.push(channel['pinhole'])
-                            if($scope.preference.backgroundType=='Manual'){
-                                $scope.preference.backgrounds.push(parseFloat(channel['background']))
-                            }
-                            else if($scope.preference.backgroundType=='None'){
-                                $scope.preference.backgrounds.push(0)
-                            }
-                            else{
-                                // parse directly the value in backgroundType
-                                $scope.preference.backgrounds.push(parseFloat($scope.preference.backgroundType))
-                            }
-                        })
-                        if($scope.preference.readSpacing && $scope.selectedItem.dr && $scope.selectedItem.dz){
-                            $scope.preference.lateralSpacing = $scope.selectedItem.dr;
-                            $scope.preference.axialSpacing = $scope.selectedItem.dz;
-                        }
-		        }
-		        var formData = {
-                   'padding': $scope.preference.padding.x + "," +$scope.preference.padding.y + "," + $scope.preference.padding.z,
-                   'tiling': $scope.preference.tiling.x + "," + $scope.preference.tiling.y + "," + $scope.preference.tiling.z,
-                   'NA': $scope.preference.NA,
-                   'RI': $scope.preference.RI,
-                   'ns': $scope.preference.ns,
-                   'psfModel': $scope.preference.psfModel.value,
-                   'backgroundType': $scope.preference.backgroundType,
-                   'swapZT': toPythonBoolean($scope.preference.swapZT),
-                   'swapPsfZT': toPythonBoolean($scope.preference.swapPsfZT),
-                   'iterations': $scope.preference.iterations.join(),
-                   'pinholes': $scope.preference.pinholes.join(),
-                   'background': $scope.preference.backgrounds.join(),
-                   'wavelength': $scope.preference.wavelengths.join(),
-                   'devices': $scope.preference.gpus,
-                   'files': selectedFiles.join(),
-                   'output': $scope.preference.output,
-                   //'prefFile': 'run.pref',
-                   'psfType': $scope.preference.psfType.value,
-                   'lightSheetIlluminationNA': $scope.preference.lightSheetIlluminationNA,
-                   //////new stuff here////
-                   'latSpacing': $scope.preference.lateralSpacing,
-                   'axSpacing': $scope.preference.axialSpacing,
-                   'psfX': $scope.preference.psfInfo.x,
-                   'psfY': $scope.preference.psfInfo.y,
-                   'psfZ': $scope.preference.psfInfo.z,
-                   'psfC': $scope.preference.psfInfo.c,
-                   'psfT': $scope.preference.psfInfo.t,
-                   'psfLatSpacing': $scope.preference.psfInfo.dr,
-                   'psfAxSpacing': $scope.preference.psfInfo.dz,
-                   'generatePsf': toPythonBoolean($scope.preference.generatePsf),
-                   'psfFile': $scope.preference.psfFile,
-                   'instances': $scope.preference.numberOfParallelJobs,
-                   'arrayMax': parseInt($scope.preference.numberOfParallelJobs)-1,
-                   'mem': $scope.preference.mem,
-                   'regType': $scope.preference.regularizationType.value,
-                   'regularization': $scope.preference.regularization,
-                   'prefilter': $scope.preference.prefilter.value,
-                   'postfilter': $scope.preference.postfilter.value,
-                   'blind': toPythonBoolean($scope.preference.blindDeconvolution),
-                   'scaling': $scope.preference.scaling.value,
-                   'format': $scope.preference.fileformat.value,
-                   'split': $scope.preference.split.value,
-                   'splitIdx': $scope.preference.splitIdx.value,
-                   //'access_token': accessToken
-                };
-                if (isNaN(formData.axSpacing) || isNaN(formData.latSpacing))
-                    throw "Lateral Spacing and Axial spacing cannot be null";
-                return formData;
-            }
-
-            /**
-            * set form data to preference
-            */
-            $scope.setFormData = function(data){
-                //console.log("Setting form data");
-                //console.log(data);
-                $scope.preference.NA = parseFloat(data.NA);
-                $scope.preference.RI = parseFloat(data.RI);
-                $scope.preference.axialSpacing = parseFloat(data.axSpacing);
-                $scope.preference.backgroundType = data.backgroundType;
-                $scope.preference.blind = data.blind == 'True';
-                $scope.preference.gpus =  parseInt(data.devices);
-                $scope.preference.fileformat = $scope.fileFormatType[parseInt(data.format)];
-                $scope.preference.generatePsf = data.generatePsf == 'True';
-                $scope.preference.numberOfParallelJobs = parseInt(data.instances);
-                $scope.preference.lateralSpacing = parseFloat(data.latSpacing);
-                $scope.preference.mem = parseInt(data.mem);
-                $scope.preference.ns = parseFloat(data.ns);
-                $scope.preference.postfilter = $scope.postFilterTypes[parseInt(data.postFilter)];
-                $scope.preference.prefilter = $scope.preFilterTypes[parseInt(data.preFilter)];
-                $scope.preference.psfFile = data.psfFile;
-                $scope.preference.psfModel = $scope.psfModelTypes[parseInt(data.psfModel)];
-                $scope.preference.psfType = $scope.psfTypes[parseInt(data.psfType)];
-                $scope.preference.lightSheetIlluminationNA = parseFloat(data.lightSheetIlluminationNA);
-                $scope.preference.regularization = parseFloat(data.regularization);
-                $scope.preference.regularizationType = $scope.regularizationType[parseInt(data.regularizationType)];
-                $scope.preference.scaling = $scope.scalingType[parseInt(data.scaling)];
-                $scope.preference.swapPsfZT = data.swapPsfZT == 'True';
-                $scope.preference.swapZT = data.swapZT == 'True';
-                // psf
-                $scope.preference.psfInfo.dz = parseFloat(data.psfAxSpacing);
-                $scope.preference.psfInfo.dr = parseFloat(data.psfLatSpacing);
-                $scope.preference.psfInfo.x = parseInt(data.psfX);
-                $scope.preference.psfInfo.y = parseInt(data.psfY);
-                $scope.preference.psfInfo.z = parseInt(data.psfZ);
-                $scope.preference.psfInfo.c = parseInt(data.psfC);
-                $scope.preference.psfInfo.t = parseInt(data.psfT);
-                //padding and tileing
-                var paddingSplitted = data.padding.split(",");
-                $scope.preference.padding.x = parseInt(paddingSplitted[0]);
-                $scope.preference.padding.y = parseInt(paddingSplitted[1]);
-                $scope.preference.padding.z = parseInt(paddingSplitted[2]);
-                var tilingSplitted = data.tiling.split(",");
-                $scope.preference.tiling.x = parseInt(tilingSplitted[0]);
-                $scope.preference.tiling.y = parseInt(tilingSplitted[1]);
-                $scope.preference.tiling.z = parseInt(tilingSplitted[2]);
-                // other splitted data
-                $scope.preference.iterations = data.iterations.split(",").map(Number);
-                $scope.preference.backgrounds = data.background.split(",").map(Number);
-                $scope.preference.pinholes = data.pinholes.split(",").map(Number);
-                $scope.preference.wavelengths = data.wavelength.split(",").map(Number);
-        		// create new selected item
-        		var newSelectedItem = {};
-        		newSelectedItem.channels = [];
-        		for(var i =0; i< $scope.preference.iterations.length; i++){
-        			var channel = {};
-        			channel.name = "Channel " + (i + 1);
-        			channel.iterations = $scope.preference.iterations[i];
-        			channel.background = $scope.preference.backgrounds[i];
-        			channel.pinhole = $scope.preference.pinholes[i];
-        			channel.wavelength = $scope.preference.wavelengths[i];
-        			newSelectedItem.channels.push(channel);
-        		}
-        		$scope.selectedItem = newSelectedItem;
-            }
-
+            
+            
+            
             /**
             * submit
             * padding, ns, devices, tiling, swapPsfZT, psfModel, 
@@ -438,20 +243,14 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
             $scope.submit = function(isReal) {
                 $scope.loading = true;
                 try{
-                    var formData = $scope.getFormData();
+                    var formData = getFormData();
                     if(formData.output == null || formData.output == ""){
                         $scope.loading = false;
                         $rootScope.$broadcast("notify", "You have to choose an output folder");
                         return;              
                     }
-                    //save it
-                    var savedData = {"pref": {
-                                            "preference": angular.toJson($scope.preference), 
-                                            "files": angular.toJson($scope.selectedFilesGridOptions.data)
-                                            }
-                                    };
-                    console.log( savedData );
-                    UserPreferenceFactory.update({}, JSON.stringify(savedData));
+                    // save preference
+                    savePreference();
                     var executioninfo = {   
                         "executioninfo": btoa(JSON.stringify(formData)),
                         "instances": formData.instances,
@@ -461,6 +260,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                         "output": formData.output,
                         "usermail": $scope.session.email
                     }
+                    console.log(executioninfo);
                     if(isReal){
                       ExecuteJobFactory.query(executioninfo)
                        .$promise.then(
@@ -559,10 +359,13 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                         });
                         selectedList = selectedList.slice(0, -1)
                         $scope.loading = true;
+                        console.log(selectedList);
+                        console.log(btoa(selectedList));
                         FilesInfoFactory.query({
                             'fileslist': btoa(selectedList)
                         }).$promise.then(
                             function(returnData) {
+                                console.log(returnData);
                                 var data = returnData.commandResult;
                                 if(data.length > 0){
                                     data.forEach(function (item){
@@ -605,6 +408,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                             'folderpath': btoa($ctrl.selected)
                         }).$promise.then(
                             function(returnData) {
+                                console.log(returnData);
                                 var data = returnData.commandResult;
                                 if(data.length > 0){
                                     data.forEach(function (item){
@@ -645,7 +449,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                     else if($ctrl.modalContents.mode === 'newtemplate'){
                         var templateName = $ctrl.selected;
                         $scope.loading = true;
-                        var formData = $scope.getFormData();
+                        var formData = getFormData();
                         //console.log("@newtemplate");
                         //console.log(formData);
                         SaveTemplateFactory.query({"templateinfo": btoa(JSON.stringify(formData)),
@@ -675,7 +479,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                                 var jsonData = ( new Function("return " + data) )();
                                 //console.log(jsonData);
                                 // load the jsonData into the form
-                                $scope.setFormData(jsonData);
+                                setFormData(jsonData);
                             },
                             function (error) {
                                 $scope.loading = false;
@@ -728,8 +532,238 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 }, function () {
                   console.log('Modal dismissed at: ' + new Date());
                 });
-
             };
+
+
+
+            /**********************************************************/
+            /***********************************************************/
+            /**
+            * save preference
+            */
+            var savePreference = function(){
+                //save it
+                var savedData = {"pref": {
+                                        "preference": angular.toJson($scope.preference), 
+                                        "files": angular.toJson($scope.selectedFilesGridOptions.data)
+                                        }
+                                };
+                UserPreferenceFactory.update({}, JSON.stringify(savedData));
+            }
+
+            var toPythonBoolean = function (booleanValue){
+                var s = booleanValue.toString();
+                return s && s[0].toUpperCase() + s.slice(1);
+            }
+
+            /**
+            * get the data supplied by the user for this form
+            */
+            var getFormData = function(){
+                var selectedFiles = [];
+                $scope.selectedFilesGridOptions.data.forEach( function( item ){
+                    var filePath = item.path;
+                    selectedFiles.push(filePath);                        
+                });
+                
+                if($scope.preference.automaticRegularizationScale){
+                    $scope.preference.regularization = -1;
+                }
+                
+                // get channel data
+                if($scope.selectedItem && $scope.selectedItem.channels){
+                    $scope.preference.iterations = []
+                    $scope.preference.wavelengths = []
+                    $scope.preference.pinholes = []
+                    $scope.preference.backgrounds = []
+                    $scope.selectedItem['channels'].forEach(function (channel){
+                            $scope.preference.iterations.push(channel['iterations'])
+                            $scope.preference.wavelengths.push(channel['wavelength'])
+                            $scope.preference.pinholes.push(channel['pinhole'])
+                            if($scope.preference.backgroundType=='Manual'){
+                                $scope.preference.backgrounds.push(parseFloat(channel['background']))
+                            }
+                            else if($scope.preference.backgroundType=='None'){
+                                $scope.preference.backgrounds.push(0)
+                            }
+                            else{
+                                // parse directly the value in backgroundType
+                                $scope.preference.backgrounds.push(parseFloat($scope.preference.backgroundType))
+                            }
+                        })
+                        if($scope.preference.readSpacing && $scope.selectedItem.dr && $scope.selectedItem.dz){
+                            $scope.preference.lateralSpacing = $scope.selectedItem.dr;
+                            $scope.preference.axialSpacing = $scope.selectedItem.dz;
+                        }
+                }
+                var formData = {
+                   'padding': $scope.preference.padding.x + "," +$scope.preference.padding.y + "," + $scope.preference.padding.z,
+                   'tiling': $scope.preference.tiling.x + "," + $scope.preference.tiling.y + "," + $scope.preference.tiling.z,
+                   'NA': $scope.preference.NA,
+                   'RI': $scope.preference.RI,
+                   'ns': $scope.preference.ns,
+                   'psfModel': $scope.preference.psfModel.value,
+                   'backgroundType': $scope.preference.backgroundType,
+                   'swapZT': toPythonBoolean($scope.preference.swapZT),
+                   'swapPsfZT': toPythonBoolean($scope.preference.swapPsfZT),
+                   'iterations': $scope.preference.iterations.join(),
+                   'pinholes': $scope.preference.pinholes.join(),
+                   'background': $scope.preference.backgrounds.join(),
+                   'wavelength': $scope.preference.wavelengths.join(),
+                   'devices': $scope.preference.gpus,
+                   'files': selectedFiles.join(),
+                   'output': $scope.preference.output,
+                   //'prefFile': 'run.pref',
+                   'psfType': $scope.preference.psfType.value,
+                   'lightSheetIlluminationNA': $scope.preference.lightSheetIlluminationNA,
+                   //////new stuff here////
+                   'latSpacing': $scope.preference.lateralSpacing,
+                   'axSpacing': $scope.preference.axialSpacing,
+                   'psfX': $scope.preference.psfInfo.x,
+                   'psfY': $scope.preference.psfInfo.y,
+                   'psfZ': $scope.preference.psfInfo.z,
+                   'psfC': $scope.preference.psfInfo.c,
+                   'psfT': $scope.preference.psfInfo.t,
+                   'psfLatSpacing': $scope.preference.psfInfo.dr,
+                   'psfAxSpacing': $scope.preference.psfInfo.dz,
+                   'generatePsf': toPythonBoolean($scope.preference.generatePsf),
+                   'psfFile': $scope.preference.psfFile,
+                   'instances': $scope.preference.numberOfParallelJobs,
+                   'arrayMax': parseInt($scope.preference.numberOfParallelJobs)-1,
+                   'mem': $scope.preference.mem,
+                   'regType': $scope.preference.regularizationType.value,
+                   'regularization': $scope.preference.regularization,
+                   'prefilter': $scope.preference.prefilter.value,
+                   'postfilter': $scope.preference.postfilter.value,
+                   'blind': toPythonBoolean($scope.preference.blindDeconvolution),
+                   'scaling': $scope.preference.scaling.value,
+                   'format': $scope.preference.fileformat.value,
+                   'split': $scope.preference.split.value,
+                   'splitIdx': $scope.preference.splitIdx.value,
+                   //'access_token': accessToken
+                };
+                if (isNaN(formData.axSpacing) || isNaN(formData.latSpacing))
+                    throw "Lateral Spacing and Axial spacing cannot be null";
+                return formData;
+            }
+
+            /**
+            * set form data to preference
+            */
+            var setFormData = function(data){
+                //console.log("Setting form data");
+                //console.log(data);
+                $scope.preference.NA = parseFloat(data.NA);
+                $scope.preference.RI = parseFloat(data.RI);
+                $scope.preference.axialSpacing = parseFloat(data.axSpacing);
+                $scope.preference.backgroundType = data.backgroundType;
+                $scope.preference.blind = data.blind == 'True';
+                $scope.preference.gpus =  parseInt(data.devices);
+                $scope.preference.fileformat = $scope.fileFormatType[parseInt(data.format)];
+                $scope.preference.generatePsf = data.generatePsf == 'True';
+                $scope.preference.numberOfParallelJobs = parseInt(data.instances);
+                $scope.preference.lateralSpacing = parseFloat(data.latSpacing);
+                $scope.preference.mem = parseInt(data.mem);
+                $scope.preference.ns = parseFloat(data.ns);
+                $scope.preference.postfilter = $scope.postFilterTypes[parseInt(data.postFilter)];
+                $scope.preference.prefilter = $scope.preFilterTypes[parseInt(data.preFilter)];
+                $scope.preference.psfFile = data.psfFile;
+                $scope.preference.psfModel = $scope.psfModelTypes[parseInt(data.psfModel)];
+                $scope.preference.psfType = $scope.psfTypes[parseInt(data.psfType)];
+                $scope.preference.lightSheetIlluminationNA = parseFloat(data.lightSheetIlluminationNA);
+                $scope.preference.regularization = parseFloat(data.regularization);
+                $scope.preference.regularizationType = $scope.regularizationType[parseInt(data.regularizationType)];
+                $scope.preference.scaling = $scope.scalingType[parseInt(data.scaling)];
+                $scope.preference.swapPsfZT = data.swapPsfZT == 'True';
+                $scope.preference.swapZT = data.swapZT == 'True';
+                // psf
+                $scope.preference.psfInfo.dz = parseFloat(data.psfAxSpacing);
+                $scope.preference.psfInfo.dr = parseFloat(data.psfLatSpacing);
+                $scope.preference.psfInfo.x = parseInt(data.psfX);
+                $scope.preference.psfInfo.y = parseInt(data.psfY);
+                $scope.preference.psfInfo.z = parseInt(data.psfZ);
+                $scope.preference.psfInfo.c = parseInt(data.psfC);
+                $scope.preference.psfInfo.t = parseInt(data.psfT);
+                //padding and tileing
+                var paddingSplitted = data.padding.split(",");
+                $scope.preference.padding.x = parseInt(paddingSplitted[0]);
+                $scope.preference.padding.y = parseInt(paddingSplitted[1]);
+                $scope.preference.padding.z = parseInt(paddingSplitted[2]);
+                var tilingSplitted = data.tiling.split(",");
+                $scope.preference.tiling.x = parseInt(tilingSplitted[0]);
+                $scope.preference.tiling.y = parseInt(tilingSplitted[1]);
+                $scope.preference.tiling.z = parseInt(tilingSplitted[2]);
+                // other splitted data
+                $scope.preference.iterations = data.iterations.split(",").map(Number);
+                $scope.preference.backgrounds = data.background.split(",").map(Number);
+                $scope.preference.pinholes = data.pinholes.split(",").map(Number);
+                $scope.preference.wavelengths = data.wavelength.split(",").map(Number);
+                // create new selected item
+                var newSelectedItem = {};
+                newSelectedItem.channels = [];
+                for(var i =0; i< $scope.preference.iterations.length; i++){
+                    var channel = {};
+                    channel.name = "Channel " + (i + 1);
+                    channel.iterations = $scope.preference.iterations[i];
+                    channel.background = $scope.preference.backgrounds[i];
+                    channel.pinhole = $scope.preference.pinholes[i];
+                    channel.wavelength = $scope.preference.wavelengths[i];
+                    newSelectedItem.channels.push(channel);
+                }
+                $scope.selectedItem = newSelectedItem;
+            };
+
+            /**
+            * reset Preference
+            */
+            var setPreferenceToDefault = function(){
+                $scope.preference = {
+                    'lateralSpacing': 100, // dr Lateral pixel spacing
+                    'axialSpacing': 312, //dz Axial pixel spacing
+                    'psfInfo': {'x': -1, 'y':-1, 'z': -1, 'dr': 100, 'dz': 312},
+                    'generatePsf': true,
+                    'readSpacing': true,
+                    'readPsfSpacing': true,
+                    'psfModel': 0, //BornWolf or Vectorial
+                    'NA': 1.4, // Numerical aperture of the objective. 
+                    'ns': 1.33, //Refractive index of the sample's immersion medium
+                    'lightSheetIlluminationNA': 0.05,
+                    'RI': 1.515, //Refractive index of the objective immersion medium
+                    'tiling': {'x': 1, 'y': 1, 'z':1},
+                    'padding': {'x': 0, 'y': 0, 'z': 0},
+                    'backgroundType': 'None',
+                    'backgrounds': null,
+                    'pinholes': null,
+                    'wavelengths': null,
+                    'iterations': null,
+                    'psfType': 3,
+                    'swapZT': false,
+                    'swapPsfZT': false,
+                    'output': '',
+                    'folder': '',
+                    'psfFile': '',
+                    'numberOfParallelJobs': 2,
+                    'mem': 10000,
+                    'gpus': 2,
+                    'regularizationType': $scope.regularizationType[0],
+                    'automaticRegularizationScale': false,
+                    'regularization':-1,
+                    'prefilter':$scope.preFilterTypes[0],
+                    'postfilter':$scope.postFilterTypes[0],
+                    'blindDeconvolution': false,
+                    'scaling': $scope.scalingType[0],
+                    'fileformat': $scope.fileFormatType[0],
+                    'split': $scope.splitChannelType[0],
+                    'splitIdx': $scope.splitStartingIndexType[0],
+                    'riPresetSelected': $scope.riPresets[2],
+                    'nsPresetSelected': $scope.nsPresets[1],
+                    'autoDetect': false
+                };  
+            }
+
+
+ 
+
 }]);
 
 
