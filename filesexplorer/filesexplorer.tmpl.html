@@ -53,19 +53,25 @@
   <br />
   <!-- main contents -->
   <div layout="row">
-    <div layout="column" flex="10" ng-if="$ctrl.modalContents.mode!='newtemplate' && $ctrl.modalContents.mode!='loadtemplate'">
+    <div layout="column" flex="15" ng-if="$ctrl.modalContents.mode!='newtemplate' && $ctrl.modalContents.mode!='loadtemplate'">
       <!-- a table of shortcuts-->
       <table border='0'>
         <caption>Shortcuts</caption>
         <tbody>
           <tr ng-repeat="shortcut in $ctrl.modalContents.shortcuts" style="font-size: 17px;">
-            <td ng-disabled="$ctrl.isLoading()" ng-click="$ctrl.shortcut(shortcut.path)">{{ shortcut.label }}</td>
+            <td ng-show="$ctrl.bookmarkEdit" ng-click="$ctrl.removeShortcut(shortcut)">
+                <md-icon md-svg-src="style/icons/delete.svg"/>
+            </td>
+            <td ng-disabled="$ctrl.isLoading()" ng-click="$ctrl.shortcut(shortcut.path)">{{ shortcut.label }}
+            </td>
           </tr>
         </tbody>
       </table>
+      <md-button class="md-warn" aria-label="bookmark" ng-click="$ctrl.bookmarkEdit=!$ctrl.bookmarkEdit">Edit
+      </md-button>
     </div>
     <div flex="5"></div>
-    <div flex="85" style="height: 350px; overflow: auto;">
+    <div flex="80" style="height: 350px; overflow: auto;">
       <table border='0' layout-fill>
         <thead>
           <tr>

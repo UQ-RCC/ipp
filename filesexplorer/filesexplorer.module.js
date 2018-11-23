@@ -11,7 +11,7 @@ angular
       $ctrl.modalContents.loading = false;
       $ctrl.modalContents.filesFolderList = [];
       if($ctrl.modalContents.initialPath == null || $ctrl.modalContents.initialPath.trim()=="")
-        $ctrl.modalContents.currentpath = "/afm01/Q0703";  
+        $ctrl.modalContents.currentpath = "/afm01"; //"/afm01/Q0703"; 
       else
         $ctrl.modalContents.currentpath = $ctrl.modalContents.initialPath;    
       $ctrl.modalContents.selectAll = false;
@@ -22,7 +22,7 @@ angular
         $ctrl.modalContents.newItem =  $ctrl.modalContents.initialNewItem;    
       $ctrl.modalContents.selectedItems = [];
       $ctrl.selected = {};
-
+      $ctrl.bookmarkEdit = false;
 
       /**
       * list dir
@@ -115,6 +115,15 @@ angular
         			$ctrl.modalContents.shortcuts = JSON.parse(data["bookmarks"]);
         		else
         		    $ctrl.modalContents.shortcuts = [];    
+        		var hasHome = false;
+        		$ctrl.modalContents.shortcuts.forEach(function(item){
+		            if(item.label == 'home'){
+		                hasHome = true;
+		            }
+		        });
+		        if(!hasHome){
+		        	$ctrl.modalContents.shortcuts.unshift({'label': 'home', 'path':home})
+		        }
             }
         );
         if(['loadtemplate', 'newtemplate'].includes($ctrl.modalContents.mode)){
@@ -138,6 +147,18 @@ angular
       	var bookmarks = {'bookmarks':  angular.toJson( $ctrl.modalContents.shortcuts )};
       	UserPreferenceFactory.update({}, JSON.stringify(bookmarks));
       };
+
+      $ctrl.removeShortcut = function(shortcut){
+      	for(var i = $ctrl.modalContents.shortcuts.length - 1; i >= 0; i--) {
+      		var item = $ctrl.modalContents.shortcuts[i];
+		    if(item.label == shortcut.label && item.path == shortcut.path) {
+		       $ctrl.modalContents.shortcuts.splice(i, 1);
+		       break;
+		    }
+		}
+      	var bookmarks = {'bookmarks':  angular.toJson( $ctrl.modalContents.shortcuts )};
+      	UserPreferenceFactory.update({}, JSON.stringify(bookmarks));
+      }
 
       $ctrl.isLoading = function () {
         return $ctrl.modalContents.loading;
