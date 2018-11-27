@@ -7,7 +7,7 @@
     <div layout="column">
       <label>Current Path</label>
       <div layout=row>
-        <div flex="90" layout="row">
+        <div flex="95" layout="row">
           <select 
                 ng-init="$ctrl.init()"
                 ng-disabled="['newtemplate', 'loadtemplate'].includes($ctrl.modalContents.mode)" 
@@ -17,15 +17,15 @@
           </select>
         </div>
         <br />
-        <div layout="row" layout-align="center center">
-            <md-button class="md-no-focus" aria-label="bookmark">
-              <md-tooltip md-direction="right">Bookmark</md-tooltip>
+        <div layout="row" layout-align="left center">
+              
               <md-icon md-svg-src="style/icons/bookmark.svg" ng-click="$ctrl.addShortcut($ctrl.modalContents.currentpath)">
-            </md-button>
-            <!--md-button class="md-no-focus" aria-label="refresh">
-              <md-tooltip md-direction="right">Refresh</md-tooltip>
-              <md-icon md-svg-src="style/icons/refresh.svg" ng-click="$ctrl.refresh()">
-            </md-button-->
+                <md-tooltip md-direction="right">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bookmark</md-tooltip>
+              </md-icon>
+              <md-icon md-svg-src="style/icons/clipboard.svg" ng-click="$ctrl.copyCurrentPathToClipboard()">
+                <md-tooltip md-direction="right">&nbsp;&nbsp;Copy to clipboard</md-tooltip>
+              </md-icon>
+            
         </div>
       </div>
     </div>

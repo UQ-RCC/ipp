@@ -65,6 +65,9 @@ angular
 	            $ctrl.modalContents.filesFolderList = data;
 	            $ctrl.modalContents.loading = false;
 	            $ctrl.modalContents.currentpath = newPath;
+	            // save to currentpath
+	            var lastPath = {'lastPath': newPath};
+      			UserPreferenceFactory.update({}, JSON.stringify(lastPath));
 	        }
 	    ),
 	    function (error) {
@@ -74,6 +77,26 @@ angular
 	        $rootScope.$broadcast("notify", "Error loading:" + newPath + ". You probably do not have permission");
 	    }                 
       };
+
+      $ctrl.copyCurrentPathToClipboard = function(){
+      	var copyElement = document.createElement("textarea");
+		copyElement.style.position = 'fixed';
+		copyElement.style.opacity = '0';
+		copyElement.textContent = $ctrl.modalContents.currentpath;
+		var body = document.getElementsByTagName('body')[0];
+		body.appendChild(copyElement);
+		copyElement.select();
+		try{
+			var successful = document.execCommand('copy');
+			if (!successful) throw successful;
+			$rootScope.$broadcast("notify", "Copied to clipboard");
+
+		}
+		catch (err) {
+			$rootScope.$broadcast("notify", "Error: cannot copy to clipboard");
+		}
+		body.removeChild(copyElement);
+      }
 
       var createQuickNavs = function(folderPath){
         // splitting path into paths
@@ -92,7 +115,7 @@ angular
       * when change the path
       */
       $ctrl.onPathChange = function(newPath){
-        console.log("path change:" + newPath);
+        //console.log("path change:" + newPath);
         ls($ctrl.modalContents.currentpath, "");
       };
 
@@ -101,8 +124,6 @@ angular
       * init the file explorer
       */
       $ctrl.init = function(){
-        //default path
-        createQuickNavs($ctrl.modalContents.currentpath);
         // now move into shotcuts
         var home = "/clusterdata/";
         if($scope.session != undefined && $scope.session != null){
@@ -111,10 +132,12 @@ angular
         // query the list of bookmarks
         UserPreferenceFactory.get().$promise.then(
             function (data) {
+            	// bookmarks
             	if(data.hasOwnProperty("bookmarks"))
         			$ctrl.modalContents.shortcuts = JSON.parse(data["bookmarks"]);
         		else
-        		    $ctrl.modalContents.shortcuts = [];    
+        		    $ctrl.modalContents.shortcuts = []; 
+        		// home   
         		var hasHome = false;
         		$ctrl.modalContents.shortcuts.forEach(function(item){
 		            if(item.label == 'home'){
@@ -124,14 +147,25 @@ angular
 		        if(!hasHome){
 		        	$ctrl.modalContents.shortcuts.unshift({'label': 'home', 'path':home})
 		        }
+		        // last path
+		        var lastPath = "";
+		        if(data.hasOwnProperty("lastPath"))
+        			lastPath = data["lastPath"];
+        		// only set to last path if initialPath is not empty
+        		if(lastPath && ($ctrl.modalContents.initialPath == null || $ctrl.modalContents.initialPath.trim()=="") ){
+        			$ctrl.modalContents.currentpath = lastPath;
+        		} 
+        		// load it
+        		//default path
+		        createQuickNavs($ctrl.modalContents.currentpath);
+		        if(['loadtemplate', 'newtemplate'].includes($ctrl.modalContents.mode)){
+		            createQuickNavs(home + "/.microvolution");
+		            ls(home + "/.microvolution", "");
+		        }
+		        else
+		            ls($ctrl.modalContents.currentpath, "");
             }
         );
-        if(['loadtemplate', 'newtemplate'].includes($ctrl.modalContents.mode)){
-            createQuickNavs(home + "/.microvolution");
-            ls(home + "/.microvolution", "");
-        }
-        else
-            ls($ctrl.modalContents.currentpath, "");
       };    
 
       $ctrl.refresh = function () {
@@ -172,11 +206,13 @@ angular
       /**
       * only available for files
       */
-      $ctrl.selectAll = function(status){
+      $ctrl.selectAll = function(){
         $ctrl.modalContents.selectedItems = [];
         $ctrl.modalContents.filesFolderList.forEach(function(item){
-            item.selected = $ctrl.modalContents.selectAll;
-            if(item.selected && item.permission.startsWith('-')){
+        	if(item.permission.startsWith('-')){
+            	item.selected = $ctrl.modalContents.selectAll;        		
+        	}
+            if(item.selected){
                 $ctrl.modalContents.selectedItems.push(item);
             }
         });
