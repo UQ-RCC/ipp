@@ -166,7 +166,7 @@
                          <tr ng-repeat="channel in selectedItem.channels" style="text-align: center; cellpadding:20px;">
                           <td>{{ channel.name }}</td>
                           <td>
-                              <input type="number" name="input" ng-model=channel.iterations min="0" max="999">
+                              <input type="number" name="input" ng-model=channel.iterations>
                           </td>
                           <td ng-if="preference.generatePsf" style="text-align: center">
                             <input type="number" name="input" ng-model=channel.wavelength>

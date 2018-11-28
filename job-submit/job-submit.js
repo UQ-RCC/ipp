@@ -140,7 +140,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                     $scope.preference.automaticRegularizationScale = true; 
                 }
             }
-            
+
             //prefilter
             $scope.preFilterTypes = [
                 {'label': 'None', 'value': 0},
@@ -267,7 +267,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                         "output": formData.output,
                         "usermail": $scope.session.email
                     }
-                    console.log(executioninfo);
+                    //console.log(executioninfo);
                     if(isReal){
                       ExecuteJobFactory.query(executioninfo)
                        .$promise.then(
