@@ -136,7 +136,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 {'label': 'Entropy', 'value': 2}];
 
             $scope.regTypeChanged = function(){
-                if($scope.preference.regularizationType.value == 2){
+                if($scope.preference.regularizationType.value != 0){
                     $scope.preference.automaticRegularizationScale = true; 
                 }
             }

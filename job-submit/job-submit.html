@@ -215,7 +215,7 @@
                         </md-option>
                       </md-select>
                     </div>
-                    <div ng-if="preference.regularizationType.label === 'Entropy'">
+                    <div ng-if="preference.regularizationType.label != 'None'">
                       <md-checkbox aria-label="automaticRegularization" ng-model="preference.automaticRegularizationScale">
                         Automatic regularization scale factor
                       </md-checkbox>
