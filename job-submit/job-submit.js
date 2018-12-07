@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 'ui.grid.selection', 
+angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial', 'ui.grid', 'ui.grid.selection', 
                                             'microvolution.filesexplorer', 'microvolution.services'])
 
     .config(['$routeProvider', function ($routeProvider) {
@@ -13,12 +13,12 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
     .controller('JobSubmitCtrl', ['$scope', '$rootScope', '$location', '$uibModal', '$timeout',
             'SessionInfoFactory', 'AccessTokenFactory', 'TokenHandler', 'ExecuteJobFactory', 
             'TestExecuteJobFactory', 'FilesInfoFactory', 'FolderInfoFactory', 'SaveTemplateFactory', 
-            'LoadTemplateFactory', 'FileInfoFactory', 'UserPreferenceFactory',
+            'LoadTemplateFactory', 'FileInfoFactory', 'UserPreferenceFactory', '$mdDialog',
 
         function ($scope, $rootScope, $location, $uibModal, $timeout, 
             SessionInfoFactory, AccessTokenFactory, TokenHandler, ExecuteJobFactory, 
             TestExecuteJobFactory, FilesInfoFactory, FolderInfoFactory, SaveTemplateFactory, 
-            LoadTemplateFactory, FileInfoFactory, UserPreferenceFactory) 
+            LoadTemplateFactory, FileInfoFactory, UserPreferenceFactory, $mdDialog) 
         {
             
             //loading
@@ -255,12 +255,12 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                     var formData = getFormData();
                     if(formData.output == null || formData.output == ""){
                         $scope.loading = false;
-                        $rootScope.$broadcast("notify", "You have to choose an output folder");
+                        showAlertDialog('You have to choose an output folder');
                         return;              
                     }
                     if(formData.NA >= formData.RI){
                         $scope.loading = false;
-                        $rootScope.$broadcast("notify", "Objective NA must be smaller than Refactive Index");
+                        showAlertDialog('Object NA must be smaller than Refactive Index');
                         return;              
                     }
                     
@@ -287,7 +287,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                            },
                            function (error) {
                                $scope.loading = false;
-                               $rootScope.$broadcast("notify", "Error: Problem submitting:" + error);
+                               showAlertDialog("Error: Problem submitting:" + error);
                            }
                        );
                      }else{
@@ -300,12 +300,12 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                            },
                            function (error) {
                                $scope.loading = false;
-                               $rootScope.$broadcast("notify", "Error: Problem submitting:" + error);
+                               showAlertDialog("Error: Problem submitting:" + error);
                            }
                         );
                      }
                }catch(err) {
-                   $rootScope.$broadcast("notify", "Error: " + err);
+                    showAlertDialog("Error: Problem submitting:" + error);
                    $scope.loading = false;
                }
             };
@@ -354,7 +354,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 modalInstance.result.then(function (selected) {
                     $ctrl.selected = selected;
                     if($ctrl.selected==null || $ctrl.selected==""){
-                        $rootScope.$broadcast("notify", "You have not selected anything");
+                        showAlertDialog("You have not selected anything");
                         return;
                     }
                     if($ctrl.modalContents.mode === 'selectoutput'){
@@ -406,14 +406,14 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                                     },
                                     100);
                                 }
-                                else
-                                    $rootScope.$broadcast("notify", "Failed to load " + selectedList);
+                                else{
+                                    showAlertDialog("Failed to load " + selectedList);
+                                }
                                 $scope.loading = false;
                             },
                             function (error) {
                                 $scope.loading = false;
-                                console.log(error);
-                                $rootScope.$broadcast("notify", "Error: Problem loading files:" + selectedList);
+                                showAlertDialog("Problem loading files:" + selectedList);
                             }
                         );
                     }
@@ -450,14 +450,14 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                                     100);
 
                                 }
-                                else
-                                    $rootScope.$broadcast("notify", "Failed to load " + $ctrl.selected);
+                                else{
+                                    showAlertDialog("Failed to load " + $ctrl.selected);
+                                }
                                 $scope.loading = false;
                             },
                             function (error) {
                                 $scope.loading = false;
-                                console.log(error);
-                                $rootScope.$broadcast("notify", "Error: Problem loading folder:" + $ctrl.selected);
+                                showAlertDialog("Problem loading folder:" + $ctrl.selected);
                             }
                         );
                     }
@@ -549,7 +549,16 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 });
             };
 
-
+            /************************************************************/
+            var showAlertDialog = function(message){
+                $mdDialog.show(
+                    $mdDialog.alert({
+                        title: 'Alert', 
+                        content: message,
+                        ok: "Close"
+                    })
+                );
+            }
 
             /**********************************************************/
             /***********************************************************/
