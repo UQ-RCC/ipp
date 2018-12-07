@@ -10,9 +10,9 @@ angular.module('microvolution.job-list', ['ngRoute', 'ngResource'])
     }])
 
     .controller('JobListCtrl', ['$scope', '$rootScope', '$interval', '$location', 
-        'SessionInfoFactory', 'AccessTokenFactory', 'ListJobsFactory', 'TokenHandler',
+        'SessionInfoFactory', 'AccessTokenFactory', 'ListJobsFactory', 'StopJobsFactory', 'TokenHandler',
         function ($scope, $rootScope, $interval, $location, 
-            SessionInfoFactory, AccessTokenFactory, ListJobsFactory, TokenHandler) {
+            SessionInfoFactory, AccessTokenFactory, ListJobsFactory, StopJobsFactory, TokenHandler) {
             
             $scope.jobs = [];
             //refresh experiment
@@ -39,6 +39,9 @@ angular.module('microvolution.job-list', ['ngRoute', 'ngResource'])
                 document.getElementById("joblistmgr").className="menu__link active";
                 document.getElementById("jobsubmitmgr").style.display="block";
                 document.getElementById("jobsubmitmgr").className="menu__link";
+                document.getElementById("convertermgr").style.display="block";
+                document.getElementById("convertermgr").className="menu__link";
+
                 AccessTokenFactory.get({}).$promise.then(function (tokenData) {
                     TokenHandler.set(tokenData.access_token);
                     //get the jobs for the first time
@@ -82,17 +85,17 @@ angular.module('microvolution.job-list', ['ngRoute', 'ngResource'])
             
             //kill all seleced jobs
             $scope.killSelectedJob = function(){
-                console.log("Request to kill selected jobs");
-            }
+                $scope.jobs.forEach(function(job){
+                    if(job.selected){
+                         StopJobsFactory.stop({'jobidNumber': job.jobid}).$promise.then(
+                            function(){
+                                $rootScope.$broadcast("notify", "Job:" + job.jobid + " cancelled");
+                            }
+                         );
+                    }
+                });
 
-            //extend all selected jobs
-            $scope.extendSelectedJob = function(){
-                console.log("Request to extend selected jobs");
             }
-        
-            //$scope.$on('refresh-event', function(event, profileObj) {
-            //    refreshJobList();
-            //});
 
         }]);
 

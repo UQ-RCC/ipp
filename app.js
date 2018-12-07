@@ -13,6 +13,7 @@ angular.module('microvolution', [
     'microvolution.partials',
     'microvolution.faqdirectives',
     'microvolution.filesexplorer',
+    'microvolution.converter',
     'microvolution.services'
 ]).
     config(['$routeProvider', '$httpProvider',
@@ -30,6 +31,7 @@ angular.module('microvolution', [
             'accessToken': 'access_token',
             'serverApiBase': 'https://wwi-test.qbi.uq.edu.au/wiener/api/',
             'home': 'execute/home',
+            'stop': 'execute/stop',
             'listJobs': 'execute/listall',
             'listFolder': 'execute/listfolder',
             'filesInfo': 'execute/filesinfo',
@@ -106,6 +108,7 @@ angular.module('microvolution', [
         document.getElementById("logout-btn").style.display="none"; 
         document.getElementById("joblistmgr").style.display="none"; 
         document.getElementById("jobsubmitmgr").style.display="none"; 
+        document.getElementById("convertermgr").style.display="none";
         $scope.toolbarHidden = false;
         $rootScope.$on('makeToolbarVisible', function (event) {
             $scope.toolbarHidden = false;
@@ -144,6 +147,7 @@ angular.module('microvolution', [
                     $location.path("/job-submit");
                     document.getElementById("joblistmgr").style.display="block";
                     document.getElementById("jobsubmitmgr").style.display="block";
+                    document.getElementById("convertermgr").style.display="block";
                 } else {
                     $rootScope.$broadcast("notify", "Login failed :(");
                     //hide login and register button
@@ -185,6 +189,7 @@ angular.module('microvolution', [
                     document.getElementById("logout-btn").style.display="none"; 
                     document.getElementById("joblistmgr").style.display="none"; 
                     document.getElementById("jobsubmitmgr").style.display="none"; 
+                    document.getElementById("convertermgr").style.display="none";
                 }
 
                 $location.path("/landingpage");

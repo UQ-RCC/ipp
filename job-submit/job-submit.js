@@ -45,16 +45,18 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 document.getElementById("joblistmgr").className="menu__link";
                 document.getElementById("jobsubmitmgr").style.display="block";
                 document.getElementById("jobsubmitmgr").className="menu__link active";
+                document.getElementById("convertermgr").style.display="block";
+                document.getElementById("convertermgr").className="menu__link";
+
                 $scope.session = sessionData;
                 AccessTokenFactory.get({}).$promise.then(function (tokenData) {
-                    console.log(tokenData.access_token);
                     TokenHandler.set(tokenData.access_token);
                     UserPreferenceFactory.get().$promise.then(
                         function (data) {
                             if(data.hasOwnProperty("pref")){
                                 var prefData = data["pref"];
                                 if(prefData.hasOwnProperty("preference")){
-                                    $scope.preference = JSON.parse(prefData["preference"]);  
+                                    $scope.preference = JSON.parse(prefData["preference"]);
                                 }
                                 if(prefData.hasOwnProperty("files")){
                                     $scope.selectedFilesGridOptions.data = JSON.parse(prefData["files"]);
@@ -110,16 +112,16 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                 {'label': 'Light Sheet', 'value': 3},  
             ];
 
-            $scope.psfTypeChange = function(){
-                if($scope.preference.psfType.value == 3){
-                    $scope.preference.NA = 1.1;
-                    $scope.preference.riPresetSelected = $scope.riPresets[2];
-                    $scope.preference.nsPresetSelected = $scope.nsPresets[1];
-                    $scope.preference.RI = 1.33;
-                    $scope.preference.ns = 1.33;
-                    $scope.preference.lightSheetIlluminationNA = 0.5;
-                }
-            }
+            // $scope.psfTypeChange = function(){
+            //     if($scope.preference.psfType.value == 3){
+            //         $scope.preference.NA = 1.1;
+            //         $scope.preference.riPresetSelected = $scope.riPresets[2];
+            //         $scope.preference.nsPresetSelected = $scope.nsPresets[1];
+            //         $scope.preference.RI = 1.33;
+            //         $scope.preference.ns = 1.33;
+            //         $scope.preference.lightSheetIlluminationNA = 0.5;
+            //     }
+            // }
 
             $scope.resetPreference = function(){
                 //resetting ----
@@ -256,6 +258,12 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ui.grid', 
                         $rootScope.$broadcast("notify", "You have to choose an output folder");
                         return;              
                     }
+                    if(formData.NA >= formData.RI){
+                        $scope.loading = false;
+                        $rootScope.$broadcast("notify", "Objective NA must be smaller than Refactive Index");
+                        return;              
+                    }
+                    
                     // save preference
                     savePreference();
                     var executioninfo = {   

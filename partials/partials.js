@@ -26,7 +26,7 @@ angular.module('microvolution.partials', ['ngRoute', 'ngResource'])
             document.getElementById("myCarousel").style.display="none";
             document.getElementById("joblistmgr").className="menu__link";
             document.getElementById("jobsubmitmgr").className="menu__link";
-
+            document.getElementById("convertermgr").className="menu__link";
             ["home-btn", "about-btn", "faq-btn", "contact-btn", "accesspolicy-btn"].forEach(function(item){
                 if(item == path){
                     document.getElementById(item).className="menu__link active";
@@ -47,6 +47,6 @@ angular.module('microvolution.partials', ['ngRoute', 'ngResource'])
             document.getElementById("accesspolicy-btn").className="menu__link";
             document.getElementById("joblistmgr").className="menu__link";
             document.getElementById("jobsubmitmgr").className="menu__link";
-
+            document.getElementById("convertermgr").className="menu__link";
         }])
 

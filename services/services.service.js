@@ -153,4 +153,12 @@ angular.
         resource = tokenHandler.wrapActions( resource, ["query"]);
         return resource;
     }])
+  .factory('StopJobsFactory', ['$resource', 'TokenHandler', 'settings', 
+    function ($resource, tokenHandler, settings) {
+        var resource = $resource(settings.URLs.serverApiBase + settings.URLs.stop, {}, {
+            stop: { method: 'GET', isArray: false },
+        });
+        resource = tokenHandler.wrapActions( resource, ["stop"]);
+        return resource;
+    }])
 ;

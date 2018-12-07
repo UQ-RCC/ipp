@@ -73,11 +73,11 @@
                     </div>
                     <div layout="row" layout-align="space-between center" class="div-normal-height">
                       <span>Objective NA</span>
-                      <input type="number" ng-model="preference.NA" />
+                      <input type="number" step="0.1" ng-model="preference.NA" />
                     </div>
                     <div layout="row" layout-align="space-between center" class="div-normal-height">
                         <span >Objective immersion refractive index </span>
-                        <input type="number" ng-model="preference.RI" />
+                        <input type="number" step="0.1" ng-model="preference.RI" />
                        <md-select  ng-model="preference.riPresetSelected" 
                        ng-change="riPresetChanged()" aria-label="riPresetSelected">
                         <md-option ng-value="preset" ng-repeat="preset in riPresets" ng-selected="preset.value == preference.riPresetSelected.value">
@@ -87,7 +87,7 @@
                     </div>
                     <div layout="row" layout-align="space-between center" class="div-normal-height" ng-if="preference.psfModel.value!=0">
                         <span>Sample medium refractive index</span>
-                        <input type="number" ng-model="preference.ns" />
+                        <input type="number" step="0.1" ng-model="preference.ns" />
                        <md-select ng-model="preference.nsPresetSelected" 
                        ng-change="nsPresetChanged()" aria-label="nsPresetSelected">
                         <md-option ng-value="nspreset" ng-repeat="nspreset in nsPresets" ng-selected="nspreset.value == preference.nsPresetSelected.value">
@@ -97,7 +97,7 @@
                     </div>
                     <div layout="row" layout-align="space-between center" class="div-normal-height">
                       <span>Illumination Type</span>
-                      <md-select ng-model=preference.psfType ng-change="psfTypeChange()"
+                      <md-select ng-model=preference.psfType
                       aria-label="psfType">
                         <md-option ng-value="APsfType" ng-repeat="APsfType in psfTypes" 
                                                           ng-selected="APsfType.value==3"> 
@@ -342,7 +342,7 @@
           				</div>
           				<div layout="row" layout-align="space-between center" class="div-normal-height">
           					<span>File format</span>
-                    <md-select ng-model="preference.fileformat" aria-label="fileformat">
+                    <md-select ng-disabled="true" ng-model="preference.fileformat" aria-label="fileformat">
                       <md-option ng-value="fileFormatT" ng-repeat="fileFormatT in fileFormatType" ng-selected="fileFormatT.value == preference.fileformat.value">
                         {{ fileFormatT.label }}
                       </md-option>
@@ -358,7 +358,7 @@
           				</div>
           				<div layout="row" layout-align="space-between center" class="div-normal-height">
           					<span>Split starting index</span>
-                    <md-select ng-model="preference.splitIdx" aria-label="splitId">
+                    <md-select ng-disabled="true" ng-model="preference.splitIdx" aria-label="splitId">
                       <md-option ng-value="splitStartingIndexT" ng-repeat="splitStartingIndexT in splitStartingIndexType" ng-selected="splitStartingIndexT.value==preference.splitIdx.value">
                         {{ splitStartingIndexT.label }}
                       </md-option>
@@ -441,7 +441,7 @@
                 </div>
                 <div layout="row" layout-align="space-between center" layout-padding>
                   <span>Number of GPUs per job</span>
-                  <input ng-disabled="true" type="number" ng-model="preference.gpus" min="1" max="2">
+                  <input type="number" ng-model="preference.gpus" min="1" max="2">
                 </div>
               </md-content>
             </md-tab>
