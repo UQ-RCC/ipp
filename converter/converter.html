@@ -1,12 +1,48 @@
 <br />
-<div class="container">
+<div class="container" ng-controller="ConverterCtrl">
+	<div id="converter" layout="row">
+		<div layout="row" flex>
+			<div flex=60 layout="column" layout-margin>
+			  <div ui-grid="selectedFilesGridOptions" ui-grid-selection class="tinyGrid"></div>
+			  <div layout="column" align="center">
+			    <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="openFilesExplorer('selectfiles')">
+			      Select Files
+			    </md-button>
+			    <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="removeSelected()">
+	              Remove Selected
+	            </md-button>
+	            <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="removeAll()">
+	              Clear All
+	            </md-button>
+			  </div>
+			</div>
 
-	<div id="job-list" layout="row" flex>
-		<div ng-controller="ConverterCtrl">
-			
+			<div flex layout-margin>
+				<div layout="row" layout-align="space-between center">
+                  <label>Output</label>
+                  <input type="text" ng-model="convertOptions.output" style="width: 70%"/>
+                  <md-button md-no-ink class="md-primary" ng-click="openFilesExplorer('selectoutput')"">Select</md-button>
+                </div> 
+                <div layout="row" layout-align="space-between center">
+                    <label>Prefix</label>
+                    <input type="text" ng-model="convertOptions.prefix" style="width: 80%"/>
+                </div>
 
+                <div layout="row" layout-align="space-between center">
+                    <span>Method</span>
+                    <md-select ng-model="convertOptions.method" ng-change="methodChanged()" aria-label="method">
+                    	<md-option ng-value="methodType" ng-repeat="methodType in methods" ng-selected="methodType.value == convertOptions.method.value">
+                          {{ methodType.label }}
+                        </md-option>
+                    </md-select>
+                </div>
+                <textarea ng-readonly=true ng-model="methodDescription" rows="5">
+                </textarea>
+			</div>
 		</div>
-
+	</div>
+	<div layout="row" layout-align="center">
+	     <md-button class="md-raised md-primary" ng-click="submit()">Submit</md-button>
 	</div>
 </div>
 

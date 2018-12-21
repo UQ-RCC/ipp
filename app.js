@@ -33,20 +33,17 @@ angular.module('microvolution', [
             'home': 'execute/home',
             'stop': 'execute/stop',
             'listJobs': 'execute/listall',
-            'listFolder': 'execute/listfolder',
-            'filesInfo': 'execute/filesinfo',
-            'testExecution': 'execute/testexecute',
             'loadTemplate': 'execute/loadtemplate',
             'listTemplate': 'execute/listtemplate',
             'saveTemplate': 'execute/savetemplate',
-            'executeMicrovolution': 'execute/executemicrovolution',
             'listFolderBase64': 'execute/listfolderbase64',
             'filesInfoBase64': 'execute/filesinfobase64',
             'folderInfoBase64': 'execute/folderinfobase64',
             'fileInfoBase64': 'execute/fileinfobase64',
             'testExecutionBase64': 'execute/testexecutebase64',
             'saveTemplateBase64': 'execute/savetemplatebase64',
-            'executeMicrovolutionBase64': 'execute/executemicrovolutionbase64'  
+            'executeMicrovolutionBase64': 'execute/executemicrovolutionbase64',
+            'convertFileBase64': 'execute/convertfilebase64'  
         },
         'maxRetryOnServerError': 3
     })

@@ -258,7 +258,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                         showAlertDialog('You have to choose an output folder');
                         return;              
                     }
-                    if(formData.NA >= formData.RI){
+                    if(formData.generatePsf=='True' && formData.NA >= formData.RI){
                         $scope.loading = false;
                         showAlertDialog('Object NA must be smaller than Refactive Index');
                         return;              
