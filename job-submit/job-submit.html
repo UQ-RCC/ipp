@@ -66,7 +66,7 @@
                     <div layout="row" layout-align="space-between center" class="div-normal-height">
                       <span>PSF Model</span>
                       <md-select ng-model=preference.psfModel aria-label="psfmodel">
-                        <md-option ng-value="modType" ng-repeat="modType in psfModelTypes" ng-selected="$first">
+                        <md-option ng-value="modType" ng-repeat="modType in psfModelTypes" ng-selected="modType.value == preference.psfModel.value">
                           {{ modType.label }}
                         </md-option>
                       </md-select>

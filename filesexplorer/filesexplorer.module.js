@@ -16,7 +16,7 @@ angular
         $ctrl.modalContents.currentpath = $ctrl.modalContents.initialPath;    
       $ctrl.modalContents.selectAll = false;
       $ctrl.modalContents.extensions = ["tif", "nd2", "ims", "sld"];
-      $ctrl.modalContents.extension = "";
+      //$ctrl.modalContents.extension = "";
       $ctrl.modalContents.newItem = "";
       if($ctrl.modalContents.initialNewItem != null && $ctrl.modalContents.initialNewItem.trim()!="")
         $ctrl.modalContents.newItem =  $ctrl.modalContents.initialNewItem;    
@@ -33,7 +33,7 @@ angular
         if(!newPath.endsWith("/"))
             newPath = newPath + "/";
         $ctrl.modalContents.loading = true;
-		ListFolderFactory.query({
+		  ListFolderFactory.query({
 	        'folderpath': btoa(newPath)
 	    }).$promise.then(
 	         function(returnData){
@@ -80,22 +80,22 @@ angular
 
       $ctrl.copyCurrentPathToClipboard = function(){
       	var copyElement = document.createElement("textarea");
-		copyElement.style.position = 'fixed';
-		copyElement.style.opacity = '0';
-		copyElement.textContent = $ctrl.modalContents.currentpath;
-		var body = document.getElementsByTagName('body')[0];
-		body.appendChild(copyElement);
-		copyElement.select();
-		try{
-			var successful = document.execCommand('copy');
-			if (!successful) throw successful;
-			$rootScope.$broadcast("notify", "Copied to clipboard");
+    		copyElement.style.position = 'fixed';
+    		copyElement.style.opacity = '0';
+    		copyElement.textContent = $ctrl.modalContents.currentpath;
+    		var body = document.getElementsByTagName('body')[0];
+    		body.appendChild(copyElement);
+    		copyElement.select();
+    		try{
+    			var successful = document.execCommand('copy');
+    			if (!successful) throw successful;
+    			$rootScope.$broadcast("notify", "Copied to clipboard");
 
-		}
-		catch (err) {
-			$rootScope.$broadcast("notify", "Error: cannot copy to clipboard");
-		}
-		body.removeChild(copyElement);
+    		}
+    		catch (err) {
+    			$rootScope.$broadcast("notify", "Error: cannot copy to clipboard");
+    		}
+    		body.removeChild(copyElement);
       }
 
       var createQuickNavs = function(folderPath){
@@ -246,13 +246,26 @@ angular
       * check whether to hide the table item
       */
       $ctrl.itemHidden = function(item){
-        return ($ctrl.modalContents.mode=='selectfolders' 
-                && item.permission.startsWith('-') 
-                && !item.name.endsWith($ctrl.modalContents.extension)) ||
-                (['newtemplate', 'loadtemplate'].includes($ctrl.modalContents.mode) 
-                    && !item.name.endsWith("template")
-                    );
+            return (
+                    ($ctrl.enableFileExtension() &&
+                      $ctrl.modalContents.extension != null &&
+                      $ctrl.modalContents.extension.trim() != "" &&  
+                      item.permission.startsWith('-') &&
+                      !item.name.endsWith($ctrl.modalContents.extension))
+                    ||
+                      (['newtemplate', 'loadtemplate'].includes($ctrl.modalContents.mode) 
+                        && !item.name.endsWith("template")
+                    ));
       };
+
+      $ctrl.enableFileExtension = function(){
+        return ($ctrl.modalContents.mode=='selectfolders' ||
+                  ($ctrl.modalContents.mode=='selectfiles' && 
+                    $ctrl.modalContents.extension != null &&
+                    $ctrl.modalContents.extension.trim() != ""
+                    ) 
+                ); 
+      }
 
       
       

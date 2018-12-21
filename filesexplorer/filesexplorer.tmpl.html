@@ -31,7 +31,7 @@
     </div>
 
     <div layout-align="start center">
-      <div layout=column ng-if="$ctrl.modalContents.mode=='selectfolders'" flex="30">
+      <div layout=column ng-if="$ctrl.enableFileExtension()" flex="30">
         <label>File Extensions</label> 
         <select
               ng-model="$ctrl.modalContents.extension"
