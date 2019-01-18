@@ -45,6 +45,7 @@ angular.module('microvolution.job-list', ['ngRoute', 'ngResource'])
                 AccessTokenFactory.get({}).$promise.then(function (tokenData) {
                     TokenHandler.set(tokenData.access_token);
                     //get the jobs for the first time
+                    queryJobs();
                     jobListRefreshTimer=$interval(function(){queryJobs();},4000);
                 });
                  

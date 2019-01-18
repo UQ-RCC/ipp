@@ -6,14 +6,17 @@
 			  <div ui-grid="selectedFilesGridOptions" ui-grid-selection class="tinyGrid"></div>
 			  <div layout="column" align="center">
 			    <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="openFilesExplorer('selectfiles')">
-			      Select Files
+			     	Select Files
 			    </md-button>
+			    <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="openFilesExplorer('selectfolders')">
+	              	Select Folder
+	            </md-button>
 			    <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="removeSelected()">
-	              		Remove Selected
-	            	    </md-button>
-	            	    <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="removeAll()">
-	              		Clear All
-	             	    </md-button>
+          			Remove Selected
+        	    </md-button>
+        	    <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="removeAll()">
+          			Clear All
+         	    </md-button>
 			  </div>
 			</div>
 

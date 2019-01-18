@@ -47,6 +47,11 @@ angular.module('microvolution.converter', ['ngRoute', 'ngResource', 'ui.grid', '
                                 var prefData = data["converter"];
                                 if(prefData.hasOwnProperty("preference")){
                                     $scope.convertOptions = JSON.parse(prefData["preference"]);
+                                    // make sure mode is set properlly
+                                    if(!$scope.convertOptions.hasOwnProperty("mode") ||
+                                             $scope.convertOptions == ''){
+                                        $scope.convertOptions.mode = 'file';
+                                    }
                                 }
                                 if(prefData.hasOwnProperty("files")){
                                     $scope.selectedFilesGridOptions.data = JSON.parse(prefData["files"]);
@@ -120,7 +125,8 @@ angular.module('microvolution.converter', ['ngRoute', 'ngResource', 'ui.grid', '
                 $scope.convertOptions = {
                     'output': '',
                     'prefix': '',
-                    'method': $scope.methods[0]
+                    'method': $scope.methods[0],
+                    'mode': 'files'
                 };
             };
             /**
@@ -145,7 +151,7 @@ angular.module('microvolution.converter', ['ngRoute', 'ngResource', 'ui.grid', '
                     'output': $scope.convertOptions.output,
                     'prefix': $scope.convertOptions.prefix,
                     'method': $scope.methods[0].value, // always bigload
-                    'files': btoa(fileList.join(":"))                    
+                    'files': btoa(fileList.join(":"))                  
                 };
                 return options;
             }
@@ -201,6 +207,10 @@ angular.module('microvolution.converter', ['ngRoute', 'ngResource', 'ui.grid', '
                         $scope.output = $ctrl.selected;
                     }
                     else if($ctrl.modalContents.mode === 'selectfiles'){
+                        if($scope.convertOptions.mode !=='files'){
+                            $scope.convertOptions.mode = 'files';
+                            $scope.selectedFilesGridOptions.data= [];
+                        }
                         $ctrl.selected.forEach(function(item){
                             var isNew = true;
                             for(var i=0; i < $scope.selectedFilesGridOptions.data.length; i++){
@@ -211,6 +221,13 @@ angular.module('microvolution.converter', ['ngRoute', 'ngResource', 'ui.grid', '
                                 $scope.selectedFilesGridOptions.data.push(item);
                             }
                         });
+                    }
+                    else if($ctrl.modalContents.mode === 'selectfolders'){
+                        $scope.selectedFilesGridOptions.data = [];
+                        $scope.convertOptions.mode ='folder';
+                        $scope.selectedFilesGridOptions.data.push(
+                            {'name': $ctrl.selected, 'path': $ctrl.selected}
+                        );
                     }
                     
                 }, function () {

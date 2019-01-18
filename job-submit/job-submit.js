@@ -423,6 +423,8 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                     }
                     else if($ctrl.modalContents.mode === 'selectfolders'){
                         $scope.loading = true;
+                        // remove all existing items
+                        $scope.selectedFilesGridOptions.data = [];
                         FolderInfoFactory.query({
                             'folderpath': btoa($ctrl.selected)
                         }).$promise.then(
