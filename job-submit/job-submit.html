@@ -432,12 +432,12 @@
                   </md-checkbox>
                 </div>
                 <div layout="row" layout-align="space-between center" layout-padding>
-                  <span>Number of instances</span>
+                  <span>Number of instances [nodes]</span>
                   <input type="number" min="1" max="10" ng-model="preference.numberOfParallelJobs">
                 </div>
                 <div layout="row" layout-align="space-between center" layout-padding>
-                  <span>Memory per job (MB)</span>
-                  <input type="number" ng-model="preference.mem" min="1000" max="30000">
+                  <span>Memory per job (GBs)</span>
+                  <input type="number" ng-model="preference.mem" min="1" max="380">
                 </div>
                 <div layout="row" layout-align="space-between center" layout-padding>
                   <span>Number of GPUs per job</span>

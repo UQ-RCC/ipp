@@ -144,7 +144,7 @@ angular.module('microvolution.converter', ['ngRoute', 'ngResource', 'ui.grid', '
                 var options = {
                     'output': $scope.convertOptions.output,
                     'prefix': $scope.convertOptions.prefix,
-                    'method': $scope.convertOptions.method.value,
+                    'method': $scope.methods[0].value, // always bigload
                     'files': btoa(fileList.join(":"))                    
                 };
                 return options;

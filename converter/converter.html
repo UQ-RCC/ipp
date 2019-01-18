@@ -9,11 +9,11 @@
 			      Select Files
 			    </md-button>
 			    <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="removeSelected()">
-	              Remove Selected
-	            </md-button>
-	            <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="removeAll()">
-	              Clear All
-	            </md-button>
+	              		Remove Selected
+	            	    </md-button>
+	            	    <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="removeAll()">
+	              		Clear All
+	             	    </md-button>
 			  </div>
 			</div>
 
@@ -21,14 +21,14 @@
 				<div layout="row" layout-align="space-between center">
                   <label>Output</label>
                   <input type="text" ng-model="convertOptions.output" style="width: 70%"/>
-                  <md-button md-no-ink class="md-primary" ng-click="openFilesExplorer('selectoutput')"">Select</md-button>
+                  <md-button md-no-ink class="md-primary" ng-click="openFilesExplorer('selectoutput')">Select</md-button>
                 </div> 
                 <div layout="row" layout-align="space-between center">
                     <label>Prefix</label>
                     <input type="text" ng-model="convertOptions.prefix" style="width: 80%"/>
                 </div>
 
-                <div layout="row" layout-align="space-between center">
+                <!--div layout="row" layout-align="space-between center">
                     <span>Method</span>
                     <md-select ng-model="convertOptions.method" ng-change="methodChanged()" aria-label="method">
                     	<md-option ng-value="methodType" ng-repeat="methodType in methods" ng-selected="methodType.value == convertOptions.method.value">
@@ -37,7 +37,7 @@
                     </md-select>
                 </div>
                 <textarea ng-readonly=true ng-model="methodDescription" rows="5">
-                </textarea>
+                </textarea-->
 			</div>
 		</div>
 	</div>

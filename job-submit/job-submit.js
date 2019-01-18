@@ -57,6 +57,10 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                                 var prefData = data["pref"];
                                 if(prefData.hasOwnProperty("preference")){
                                     $scope.preference = JSON.parse(prefData["preference"]);
+				    // this is to make sure the value stored in database not bigger than 384 Gbs
+				    if ($scope.preference.mem > 384){
+				    	$scope.preference.mem = 100; //default
+				    }
                                 }
                                 if(prefData.hasOwnProperty("files")){
                                     $scope.selectedFilesGridOptions.data = JSON.parse(prefData["files"]);
@@ -767,7 +771,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                     'folder': '',
                     'psfFile': '',
                     'numberOfParallelJobs': 2,
-                    'mem': 10000,
+                    'mem': 100,
                     'gpus': 2,
                     'regularizationType': $scope.regularizationType[0],
                     'automaticRegularizationScale': false,
