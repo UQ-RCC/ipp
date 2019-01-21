@@ -190,6 +190,8 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                 {'label': '1', 'value': 1}  
             ];
             
+            // total file size of all the files to be computed
+            var totalFilesSizeMbs = 0;
             
             /********************************************************************/
             /**  selected files table **/
@@ -321,6 +323,23 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
             });
 
 
+            // suggest another value in Mem if the number of nodes changed
+            $scope.suggestMem = function(){
+                console.log("@suggest mem: " + $scope.preference.numberOfParallelJobs);
+                if(totalFilesSizeMbs > 0){
+                    var totalMemSuggestedGbs = (totalFilesSizeMbs * 2 * 1.2)/1024;
+                    console.log("@totalMemSuggestedGbs: " + totalMemSuggestedGbs);
+                    $scope.preference.mem = totalMemSuggestedGbs / $scope.preference.numberOfParallelJobs;
+                    // round up
+                    $scope.preference.mem = Math.ceil($scope.preference.mem/10) * 10;
+                    if($scope.preference.mem > 380){
+                        $scope.preference.mem = 380;
+                    }
+                    console.log("suggested:" + $scope.preference.mem);
+                }
+            }
+
+
             /*************************open file explroer*****************************************/
             $scope.openFilesExplorer = function(mode){
                 var $ctrl = this;
@@ -409,6 +428,9 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                                         $scope.gridApi.selection.selectRow($scope.selectedFilesGridOptions.data[0]);
                                     },
                                     100);
+                                    // calculate the total mem
+                                    totalFilesSizeMbs = data[0].maxSizeM * data.length;
+                                    $scope.suggestMem();
                                 }
                                 else{
                                     showAlertDialog("Failed to load " + selectedList);
@@ -454,7 +476,9 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                                         $scope.gridApi.selection.selectRow($scope.selectedFilesGridOptions.data[0]);
                                     },
                                     100);
-
+                                    // calculate the total mem
+                                    totalFilesSizeMbs = data[0].maxSizeM * data[0].total;
+                                    $scope.suggestMem();
                                 }
                                 else{
                                     showAlertDialog("Failed to load " + $ctrl.selected);
