@@ -330,9 +330,8 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                     // 4 * 4 due to size of buffer
                     // 1.5 to make it safe (50% more - a bit generous)
                     var totalMemSuggestedGbs = (maxFileSizeMbs * 2 * 4 * 4 * 1.5)/1024;
-                    $scope.preference.mem = totalMemSuggestedGbs / $scope.preference.numberOfParallelJobs;
                     // round up
-                    $scope.preference.mem = Math.ceil($scope.preference.mem/10) * 10;
+                    $scope.preference.mem = Math.ceil(totalMemSuggestedGbs/10) * 10;
                     if($scope.preference.mem > 380){
                         $scope.preference.mem = 380;
                     }
@@ -799,7 +798,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                     'psfFile': '',
                     'numberOfParallelJobs': 2,
                     'mem': 100,
-                    'gpus': 2,
+                    'gpus': 1,
                     'regularizationType': $scope.regularizationType[0],
                     'automaticRegularizationScale': false,
                     'regularization':-1,
