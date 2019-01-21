@@ -191,7 +191,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
             ];
             
             // total file size of all the files to be computed
-            var totalFilesSizeMbs = 0;
+            var maxFileSizeMbs = 0;
             
             /********************************************************************/
             /**  selected files table **/
@@ -325,10 +325,11 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
 
             // suggest another value in Mem if the number of nodes changed
             $scope.suggestMem = function(){
-                console.log("@suggest mem: " + $scope.preference.numberOfParallelJobs);
-                if(totalFilesSizeMbs > 0){
-                    var totalMemSuggestedGbs = (totalFilesSizeMbs * 2 * 1.2)/1024;
-                    console.log("@totalMemSuggestedGbs: " + totalMemSuggestedGbs);
+                if(maxFileSizeMbs > 0){
+                    // double the amount for read + write
+                    // 4 * 4 due to size of buffer
+                    // 1.5 to make it safe (50% more - a bit generous)
+                    var totalMemSuggestedGbs = (maxFileSizeMbs * 2 * 4 * 4 * 1.5)/1024;
                     $scope.preference.mem = totalMemSuggestedGbs / $scope.preference.numberOfParallelJobs;
                     // round up
                     $scope.preference.mem = Math.ceil($scope.preference.mem/10) * 10;
@@ -429,7 +430,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                                     },
                                     100);
                                     // calculate the total mem
-                                    totalFilesSizeMbs = data[0].maxSizeM * data.length;
+                                    maxFileSizeMbs = data[0].maxSizeM;
                                     $scope.suggestMem();
                                 }
                                 else{
@@ -477,7 +478,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                                     },
                                     100);
                                     // calculate the total mem
-                                    totalFilesSizeMbs = data[0].maxSizeM * data[0].total;
+                                    maxFileSizeMbs = data[0].maxSizeM;
                                     $scope.suggestMem();
                                 }
                                 else{
