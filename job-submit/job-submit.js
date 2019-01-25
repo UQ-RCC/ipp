@@ -429,12 +429,9 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                                             $scope.preference.swapZT = true;
                                         }
                                         $scope.selectedFilesGridOptions.data.push(item);
-                                        if($scope.preference.outputBasePath.trim() == ""){
-                                            var defaultOutput = item['defaultoutput'];
-                                            var _pathParts = $ctrl.selected.split("/");
-                                            $scope.preference.outputBasePath = _pathParts.slice(0,-1).join("/");
-                                            $scope.preference.outputFolderName = _pathParts.slice(-1)[0];
-                                        }
+                                        var _pathParts = item['defaultoutput'].split("/");
+                                        $scope.preference.outputBasePath = _pathParts.slice(0,-1).join("/");
+                                        $scope.preference.outputFolderName = _pathParts.slice(-1)[0];                                        
                                     });
                                     //not sure why, but this works
                                     $timeout(function () {
@@ -483,12 +480,9 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                                             $scope.preference.swapZT = true;
                                         }
                                         $scope.selectedFilesGridOptions.data.push(item);
-                                        if($scope.preference.outputBasePath.trim() == ""){
-                                            var defaultOutput = item['defaultoutput'];
-                                            var _pathParts = $ctrl.selected.split("/");
-                                            $scope.preference.outputBasePath = _pathParts.slice(0,-1).join("/");
-                                            $scope.preference.outputFolderName = _pathParts.slice(-1)[0];
-                                        }
+                                        var _pathParts = item['defaultoutput'].split("/");
+                                        $scope.preference.outputBasePath = _pathParts.slice(0,-1).join("/");
+                                        $scope.preference.outputFolderName = _pathParts.slice(-1)[0];                                        
                                     });
                                     $timeout(function () {
                                         $scope.gridApi.selection.selectRow($scope.selectedFilesGridOptions.data[0]);
