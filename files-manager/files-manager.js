@@ -57,7 +57,7 @@ angular.module('microvolution.files-manager', ['ngRoute', 'ngResource', 'ngMater
                 document.getElementById("convertermgr").className="menu__link";
                 document.getElementById("filesmanagermgr").style.display="block";
                 document.getElementById("filesmanagermgr").className="menu__link active";
-
+                $scope.session = sessionData;
                 AccessTokenFactory.get({}).$promise.then(function (tokenData) {
                     TokenHandler.set(tokenData.access_token);
                     //get the jobs for the first time
