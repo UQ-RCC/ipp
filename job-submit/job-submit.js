@@ -334,9 +334,9 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
             $scope.suggestMem = function(){
                 if(maxFileSizeMbs > 0){
                     // double the amount for read + write
-                    // 4 * 4 due to size of buffer
-                    // 1.5 to make it safe (50% more - a bit generous)
-                    var totalMemSuggestedGbs = (maxFileSizeMbs * 2 * 4 * 4 * 1.5)/1024;
+                    // 4 * 5 due to size of buffer
+                    // 2 to make it safe
+                    var totalMemSuggestedGbs = (maxFileSizeMbs * 2 * 4 * 5 * 2)/1024;
                     // round up
                     $scope.preference.mem = Math.ceil(totalMemSuggestedGbs/10) * 10;
                     if($scope.preference.mem > 380){
