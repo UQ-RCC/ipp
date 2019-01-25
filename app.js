@@ -14,7 +14,8 @@ angular.module('microvolution', [
     'microvolution.faqdirectives',
     'microvolution.filesexplorer',
     'microvolution.converter',
-    'microvolution.services'
+    'microvolution.services',
+    'microvolution.files-manager'
 ]).
     config(['$routeProvider', '$httpProvider',
         function ($routeProvider, $httpProvider) {
@@ -43,7 +44,12 @@ angular.module('microvolution', [
             'testExecutionBase64': 'execute/testexecutebase64',
             'saveTemplateBase64': 'execute/savetemplatebase64',
             'executeMicrovolutionBase64': 'execute/executemicrovolutionbase64',
-            'convertFileBase64': 'execute/convertfilebase64'  
+            'convertFileBase64': 'execute/convertfilebase64',
+            'deleteBase64': 'execute/deletebase64',
+            'copyBase64': 'execute/copybase64',
+            'moveBase64': 'execute/moveBase64',
+            'listCopyingProcess': 'execute/listCopying'
+                
         },
         'maxRetryOnServerError': 3
     })
@@ -106,6 +112,7 @@ angular.module('microvolution', [
         document.getElementById("joblistmgr").style.display="none"; 
         document.getElementById("jobsubmitmgr").style.display="none"; 
         document.getElementById("convertermgr").style.display="none";
+        document.getElementById("filesmanagermgr").style.display="none";
         $scope.toolbarHidden = false;
         $rootScope.$on('makeToolbarVisible', function (event) {
             $scope.toolbarHidden = false;
@@ -145,6 +152,7 @@ angular.module('microvolution', [
                     document.getElementById("joblistmgr").style.display="block";
                     document.getElementById("jobsubmitmgr").style.display="block";
                     document.getElementById("convertermgr").style.display="block";
+                    document.getElementById("filesmanagermgr").style.display="block";
                 } else {
                     $rootScope.$broadcast("notify", "Login failed :(");
                     //hide login and register button
@@ -187,6 +195,7 @@ angular.module('microvolution', [
                     document.getElementById("joblistmgr").style.display="none"; 
                     document.getElementById("jobsubmitmgr").style.display="none"; 
                     document.getElementById("convertermgr").style.display="none";
+                    document.getElementById("filesmanagermgr").style.display="none";
                 }
 
                 $location.path("/landingpage");

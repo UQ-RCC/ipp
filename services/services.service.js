@@ -169,4 +169,36 @@ angular.
         resource = tokenHandler.wrapActions( resource, ["query"]);
         return resource;
     }])
+  .factory('DeleteFilesFactory', ['$resource', 'TokenHandler', 'settings', 
+    function ($resource, tokenHandler, settings) {
+        var resource = $resource(settings.URLs.serverApiBase + settings.URLs.deleteBase64, {}, {
+            delete: { method: 'GET', isArray: false },
+        });
+        resource = tokenHandler.wrapActions( resource, ["delete"]);
+        return resource;
+    }])
+  .factory('CopyFilesFactory', ['$resource', 'TokenHandler', 'settings', 
+    function ($resource, tokenHandler, settings) {
+        var resource = $resource(settings.URLs.serverApiBase + settings.URLs.copyBase64, {}, {
+            copy: { method: 'GET', isArray: false },
+        });
+        resource = tokenHandler.wrapActions( resource, ["copy"]);
+        return resource;
+    }])
+  .factory('MoveFilesFactory', ['$resource', 'TokenHandler', 'settings', 
+    function ($resource, tokenHandler, settings) {
+        var resource = $resource(settings.URLs.serverApiBase + settings.URLs.moveBase64, {}, {
+            move: { method: 'GET', isArray: false },
+        });
+        resource = tokenHandler.wrapActions( resource, ["move"]);
+        return resource;
+    }])
+  .factory('ListCopyingProcessFactory', ['$resource', 'TokenHandler', 'settings', 
+    function ($resource, tokenHandler, settings) {
+        var resource = $resource(settings.URLs.serverApiBase + settings.URLs.listCopyingProcess, {}, {
+            list: { method: 'GET', isArray: false },
+        });
+        resource = tokenHandler.wrapActions( resource, ["list"]);
+        return resource;
+    }])
 ;

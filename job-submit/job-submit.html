@@ -22,9 +22,11 @@
               Clear All
             </md-button> 
           </div>
-            
+          
+          <label>Output Base Path</label>
+          <input type="text" ng-model="preference.outputBasePath" disabled="true" />  
           <label>Output Folder</label>
-          <input type="text" ng-model="preference.output" />
+          <input type="text" ng-model="preference.outputFolderName"/>
           <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="openFilesExplorer('selectoutput')">Choose Output Folder</md-button>
         </div>
 
@@ -332,7 +334,7 @@
           					</md-card-title-text>
           				</md-card-title>
           				<div ng-disabled="true" layout="row" layout-align="space-between center" class="div-normal-height">
-                    <span>Scaling</span>
+                    <span>Output image type</span>
                     <md-select ng-model="preference.scaling" aria-label="scaling">
                       <md-option ng-value="scalingT" ng-repeat="scalingT in scalingType" 
                       ng-selected="scalingT.value == preference.scaling.value">

@@ -1,0 +1,104 @@
+<br />
+<div class="container">
+
+	<div id="files-manager" ng-controller="FilesManagerCtrl" layout-align="center center" flex>
+		<!-- current path -->
+	  	<div layout="column">
+		    <div layout="column">
+		      <label>Current Path</label>
+		      <div layout=row>
+		        <div flex="95" layout="row">
+		          <select 
+		                ng-model="filesmanagerOptions.currentpath" 
+		                ng-change="onPathChange(filesmanagerOptions.currentpath)"
+		                ng-options="path for path in filesmanagerOptions.paths">
+		          </select>
+		        </div>
+		        <br />
+		        <div layout="row" layout-align="left center">
+		              <md-icon md-svg-src="style/icons/bookmark.svg" ng-click="addShortcut(filesmanagerOptions.currentpath)">
+		                <md-tooltip md-direction="right">Bookmark</md-tooltip>
+		              </md-icon>
+		              <md-icon md-svg-src="style/icons/clipboard.svg" ng-click="copyCurrentPathToClipboard()">
+		                <md-tooltip md-direction="right">Copy to clipboard</md-tooltip>
+		              </md-icon>
+		            
+		        </div>
+		      </div>
+		    </div>
+
+		    <md-progress-linear ng-if="filesmanagerOptions.loading" md-mode="indeterminate"></md-progress-linear>
+	  	</div>
+		<br />
+
+		<!-- main contents -->
+		<div layout="row">
+		    <div layout="column" flex="15">
+		      <!-- a table of shortcuts-->
+		      <table border='0'>
+		        <caption>Shortcuts</caption>
+		        <tbody>
+		          <tr ng-repeat="shortcut in filesmanagerOptions.shortcuts" style="font-size: 17px;">
+		            <td ng-show="filesmanagerOptions.bookmarkEdit" ng-click="removeShortcut(shortcut)">
+		                <md-icon md-svg-src="style/icons/delete.svg"/>
+		            </td>
+		            <td ng-disabled="filesmanagerOptions.loading" ng-click="visitShortcut(shortcut.path)">{{ shortcut.label }}
+		            </td>
+		          </tr>
+		        </tbody>
+		      </table>
+		      <md-button class="md-warn" aria-label="bookmark" ng-click="toggleBookmarkEdit()">Edit
+		      </md-button>
+		    </div>
+		    <div flex="5"></div>
+		    <div flex="80" style="height: 350px; overflow: auto;">
+		      <table border='0' layout-fill>
+		        <thead>
+		          <tr>
+		            <th></th>
+		            <th style="text-align: left">Name</th>
+		            <th style="text-align: left">Size</th>
+		            <th style="text-align: left">Owner</th>
+		            <th style="text-align: left">Group</th>
+		            <th>
+		              <input type="checkbox" ng-model="filesmanagerOptions.selectAll" ng-click="selectAllItems()" />
+		            </th>
+		          </tr>
+		        </thead>
+		        <tbody>
+		          <tr ng-repeat="item in filesmanagerOptions.filesFolderList"
+		              style="font-size: 17px; cellpadding:20px; height: 20px;"
+		              ng-dblclick="navigate(item)">
+		            <td>
+		              <md-icon ng-if="item.permission.startsWith('d') || item.permission.startsWith('l')" md-svg-src="style/icons/folder.svg"></md-icon>
+		              <md-icon ng-if="item.permission.startsWith('-')" md-svg-src="style/icons/file.svg"></md-icon>
+		            </td>
+		            <td style="text-align: left">{{ item.name }}</td>
+		            <td style="text-align: left">{{ item.size }}</td>
+		            <td style="text-align: left">{{ item.owner }}</td>
+		            <td style="text-align: left">{{ item.group }}</td>
+		            <td>
+		              <input type="checkbox" ng-model="item.selected" ng-click="selectItem(item)" />
+		            </td>
+		          </tr>
+		        </tbody>
+		      </table>
+		    </div>
+		</div>
+
+		<div layout="row" layout-align="center">
+	      <!--md-button class="md-raised md-primary" ng-click="createFileFolder()" ng-disabled="true">Create</md-button-->
+	      <md-button class="md-raised md-primary" ng-click="copyFolder($event, false)" ng-disabled="filesmanagerOptions.loading || filesmanagerOptions.selectedItems.length == 0">Copy</md-button>
+	      <!--md-button class="md-raised md-warn" ng-click="copyFolder($event, true)" ng-disabled="filesmanagerOptions.loading || filesmanagerOptions.selectedItems.length == 0">Move</md-button-->
+	      <md-button class="md-raised md-warn" ng-click="deleteFileFolder($event)" ng-disabled="filesmanagerOptions.loading || filesmanagerOptions.selectedItems.length == 0">Delete</md-button>
+	    </div>
+		<br />
+
+
+	</div>
+</div>
+
+
+
+
+

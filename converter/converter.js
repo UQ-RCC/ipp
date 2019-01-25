@@ -39,6 +39,8 @@ angular.module('microvolution.converter', ['ngRoute', 'ngResource', 'ui.grid', '
                 document.getElementById("jobsubmitmgr").className="menu__link";
                 document.getElementById("convertermgr").style.display="block";
                 document.getElementById("convertermgr").className="menu__link active";
+                document.getElementById("filesmanagermgr").style.display="block";
+                document.getElementById("filesmanagermgr").className="menu__link";
                 AccessTokenFactory.get({}).$promise.then(function (tokenData) {
                     TokenHandler.set(tokenData.access_token);
                     UserPreferenceFactory.get().$promise.then(

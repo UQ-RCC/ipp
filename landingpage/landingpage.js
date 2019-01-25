@@ -22,9 +22,8 @@ angular.module('microvolution.landingpage', ['ngRoute', 'ngResource'])
             document.getElementById("accesspolicy-btn").className="menu__link";
             document.getElementById("joblistmgr").className="menu__link";
             document.getElementById("jobsubmitmgr").className="menu__link";
-            document.getElementById("convertermgr").style.display="block";
             document.getElementById("convertermgr").className="menu__link";
-
+            document.getElementById("filesmanagermgr").className="menu__link";
             var sessionInfoResource = $resource(settings.URLs.apiBase + settings.URLs.sessionInfo);
             sessionInfoResource.get({}).$promise.then(function (sessionData) {
                 if (sessionData.has_oauth_access_token !== "true") {
@@ -33,12 +32,14 @@ angular.module('microvolution.landingpage', ['ngRoute', 'ngResource'])
                     document.getElementById("joblistmgr").style.display="none";
                     document.getElementById("jobsubmitmgr").style.display="none";
                     document.getElementById("convertermgr").style.display="none";
+                    document.getElementById("filesmanagermgr").style.display="none";
                 }else{
                     document.getElementById("login").style.display="none";
                     document.getElementById("logout-btn").style.display="block";
                     document.getElementById("joblistmgr").style.display="block";
                     document.getElementById("jobsubmitmgr").style.display="block";
                     document.getElementById("convertermgr").style.display="block";
+                    document.getElementById("filesmanagermgr").style.display="block";
                 }
             })
         }
