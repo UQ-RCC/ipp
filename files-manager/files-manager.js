@@ -390,7 +390,7 @@ angular.module('microvolution.files-manager', ['ngRoute', 'ngResource', 'ngMater
 
             $scope.startCopyingFolder = function(ev, sourceDir, deleteSource){
                 // TODO find a smater way to deal with this
-                var parallel = 4;
+                var parallel = 8;
                 // now open the files explorer to get the destination folder
                 var $ctrl = this;
                 $ctrl.modalContents = {};
