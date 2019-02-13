@@ -62,6 +62,9 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                 				    if ($scope.preference.mem > 384){
                 				    	$scope.preference.mem = 100; //default
                 				    }
+                                    if(!$scope.preference.hasOwnProperty('separateOutputs')){
+                                        $scope.preference.hasOwnProperty('separateOutputs') = false;
+                                    }
                                     // this is to makre sure preferehce has outputBasePath
                                     if($scope.preference.hasOwnProperty('output') && 
                                         !$scope.preference.hasOwnProperty('outputBasePath')){
@@ -213,7 +216,14 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
             };
             
             $scope.selectedFilesGridOptions.columnDefs = [
-                { name: 'name', displayName: 'Name', allowCellFocus : false}
+                { name: 'name', 
+                  displayName: 'Name',
+                  cellTooltip: 
+                    function( row, col ) {
+                      return row.entity.name;
+                    }, 
+                  allowCellFocus : false
+                }
             ];
            
             $scope.selectedFilesGridOptions.onRegisterApi = function( gridApi ) {
@@ -406,8 +416,6 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                         });
                         selectedList = selectedList.slice(0, -1)
                         $scope.loading = true;
-                        console.log(selectedList);
-                        console.log(btoa(selectedList));
                         FilesInfoFactory.query({
                             'fileslist': btoa(selectedList)
                         }).$promise.then(
@@ -417,6 +425,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                                 if(data.length > 0){
                                     data.forEach(function (item){
                                         item['name'] = item['path'].split('/').pop();
+                                        item['ftype'] = 'file';
                                         var numOfChannels = parseInt(item['c']);
                                         var channels = []
                                         for(var i=1; i <=numOfChannels; i++){
@@ -455,8 +464,6 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                     }
                     else if($ctrl.modalContents.mode === 'selectfolders'){
                         $scope.loading = true;
-                        // remove all existing items
-                        $scope.selectedFilesGridOptions.data = [];
                         FolderInfoFactory.query({
                             'folderpath': btoa($ctrl.selected)
                         }).$promise.then(
@@ -466,6 +473,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                                 if(data.length > 0){
                                     data.forEach(function (item){
                                         item['name'] = item['path'];
+                                        item['ftype'] = 'folder';
                                         var numOfChannels = parseInt(item['c']);
                                         var channels = []
                                         for(var i=1; i <=numOfChannels; i++){
@@ -706,6 +714,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                    'format': $scope.preference.fileformat.value,
                    'split': $scope.preference.split.value,
                    'splitIdx': $scope.preference.splitIdx.value,
+                   'separateOutputs': toPythonBoolean($scope.preference.separateOutputs)
                    //'access_token': accessToken
                 };
                 if (isNaN(formData.axSpacing) || isNaN(formData.latSpacing))
@@ -824,7 +833,8 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                     'splitIdx': $scope.splitStartingIndexType[0],
                     'riPresetSelected': $scope.riPresets[2],
                     'nsPresetSelected': $scope.nsPresets[1],
-                    'autoDetect': false
+                    'autoDetect': false,
+                    'separateOutputs': false
                 };  
             }
 

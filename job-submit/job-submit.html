@@ -28,6 +28,10 @@
           <label>Output Folder</label>
           <input type="text" ng-model="preference.outputFolderName"/>
           <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="openFilesExplorer('selectoutput')">Choose Output Folder</md-button>
+          <md-checkbox aria-label="separateOutputs" ng-model="preference.separateOutputs">
+            Seperate outputs based on input paths
+           </md-checkbox>
+           
         </div>
 
         <div flex layout-margin>
