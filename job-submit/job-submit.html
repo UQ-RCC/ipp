@@ -1,7 +1,7 @@
 <br />
 <div class="container">
 
-  <div id="job-submit" ng-controller="JobSubmitCtrl" ng-cloak layout="column" layout-xs="column">
+  <div id="job-submit" ng-cloak layout="column" layout-xs="column">
     <div ng-if="loading">
       <md-progress-linear md-mode="indeterminate"></md-progress-linear>
     </div>
@@ -148,11 +148,28 @@
                         Read spacing from metadata 
                       </md-checkbox>
                     </div>
-                    <!-- TODO: what is disstillDSF-->
-                    <div layout="column" layout-align="center center">
-                      <md-checkbox aria-label="disstillPsf" ng-disabled="true">
-                        Distill PSFs
+                    <md-divider ></md-divider>
+                    <div layout="row" layout-align="space-around center">
+                      <md-checkbox aria-label="deskew" ng-model="preference.deskew">
+                        Deskew
                       </md-checkbox>
+                      <md-checkbox aria-label="deskew" ng-model="preference.keepDeskew" ng-show="preference.deskew">
+                        Keep Deskewing Files
+                      </md-checkbox>
+                    </div>
+                    <div layout="row" layout-align="space-around center" ng-show="preference.deskew">
+                        <div layout="row" layout-align="space-between center" layout-padding>
+                          <span>Angle</span>
+                          <input ng-model="preference.angle">
+                        </div>
+                        <div layout="row" layout-align="space-between center" layout-padding>
+                          <span>Background</span>
+                          <input ng-model="preference.threshold">
+                        </div>
+                    </div>
+                    <div layout="row" layout-align="space-around center" ng-show="preference.deskew">
+                      <div>Background: {{ selectedItem.threshold }}</div>
+                      <div>Standard deviation: {{ selectedItem.stddev }}</div>
                     </div>
                   </div>
 
@@ -397,38 +414,6 @@
           			</md-card>
           		</md-tab>
 
-              <!-- ==== LLSM ==============-->
-              <!-- This is not being used -->
-              <md-tab ng-disabled="true" label="LLSM">
-                <md-content class="md-padding">
-          			<div layout="column" layout-align="left center">
-          				<md-checkbox aria-label="deskewPSF">Deskew PSF</md-checkbox>
-          				<md-checkbox aria-label="deskewDataset">Deskew Dataset</md-checkbox>
-          				<md-checkbox aria-label="autoPSF">Automatically Determine PSF background and subtract from PSF and dataset</md-checkbox>
-          			</div>
-          			<md-divider ></md-divider>
-          			<div layout="row" layout-align="space-between center" layout-padding>
-          				<span>Mannually Determine PSF background and subtract from PSF and dataset</span>
-          				<input ng-value="">
-          			</div>
-          			<div layout="row" layout-align="space-between center" layout-padding>
-          				<span>Deskew Angle (degrees)</span>
-          				<input type="number" min="0" max="999" ng-value="32.8">
-          			</div>
-          			<div layout="row" layout-align="space-between center" layout-padding>
-          				<span>Clip Pixels (X)</span>
-          				<input type="number" ng-value="0" min="0" max="999">
-          			</div>
-          			<div layout="row" layout-align="space-between center" layout-padding>
-          				<span>Clip Pixels (Y)</span>
-          				<input type="number" ng-value="0" min="0" max="999">
-          			</div>
-          			<div layout="row" layout-align="space-between center" layout-padding>
-          				<span>Clip Pixels (Z)</span>
-          				<input type="number" ng-value="0" min="0" max="999">
-          			</div>
-              </md-content>
-            </md-tab>
             <!-- ==== Devices ==============-->
             <md-tab label="Devices">
           		<md-content class="md-padding">

@@ -33,9 +33,9 @@ angular
         if(!newPath.endsWith("/"))
             newPath = newPath + "/";
         $ctrl.modalContents.loading = true;
-		  ListFolderFactory.query({
+		    ListFolderFactory.query({
 	        'folderpath': btoa(newPath)
-	    }).$promise.then(
+        }).$promise.then(
 	         function(returnData){
 	            //for some reason 500 is considered success :-s
 	            if(returnData.status == 500){
@@ -221,7 +221,14 @@ angular
 
       $ctrl.selectItem = function(item){
         if(item.selected){
-            $ctrl.modalContents.selectedItems.push(item);
+          if(['selectfolders'].includes($ctrl.modalContents.mode)){
+            // remove all other items
+            $ctrl.modalContents.selectedItems.forEach(function(item){
+              item.selected = false;
+            });
+            $ctrl.modalContents.selectedItems = [];
+          }
+          $ctrl.modalContents.selectedItems.push(item);
         }
         else{
             $ctrl.modalContents.selectedItems.pop(item);
@@ -233,7 +240,7 @@ angular
       * check whether itemSelect should be enabled
       */
       $ctrl.itemSelectDisabled = function(item){
-        if(['selectoutput', 'selectfolders'].includes($ctrl.modalContents.mode))
+        if(['selectoutput'].includes($ctrl.modalContents.mode))
             return true;
         else if(['selectfiles', 'loadpsf'].includes($ctrl.modalContents.mode)){
             return (item.permission.startsWith('d') || item.permission.startsWith('l'));
@@ -290,6 +297,9 @@ angular
             $ctrl.selected = $ctrl.modalContents.selectedItems;
         }
         else if($ctrl.modalContents.mode === 'selectfolders'){
+          if($ctrl.modalContents.selectedItems.length > 0)
+            $ctrl.selected = $ctrl.modalContents.currentpath + "/"+ $ctrl.modalContents.selectedItems[0].name +"/*." +$ctrl.modalContents.extension; //folder + exensions
+          else
             $ctrl.selected = $ctrl.modalContents.currentpath + "*." +$ctrl.modalContents.extension; //folder + exensions
         }
         else if($ctrl.modalContents.mode === 'newtemplate'){

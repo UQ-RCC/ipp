@@ -68,19 +68,19 @@
       <div id="block-system-main-menu" class="block block-system block-menu main-menu">
         <ul class="menu" id="main-menu">
           <li class="leaf"><a id="home-btn" href="#" title="home" class="menu__link active">Home</a></li>
+          <li class="leaf"><a id="filesmanagermgr" href="#/files-manager" title="filesmanager" class="menu__link">FilesManager</a></li>
+          <li class="leaf"><a id="prepmgr" href="#/preprocessing" title="prepmgr" class="menu__link">Preprocessing</a></li>
+          <li class="leaf"><a id="jobsubmitmgr" href="#/job-submit" title="jobsubmit" class="menu__link">Deconvolution</a></li>
+          <li class="leaf"><a id="convertermgr" href="#/converter" title="converter" class="menu__link">Converter</a></li>
+          <li class="leaf"><a id="joblistmgr" href="#/job-list" title="joblist" class="menu__link">JobList</a></li>
+
           <li class="leaf"><a id="about-btn" href="#/about" title="about" class="menu__link">About</a></li>
           <li class="leaf"><a id="faq-btn" href="#/faq" title="faq" class="menu__link">FAQs</a></li>
-          <li class="leaf"><a id="contact-btn" href="#/contact" title="contact" class="menu__link">Contact</a></li>
           <li class="leaf"><a id="accesspolicy-btn" href="#/accesspolicy" title="policy" class="menu__link">Policy</a></li>
           <li class="leaf"><a id="login" href="javascript:void(0);" 
                                   ng-disabled="loginButtonDisabled('wiener')" 
                                   ng-click="startLogin('wiener')" class="menu__link">Sign in</a></li>
-          <li class="leaf"><a id="joblistmgr" href="#/job-list" title="joblist" class="menu__link">JobList</a></li>
-          <li class="leaf"><a id="jobsubmitmgr" href="#/job-submit" title="jobsubmit" class="menu__link">JobSubmit</a></li>
-          <li class="leaf"><a id="convertermgr" href="#/converter" title="converter" class="menu__link">Converter</a></li>
-          <li class="leaf"><a id="filesmanagermgr" href="#/files-manager" title="filesmanager" class="menu__link">Files Manager</a></li>
           <li class="leaf"><a id="logout-btn" ng-click="doSignout()" title="signout" class="menu__link">Logout</a></li>
-
         </ul>
       </div>
     </div>
@@ -196,6 +196,7 @@ $('.carousel').carousel({
 <script src="job-list/job-list.js"></script>
 <script src="files-manager/files-manager.js"></script>
 <script src="job-submit/job-submit.js"></script>
+<script src="preprocessing/preprocessing.js"></script>
 <script src="partials/faqdirective.js"></script>
 <script src="converter/converter.js"></script>
 <script src="js/jqBootstrapValidation.js"></script>

@@ -15,7 +15,8 @@ angular.module('microvolution', [
     'microvolution.filesexplorer',
     'microvolution.converter',
     'microvolution.services',
-    'microvolution.files-manager'
+    'microvolution.files-manager',
+    'microvolution.preprocessing'
 ]).
     config(['$routeProvider', '$httpProvider',
         function ($routeProvider, $httpProvider) {
@@ -113,6 +114,7 @@ angular.module('microvolution', [
         document.getElementById("jobsubmitmgr").style.display="none"; 
         document.getElementById("convertermgr").style.display="none";
         document.getElementById("filesmanagermgr").style.display="none";
+        document.getElementById("prepmgr").style.display="none";
         $scope.toolbarHidden = false;
         $rootScope.$on('makeToolbarVisible', function (event) {
             $scope.toolbarHidden = false;
@@ -153,6 +155,7 @@ angular.module('microvolution', [
                     document.getElementById("jobsubmitmgr").style.display="block";
                     document.getElementById("convertermgr").style.display="block";
                     document.getElementById("filesmanagermgr").style.display="block";
+                    document.getElementById("prepmgr").style.display="block";
                 } else {
                     $rootScope.$broadcast("notify", "Login failed :(");
                     //hide login and register button
@@ -196,6 +199,7 @@ angular.module('microvolution', [
                     document.getElementById("jobsubmitmgr").style.display="none"; 
                     document.getElementById("convertermgr").style.display="none";
                     document.getElementById("filesmanagermgr").style.display="none";
+                    document.getElementById("prepmgr").style.display="none";
                 }
 
                 $location.path("/landingpage");

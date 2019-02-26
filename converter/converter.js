@@ -26,13 +26,11 @@ angular.module('microvolution.converter', ['ngRoute', 'ngResource', 'ui.grid', '
                 document.getElementById("home-btn").className="menu__link";
                 document.getElementById("about-btn").className="menu__link";
                 document.getElementById("faq-btn").className="menu__link";
-                document.getElementById("contact-btn").className="menu__link";
                 document.getElementById("accesspolicy-btn").className="menu__link";
                 document.getElementById("login").style.display="none";
                 document.getElementById("logout-btn").style.display="block";
                 document.getElementById("joblistmgr").style.display="block";
                 document.getElementById("about-btn").style.display="none";
-                document.getElementById("contact-btn").style.display="none";
                 document.getElementById("accesspolicy-btn").style.display="none";
                 document.getElementById("joblistmgr").className="menu__link";
                 document.getElementById("jobsubmitmgr").style.display="block";
@@ -41,6 +39,9 @@ angular.module('microvolution.converter', ['ngRoute', 'ngResource', 'ui.grid', '
                 document.getElementById("convertermgr").className="menu__link active";
                 document.getElementById("filesmanagermgr").style.display="block";
                 document.getElementById("filesmanagermgr").className="menu__link";
+                document.getElementById("prepmgr").style.display="block";
+                document.getElementById("prepmgr").className="menu__link";
+
                 AccessTokenFactory.get({}).$promise.then(function (tokenData) {
                     TokenHandler.set(tokenData.access_token);
                     UserPreferenceFactory.get().$promise.then(

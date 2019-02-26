@@ -28,13 +28,11 @@ angular.module('microvolution.job-list', ['ngRoute', 'ngResource'])
                 document.getElementById("home-btn").className="menu__link";
                 document.getElementById("about-btn").className="menu__link";
                 document.getElementById("faq-btn").className="menu__link";
-                document.getElementById("contact-btn").className="menu__link";
                 document.getElementById("accesspolicy-btn").className="menu__link";
                 document.getElementById("login").style.display="none";
                 document.getElementById("logout-btn").style.display="block";
                 document.getElementById("joblistmgr").style.display="block";
                 document.getElementById("about-btn").style.display="none";
-                document.getElementById("contact-btn").style.display="none";
                 document.getElementById("accesspolicy-btn").style.display="none";
                 document.getElementById("joblistmgr").className="menu__link active";
                 document.getElementById("jobsubmitmgr").style.display="block";
@@ -43,6 +41,9 @@ angular.module('microvolution.job-list', ['ngRoute', 'ngResource'])
                 document.getElementById("convertermgr").className="menu__link";
                 document.getElementById("filesmanagermgr").style.display="block";
                 document.getElementById("filesmanagermgr").className="menu__link";
+                document.getElementById("prepmgr").style.display="block";
+                document.getElementById("prepmgr").className="menu__link";
+                
                 AccessTokenFactory.get({}).$promise.then(function (tokenData) {
                     TokenHandler.set(tokenData.access_token);
                     //get the jobs for the first time
@@ -55,17 +56,18 @@ angular.module('microvolution.job-list', ['ngRoute', 'ngResource'])
             var queryJobs = function(){
                 ListJobsFactory.query().$promise.then(
                     function(returnData){
-                        console.log(returnData);
+                        //console.log(returnData);
                         var data = returnData.commandResult;
                         $scope.jobs = [];
                         for (var i = 0; i < data.length; i++) {
                             (function (jobData) {                                    
                                 $scope.jobs.push({
                                     'jobid': jobData.jobid,
+                                    'jobname': jobData.jobName,
                                     'uname': jobData.uname,
                                     'status': jobData.status,
                                     'nnodes': jobData.nnodes,
-                                    'remainingWalltime': jobData.remainingWalltime,
+                                    'elapsedtime': jobData.usedTime,
                                     'selected': false, 
                                 });
                             })(data[i]);

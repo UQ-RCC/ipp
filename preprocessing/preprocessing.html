@@ -1,0 +1,79 @@
+<br />
+<div class="container">
+	<div id="converter" layout="row">
+		<div layout="row" flex>
+			<div flex=60 layout="column" layout-margin>
+			  <div ui-grid="selectedFilesGridOptions" ui-grid-selection class="tinyGrid"></div>
+			  <div layout="column" align="center">
+			    <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="openFilesExplorer('selectfiles')">
+			     	Select Files
+			    </md-button>
+			    <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="removeSelected()">
+          			Remove Selected
+        	    </md-button>
+        	    <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="removeAll()">
+          			Clear All
+         	    </md-button>
+			  </div>
+			</div>
+
+			<div flex layout-margin>
+				<!-- deskewing-->
+        <div layout="row" layout-align="space-around center">
+          <md-checkbox aria-label="deskew" ng-model="config.deskew">
+            Deskew
+          </md-checkbox>
+          <md-checkbox aria-label="deskew" ng-model="config.keepDeskew" ng-show="config.deskew">
+            Keep Deskewing Files
+          </md-checkbox>
+        </div>
+        <div layout="row" layout-align="space-around center" ng-show="config.deskew">
+            <div layout="row" layout-align="space-between center" layout-padding>
+              <span>Angle</span>
+              <input ng-model="config.angle">
+            </div>
+            <div layout="row" layout-align="space-between center" layout-padding>
+              <span>Background</span>
+              <input ng-model="config.threshold">
+            </div>
+        </div>
+        <div layout="row" layout-align="space-around center" ng-show="config.deskew">
+          <div>Background: {{ selectedItem.threshold }}</div>
+          <div>Standard deviation: {{ selectedItem.stddev }}</div>
+        </div>
+        <md-divider ></md-divider>
+        <!-- centering-->
+        <div layout="row" layout-align="space-around center">
+          <md-checkbox aria-label="center" ng-model="config.center">
+            Center
+          </md-checkbox>
+          <md-checkbox aria-label="center" ng-model="config.keepCenter" ng-show="config.center">
+            Keep Centering Files
+          </md-checkbox>
+        </div>
+        <md-divider ></md-divider>
+        <!-- Combine-->
+        <div layout="row" layout-align="space-around center">
+          <md-checkbox aria-label="combine" ng-model="combine.combine">
+            Combine
+          </md-checkbox>
+          <div ng-show="combine.combine"> Order of combined stack</div>  
+        </div>
+        <div layout="column" ng-show="combine.combine">
+        	Order here...
+        </div>
+        <md-divider ></md-divider>
+        <br />
+        <div layout="row" layout-align="space-between center">
+          <label>Output</label>
+          <input type="text" ng-model="convertOptions.output" style="width: 70%"/>
+          <md-button md-no-ink class="md-primary" ng-click="openFilesExplorer('selectoutput')">Select</md-button>
+        </div>
+
+			</div>
+		</div>
+	</div>
+	<div layout="row" layout-align="center">
+	     <md-button class="md-raised md-primary" ng-click="submit()">Submit</md-button>
+	</div>
+</div>

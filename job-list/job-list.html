@@ -1,16 +1,16 @@
 <br />
 <div class="container">
-	<div id="job-list" ng-controller="JobListCtrl" flex layout-align="center center">
+	<div id="job-list" flex layout-align="center center">
 		<p  class="jobsParam" ng-if="!jobs || jobs.length === 0">You currently have no job.</p>
 		<table ng-if="jobs && jobs.length > 0" layout-fill">
 	    	<thead>
 				<tr>
 					<th style="text-align: left">ID</th>
+					<th style="text-align: center">Job Name</th>
 				    <th style="text-align: center">Username</th>
 				    <th style="text-align: center">Status</th>
 				    <th style="text-align: center">Number of Nodes</th>
-				    <th style="text-align: center">Remaining Walltime</th>
-				    <th></th>
+				    <th style="text-align: center">Elapsed time</th>
 				</tr>
 			</thead>
 	         <tbody>
@@ -22,10 +22,11 @@
 					        </md-checkbox>
 				    	</div>
 		            </td>
+		            <td style="text-align: center">{{ job.jobname }}</td>
 		            <td style="text-align: center">{{ job.uname }}</td>
 		            <td style="text-align: center">{{ job.status }}</td>
 		            <td style="text-align: center" width="12%">{{ job.nnodes }}</td>
-		            <td style="text-align: center" width="20%">{{ job.remainingWalltime }}</td>
+		            <td style="text-align: center" width="20%">{{ job.elapsedtime }}</td>
 		         </tr>
 	         </tbody>
 		</table>

@@ -34,11 +34,9 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                 document.getElementById("home-btn").className="menu__link";
                 document.getElementById("about-btn").className="menu__link";
                 document.getElementById("about-btn").className="menu__link";
-                document.getElementById("contact-btn").className="menu__link";
                 document.getElementById("accesspolicy-btn").className="menu__link";
                 document.getElementById("login").style.display="none";
                 document.getElementById("about-btn").style.display="none";
-                document.getElementById("contact-btn").style.display="none";
                 document.getElementById("accesspolicy-btn").style.display="none";
                 document.getElementById("logout-btn").style.display="block";
                 document.getElementById("joblistmgr").style.display="block";
@@ -49,6 +47,9 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                 document.getElementById("convertermgr").className="menu__link";
                 document.getElementById("filesmanagermgr").style.display="block";
                 document.getElementById("filesmanagermgr").className="menu__link";
+                document.getElementById("prepmgr").style.display="block";
+                document.getElementById("prepmgr").className="menu__link";
+                
                 $scope.session = sessionData;
                 AccessTokenFactory.get({}).$promise.then(function (tokenData) {
                     TokenHandler.set(tokenData.access_token);
@@ -63,7 +64,13 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                 				    	$scope.preference.mem = 100; //default
                 				    }
                                     if(!$scope.preference.hasOwnProperty('separateOutputs')){
-                                        $scope.preference.hasOwnProperty('separateOutputs') = false;
+                                        $scope.preference.separateOutputs = false;
+                                    }
+                                    if(!$scope.preference.hasOwnProperty('deskew')){
+                                        $scope.preference.deskew = false;
+                                        $scope.preference.keepDeskew = false;
+                                        $scope.preference.angle = 32.8;
+                                        $scope.preference.threshold = 100;       
                                     }
                                     // this is to makre sure preferehce has outputBasePath
                                     if($scope.preference.hasOwnProperty('output') && 
@@ -438,9 +445,11 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                                             $scope.preference.swapZT = true;
                                         }
                                         $scope.selectedFilesGridOptions.data.push(item);
-                                        var _pathParts = item['defaultoutput'].split("/");
-                                        $scope.preference.outputBasePath = _pathParts.slice(0,-1).join("/");
-                                        $scope.preference.outputFolderName = _pathParts.slice(-1)[0];                                        
+                                        if($scope.preference.outputBasePath != ""){
+                                            var _pathParts = item['defaultoutput'].split("/");
+                                            $scope.preference.outputBasePath = _pathParts.slice(0,-1).join("/");
+                                            $scope.preference.outputFolderName = _pathParts.slice(-1)[0];                                        
+                                        }
                                     });
                                     //not sure why, but this works
                                     $timeout(function () {
@@ -488,9 +497,11 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                                             $scope.preference.swapZT = true;
                                         }
                                         $scope.selectedFilesGridOptions.data.push(item);
-                                        var _pathParts = item['defaultoutput'].split("/");
-                                        $scope.preference.outputBasePath = _pathParts.slice(0,-1).join("/");
-                                        $scope.preference.outputFolderName = _pathParts.slice(-1)[0];                                        
+                                        if($scope.preference.outputBasePath != ""){
+                                            var _pathParts = item['defaultoutput'].split("/");
+                                            $scope.preference.outputBasePath = _pathParts.slice(0,-1).join("/");
+                                            $scope.preference.outputFolderName = _pathParts.slice(-1)[0];                                                                                    
+                                        }
                                     });
                                     $timeout(function () {
                                         $scope.gridApi.selection.selectRow($scope.selectedFilesGridOptions.data[0]);
@@ -714,7 +725,11 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                    'format': $scope.preference.fileformat.value,
                    'split': $scope.preference.split.value,
                    'splitIdx': $scope.preference.splitIdx.value,
-                   'separateOutputs': toPythonBoolean($scope.preference.separateOutputs)
+                   'separateOutputs': toPythonBoolean($scope.preference.separateOutputs),
+                   'deskew': toPythonBoolean($scope.preference.deskew),
+                   'keepDeskew': toPythonBoolean($scope.preference.keepDeskew),
+                   'angle': $scope.preference.angle,
+                   'threshold': $scope.preference.threshold
                    //'access_token': accessToken
                 };
                 if (isNaN(formData.axSpacing) || isNaN(formData.latSpacing))
@@ -834,7 +849,11 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                     'riPresetSelected': $scope.riPresets[2],
                     'nsPresetSelected': $scope.nsPresets[1],
                     'autoDetect': false,
-                    'separateOutputs': false
+                    'separateOutputs': false,
+                    'deskew': false,
+                    'keepDeskew': false,
+                    'angle': 32.8,
+                    'threshold': 100
                 };  
             }
 
