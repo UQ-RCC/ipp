@@ -1,8 +1,6 @@
 'use strict';
 
-angular.module('microvolution.files-manager', ['ngRoute', 'ngResource', 'ngMaterial', 
-                                            'ui.grid', 'ui.grid.selection', 
-                                            'microvolution.filesexplorer', 'microvolution.services'])
+angular.module('microvolution.files-manager', [])
 
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/files-manager', {

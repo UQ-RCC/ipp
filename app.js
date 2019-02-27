@@ -6,6 +6,7 @@ angular.module('microvolution', [
     'ngRoute',
     'ui.grid', 
     'ui.bootstrap',
+    'as.sortable',
     'ui.grid.selection',
     'microvolution.job-list',
     'microvolution.job-submit',
@@ -49,7 +50,8 @@ angular.module('microvolution', [
             'deleteBase64': 'execute/deletebase64',
             'copyBase64': 'execute/copybase64',
             'moveBase64': 'execute/moveBase64',
-            'listCopyingProcess': 'execute/listCopying'
+            'listCopyingProcess': 'execute/listCopying',
+            'preprocess': 'execute/preprocessing'
                 
         },
         'maxRetryOnServerError': 3

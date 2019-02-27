@@ -201,4 +201,12 @@ angular.
         resource = tokenHandler.wrapActions( resource, ["list"]);
         return resource;
     }])
+  .factory('PreprocessFactory', ['$resource', 'TokenHandler', 'settings', 
+    function ($resource, tokenHandler, settings) {
+        var resource = $resource(settings.URLs.serverApiBase + settings.URLs.preprocess, {}, {
+            process: { method: 'GET', isArray: false },
+        });
+        resource = tokenHandler.wrapActions( resource, ["process"]);
+        return resource;
+    }])
 ;

@@ -1,7 +1,6 @@
 'use strict';
 
-angular.module('microvolution.converter', ['ngRoute', 'ngResource', 'ui.grid', 'ui.grid.selection', 
-                                            'microvolution.filesexplorer', 'microvolution.services'])
+angular.module('microvolution.converter', [])
 
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/converter', {
@@ -41,7 +40,7 @@ angular.module('microvolution.converter', ['ngRoute', 'ngResource', 'ui.grid', '
                 document.getElementById("filesmanagermgr").className="menu__link";
                 document.getElementById("prepmgr").style.display="block";
                 document.getElementById("prepmgr").className="menu__link";
-
+                $scope.session = sessionData;
                 AccessTokenFactory.get({}).$promise.then(function (tokenData) {
                     TokenHandler.set(tokenData.access_token);
                     UserPreferenceFactory.get().$promise.then(
@@ -92,7 +91,14 @@ angular.module('microvolution.converter', ['ngRoute', 'ngResource', 'ui.grid', '
             };
 
             $scope.selectedFilesGridOptions.columnDefs = [
-                { name: 'name', displayName: 'Name', allowCellFocus: false}
+                { name: 'name', 
+                  displayName: 'Name',
+                  cellTooltip: 
+                    function( row, col ) {
+                      return row.entity.path;
+                    }, 
+                  allowCellFocus : false
+                }
             ];
 
             $scope.selectedFilesGridOptions.onRegisterApi = function( gridApi ) {
@@ -162,6 +168,7 @@ angular.module('microvolution.converter', ['ngRoute', 'ngResource', 'ui.grid', '
             $scope.submit = function() {
                 saveOptions();
                 var convertingOptions = getConvertingOptions();
+                convertingOptions["usermail"] = $scope.session.email;
                 ConverterFactory.query(convertingOptions)
                    .$promise.then(
                        function(data) {

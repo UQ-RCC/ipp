@@ -1,7 +1,6 @@
 'use strict';
 
-angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial', 'ui.grid', 'ui.grid.selection', 
-                                            'microvolution.filesexplorer', 'microvolution.services'])
+angular.module('microvolution.job-submit', [])
 
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/job-submit', {
@@ -372,7 +371,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource', 'ngMaterial
                 if($ctrl.modalContents.mode == 'selectoutput'){
                     $ctrl.modalContents.title = "Select Output Folder";
                     if($scope.preference.outputBasePath == null || $scope.preference.outputBasePath.trim()=="")
-                        $ctrl.modalContents.initialPath = "/afm01/scratch";
+                        $ctrl.modalContents.initialPath = "/scratch";
                     else{
                         $ctrl.modalContents.initialPath = $scope.preference.outputBasePath;
                         $ctrl.modalContents.initialNewItem = $scope.preference.outputFolderName;
