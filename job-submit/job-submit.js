@@ -485,7 +485,7 @@ angular.module('microvolution.job-submit', [])
                                             $scope.preference.swapZT = true;
                                         }
                                         $scope.selectedFilesGridOptions.data.push(item);
-                                        if($scope.preference.outputBasePath != ""){
+                                        if($scope.preference.outputBasePath == ""){
                                             var _pathParts = item['defaultoutput'].split("/");
                                             $scope.preference.outputBasePath = _pathParts.slice(0,-1).join("/");
                                             $scope.preference.outputFolderName = _pathParts.slice(-1)[0];                                                                                    
