@@ -18,14 +18,12 @@
         </div>
         <br />
         <div layout="row" layout-align="left center">
-              
-              <md-icon md-svg-src="style/icons/bookmark.svg" ng-click="$ctrl.addShortcut($ctrl.modalContents.currentpath)">
-                <md-tooltip md-direction="right">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bookmark</md-tooltip>
-              </md-icon>
-              <md-icon md-svg-src="style/icons/clipboard.svg" ng-click="$ctrl.copyCurrentPathToClipboard()">
-                <md-tooltip md-direction="right">&nbsp;&nbsp;Copy to clipboard</md-tooltip>
-              </md-icon>
-            
+            <md-icon md-svg-src="style/icons/bookmark.svg" ng-click="$ctrl.addShortcut($ctrl.modalContents.currentpath)">
+              <md-tooltip md-direction="right">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bookmark</md-tooltip>
+            </md-icon>
+            <md-icon md-svg-src="style/icons/clipboard.svg" ng-click="$ctrl.copyCurrentPathToClipboard()">
+              <md-tooltip md-direction="right">&nbsp;&nbsp;Copy to clipboard</md-tooltip>
+            </md-icon>
         </div>
       </div>
     </div>
@@ -75,14 +73,15 @@
       <table border='0' layout-fill>
         <thead>
           <tr>
+            <th>
+              <br />
+              <input type="checkbox" ng-disabled="$ctrl.modalContents.mode!='selectfiles'" ng-model="$ctrl.modalContents.selectAll" ng-click="$ctrl.selectAll()" />
+            </th>
             <th></th>
             <th style="text-align: left">Name</th>
             <th style="text-align: left">Size</th>
             <th style="text-align: left">Owner</th>
             <th style="text-align: left">Group</th>
-            <th>
-              <input type="checkbox" ng-disabled="$ctrl.modalContents.mode!='selectfiles'" ng-model="$ctrl.modalContents.selectAll" ng-click="$ctrl.selectAll()" />
-            </th>
           </tr>
         </thead>
         <tbody>
@@ -91,6 +90,10 @@
               style="font-size: 17px; cellpadding:20px; height: 20px;"
               ng-dblclick="$ctrl.navigate(item)">
             <td>
+              <br />
+              <input type="checkbox" ng-disabled="$ctrl.itemSelectDisabled(item)" ng-model="item.selected" ng-click="$ctrl.selectItem(item)" />
+            </td>
+            <td>
               <md-icon ng-if="item.permission.startsWith('d') || item.permission.startsWith('l')" md-svg-src="style/icons/folder.svg"></md-icon>
               <md-icon ng-if="item.permission.startsWith('-')" md-svg-src="style/icons/file.svg"></md-icon>
             </td>
@@ -98,9 +101,6 @@
             <td style="text-align: left">{{ item.size }}</td>
             <td style="text-align: left">{{ item.owner }}</td>
             <td style="text-align: left">{{ item.group }}</td>
-            <td>
-              <input type="checkbox" ng-disabled="$ctrl.itemSelectDisabled(item)" ng-model="item.selected" ng-click="$ctrl.selectItem(item)" />
-            </td>
           </tr>
         </tbody>
       </table>

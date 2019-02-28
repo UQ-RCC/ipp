@@ -55,20 +55,26 @@
 		      <table border='0' layout-fill>
 		        <thead>
 		          <tr>
-		            <th></th>
-		            <th style="text-align: left">Name</th>
-		            <th style="text-align: left">Size</th>
-		            <th style="text-align: left">Owner</th>
-		            <th style="text-align: left">Group</th>
-		            <th>
-		              <input type="checkbox" ng-model="filesmanagerOptions.selectAll" ng-click="selectAllItems()" />
+		          	<th>
+		              <br />	
+		              <input type="checkbox" ng-model="filesmanagerOptions.selectAll" ng-click="selectAllItems()"></input>
 		            </th>
+		          	<th></th>
+		            <th style="text-align: left"><i>Name</i></th>
+		            <th style="text-align: left"><i>Size</i></th>
+		            <th style="text-align: left"><i>Owner</i></th>
+		            <th style="text-align: left"><i>Group</i></th>
 		          </tr>
 		        </thead>
 		        <tbody>
 		          <tr ng-repeat="item in filesmanagerOptions.filesFolderList"
 		              style="font-size: 17px; cellpadding:20px; height: 20px;"
 		              ng-dblclick="navigate(item)">
+		            <td>
+		              <br />	
+		              <input type="checkbox" ng-model="item.selected" ng-click="selectItem(item)">
+		              </input>
+		            </td>
 		            <td>
 		              <md-icon ng-if="item.permission.startsWith('d') || item.permission.startsWith('l')" md-svg-src="style/icons/folder.svg"></md-icon>
 		              <md-icon ng-if="item.permission.startsWith('-')" md-svg-src="style/icons/file.svg"></md-icon>
@@ -77,9 +83,6 @@
 		            <td style="text-align: left">{{ item.size }}</td>
 		            <td style="text-align: left">{{ item.owner }}</td>
 		            <td style="text-align: left">{{ item.group }}</td>
-		            <td>
-		              <input type="checkbox" ng-model="item.selected" ng-click="selectItem(item)" />
-		            </td>
 		          </tr>
 		        </tbody>
 		      </table>
