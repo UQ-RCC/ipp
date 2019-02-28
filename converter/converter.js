@@ -79,6 +79,7 @@ angular.module('microvolution.converter', [])
                 'chunked': 'For each chunk of dimension (Z, Y, X) in each source channel, interleave into the destination.',
                 'hyperslab': 'For each z-stack, read a single channel, interleave it, then write to disk.'
             };
+            $scope.loading = false;
             /**  selected files table **/
             $scope.selectedFilesGridOptions = {
                 enableRowSelection: true,
@@ -166,17 +167,20 @@ angular.module('microvolution.converter', [])
             }
 
             $scope.submit = function() {
+                $scope.loading = true;
                 saveOptions();
                 var convertingOptions = getConvertingOptions();
                 convertingOptions["usermail"] = $scope.session.email;
                 ConverterFactory.query(convertingOptions)
                    .$promise.then(
                        function(data) {
-                           $rootScope.$broadcast("notify", "Job submitted");
-                           $location.path("/job-list");
+                            $scope.loading = false;
+                            $rootScope.$broadcast("notify", "Job submitted");
+                            $location.path("/job-list");
                        },
                        function (error) {
-                           showAlertDialog("Error: Problem submitting:" + error);
+                            $scope.loading = false;
+                            showAlertDialog("Error: Problem submitting:" + error);
                        }
                    );
             };

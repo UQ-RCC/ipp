@@ -11,12 +11,12 @@ angular.module('microvolution.job-submit', [])
 
     .controller('JobSubmitCtrl', ['$scope', '$rootScope', '$location', '$uibModal', '$timeout',
             'SessionInfoFactory', 'AccessTokenFactory', 'TokenHandler', 'ExecuteJobFactory', 
-            'TestExecuteJobFactory', 'FilesInfoFactory', 'FolderInfoFactory', 'SaveTemplateFactory', 
+            'FilesInfoFactory', 'FolderInfoFactory', 'SaveTemplateFactory', 
             'LoadTemplateFactory', 'FileInfoFactory', 'UserPreferenceFactory', '$mdDialog',
 
         function ($scope, $rootScope, $location, $uibModal, $timeout, 
             SessionInfoFactory, AccessTokenFactory, TokenHandler, ExecuteJobFactory, 
-            TestExecuteJobFactory, FilesInfoFactory, FolderInfoFactory, SaveTemplateFactory, 
+            FilesInfoFactory, FolderInfoFactory, SaveTemplateFactory, 
             LoadTemplateFactory, FileInfoFactory, UserPreferenceFactory, $mdDialog) 
         {
             
@@ -321,17 +321,6 @@ angular.module('microvolution.job-submit', [])
                        );
                      }else{
                         console.log(executioninfo);
-                        TestExecuteJobFactory.query(executioninfo)
-                       .$promise.then(
-                           function(data) {
-                               $scope.loading = false;
-                               console.log(data);
-                           },
-                           function (error) {
-                               $scope.loading = false;
-                               showAlertDialog("Error: Problem submitting:" + error);
-                           }
-                        );
                      }
                }catch(err) {
                     showAlertDialog("Error: Problem submitting:" + error);

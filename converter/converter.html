@@ -1,7 +1,10 @@
 <br />
 <div class="container">
-	<div id="converter" layout="row">
-		<div layout="row" flex>
+	<div ng-if="loading">
+    <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+  </div>
+  <div id="converter" layout="row">
+  	<div layout="row" flex>
 			<div flex=60 layout="column" layout-margin>
 			  <div ui-grid="selectedFilesGridOptions" ui-grid-selection class="tinyGrid"></div>
 			  <div layout="column" align="center">

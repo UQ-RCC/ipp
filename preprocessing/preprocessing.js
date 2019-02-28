@@ -272,6 +272,7 @@ angular.module('microvolution.preprocessing', [])
 
             /*****************************************************************/
             $scope.submit = function() {
+                $scope.loading = true;
                 $scope.prepConfig.files = $scope.selectedFilesGridOptions.data;
                 savePreference();
                 var submitJson = { 
@@ -279,15 +280,16 @@ angular.module('microvolution.preprocessing', [])
                                     "output": $scope.prepConfig.output,
                                     "prepinfo": btoa(JSON.stringify($scope.prepConfig))
                                 }
-                console.log(submitJson);
                 PreprocessFactory.process(submitJson)
                    .$promise.then(
                        function(data) {
-                           $rootScope.$broadcast("notify", "Job submitted");
-                           $location.path("/job-list");
+                            $scope.loading = false;
+                            $rootScope.$broadcast("notify", "Job submitted");
+                            $location.path("/job-list");
                        },
                        function (error) {
-                           showAlertDialog("Error: Problem submitting:" + error);
+                            $scope.loading = false;
+                            showAlertDialog("Error: Problem submitting:" + error);
                        }
                    );
             };

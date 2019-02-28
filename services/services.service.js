@@ -137,14 +137,6 @@ angular.
         resource = tokenHandler.wrapActions( resource, ["query"]);
         return resource;
     }])
-  .factory('TestExecuteJobFactory', ['$resource', 'TokenHandler', 'settings', 
-    function ($resource, tokenHandler, settings) {
-        var resource = $resource(settings.URLs.serverApiBase + settings.URLs.testExecutionBase64, {}, {
-            query: { method: 'GET', isArray: false },
-        });
-        resource = tokenHandler.wrapActions( resource, ["query"]);
-        return resource;
-    }])
   .factory('ListJobsFactory', ['$resource', 'TokenHandler', 'settings', 
     function ($resource, tokenHandler, settings) {
         var resource = $resource(settings.URLs.serverApiBase + settings.URLs.listJobs, {}, {
