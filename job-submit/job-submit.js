@@ -70,7 +70,7 @@ angular.module('microvolution.job-submit', [])
                                         $scope.preference.keepDeskew = false;
                                         $scope.preference.angle = 32.8;
                                         $scope.preference.threshold = 100; 
-                                        $scope.preference.pixelUnit = "µm";
+                                        $scope.preference.pixelUnit = "micron";
                                         $scope.preference.pixelWidth = 0.104;
                                         $scope.preference.pixelHeight = 0.104;
                                         $scope.preference.voxelDepth =  0.495;

@@ -173,7 +173,7 @@
                       <div>Background: {{ selectedItem.threshold }}</div>
                       <div>Standard deviation: {{ selectedItem.stddev }}</div>
                     </div>
-                    <div layout="row" layout-align="space-around left">
+                    <div layout="row" layout-align="space-around left" ng-show="preference.deskew">
                       <md-checkbox aria-label="deskew" ng-model="preference.modifyMetaData">
                         Modify metadata
                       </md-checkbox>
