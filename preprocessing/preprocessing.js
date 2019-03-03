@@ -174,12 +174,17 @@ angular.module('microvolution.preprocessing', [])
                                             'angle': 32.8,
                                             'threshold': item['threshold'],
                                             'suggestedThreshold': item['threshold'],
-                                            'suggestedStdDev': item['stddev']
+                                            'suggestedStdDev': item['stddev'],
+                                            'pixelUnit': item['unit'],
+                                            'pixelWidth': item['pixelW'],
+                                            'pixelHeight': item['pixelH'],
+                                            'voxelDepth': item['pixelD']  
                                         };
                                         item['center']={
                                             'center': true, 
                                             'keepCenter': true
                                         };
+                                        console.log(item);
                                         $scope.selectedFilesGridOptions.data.push(item);
                                         // add to combine
                                         if(!$scope.prepConfig.combine.order.includes(item['name']))

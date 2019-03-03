@@ -171,8 +171,36 @@
                       <div>Background: {{ selectedItem.threshold }}</div>
                       <div>Standard deviation: {{ selectedItem.stddev }}</div>
                     </div>
-                  </div>
+                    <div layout="row" layout-align="space-around center" ng-show="preference.deskew">
+                        <div layout="row" layout-align="space-between center">
+                          <span>Unit</span>
+                          <input ng-model="preference.pixelUnit">
+                        </div>
+                        <div layout="row" layout-align="space-between center" layout-padding>
+                          <span>Pixel Width</span>
+                          <input ng-model="preference.pixelWidth">
+                        </div>
+                        <div layout="row" layout-align="space-between center" layout-padding>
+                          <span>Pixel Height</span>
+                          <input ng-model="preference.pixelHeight">
+                        </div>
+                        <div layout="row" layout-align="space-between center" layout-padding>
+                          <span>Voxel Depth</span>
+                          <input ng-model="preference.voxelDepth">
+                        </div>
+                    </div>
+                    <div layout="row" layout-align="space-around center" ng-show="preference.deskew">
+                      <div>Unit: {{ selectedItem.unit }}</div>
+                      <div>Pixel Width: {{ selectedItem.pixelW }}</div>
+                      <div>Pixel Height: {{ selectedItem.pixelH }}</div>
+                      <div>Voxel Depth: {{ selectedItem.pixelD }}</div>
+                    </div>
+                    
+                    
 
+                  </div>
+                  <br />
+                    
                   <md-divider ></md-divider>
                   <div layout="column" layout-align="space-around center">
                     <table ng-if="selectedItem && selectedItem.channels" layout-align="center">

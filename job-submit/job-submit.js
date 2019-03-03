@@ -69,7 +69,11 @@ angular.module('microvolution.job-submit', [])
                                         $scope.preference.deskew = false;
                                         $scope.preference.keepDeskew = false;
                                         $scope.preference.angle = 32.8;
-                                        $scope.preference.threshold = 100;       
+                                        $scope.preference.threshold = 100; 
+                                        $scope.preference.pixelUnit = "µm";
+                                        $scope.preference.pixelWidth = 0.104;
+                                        $scope.preference.pixelHeight = 0.104;
+                                        $scope.preference.voxelDepth =  0.495;
                                     }
                                     // this is to makre sure preferehce has outputBasePath
                                     if($scope.preference.hasOwnProperty('output') && 
@@ -717,7 +721,11 @@ angular.module('microvolution.job-submit', [])
                    'deskew': toPythonBoolean($scope.preference.deskew),
                    'keepDeskew': toPythonBoolean($scope.preference.keepDeskew),
                    'angle': $scope.preference.angle,
-                   'threshold': $scope.preference.threshold
+                   'threshold': $scope.preference.threshold,
+                   'pixelUnit': $scope.preference.pixelUnit,
+                   'pixelWidth': $scope.preference.pixelWidth,
+                   'pixelHeight': $scope.preference.pixelHeight,
+                   'voxelDepth': $scope.preference.voxelDepth
                    //'access_token': accessToken
                 };
                 if (isNaN(formData.axSpacing) || isNaN(formData.latSpacing))
@@ -841,7 +849,11 @@ angular.module('microvolution.job-submit', [])
                     'deskew': false,
                     'keepDeskew': false,
                     'angle': 32.8,
-                    'threshold': 100
+                    'threshold': 100,
+                    'pixelUnit': 'µm',
+                    'pixelWidth': 0.104,
+                    'pixelHeight': 0.104,
+                    'voxelDepth': 0.495
                 };  
             }
 

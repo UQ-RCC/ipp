@@ -44,6 +44,27 @@
           <div>Background: {{ selectedItem.deskew.suggestedThreshold }}</div>
           <div>Standard deviation: {{ selectedItem.deskew.suggestedStdDev }}</div>
         </div>
+        <div layout="row" layout-align="space-around center" ng-show="selectedItem.deskew.deskew">
+          <div layout="row" layout-align="space-between center">
+            <span>Pixel Unit</span>
+            <input ng-model="selectedItem.deskew.pixelUnit">
+          </div>
+          <div layout="row" layout-align="space-between center" layout-padding>
+            <span>Pixel Width</span>
+            <input ng-model="selectedItem.deskew.pixelWidth">
+          </div>
+        </div>
+        <div layout="row" layout-align="space-around center" ng-show="selectedItem.deskew.deskew">
+          <div layout="row" layout-align="space-between center" layout-padding>
+            <span>Pixel Height</span>
+            <input ng-model="selectedItem.deskew.pixelHeight">
+          </div>
+          <div layout="row" layout-align="space-between center" layout-padding>
+            <span>Voxel Depth</span>
+            <input ng-model="selectedItem.deskew.voxelDepth">
+          </div>
+        </div>
+
         <md-divider ></md-divider>
         <!-- centering-->
         <div layout="row" layout-align="space-around center">
