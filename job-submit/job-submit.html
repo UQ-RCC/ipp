@@ -171,7 +171,12 @@
                       <div>Background: {{ selectedItem.threshold }}</div>
                       <div>Standard deviation: {{ selectedItem.stddev }}</div>
                     </div>
-                    <div layout="row" layout-align="space-around center" ng-show="preference.deskew">
+                    <div layout="row" layout-align="space-around left">
+                      <md-checkbox aria-label="deskew" ng-model="preference.modifyMetaData">
+                        Modify metadata
+                      </md-checkbox>
+                    </div>
+                    <div layout="row" layout-align="space-around center" ng-show="preference.modifyMetaData">
                         <div layout="row" layout-align="space-between center">
                           <span>Unit</span>
                           <input ng-model="preference.pixelUnit">

@@ -725,7 +725,8 @@ angular.module('microvolution.job-submit', [])
                    'pixelUnit': $scope.preference.pixelUnit,
                    'pixelWidth': $scope.preference.pixelWidth,
                    'pixelHeight': $scope.preference.pixelHeight,
-                   'voxelDepth': $scope.preference.voxelDepth
+                   'voxelDepth': $scope.preference.voxelDepth,
+                   'modifyMetaData': $scope.preference.modifyMetaData
                    //'access_token': accessToken
                 };
                 if (isNaN(formData.axSpacing) || isNaN(formData.latSpacing))
@@ -850,6 +851,7 @@ angular.module('microvolution.job-submit', [])
                     'keepDeskew': false,
                     'angle': 32.8,
                     'threshold': 100,
+                    'modifyMetaData': false,
                     'pixelUnit': 'micron',
                     'pixelWidth': 0.104,
                     'pixelHeight': 0.104,

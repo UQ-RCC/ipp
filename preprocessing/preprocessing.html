@@ -44,7 +44,12 @@
           <div>Background: {{ selectedItem.deskew.suggestedThreshold }}</div>
           <div>Standard deviation: {{ selectedItem.deskew.suggestedStdDev }}</div>
         </div>
-        <div layout="row" layout-align="space-around center" ng-show="selectedItem.deskew.deskew">
+        <div layout="row" layout-align="space-around left" ng-show="selectedItem.deskew.deskew">
+          <md-checkbox aria-label="deskew" ng-model="selectedItem.deskew.modifyMetaData">
+            Modify metadata
+          </md-checkbox>
+        </div>
+        <div layout="row" layout-align="space-around center" ng-show="selectedItem.deskew.modifyMetaData">
           <div layout="row" layout-align="space-between center">
             <span>Pixel Unit</span>
             <input ng-model="selectedItem.deskew.pixelUnit">
@@ -54,7 +59,7 @@
             <input ng-model="selectedItem.deskew.pixelWidth">
           </div>
         </div>
-        <div layout="row" layout-align="space-around center" ng-show="selectedItem.deskew.deskew">
+        <div layout="row" layout-align="space-around center" ng-show="selectedItem.deskew.modifyMetaData">
           <div layout="row" layout-align="space-between center" layout-padding>
             <span>Pixel Height</span>
             <input ng-model="selectedItem.deskew.pixelHeight">

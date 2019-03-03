@@ -175,6 +175,7 @@ angular.module('microvolution.preprocessing', [])
                                             'threshold': item['threshold'],
                                             'suggestedThreshold': item['threshold'],
                                             'suggestedStdDev': item['stddev'],
+                                            'modifyMetaData': false,
                                             'pixelUnit': item['unit'],
                                             'pixelWidth': item['pixelW'],
                                             'pixelHeight': item['pixelH'],
