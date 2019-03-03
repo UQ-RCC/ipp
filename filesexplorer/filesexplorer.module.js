@@ -15,7 +15,7 @@ angular
       else
         $ctrl.modalContents.currentpath = $ctrl.modalContents.initialPath;    
       $ctrl.modalContents.selectAll = false;
-      $ctrl.modalContents.extensions = ["tif", "nd2", "ims", "sld"];
+      $ctrl.modalContents.extensions = ["tiff","tif", "nd2", "ims", "sld"];
       //$ctrl.modalContents.extension = "";
       $ctrl.modalContents.newItem = "";
       if($ctrl.modalContents.initialNewItem != null && $ctrl.modalContents.initialNewItem.trim()!="")

@@ -850,7 +850,7 @@ angular.module('microvolution.job-submit', [])
                     'keepDeskew': false,
                     'angle': 32.8,
                     'threshold': 100,
-                    'pixelUnit': 'µm',
+                    'pixelUnit': 'micron',
                     'pixelWidth': 0.104,
                     'pixelHeight': 0.104,
                     'voxelDepth': 0.495
