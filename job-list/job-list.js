@@ -56,7 +56,7 @@ angular.module('microvolution.job-list', [])
             var queryJobs = function(){
                 ListJobsFactory.query().$promise.then(
                     function(returnData){
-                        //console.log(returnData);
+                        console.log(returnData);
                         var data = returnData.commandResult;
                         $scope.jobs = [];
                         for (var i = 0; i < data.length; i++) {

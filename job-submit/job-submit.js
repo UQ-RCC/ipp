@@ -343,11 +343,12 @@ angular.module('microvolution.job-submit', [])
             $scope.suggestMem = function(){
                 if(maxFileSizeMbs > 0){
                     // double the amount for read + write
+                    // double due to decon
                     // 4 * 5 due to size of buffer
                     // 2 to make it safe
-                    var totalMemSuggestedGbs = (maxFileSizeMbs * 2 * 4 * 5 * 2)/1024;
+                    var totalMemSuggestedGbs = (maxFileSizeMbs * 2 * 2 * 4 * 5 * 2)/1024;
                     // round up
-                    $scope.preference.mem = Math.ceil(totalMemSuggestedGbs/10) * 10;
+                    $scope.preference.mem = Math.ceil(totalMemSuggestedGbs/10) * 10 + 5;
                     if($scope.preference.mem > 380){
                         $scope.preference.mem = 380;
                     }
@@ -726,7 +727,7 @@ angular.module('microvolution.job-submit', [])
                    'pixelWidth': $scope.preference.pixelWidth,
                    'pixelHeight': $scope.preference.pixelHeight,
                    'voxelDepth': $scope.preference.voxelDepth,
-                   'modifyMetaData': $scope.preference.modifyMetaData
+                   'modifyMetaData': toPythonBoolean($scope.preference.modifyMetaData)
                    //'access_token': accessToken
                 };
                 if (isNaN(formData.axSpacing) || isNaN(formData.latSpacing))
