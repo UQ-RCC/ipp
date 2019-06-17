@@ -1,67 +1,15 @@
 <!-- Page Content -->
     <div class="container">
-        <!-- Marketing Icons Section -->
-        <div class="row">
-            <div class="col-lg-12">
-                <h1 class="page-header">
-                    Welcome to the IMB Image Processing Portal
-                </h1>
-            </div>
-            <div class="col-md-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4><i class="fa fa-fw fa-magic"></i> What is this? </h4>
-                    </div>
-                    <div class="panel-body">
-                        <p> IMB Image Processing Portal  </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4><i class="fa fa-user fa-fw"></i> Who can use? </h4>
-                    </div>
-                    <div class="panel-body">
-                        <p> Anyone with a UQ and Wiener account.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4><i class="fa fa-fw fa-cog"></i> Why portal? </h4>
-                    </div>
-                    <div class="panel-body">
-                        <p>Easy to access microvolution pipelines from the Web.</p>
-                    </div>
-                </div>
-            </div>
+        <br />
+        <div ng-show="signed_in!=true">
+            <h2>
+                <b>You are not sign in.</b>
+            </h2>
+            <p>Please sign in to continue.</p>
         </div>
-        <!-- /.row -->
-
-        
-        
-        <!-- /.row -->
-
-        <!-- Features Section -->
-        <div class="row" id="Features">
-            <div class="col-lg-12">
-                <h2 class="page-header">Microvolution Portal Features</h2>
-            </div>
-            <div class="col-md-6">
-                <p>More about Microvolution Portal features here.</p>
-            </div>
-            <div class="col-md-6 google-slide">
-                <iframe 
-                    src="https://docs.google.com/presentation/d/1nQXe45Z9ANSGBQbVOdo0BhJF6jtMviodJViSt_Q4FiE/embed?start=false&loop=false&delayms=3000" 
-                    frameborder="0" width="1200" height="330" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true">
-                        Your browser does not support iframes
-                </iframe>
-            </div>
+        <div ng-show="signed_in==true">
+            <h2>
+                <b>You are already signed in.</b>
+            </h2>
         </div>
-
-        <!-- /.row -->
-
-        <hr>
     </div>

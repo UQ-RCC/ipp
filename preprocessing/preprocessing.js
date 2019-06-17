@@ -16,22 +16,16 @@ angular.module('microvolution.preprocessing', [])
             $mdDialog, SessionInfoFactory, AccessTokenFactory, TokenHandler, 
             UserPreferenceFactory, FolderInfoFactory, PreprocessFactory, $timeout) {
 
-            // Gets the session data and redirects to the login screen if the user is not logged in
-            SessionInfoFactory.get({}).$promise.then(function (sessionData) {
-                if (sessionData.has_oauth_access_token !== "true") {
-                    $location.path("/landingpage");
-                    return;
-                }            
-                document.getElementById("myCarousel").style.display="none";
+
+            // call checkSession for the first ime
+            $scope.checkSession(function(){
                 document.getElementById("home-btn").className="menu__link";
-                document.getElementById("about-btn").className="menu__link";
+                document.getElementById("contact-btn").className="menu__link";
                 document.getElementById("faq-btn").className="menu__link";
-                document.getElementById("accesspolicy-btn").className="menu__link";
                 document.getElementById("login").style.display="none";
                 document.getElementById("logout-btn").style.display="block";
                 document.getElementById("joblistmgr").style.display="block";
-                document.getElementById("about-btn").style.display="none";
-                document.getElementById("accesspolicy-btn").style.display="none";
+                document.getElementById("contact-btn").style.display="none";
                 document.getElementById("joblistmgr").className="menu__link";
                 document.getElementById("jobsubmitmgr").style.display="block";
                 document.getElementById("jobsubmitmgr").className="menu__link";
@@ -41,28 +35,24 @@ angular.module('microvolution.preprocessing', [])
                 document.getElementById("filesmanagermgr").className="menu__link";
                 document.getElementById("prepmgr").style.display="block";
                 document.getElementById("prepmgr").className="menu__link active";
-                /**************************************************************/
-                $scope.session = sessionData;
-                AccessTokenFactory.get({}).$promise.then(function (tokenData) {
-                    TokenHandler.set(tokenData.access_token);
-                    UserPreferenceFactory.get().$promise.then(
-                        function (data) {
-                            if(data.hasOwnProperty("preprocessing")){
-                                $scope.prepConfig = JSON.parse(data["preprocessing"]);
-                            } 
-                            else{
-                                setConfigToDefault();
-                            } //end else
-                            $scope.selectedFilesGridOptions.data = $scope.prepConfig["files"];
-                            if($scope.selectedFilesGridOptions.data.length > 0)
-                                $timeout(function () {
-                                    $scope.gridApi.selection.selectRow($scope.selectedFilesGridOptions.data[0]);
-                                },
-                                100);
-                        }
-                    );
-                });
+                UserPreferenceFactory.get().$promise.then(
+                    function (data) {
+                        if(data.hasOwnProperty("preprocessing")){
+                            $scope.prepConfig = JSON.parse(data["preprocessing"]);
+                        } 
+                        else{
+                            setConfigToDefault();
+                        } //end else
+                        $scope.selectedFilesGridOptions.data = $scope.prepConfig["files"];
+                        if($scope.selectedFilesGridOptions.data.length > 0)
+                            $timeout(function () {
+                                $scope.gridApi.selection.selectRow($scope.selectedFilesGridOptions.data[0]);
+                            },
+                            100);
+                    }
+                );
             });
+
             /**
             * set Config to default
             */

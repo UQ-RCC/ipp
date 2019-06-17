@@ -29,14 +29,10 @@ angular.module('microvolution.job-submit', [])
                     $location.path("/langingpage");
                     return;
                 }
-                document.getElementById("myCarousel").style.display="none";
                 document.getElementById("home-btn").className="menu__link";
-                document.getElementById("about-btn").className="menu__link";
-                document.getElementById("about-btn").className="menu__link";
-                document.getElementById("accesspolicy-btn").className="menu__link";
+                document.getElementById("contact-btn").className="menu__link";
                 document.getElementById("login").style.display="none";
-                document.getElementById("about-btn").style.display="none";
-                document.getElementById("accesspolicy-btn").style.display="none";
+                document.getElementById("contact-btn").style.display="none";
                 document.getElementById("logout-btn").style.display="block";
                 document.getElementById("joblistmgr").style.display="block";
                 document.getElementById("joblistmgr").className="menu__link";
@@ -327,7 +323,7 @@ angular.module('microvolution.job-submit', [])
                         console.log(executioninfo);
                      }
                }catch(err) {
-                    showAlertDialog("Error: Problem submitting:" + error);
+                    showAlertDialog("Error: Problem submitting:" + err);
                    $scope.loading = false;
                }
             };
@@ -630,6 +626,8 @@ angular.module('microvolution.job-submit', [])
             }
 
             var toPythonBoolean = function (booleanValue){
+		if(booleanValue == null || booleanValue == undefined)
+		    return 'False';
                 var s = booleanValue.toString();
                 return s && s[0].toUpperCase() + s.slice(1);
             }

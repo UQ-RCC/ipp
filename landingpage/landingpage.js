@@ -9,19 +9,16 @@ angular.module('microvolution.landingpage', [])
         });
     }])
 
-    .controller('LandingPageCtrl', ['$scope', '$rootScope', '$window', '$resource', '$mdMedia', '$interval', '$location', 'settings',
-        function ($scope, $rootScope, $window, $resource, $mdMedia, $interval, $location, settings) {
-            document.getElementById("myCarousel").style.display="block";
-            document.getElementById("about-btn").style.display="block";
-            document.getElementById("accesspolicy-btn").style.display="block";
+    .controller('LandingPageCtrl', ['$scope', '$resource', 'settings',
+        function ($scope, $resource, settings) {
             document.getElementById("home-btn").className="menu__link active";
-            document.getElementById("about-btn").className="menu__link";
+            document.getElementById("contact-btn").className="menu__link";
             document.getElementById("faq-btn").className="menu__link";
-            document.getElementById("accesspolicy-btn").className="menu__link";
             document.getElementById("joblistmgr").className="menu__link";
             document.getElementById("jobsubmitmgr").className="menu__link";
             document.getElementById("convertermgr").className="menu__link";
             document.getElementById("filesmanagermgr").className="menu__link";
+            $scope.signed_in = false;
             var sessionInfoResource = $resource(settings.URLs.apiBase + settings.URLs.sessionInfo);
             sessionInfoResource.get({}).$promise.then(function (sessionData) {
                 if (sessionData.has_oauth_access_token !== "true") {
@@ -32,6 +29,7 @@ angular.module('microvolution.landingpage', [])
                     document.getElementById("convertermgr").style.display="none";
                     document.getElementById("filesmanagermgr").style.display="none";
                 }else{
+                    $scope.signed_in = true;
                     document.getElementById("login").style.display="none";
                     document.getElementById("logout-btn").style.display="block";
                     document.getElementById("joblistmgr").style.display="block";

@@ -9,31 +9,23 @@ angular.module('microvolution.job-list', [])
         });
     }])
 
-    .controller('JobListCtrl', ['$scope', '$rootScope', '$interval', '$location', 
-        'SessionInfoFactory', 'AccessTokenFactory', 'ListJobsFactory', 'StopJobsFactory', 'TokenHandler',
-        function ($scope, $rootScope, $interval, $location, 
-            SessionInfoFactory, AccessTokenFactory, ListJobsFactory, StopJobsFactory, TokenHandler) {
-            
+    .controller('JobListCtrl', ['$scope', '$rootScope', '$interval', 
+        'ListJobsFactory', 'StopJobsFactory', 'TokenHandler',
+        function ($scope, $rootScope, $interval, 
+        ListJobsFactory, StopJobsFactory, TokenHandler) {
             $scope.jobs = [];
             //refresh experiment
             var jobListRefreshTimer;
 
-            // Gets the session data and redirects to the login screen if the user is not logged in
-            SessionInfoFactory.get({}).$promise.then(function (sessionData) {
-		        if (sessionData.has_oauth_access_token !== "true") {
-                    $location.path("/landingpage");
-                    return;
-                }            
-                document.getElementById("myCarousel").style.display="none";
+            // call checkSession for the first ime
+            $scope.checkSession(function(){
                 document.getElementById("home-btn").className="menu__link";
-                document.getElementById("about-btn").className="menu__link";
+                document.getElementById("contact-btn").className="menu__link";
                 document.getElementById("faq-btn").className="menu__link";
-                document.getElementById("accesspolicy-btn").className="menu__link";
                 document.getElementById("login").style.display="none";
                 document.getElementById("logout-btn").style.display="block";
                 document.getElementById("joblistmgr").style.display="block";
-                document.getElementById("about-btn").style.display="none";
-                document.getElementById("accesspolicy-btn").style.display="none";
+                document.getElementById("contact-btn").style.display="none";
                 document.getElementById("joblistmgr").className="menu__link active";
                 document.getElementById("jobsubmitmgr").style.display="block";
                 document.getElementById("jobsubmitmgr").className="menu__link";
@@ -43,15 +35,10 @@ angular.module('microvolution.job-list', [])
                 document.getElementById("filesmanagermgr").className="menu__link";
                 document.getElementById("prepmgr").style.display="block";
                 document.getElementById("prepmgr").className="menu__link";
-                
-                AccessTokenFactory.get({}).$promise.then(function (tokenData) {
-                    TokenHandler.set(tokenData.access_token);
-                    //get the jobs for the first time
-                    queryJobs();
-                    jobListRefreshTimer=$interval(function(){queryJobs();},4000);
-                });
-                 
+                queryJobs();
+                jobListRefreshTimer=$interval(function(){queryJobs();},4000);
             });
+
 
             var queryJobs = function(){
                 ListJobsFactory.query().$promise.then(

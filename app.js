@@ -12,7 +12,6 @@ angular.module('microvolution', [
     'microvolution.job-submit',
     'microvolution.landingpage',
     'microvolution.partials',
-    'microvolution.faqdirectives',
     'microvolution.filesexplorer',
     'microvolution.converter',
     'microvolution.services',
@@ -26,6 +25,7 @@ angular.module('microvolution', [
         }])
     .constant('settings', {
         'URLs': {
+            'staticHomePage': 'http://localhost/',
             'base': '/client/',
             'apiBase': '/client/api/',
             'oauthStart': 'login',
@@ -99,9 +99,10 @@ angular.module('microvolution', [
             };
         }])
     .controller('AppCtrl', ['$mdToast', '$rootScope', '$scope', '$interval', '$window', 
-        'settings','$location', 'SessionInfoFactory', 'EndSessionFactory',
+        'settings','$location', 'SessionInfoFactory', 'EndSessionFactory', 
+        'AccessTokenFactory', 'TokenHandler',
         function ($mdToast, $rootScope, $scope, $interval, $window, 
-        settings,$location, SessionInfoFactory, EndSessionFactory) {
+        settings,$location, SessionInfoFactory, EndSessionFactory, AccessTokenFactory, TokenHandler) {
             $rootScope.$on('notify', function (event, message) {
             $mdToast.show(
                 $mdToast.simple()
@@ -128,7 +129,6 @@ angular.module('microvolution', [
             $scope.toolbarHidden = false;
         });
         
-        
         // Starts the login auth flow
         var loginWindow;
         $scope.startLogin = function (service) {
@@ -149,9 +149,10 @@ angular.module('microvolution', [
         var onLoginWindowClose = function() {
             SessionInfoFactory.get({}, function(data) {
                 if (data.has_oauth_access_token === "true") {
+                    document.getElementById("home-btn").style.display="none";
                     document.getElementById("login").style.display="none";
                     document.getElementById("logout-btn").style.display="block";
-                    $location.path("/job-submit");
+                    $location.path("/files-manager");
                     document.getElementById("joblistmgr").style.display="block";
                     document.getElementById("jobsubmitmgr").style.display="block";
                     document.getElementById("convertermgr").style.display="block";
@@ -188,12 +189,47 @@ angular.module('microvolution', [
             return !angular.isDefined(service) || loginWindowOpen();
         };
 
+        $scope.sessionRefreshTimer = $interval(function(){
+                                                console.log("....Checking session....");
+                                                $scope.checkSession();
+                                            },300000);// every 5 minutes
+        $scope.checkSession = function(onValidAccessTokenCallback){
+            SessionInfoFactory.get({}, function(data) {
+                if (data.has_oauth_access_token !== "true") {
+                    $location.path("/landingpage");
+                    return;
+                } else {
+                    $scope.session = data;
+                    AccessTokenFactory.get({}).$promise.then(function (tokenData) {
+                        TokenHandler.set(tokenData.access_token);
+                        if(onValidAccessTokenCallback){
+                            onValidAccessTokenCallback();
+                        }
+                    }),
+                    function (error) {
+                        $location.path("/landingpage");
+                        return;
+                    };
+                }
+            }),
+            function (error) {
+                $location.path("/landingpage");
+                return;
+            };
+        };
+        $scope.$on('$destroy', function () {
+            if ($scope.sessionRefreshTimer) {
+                $interval.cancel($scope.sessionRefreshTimer );
+            }
+        });
+
         // sign out
         $scope.doSignout = function () {
             console.log("Signing out");
             EndSessionFactory.get({}, function () {
                 if(document.getElementById("login").style.display="none")
                 {
+                    document.getElementById("home-btn").style.display="block";
                     document.getElementById("login").style.display="inline-block";
                     document.getElementById("logout-btn").style.display="none"; 
                     document.getElementById("joblistmgr").style.display="none"; 
@@ -203,7 +239,9 @@ angular.module('microvolution', [
                     document.getElementById("prepmgr").style.display="none";
                 }
 
-                $location.path("/landingpage");
+                $location.path(settings.URLs.staticHomePage);
             });
-        };        
+        };
+
+            
     }]);

@@ -9,13 +9,11 @@ angular.module('microvolution.files-manager', [])
         });
     }])
 
-    .controller('FilesManagerCtrl', ['$scope', '$rootScope', '$interval', '$location', 
-        'SessionInfoFactory', 'AccessTokenFactory', 'TokenHandler', 'ListFolderFactory', 
-        'UserPreferenceFactory', '$mdDialog', '$uibModal', 
+    .controller('FilesManagerCtrl', ['$scope', '$rootScope', '$interval', 
+        'ListFolderFactory', 'UserPreferenceFactory', '$mdDialog', '$uibModal', 
         'DeleteFilesFactory', 'CopyFilesFactory', 'MoveFilesFactory', 'ListCopyingProcessFactory',
-        function ($scope, $rootScope, $interval, $location, 
-            SessionInfoFactory, AccessTokenFactory, TokenHandler, ListFolderFactory, 
-            UserPreferenceFactory, $mdDialog, $uibModal, 
+        function ($scope, $rootScope, $interval, 
+            ListFolderFactory, UserPreferenceFactory, $mdDialog, $uibModal, 
             DeleteFilesFactory, CopyFilesFactory, MoveFilesFactory, ListCopyingProcessFactory) {
             
             //refresh experiment
@@ -29,23 +27,15 @@ angular.module('microvolution.files-manager', [])
                 'loading': false
             };
 
-
-            // Gets the session data and redirects to the login screen if the user is not logged in
-            SessionInfoFactory.get({}).$promise.then(function (sessionData) {
-		        if (sessionData.has_oauth_access_token !== "true") {
-                    $location.path("/landingpage");
-                    return;
-                }            
-                document.getElementById("myCarousel").style.display="none";
+            // call checkSession for the first ime
+            $scope.checkSession(function(){
                 document.getElementById("home-btn").className="menu__link";
-                document.getElementById("about-btn").className="menu__link";
+                document.getElementById("contact-btn").className="menu__link";
                 document.getElementById("faq-btn").className="menu__link";
-                document.getElementById("accesspolicy-btn").className="menu__link";
                 document.getElementById("login").style.display="none";
                 document.getElementById("logout-btn").style.display="block";
                 document.getElementById("joblistmgr").style.display="block";
-                document.getElementById("about-btn").style.display="none";
-                document.getElementById("accesspolicy-btn").style.display="none";
+                document.getElementById("contact-btn").style.display="none";
                 document.getElementById("joblistmgr").className="menu__link";
                 document.getElementById("jobsubmitmgr").style.display="block";
                 document.getElementById("jobsubmitmgr").className="menu__link";
@@ -55,16 +45,10 @@ angular.module('microvolution.files-manager', [])
                 document.getElementById("filesmanagermgr").className="menu__link active";
                 document.getElementById("prepmgr").style.display="block";
                 document.getElementById("prepmgr").className="menu__link";
-
-                $scope.session = sessionData;
-                AccessTokenFactory.get({}).$promise.then(function (tokenData) {
-                    TokenHandler.set(tokenData.access_token);
-                    //get the jobs for the first time
-                    $scope.init();
-                    //listFolder($scope.filesmanagerOptions.currentpath);
-                    filesListRefreshTimer=$interval(function(){ls($scope.filesmanagerOptions.currentpath);},40000);
-                });
-                 
+                //get the jobs for the first time
+                $scope.init();
+                //listFolder($scope.filesmanagerOptions.currentpath);
+                filesListRefreshTimer=$interval(function(){ls($scope.filesmanagerOptions.currentpath);},60000);
             });
             
             
