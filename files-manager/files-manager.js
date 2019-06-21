@@ -17,7 +17,7 @@ angular.module('microvolution.files-manager', [])
             DeleteFilesFactory, CopyFilesFactory, MoveFilesFactory, ListCopyingProcessFactory) {
             
             //refresh experiment
-            var filesListRefreshTimer;
+            var filesListRefreshTimer, lastPaths;
             $scope.filesmanagerOptions = {
                 'currentpath': "/afm01",
                 'selectAll': false,
@@ -103,9 +103,11 @@ angular.module('microvolution.files-manager', [])
                         $scope.filesmanagerOptions.filesFolderList = data;
                         $scope.filesmanagerOptions.loading = false;
                         $scope.filesmanagerOptions.currentpath = newPath;
+                        lastPaths['files-manager'] = $scope.filesmanagerOptions.currentpath;
                         // save to currentpath
-                        var lastPath = {'lastPath': newPath};
-                        UserPreferenceFactory.update({}, JSON.stringify(lastPath));
+                        UserPreferenceFactory.update({}, 
+                            JSON.stringify({'lastPaths':  angular.toJson( lastPaths )})
+                        );
                     }
                 ),
                 function (error) {
@@ -157,14 +159,16 @@ angular.module('microvolution.files-manager', [])
                             $scope.filesmanagerOptions.shortcuts.unshift({'label': 'home', 'path':home})
                         }
                         // last path
-                        var lastPath = "";
-                        if(data.hasOwnProperty("lastPath"))
-                            lastPath = data["lastPath"];
+                        lastPaths = JSON.parse(data['lastPaths']);
+                        if(!lastPaths)
+                          lastPaths = {};
+                        if(!lastPaths.hasOwnProperty('files-manager'))
+                          lastPaths['files-manager'] = '';
                         // only set to last path if initialPath is not empty
-                        if(lastPath && 
+                        if(lastPaths['files-manager'] && 
                             ($scope.filesmanagerOptions.initialPath == null 
                                 || $scope.filesmanagerOptions.initialPath.trim()=="") ){
-                            $scope.filesmanagerOptions.currentpath = lastPath;
+                            $scope.filesmanagerOptions.currentpath = lastPaths['files-manager'];
                         } 
                         // load it
                         //default path

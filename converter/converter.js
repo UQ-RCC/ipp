@@ -189,6 +189,7 @@ angular.module('microvolution.converter', [])
                 $ctrl.modalContents = {};
                 $ctrl.modalContents.mode = mode;
                 $ctrl.modalContents.extension = "ims";
+                $ctrl.modalContents.source = 'converter';
                 var modalInstance = $uibModal.open({
                     animation: false,
                     ariaLabelledBy: 'modal-title',

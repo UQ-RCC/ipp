@@ -105,6 +105,7 @@ angular.module('microvolution.preprocessing', [])
                 var $ctrl = this;
                 $ctrl.modalContents = {};
                 $ctrl.modalContents.mode = mode;
+                $ctrl.modalContents.source = 'preprocessing';
                 if($ctrl.modalContents.mode == 'selectoutput'){
                     $ctrl.modalContents.title = "Select Output Folder";
                     if($scope.prepConfig.output == null || $scope.prepConfig.output.trim()=="")

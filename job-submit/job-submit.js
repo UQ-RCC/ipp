@@ -358,6 +358,7 @@ angular.module('microvolution.job-submit', [])
                 var $ctrl = this;
                 $ctrl.modalContents = {};
                 $ctrl.modalContents.mode = mode;
+                $ctrl.modalContents.source = 'job-submit';
                 if($ctrl.modalContents.mode == 'selectoutput'){
                     $ctrl.modalContents.title = "Select Output Folder";
                     if($scope.preference.outputBasePath == null || $scope.preference.outputBasePath.trim()=="")
@@ -626,8 +627,8 @@ angular.module('microvolution.job-submit', [])
             }
 
             var toPythonBoolean = function (booleanValue){
-		if(booleanValue == null || booleanValue == undefined)
-		    return 'False';
+            if(booleanValue == null || booleanValue == undefined)
+                return 'False';
                 var s = booleanValue.toString();
                 return s && s[0].toUpperCase() + s.slice(1);
             }

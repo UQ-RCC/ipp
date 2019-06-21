@@ -7,6 +7,7 @@ angular
     function ($scope, $rootScope, 
       	$uibModalInstance, modalContents, ListFolderFactory, UserPreferenceFactory) {
       var $ctrl = this; 
+      var lastPaths = null;
       $ctrl.modalContents = modalContents;
       $ctrl.modalContents.loading = false;
       $ctrl.modalContents.filesFolderList = [];
@@ -33,41 +34,44 @@ angular
         if(!newPath.endsWith("/"))
             newPath = newPath + "/";
         $ctrl.modalContents.loading = true;
-		    ListFolderFactory.query({
-	        'folderpath': btoa(newPath)
+        ListFolderFactory.query({
+          'folderpath': btoa(newPath)
         }).$promise.then(
-	         function(returnData){
-	            //for some reason 500 is considered success :-s
-	            if(returnData.status == 500){
-	                $ctrl.modalContents.loading = false;
-	                $ctrl.modalContents.currentpath = oldPath;
-	                $rootScope.$broadcast("notify", "Error loading:" + newPath + ". You probably do not have permission");
-	                return;
-	            }
-	            var data = returnData.commandResult;
-	            if(data == null){
-	                $ctrl.modalContents.loading = false;
-	                return;
-	            }                                            
-	            data.forEach(function(element) {
-	                element.children = [];
-	                element.type = 'f';
-	                if(['d', 'l'].includes(element.permission.charAt(0))){
-	                    element.type = element.permission.charAt(0);
-	                    element.children.push({name: "", children: []})
-	                    // symlink
-	                    if(element.type==='l')
-	                        element.name = element.name.split("->")[0].trim();
-	                }
-	                element.path = newPath + element.name;
-	                element.selected = false;
-	            });
-	            $ctrl.modalContents.filesFolderList = data;
-	            $ctrl.modalContents.loading = false;
-	            $ctrl.modalContents.currentpath = newPath;
-	            // save to currentpath
-	            var lastPath = {'lastPath': newPath};
-      			UserPreferenceFactory.update({}, JSON.stringify(lastPath));
+           function(returnData){
+              //for some reason 500 is considered success :-s
+              if(returnData.status == 500){
+                  $ctrl.modalContents.loading = false;
+                  $ctrl.modalContents.currentpath = oldPath;
+                  $rootScope.$broadcast("notify", "Error loading:" + newPath + ". You probably do not have permission");
+                  return;
+              }
+              var data = returnData.commandResult;
+              if(data == null){
+                  $ctrl.modalContents.loading = false;
+                  return;
+              }                                            
+              data.forEach(function(element) {
+                  element.children = [];
+                  element.type = 'f';
+                  if(['d', 'l'].includes(element.permission.charAt(0))){
+                      element.type = element.permission.charAt(0);
+                      element.children.push({name: "", children: []})
+                      // symlink
+                      if(element.type==='l')
+                          element.name = element.name.split("->")[0].trim();
+                  }
+                  element.path = newPath + element.name;
+                  element.selected = false;
+              });
+              $ctrl.modalContents.filesFolderList = data;
+              $ctrl.modalContents.loading = false;
+              $ctrl.modalContents.currentpath = newPath;
+              lastPaths[$ctrl.modalContents.source][$ctrl.modalContents.mode] 
+                                  = $ctrl.modalContents.currentpath;
+              // save to currentpath
+              UserPreferenceFactory.update({}, 
+                    JSON.stringify({'lastPaths':  angular.toJson( lastPaths )})
+              );
 	        }
 	    ),
 	    function (error) {
@@ -148,12 +152,17 @@ angular
 		        	$ctrl.modalContents.shortcuts.unshift({'label': 'home', 'path':home})
 		        }
 		        // last path
-		        var lastPath = "";
-		        if(data.hasOwnProperty("lastPath"))
-        			lastPath = data["lastPath"];
-        		// only set to last path if initialPath is not empty
-        		if(lastPath && ($ctrl.modalContents.initialPath == null || $ctrl.modalContents.initialPath.trim()=="") ){
-        			$ctrl.modalContents.currentpath = lastPath;
+            lastPaths = JSON.parse(data['lastPaths']);
+            if(!lastPaths)
+              lastPaths = {};
+            if(!lastPaths.hasOwnProperty($ctrl.modalContents.source))
+              lastPaths[$ctrl.modalContents.source] = {};
+            var lastPathSourceMode = lastPaths[$ctrl.modalContents.source][$ctrl.modalContents.mode];
+            // only set to last path if initialPath is not empty
+        		if( lastPathSourceMode && 
+              ($ctrl.modalContents.initialPath == null || 
+                $ctrl.modalContents.initialPath.trim()=="") ){
+        			$ctrl.modalContents.currentpath = lastPathSourceMode;
         		} 
         		// load it
         		//default path
