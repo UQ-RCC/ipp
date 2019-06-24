@@ -54,7 +54,7 @@
     <div layout="column" flex="15" ng-if="$ctrl.modalContents.mode!='newtemplate' && $ctrl.modalContents.mode!='loadtemplate'">
       <!-- a table of shortcuts-->
       <table border='0'>
-        <caption>Shortcuts</caption>
+        <caption>Bookmarks</caption>
         <tbody>
           <tr ng-repeat="shortcut in $ctrl.modalContents.shortcuts" style="font-size: 17px;">
             <td ng-show="$ctrl.bookmarkEdit" ng-click="$ctrl.removeShortcut(shortcut)">

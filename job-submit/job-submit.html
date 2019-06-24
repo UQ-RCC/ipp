@@ -5,6 +5,15 @@
     <div ng-if="loading">
       <md-progress-linear md-mode="indeterminate"></md-progress-linear>
     </div>
+    <div layout="row" layout-align="space-around center" class="div-normal-height">
+      <span class="md-primary">Illumination Type</span>
+      <md-select ng-model=preference.psfType
+      aria-label="psfType">
+        <md-option ng-value="APsfType" ng-repeat="APsfType in psfTypes" ng-selected="APsfType.value==preference.psfType.value"> 
+          {{ APsfType.label }}
+        </md-option>
+      </md-select>
+    </div>
     <div layout="row">
         <div flex=40 layout="column" layout-margin>
           <div ui-grid="selectedFilesGridOptions" ui-grid-selection class="smallGrid"></div>
@@ -29,7 +38,7 @@
           <input type="text" ng-model="preference.outputFolderName"/>
           <md-button md-no-ink class="md-primary" style="width:200px;" ng-click="openFilesExplorer('selectoutput')">Choose Output Folder</md-button>
           <md-checkbox aria-label="separateOutputs" ng-model="preference.separateOutputs">
-            Seperate outputs based on input paths
+            Separate outputs based on input paths
            </md-checkbox>
            
         </div>
@@ -71,7 +80,7 @@
                   <div ng-if="preference.generatePsf == true">
                     <div layout="row" layout-align="space-between center" class="div-normal-height">
                       <span>PSF Model</span>
-                      <md-select ng-model=preference.psfModel aria-label="psfmodel">
+                      <md-select ng-model=preference.psfModel aria-label="psfModel">
                         <md-option ng-value="modType" ng-repeat="modType in psfModelTypes" ng-selected="modType.value == preference.psfModel.value">
                           {{ modType.label }}
                         </md-option>
@@ -82,9 +91,9 @@
                       <input type="number" step="0.1" ng-model="preference.NA" />
                     </div>
                     <div layout="row" layout-align="space-between center" class="div-normal-height">
-                        <span >Objective immersion refractive index </span>
-                        <input type="number" step="0.1" ng-model="preference.RI" />
-                       <md-select  ng-model="preference.riPresetSelected" 
+                      <span >Objective immersion refractive index </span>
+                      <input type="number" step="0.1" ng-model="preference.RI" />
+                      <md-select  ng-model="preference.riPresetSelected" 
                        ng-change="riPresetChanged()" aria-label="riPresetSelected">
                         <md-option ng-value="preset" ng-repeat="preset in riPresets" ng-selected="preset.value == preference.riPresetSelected.value">
                           {{ preset.label }}
@@ -101,7 +110,7 @@
                         </md-option>
                       </md-select>
                     </div>
-                    <div layout="row" layout-align="space-between center" class="div-normal-height">
+                    <!--div layout="row" layout-align="space-between center" class="div-normal-height">
                       <span>Illumination Type</span>
                       <md-select ng-model=preference.psfType
                       aria-label="psfType">
@@ -110,7 +119,7 @@
                           {{ APsfType.label }}
                         </md-option>
                       </md-select>
-                    </div>
+                    </div-->
 
                     <div ng-if="preference.psfType.value === 3" layout="row" layout-align="space-between center" class="div-normal-height">
                       <span>Light sheet illumination NA</span>
@@ -151,12 +160,12 @@
                   </div>
                   <div>
                     <md-divider ></md-divider>
-                    <div layout="row" layout-align="space-around center">
+                    <div layout="row" layout-align="space-around center" ng-if="preference.psfType.value==3">
                       <md-checkbox aria-label="deskew" ng-model="preference.deskew">
                         Deskew
                       </md-checkbox>
                       <md-checkbox aria-label="deskew" ng-model="preference.keepDeskew" ng-show="preference.deskew">
-                        Keep Deskewing Files
+                        Keep Deskewed Files
                       </md-checkbox>
                     </div>
                     <div layout="row" layout-align="space-around center" ng-show="preference.deskew">
@@ -170,9 +179,10 @@
                         </div>
                     </div>
                     <div layout="row" layout-align="space-around center" ng-show="preference.deskew">
-                      <div>Background: {{ selectedItem.threshold }}</div>
-                      <div>Standard deviation: {{ selectedItem.stddev }}</div>
+                      <div>Background: {{ parseInt(selectedItem.threshold) }}</div>
+                      <div>Standard deviation: {{ parseFloat(Number(selectedItem.stddev).toFixed(2)) }}</div>
                     </div>
+                    <md-divider ng-show="preference.deskew"></md-divider>
                     <div layout="row" layout-align="space-around left" ng-show="preference.deskew">
                       <md-checkbox aria-label="deskew" ng-model="preference.modifyMetaData">
                         Modify metadata
@@ -203,7 +213,6 @@
                       <div>Voxel Depth: {{ selectedItem.pixelD }}</div>
                     </div>
                   </div>
-                  <br />
                     
                   <md-divider ></md-divider>
                   <div layout="column" layout-align="space-around center">
@@ -436,7 +445,7 @@
           				</div>
           				<div layout="row" layout-align="center center" class="div-normal-height">
           					<md-checkbox aria-label="saveiter">Save every</md-checkbox>
-          					<input type="number" ng-disabled="true" ng-value="0" min="0" max="999">iterations
+          					<input type="number" ng-disabled="false" ng-value="0" min="0" max="999">&nbsp;iterations
           				</div>
           				<div layout="column" layout-align="center center">
           					<md-button md-no-ink class="md-primary" ng-value="reset" ng-click="resetPreference()">

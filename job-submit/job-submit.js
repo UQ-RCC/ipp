@@ -9,26 +9,20 @@ angular.module('microvolution.job-submit', [])
         });
     }])
 
-    .controller('JobSubmitCtrl', ['$scope', '$rootScope', '$location', '$uibModal', '$timeout',
-            'SessionInfoFactory', 'AccessTokenFactory', 'TokenHandler', 'ExecuteJobFactory', 
-            'FilesInfoFactory', 'FolderInfoFactory', 'SaveTemplateFactory', 
-            'LoadTemplateFactory', 'FileInfoFactory', 'UserPreferenceFactory', '$mdDialog',
+    .controller('JobSubmitCtrl', ['$scope', '$location', '$uibModal', '$timeout',
+            'ExecuteJobFactory', 'FilesInfoFactory', 'FolderInfoFactory', 'SaveTemplateFactory', 
+            'LoadTemplateFactory', 'FileInfoFactory', 'UserPreferenceFactory', 
 
-        function ($scope, $rootScope, $location, $uibModal, $timeout, 
-            SessionInfoFactory, AccessTokenFactory, TokenHandler, ExecuteJobFactory, 
-            FilesInfoFactory, FolderInfoFactory, SaveTemplateFactory, 
-            LoadTemplateFactory, FileInfoFactory, UserPreferenceFactory, $mdDialog) 
+        function ($scope, $location, $uibModal, $timeout, 
+            ExecuteJobFactory, FilesInfoFactory, FolderInfoFactory, SaveTemplateFactory, 
+            LoadTemplateFactory, FileInfoFactory, UserPreferenceFactory,) 
         {
             
             //loading
             $scope.loading = false;
             
             // Gets the session data and redirects to the login screen if the user is not logged in
-            SessionInfoFactory.get({}).$promise.then(function (sessionData) {
-                if (sessionData.has_oauth_access_token !== "true") {
-                    $location.path("/langingpage");
-                    return;
-                }
+            $scope.checkSession(function(){
                 document.getElementById("home-btn").className="menu__link";
                 document.getElementById("contact-btn").className="menu__link";
                 document.getElementById("login").style.display="none";
@@ -45,50 +39,47 @@ angular.module('microvolution.job-submit', [])
                 document.getElementById("prepmgr").style.display="block";
                 document.getElementById("prepmgr").className="menu__link";
                 
-                $scope.session = sessionData;
-                AccessTokenFactory.get({}).$promise.then(function (tokenData) {
-                    TokenHandler.set(tokenData.access_token);
-                    UserPreferenceFactory.get().$promise.then(
-                        function (data) {
-                            if(data.hasOwnProperty("pref")){
-                                var prefData = data["pref"];
-                                if(prefData.hasOwnProperty("preference")){
-                                    $scope.preference = JSON.parse(prefData["preference"]);
-                				    // this is to make sure the value stored in database not bigger than 384 Gbs
-                				    if ($scope.preference.mem > 384){
-                				    	$scope.preference.mem = 100; //default
-                				    }
-                                    if(!$scope.preference.hasOwnProperty('separateOutputs')){
-                                        $scope.preference.separateOutputs = false;
-                                    }
-                                    if(!$scope.preference.hasOwnProperty('deskew')){
-                                        $scope.preference.deskew = false;
-                                        $scope.preference.keepDeskew = false;
-                                        $scope.preference.angle = 32.8;
-                                        $scope.preference.threshold = 100; 
-                                        $scope.preference.pixelUnit = "micron";
-                                        $scope.preference.pixelWidth = 0.104;
-                                        $scope.preference.pixelHeight = 0.104;
-                                        $scope.preference.voxelDepth =  0.495;
-                                    }
-                                    // this is to makre sure preferehce has outputBasePath
-                                    if($scope.preference.hasOwnProperty('output') && 
-                                        !$scope.preference.hasOwnProperty('outputBasePath')){
-                                        var _pathParts = $scope.preference.output.split("/");
-                                        $scope.preference.outputBasePath = _pathParts.slice(0,-1).join("/");
-                                        $scope.preference.outputFolderName = _pathParts.slice(-1)[0]; 
-                                    }
+                UserPreferenceFactory.get().$promise.then(
+                    function (data) {
+                        if(data.hasOwnProperty("pref")){
+                            var prefData = data["pref"];
+                            if(prefData.hasOwnProperty("preference")){
+                                $scope.preference = JSON.parse(prefData["preference"]);
+                                // this is to make sure the value stored in database not bigger than 384 Gbs
+                                if ($scope.preference.mem > 384){
+                                    $scope.preference.mem = 100; //default
                                 }
-                                if(prefData.hasOwnProperty("files")){
-                                    $scope.selectedFilesGridOptions.data = JSON.parse(prefData["files"]);
+                                if(!$scope.preference.hasOwnProperty('separateOutputs')){
+                                    $scope.preference.separateOutputs = false;
                                 }
-                            } 
-                            else{
-                                setPreferenceToDefault();
-                            } //end else
-                        }
-                    );
-                });
+                                if(!$scope.preference.hasOwnProperty('deskew')){
+                                    $scope.preference.deskew = false;
+                                    $scope.preference.keepDeskew = false;
+                                    $scope.preference.angle = 32.8;
+                                    $scope.preference.threshold = 100; 
+                                    $scope.preference.pixelUnit = "micron";
+                                    $scope.preference.pixelWidth = 0.104;
+                                    $scope.preference.pixelHeight = 0.104;
+                                    $scope.preference.voxelDepth =  0.495;
+                                }
+                                // this is to makre sure preferehce has outputBasePath
+                                if($scope.preference.hasOwnProperty('output') && 
+                                    !$scope.preference.hasOwnProperty('outputBasePath')){
+                                    var _pathParts = $scope.preference.output.split("/");
+                                    $scope.preference.outputBasePath = _pathParts.slice(0,-1).join("/");
+                                    $scope.preference.outputFolderName = _pathParts.slice(-1)[0]; 
+                                }
+                            }
+                            if(prefData.hasOwnProperty("files")){
+                                $scope.selectedFilesGridOptions.data = JSON.parse(prefData["files"]);
+                            }
+                        } 
+                        else{
+                            console.log("not data. set default");
+                            setPreferenceToDefault();
+                        } //end else
+                    }
+                );
             });
 
             
@@ -284,12 +275,12 @@ angular.module('microvolution.job-submit', [])
                     var formData = getFormData();
                     if(formData.output == null || formData.output == ""){
                         $scope.loading = false;
-                        showAlertDialog('You have to choose an output folder');
+                        $scope.showAlertDialog('You have to choose an output folder');
                         return;              
                     }
                     if(formData.generatePsf=='True' && formData.NA >= formData.RI){
                         $scope.loading = false;
-                        showAlertDialog('Object NA must be smaller than Refactive Index');
+                        $scope.showAlertDialog('Object NA must be smaller than Refactive Index');
                         return;              
                     }
                     
@@ -311,20 +302,20 @@ angular.module('microvolution.job-submit', [])
                            function(data) {
                                $scope.loading = false;
                                console.log(data);
-                               $rootScope.$broadcast("notify", "Job submitted");
+                               $scope.broadcastMessage("Job submitted");
                                $location.path("/job-list");
                            },
                            function (error) {
                                $scope.loading = false;
-                               showAlertDialog("Error: Problem submitting:" + error);
+                               $scope.showAlertDialog("Error: Problem submitting:" + error);
                            }
                        );
                      }else{
                         console.log(executioninfo);
                      }
                }catch(err) {
-                    showAlertDialog("Error: Problem submitting:" + err);
-                   $scope.loading = false;
+                    $scope.showAlertDialog("Error: Problem submitting:" + err);
+                    $scope.loading = false;
                }
             };
 
@@ -358,7 +349,7 @@ angular.module('microvolution.job-submit', [])
                 var $ctrl = this;
                 $ctrl.modalContents = {};
                 $ctrl.modalContents.mode = mode;
-                $ctrl.modalContents.source = 'job-submit';
+                $ctrl.modalContents.source = 'job-submit-' + $scope.preference.psfType.value;
                 if($ctrl.modalContents.mode == 'selectoutput'){
                     $ctrl.modalContents.title = "Select Output Folder";
                     if($scope.preference.outputBasePath == null || $scope.preference.outputBasePath.trim()=="")
@@ -390,7 +381,7 @@ angular.module('microvolution.job-submit', [])
                 modalInstance.result.then(function (selected) {
                     $ctrl.selected = selected;
                     if($ctrl.selected==null || $ctrl.selected==""){
-                        showAlertDialog("You have not selected anything");
+                        $scope.showAlertDialog("You have not selected anything");
                         return;
                     }
                     if($ctrl.modalContents.mode === 'selectoutput'){
@@ -451,13 +442,13 @@ angular.module('microvolution.job-submit', [])
                                     $scope.suggestMem();
                                 }
                                 else{
-                                    showAlertDialog("Failed to load " + selectedList);
+                                    $scope.showAlertDialog("Failed to load " + selectedList);
                                 }
                                 $scope.loading = false;
                             },
                             function (error) {
                                 $scope.loading = false;
-                                showAlertDialog("Problem loading files:" + selectedList);
+                                $scope.showAlertDialog("Problem loading files:" + selectedList);
                             }
                         );
                     }
@@ -502,13 +493,13 @@ angular.module('microvolution.job-submit', [])
                                     $scope.suggestMem();
                                 }
                                 else{
-                                    showAlertDialog("Failed to load " + $ctrl.selected);
+                                    $scope.showAlertDialog("Failed to load " + $ctrl.selected);
                                 }
                                 $scope.loading = false;
                             },
                             function (error) {
                                 $scope.loading = false;
-                                showAlertDialog("Problem loading folder:" + $ctrl.selected);
+                                $scope.showAlertDialog("Problem loading folder:" + $ctrl.selected);
                             }
                         );
                     }
@@ -523,12 +514,12 @@ angular.module('microvolution.job-submit', [])
                                         }).$promise.then(
                             function(returnData) {
                                 $scope.loading = false;
-                                $rootScope.$broadcast("notify", "Successfuly save template " + templateName);
+                                $scope.broadcastMessage("Successfuly save template " + templateName);
                             },
                             function (error) {
                                 $scope.loading = false;
                                 console.log(error);
-                                $rootScope.$broadcast("notify", "Error: Problem saving template:" + templateName);
+                                $scope.broadcastMessage("Error: Problem saving template:" + templateName);
                             }
                         )
                     }
@@ -550,7 +541,7 @@ angular.module('microvolution.job-submit', [])
                             function (error) {
                                 $scope.loading = false;
                                 console.log(error);
-                                $rootScope.$broadcast("notify", "Error: Problem loading template:" + answer[0]);
+                                $scope.broadcastMessage("Error: Problem loading template:" + answer[0]);
                             }
                         );
                     }
@@ -558,7 +549,7 @@ angular.module('microvolution.job-submit', [])
                         $scope.preference.psfFile = $ctrl.selected;                
                         $scope.loading = true;
                         console.log($ctrl.selected);
-                        $rootScope.$broadcast("notify", "Loading Psf");
+                        $scope.broadcastMessage("Loading Psf");
                         FileInfoFactory.query({
                             'filepath': btoa($ctrl.selected)
                         }).$promise.then(
@@ -584,14 +575,14 @@ angular.module('microvolution.job-submit', [])
                                     $scope.preference.psfInfo.z = -1;
                                     $scope.preference.psfInfo.c = -1;
                                     $scope.preference.psfInfo.t = -1;
-                                    $rootScope.$broadcast("notify", "Failed to load " + $ctrl.selected);
+                                    $scope.broadcastMessage("Failed to load " + $ctrl.selected);
                                 }
                                 $scope.loading = false;
                             },
                             function (error) {
                                 $scope.loading = false;
                                 console.log(error);
-                                $rootScope.$broadcast("notify", "Error: Problem loading psf file:" + $ctrl.selected);
+                                $scope.broadcastMessage("Error: Problem loading psf file:" + $ctrl.selected);
                             }
                         );
                     }
@@ -600,16 +591,7 @@ angular.module('microvolution.job-submit', [])
                 });
             };
 
-            /************************************************************/
-            var showAlertDialog = function(message){
-                $mdDialog.show(
-                    $mdDialog.alert({
-                        title: 'Alert', 
-                        content: message,
-                        ok: "Close"
-                    })
-                );
-            }
+            
 
             /**********************************************************/
             /***********************************************************/
@@ -811,7 +793,7 @@ angular.module('microvolution.job-submit', [])
                     'generatePsf': true,
                     'readSpacing': true,
                     'readPsfSpacing': true,
-                    'psfModel': 0, //BornWolf or Vectorial
+                    'psfModel': $scope.psfModelTypes[0],//BornWolf or Vectorial
                     'NA': 1.4, // Numerical aperture of the objective. 
                     'ns': 1.33, //Refractive index of the sample's immersion medium
                     'lightSheetIlluminationNA': 0.5,
@@ -823,7 +805,7 @@ angular.module('microvolution.job-submit', [])
                     'pinholes': null,
                     'wavelengths': null,
                     'iterations': null,
-                    'psfType': 3,
+                    'psfType': $scope.psfTypes[3],
                     'swapZT': false,
                     'swapPsfZT': false,
                     'outputBasePath': '',

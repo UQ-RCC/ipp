@@ -9,13 +9,10 @@ angular.module('microvolution.preprocessing', [])
         });
     }])
 
-    .controller('PrepCtrl', ['$scope', '$rootScope', '$location', '$uibModal',
-        '$mdDialog', 'SessionInfoFactory', 'AccessTokenFactory', 'TokenHandler', 
-        'UserPreferenceFactory', 'FolderInfoFactory', 'PreprocessFactory', '$timeout',
-        function ($scope, $rootScope, $location, $uibModal,
-            $mdDialog, SessionInfoFactory, AccessTokenFactory, TokenHandler, 
-            UserPreferenceFactory, FolderInfoFactory, PreprocessFactory, $timeout) {
-
+    .controller('PrepCtrl', ['$scope', '$location', '$uibModal',
+        '$mdDialog', 'UserPreferenceFactory', 'FolderInfoFactory', 'PreprocessFactory', '$timeout',
+        function ($scope, $location, $uibModal,
+            $mdDialog, UserPreferenceFactory, FolderInfoFactory, PreprocessFactory, $timeout) {
 
             // call checkSession for the first ime
             $scope.checkSession(function(){
@@ -137,7 +134,7 @@ angular.module('microvolution.preprocessing', [])
                 modalInstance.result.then(function (selected) {
                     $ctrl.selected = selected;
                     if($ctrl.selected==null || $ctrl.selected==""){
-                        showAlertDialog("You have not selected anything");
+                        $scope.showAlertDialog("You have not selected anything");
                         return;
                     }
                     if($ctrl.modalContents.mode === 'selectoutput'){
@@ -154,7 +151,7 @@ angular.module('microvolution.preprocessing', [])
                                 if(data.length > 0){
                                     data.forEach(function (item){
                                         if(item['z'] <= 1){
-                                            showAlertDialog("Invalid folder of image stack. Ignored!");
+                                            $scope.showAlertDialog("Invalid folder of image stack. Ignored!");
                                             return;
                                         }
                                         item['name'] = item['path'].split('/').slice(-2).join("/");
@@ -189,13 +186,13 @@ angular.module('microvolution.preprocessing', [])
                                     100);
                                 }
                                 else{
-                                    showAlertDialog("Failed to load " + selectedList);
+                                    $scope.showAlertDialog("Failed to load " + selectedList);
                                 }
                                 $scope.loading = false;
                             },
                             function (error) {
                                 $scope.loading = false;
-                                showAlertDialog("Problem loading files:" + selectedList);
+                                $scope.showAlertDialog("Problem loading files:" + selectedList);
                             }
                         );
                     }
@@ -238,16 +235,6 @@ angular.module('microvolution.preprocessing', [])
                 savePreference();
             }
 
-            /************************************************************/
-            var showAlertDialog = function(message){
-                $mdDialog.show(
-                    $mdDialog.alert({
-                        title: 'Alert', 
-                        content: message,
-                        ok: "Close"
-                    })
-                );
-            }
             /***********************************************************/
             /**
             * save preference
@@ -281,12 +268,12 @@ angular.module('microvolution.preprocessing', [])
                    .$promise.then(
                        function(data) {
                             $scope.loading = false;
-                            $rootScope.$broadcast("notify", "Job submitted");
+                            $scope.broadcastMessage("Job submitted");
                             $location.path("/job-list");
                        },
                        function (error) {
                             $scope.loading = false;
-                            showAlertDialog("Error: Problem submitting:" + error);
+                            $scope.showAlertDialog("Error: Problem submitting:" + error);
                        }
                    );
             };

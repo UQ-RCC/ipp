@@ -9,10 +9,10 @@ angular.module('microvolution.files-manager', [])
         });
     }])
 
-    .controller('FilesManagerCtrl', ['$scope', '$rootScope', '$interval', 
+    .controller('FilesManagerCtrl', ['$scope', '$interval', 
         'ListFolderFactory', 'UserPreferenceFactory', '$mdDialog', '$uibModal', 
         'DeleteFilesFactory', 'CopyFilesFactory', 'MoveFilesFactory', 'ListCopyingProcessFactory',
-        function ($scope, $rootScope, $interval, 
+        function ($scope, $interval, 
             ListFolderFactory, UserPreferenceFactory, $mdDialog, $uibModal, 
             DeleteFilesFactory, CopyFilesFactory, MoveFilesFactory, ListCopyingProcessFactory) {
             
@@ -73,13 +73,13 @@ angular.module('microvolution.files-manager', [])
                     'folderpath': btoa(newPath)
                 }).$promise.then(
                      function(returnData){
-                        console.log("Listing:" + newPath);
-                        console.log(returnData);
+                        //console.log("Listing:" + newPath);
+                        //console.log(returnData);
                         //for some reason 500 is considered success :-s
                         if(returnData.status == 500){
                             $scope.filesmanagerOptions.loading = false;
                             $scope.filesmanagerOptions.currentpath = oldPath;
-                            $rootScope.$broadcast("notify", "Error loading:" + newPath + ". You probably do not have permission");
+                            $scope.broadcastMessage("Error loading:" + newPath + ". You probably do not have permission");
                             return;
                         }
                         var data = returnData.commandResult;
@@ -114,7 +114,7 @@ angular.module('microvolution.files-manager', [])
                     console.log("Error: failed to load:" + newPath);
                     $scope.filesmanagerOptions.loading = false;
                     $scope.filesmanagerOptions.currentpath = oldPath;
-                    $rootScope.$broadcast("notify", "Error loading:" + newPath + ". You probably do not have permission");
+                    $scope.broadcastMessage("Error loading:" + newPath + ". You probably do not have permission");
                 }                 
             };
 
@@ -159,9 +159,10 @@ angular.module('microvolution.files-manager', [])
                             $scope.filesmanagerOptions.shortcuts.unshift({'label': 'home', 'path':home})
                         }
                         // last path
-                        lastPaths = JSON.parse(data['lastPaths']);
-                        if(!lastPaths)
-                          lastPaths = {};
+                        if(data.hasOwnProperty("lastPaths"))
+                            lastPaths = JSON.parse(data['lastPaths']);
+                        else    
+                            lastPaths = {};
                         if(!lastPaths.hasOwnProperty('files-manager'))
                           lastPaths['files-manager'] = '';
                         // only set to last path if initialPath is not empty
@@ -196,11 +197,11 @@ angular.module('microvolution.files-manager', [])
                 try{
                     var successful = document.execCommand('copy');
                     if (!successful) throw successful;
-                    $rootScope.$broadcast("notify", "Copied to clipboard");
+                    $scope.broadcastMessage("Copied to clipboard");
 
                 }
                 catch (err) {
-                    $rootScope.$broadcast("notify", "Error: cannot copy to clipboard");
+                    $scope.broadcastMessage("Error: cannot copy to clipboard");
                 }
                 body.removeChild(copyElement);
             }
@@ -346,7 +347,7 @@ angular.module('microvolution.files-manager', [])
                     }
                 });
                 if(numberOfFolders != 1 && numberOfFolders != $scope.filesmanagerOptions.selectedItems.length){
-                    showAlertDialog("The portal only supports copy one folder at a time");
+                    $scope.showAlertDialog("The portal only supports copy one folder at a time");
                     return;
                 }
                 var sourceDir = selectedFilesPaths[0];
@@ -359,14 +360,14 @@ angular.module('microvolution.files-manager', [])
                             $scope.startCopyingFolder(ev, sourceDir, deleteSource);
                         }
                         else {
-                            showAlertDialog("It seems another copying process is going on. Wait for it to finish.");
+                            $scope.showAlertDialog("It seems another copying process is going on. Wait for it to finish.");
                             $scope.filesmanagerOptions.loading = false;
                             return;
                         }
                     },
                     function (error) {
                         $scope.filesmanagerOptions.loading = false;
-                        showAlertDialog("Problem accessing Wiener");
+                        $scope.showAlertDialog("Problem accessing Wiener");
                     }
                 );
 
@@ -405,7 +406,7 @@ angular.module('microvolution.files-manager', [])
                 modalInstance.result.then(function (selected) {
                     $ctrl.selected = selected;
                     if($ctrl.selected==null || $ctrl.selected==""){
-                        showAlertDialog("You have not selected anything");
+                        $scope.showAlertDialog("You have not selected anything");
                         return;
                     }
                     doCopyFolder(ev, sourceDir, $ctrl.selected, deleteSource, parallel);
@@ -424,7 +425,7 @@ angular.module('microvolution.files-manager', [])
                     },
                     function (error) {
                         $scope.filesmanagerOptions.loading = false;
-                        showAlertDialog("Problem deleting files:" + fileList);
+                        $scope.showAlertDialog("Problem deleting files:" + fileList);
                     }
                 );
             }
@@ -443,7 +444,7 @@ angular.module('microvolution.files-manager', [])
                         },
                         function (error) {
                             $scope.filesmanagerOptions.loading = false;
-                            showAlertDialog("Problem moving files:" + fileList);
+                            $scope.showAlertDialog("Problem moving files:" + fileList);
                         }
                     );  
                 } else {
@@ -454,28 +455,16 @@ angular.module('microvolution.files-manager', [])
                         'usermail': $scope.session.email
                     }).$promise.then(
                         function(returnData) {
-                            $rootScope.$broadcast("notify", "Start copying to :"+destDir);
+                            $scope.broadcastMessage("Start copying to :"+destDir);
                             $scope.filesmanagerOptions.loading = false;
                         },
                         function (error) {
                             $scope.filesmanagerOptions.loading = false;
-                            showAlertDialog("Problem copying files:" + fileList);
+                            $scope.showAlertDialog("Problem copying files:" + fileList);
                         }
                     );
                 }
             }
-
-            /************************************************************/
-            var showAlertDialog = function(message){
-                $mdDialog.show(
-                    $mdDialog.alert({
-                        title: 'Alert', 
-                        content: message,
-                        ok: "Close"
-                    })
-                );
-            }
-
 
         }]);
 

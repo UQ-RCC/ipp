@@ -2,10 +2,10 @@
 
 angular
 	.module('microvolution.filesexplorer', ['microvolution.services'])
-	.controller('ModalInstanceCtrl', ['$scope', '$rootScope', 
-    	'$uibModalInstance', 'modalContents', 'ListFolderFactory', 'UserPreferenceFactory',
-    function ($scope, $rootScope, 
-      	$uibModalInstance, modalContents, ListFolderFactory, UserPreferenceFactory) {
+	.controller('ModalInstanceCtrl', ['$scope', '$uibModalInstance', 
+    'modalContents', 'ListFolderFactory', 'UserPreferenceFactory',
+    function ($scope, $uibModalInstance, 
+      modalContents, ListFolderFactory, UserPreferenceFactory) {
       var $ctrl = this; 
       var lastPaths = null;
       $ctrl.modalContents = modalContents;
@@ -42,7 +42,7 @@ angular
               if(returnData.status == 500){
                   $ctrl.modalContents.loading = false;
                   $ctrl.modalContents.currentpath = oldPath;
-                  $rootScope.$broadcast("notify", "Error loading:" + newPath + ". You probably do not have permission");
+                  $scope.broadcastMessage("Error loading:" + newPath + ". You probably do not have permission");
                   return;
               }
               var data = returnData.commandResult;
@@ -78,7 +78,7 @@ angular
 	        console.log("Error: failed to load:" + newPath);
 	        $ctrl.modalContents.loading = false;
 	        $ctrl.modalContents.currentpath = oldPath;
-	        $rootScope.$broadcast("notify", "Error loading:" + newPath + ". You probably do not have permission");
+	        $scope.broadcastMessage("Error loading:" + newPath + ". You probably do not have permission");
 	    }                 
       };
 
@@ -93,11 +93,11 @@ angular
     		try{
     			var successful = document.execCommand('copy');
     			if (!successful) throw successful;
-    			$rootScope.$broadcast("notify", "Copied to clipboard");
+    			$scope.broadcastMessage("Copied to clipboard");
 
     		}
     		catch (err) {
-    			$rootScope.$broadcast("notify", "Error: cannot copy to clipboard");
+    			$scope.broadcastMessage("Error: cannot copy to clipboard");
     		}
     		body.removeChild(copyElement);
       }
@@ -152,9 +152,10 @@ angular
 		        	$ctrl.modalContents.shortcuts.unshift({'label': 'home', 'path':home})
 		        }
 		        // last path
-            lastPaths = JSON.parse(data['lastPaths']);
-            if(!lastPaths)
-              lastPaths = {};
+            if(data.hasOwnProperty("lastPaths"))
+                lastPaths = JSON.parse(data['lastPaths']);
+            else    
+                lastPaths = {};                        
             if(!lastPaths.hasOwnProperty($ctrl.modalContents.source))
               lastPaths[$ctrl.modalContents.source] = {};
             var lastPathSourceMode = lastPaths[$ctrl.modalContents.source][$ctrl.modalContents.mode];

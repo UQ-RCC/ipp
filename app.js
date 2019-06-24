@@ -98,11 +98,12 @@ angular.module('microvolution', [
                 return response;
             };
         }])
-    .controller('AppCtrl', ['$mdToast', '$rootScope', '$scope', '$interval', '$window', 
+    .controller('AppCtrl', ['$mdToast', '$rootScope', '$scope', '$interval', '$window', '$mdDialog',
         'settings','$location', 'SessionInfoFactory', 'EndSessionFactory', 
         'AccessTokenFactory', 'TokenHandler',
-        function ($mdToast, $rootScope, $scope, $interval, $window, 
-        settings,$location, SessionInfoFactory, EndSessionFactory, AccessTokenFactory, TokenHandler) {
+        function ($mdToast, $rootScope, $scope, $interval, $window, $mdDialog, 
+        settings,$location, SessionInfoFactory, EndSessionFactory, 
+        AccessTokenFactory, TokenHandler) {
             $rootScope.$on('notify', function (event, message) {
             $mdToast.show(
                 $mdToast.simple()
@@ -159,7 +160,7 @@ angular.module('microvolution', [
                     document.getElementById("filesmanagermgr").style.display="block";
                     document.getElementById("prepmgr").style.display="block";
                 } else {
-                    $rootScope.$broadcast("notify", "Login failed :(");
+                    $scope.broadcastMessage("Login failed :(");
                     //hide login and register button
                     $("#over").remove(); //added
                 }
@@ -242,6 +243,22 @@ angular.module('microvolution', [
                 $location.path(settings.URLs.staticHomePage);
             });
         };
+
+
+        /************************************************************/
+        $scope.showAlertDialog = function(message){
+            $mdDialog.show(
+                $mdDialog.alert({
+                    title: 'Alert', 
+                    content: message,
+                    ok: "Close"
+                })
+            );
+        }
+
+        $scope.broadcastMessage = function(message){
+            $rootScope.$broadcast("notify", message);
+        }
 
             
     }]);

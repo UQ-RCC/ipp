@@ -9,9 +9,9 @@ angular.module('microvolution.job-list', [])
         });
     }])
 
-    .controller('JobListCtrl', ['$scope', '$rootScope', '$interval', 
+    .controller('JobListCtrl', ['$scope', '$interval', 
         'ListJobsFactory', 'StopJobsFactory', 'TokenHandler',
-        function ($scope, $rootScope, $interval, 
+        function ($scope, $interval, 
         ListJobsFactory, StopJobsFactory, TokenHandler) {
             $scope.jobs = [];
             //refresh experiment
@@ -61,7 +61,7 @@ angular.module('microvolution.job-list', [])
                         }                            
                     },//end function data
                     function (error) {
-                        $rootScope.$broadcast("notify", "Could not refresh experiment list!");
+                        $scope.broadcastMessage("Could not refresh experiment list!");
                     }
                 );
             }
@@ -80,7 +80,7 @@ angular.module('microvolution.job-list', [])
                     if(job.selected){
                          StopJobsFactory.stop({'jobidNumber': job.jobid}).$promise.then(
                             function(){
-                                $rootScope.$broadcast("notify", "Job:" + job.jobid + " cancelled");
+                                $scope.broadcastMessage("Job:" + job.jobid + " cancelled");
                             }
                          );
                     }

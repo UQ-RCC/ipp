@@ -9,19 +9,15 @@ angular.module('microvolution.converter', [])
         });
     }])
 
-    .controller('ConverterCtrl', ['$scope', '$rootScope', '$location', 'SessionInfoFactory',
-        'AccessTokenFactory', 'TokenHandler', '$uibModal', '$mdDialog', 'ConverterFactory', 'UserPreferenceFactory',
-        function ($scope, $rootScope, $location, SessionInfoFactory, 
-            AccessTokenFactory, TokenHandler, $uibModal, $mdDialog, ConverterFactory, UserPreferenceFactory) {
+    .controller('ConverterCtrl', ['$scope', '$location',
+        '$uibModal', 'ConverterFactory', 'UserPreferenceFactory',
+        function ($scope, $location,
+            $uibModal, ConverterFactory, UserPreferenceFactory) {
             
             
             // Gets the session data and redirects to the login screen if the user is not logged in
-            SessionInfoFactory.get({}).$promise.then(function (sessionData) {
-		        if (sessionData.has_oauth_access_token !== "true") {
-                    $location.path("/landingpage");
-                    return;
-                }            
-                document.getElementById("home-btn").className="menu__link";
+            $scope.checkSession(function(){
+		        document.getElementById("home-btn").className="menu__link";
                 document.getElementById("contact-btn").className="menu__link";
                 document.getElementById("faq-btn").className="menu__link";
                 document.getElementById("login").style.display="none";
@@ -37,33 +33,28 @@ angular.module('microvolution.converter', [])
                 document.getElementById("filesmanagermgr").className="menu__link";
                 document.getElementById("prepmgr").style.display="block";
                 document.getElementById("prepmgr").className="menu__link";
-                $scope.session = sessionData;
-                AccessTokenFactory.get({}).$promise.then(function (tokenData) {
-                    TokenHandler.set(tokenData.access_token);
-                    UserPreferenceFactory.get().$promise.then(
-                        function (data) {
-                            if(data.hasOwnProperty("converter")){
-                                var prefData = data["converter"];
-                                if(prefData.hasOwnProperty("preference")){
-                                    $scope.convertOptions = JSON.parse(prefData["preference"]);
-                                    // make sure mode is set properlly
-                                    if(!$scope.convertOptions.hasOwnProperty("mode") ||
-                                             $scope.convertOptions == ''){
-                                        $scope.convertOptions.mode = 'file';
-                                    }
+                UserPreferenceFactory.get().$promise.then(
+                    function (data) {
+                        if(data.hasOwnProperty("converter")){
+                            var prefData = data["converter"];
+                            if(prefData.hasOwnProperty("preference")){
+                                $scope.convertOptions = JSON.parse(prefData["preference"]);
+                                // make sure mode is set properlly
+                                if(!$scope.convertOptions.hasOwnProperty("mode") ||
+                                         $scope.convertOptions == ''){
+                                    $scope.convertOptions.mode = 'file';
                                 }
-                                if(prefData.hasOwnProperty("files")){
-                                    $scope.selectedFilesGridOptions.data = JSON.parse(prefData["files"]);
-                                }
-                                //console.log($scope.convertOptions);
-                            } 
-                            else{
-                                setOptionsToDefault();
-                            } //end else
-                        }
-                    );
-                });
-                 
+                            }
+                            if(prefData.hasOwnProperty("files")){
+                                $scope.selectedFilesGridOptions.data = JSON.parse(prefData["files"]);
+                            }
+                            //console.log($scope.convertOptions);
+                        } 
+                        else{
+                            setOptionsToDefault();
+                        } //end else
+                    }
+                );
             });
 
             $scope.methods = [
@@ -172,12 +163,12 @@ angular.module('microvolution.converter', [])
                    .$promise.then(
                        function(data) {
                             $scope.loading = false;
-                            $rootScope.$broadcast("notify", "Job submitted");
+                            $scope.broadcastMessage("Job submitted");
                             $location.path("/job-list");
                        },
                        function (error) {
                             $scope.loading = false;
-                            showAlertDialog("Error: Problem submitting:" + error);
+                            $scope.showAlertDialog("Error: Problem submitting:" + error);
                        }
                    );
             };
@@ -211,7 +202,7 @@ angular.module('microvolution.converter', [])
                 modalInstance.result.then(function (selected) {
                     $ctrl.selected = selected;
                     if($ctrl.selected==null || $ctrl.selected==""){
-                        showAlertDialog("You have not selected anything");
+                        $scope.showAlertDialog("You have not selected anything");
                         return;
                     }
                     if($ctrl.modalContents.mode === 'selectoutput'){
@@ -246,21 +237,6 @@ angular.module('microvolution.converter', [])
                   console.log('Modal dismissed at: ' + new Date());
                 });
             };
-
-
-            
-            /************************************************************/
-            var showAlertDialog = function(message){
-                $mdDialog.show(
-                    $mdDialog.alert({
-                        title: 'Alert', 
-                        content: message,
-                        ok: "Close"
-                    })
-                );
-            };
-            
-
         }]);
 
 
