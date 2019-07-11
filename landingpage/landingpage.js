@@ -9,8 +9,8 @@ angular.module('microvolution.landingpage', [])
         });
     }])
 
-    .controller('LandingPageCtrl', ['$scope', '$resource', 'settings',
-        function ($scope, $resource, settings) {
+    .controller('LandingPageCtrl', ['SessionInfoFactory',
+        function (SessionInfoFactory) {
             document.getElementById("home-btn").className="menu__link active";
             document.getElementById("contact-btn").className="menu__link";
             document.getElementById("faq-btn").className="menu__link";
@@ -18,9 +18,7 @@ angular.module('microvolution.landingpage', [])
             document.getElementById("jobsubmitmgr").className="menu__link";
             document.getElementById("convertermgr").className="menu__link";
             document.getElementById("filesmanagermgr").className="menu__link";
-            $scope.signed_in = false;
-            var sessionInfoResource = $resource(settings.URLs.apiBase + settings.URLs.sessionInfo);
-            sessionInfoResource.get({}).$promise.then(function (sessionData) {
+            SessionInfoFactory.get({}).$promise.then(function (sessionData) {
                 if (sessionData.has_oauth_access_token !== "true") {
                     document.getElementById("login").style.display="block";
                     document.getElementById("logout-btn").style.display="none";
@@ -29,7 +27,6 @@ angular.module('microvolution.landingpage', [])
                     document.getElementById("convertermgr").style.display="none";
                     document.getElementById("filesmanagermgr").style.display="none";
                 }else{
-                    $scope.signed_in = true;
                     document.getElementById("login").style.display="none";
                     document.getElementById("logout-btn").style.display="block";
                     document.getElementById("joblistmgr").style.display="block";

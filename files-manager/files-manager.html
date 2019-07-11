@@ -43,6 +43,7 @@
 		                <md-icon md-svg-src="style/icons/delete.svg"/>
 		            </td>
 		            <td ng-disabled="filesmanagerOptions.loading" ng-click="visitShortcut(shortcut.path)">{{ shortcut.label }}
+		            <md-tooltip md-direction="right">{{ shortcut.path }}</md-tooltip>
 		            </td>
 		          </tr>
 		        </tbody>

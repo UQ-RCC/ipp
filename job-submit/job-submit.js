@@ -20,8 +20,45 @@ angular.module('microvolution.job-submit', [])
             
             //loading
             $scope.loading = false;
-            
-            // Gets the session data and redirects to the login screen if the user is not logged in
+            // preference data
+            var prefData = [];
+                
+            /************************************************************/
+            /**/
+            /*************************************************************/
+            var setCorrectPsfPref = function(){
+                prefData.forEach(function(prefJson){
+                    if(parseInt(prefJson['psfType']) == parseInt($scope.psfType.value)){
+                        if(prefJson.hasOwnProperty('preference')){
+                            var psfPrefData = JSON.parse(prefJson['preference']);
+                            if(psfPrefData.mem > 384)
+                                psfPrefData.mem = 100;
+                            if(!psfPrefData.hasOwnProperty('separateOutputs'))
+                                psfPrefData.separateOutputs = false;
+                            if(psfPrefData.hasOwnProperty('deskew')){
+                                psfPrefData.deskew = false;
+                                psfPrefData.deskew = false;
+                                psfPrefData.keepDeskew = false;
+                                psfPrefData.angle = 32.8;
+                                psfPrefData.threshold = 100; 
+                                psfPrefData.pixelUnit = "micron";
+                                psfPrefData.pixelWidth = 0.104;
+                                psfPrefData.pixelHeight = 0.104;
+                                psfPrefData.voxelDepth =  0.495;
+                            }                                        
+                            $scope.preference = psfPrefData;
+                        }
+                        if(prefJson.hasOwnProperty("files")){
+                            $scope.selectedFilesGridOptions.data = 
+                                            JSON.parse(prefJson["files"]);
+                        }
+                    }
+                });
+            }
+
+            /************************************************************/
+            /*invokve the checkSesion method from main*/
+            /************************************************************/
             $scope.checkSession(function(){
                 document.getElementById("home-btn").className="menu__link";
                 document.getElementById("contact-btn").className="menu__link";
@@ -38,51 +75,44 @@ angular.module('microvolution.job-submit', [])
                 document.getElementById("filesmanagermgr").className="menu__link";
                 document.getElementById("prepmgr").style.display="block";
                 document.getElementById("prepmgr").className="menu__link";
-                
+                setPreferenceToDefault();
+                $scope.psfType = $scope.psfTypes[3];
                 UserPreferenceFactory.get().$promise.then(
                     function (data) {
+                        // psfTYpe
+                        if(data.hasOwnProperty("psfType")){
+                            $scope.psfType = $scope.psfTypes[parseInt(data['psfType'])];
+                        }
+                        //pref
                         if(data.hasOwnProperty("pref")){
-                            var prefData = data["pref"];
-                            if(prefData.hasOwnProperty("preference")){
-                                $scope.preference = JSON.parse(prefData["preference"]);
-                                // this is to make sure the value stored in database not bigger than 384 Gbs
-                                if ($scope.preference.mem > 384){
-                                    $scope.preference.mem = 100; //default
-                                }
-                                if(!$scope.preference.hasOwnProperty('separateOutputs')){
-                                    $scope.preference.separateOutputs = false;
-                                }
-                                if(!$scope.preference.hasOwnProperty('deskew')){
-                                    $scope.preference.deskew = false;
-                                    $scope.preference.keepDeskew = false;
-                                    $scope.preference.angle = 32.8;
-                                    $scope.preference.threshold = 100; 
-                                    $scope.preference.pixelUnit = "micron";
-                                    $scope.preference.pixelWidth = 0.104;
-                                    $scope.preference.pixelHeight = 0.104;
-                                    $scope.preference.voxelDepth =  0.495;
-                                }
-                                // this is to makre sure preferehce has outputBasePath
-                                if($scope.preference.hasOwnProperty('output') && 
-                                    !$scope.preference.hasOwnProperty('outputBasePath')){
-                                    var _pathParts = $scope.preference.output.split("/");
-                                    $scope.preference.outputBasePath = _pathParts.slice(0,-1).join("/");
-                                    $scope.preference.outputFolderName = _pathParts.slice(-1)[0]; 
-                                }
-                            }
-                            if(prefData.hasOwnProperty("files")){
-                                $scope.selectedFilesGridOptions.data = JSON.parse(prefData["files"]);
-                            }
-                        } 
-                        else{
-                            console.log("not data. set default");
-                            setPreferenceToDefault();
-                        } //end else
+                            prefData = data["pref"];
+                            setCorrectPsfPref();
+                        }
                     }
-                );
+                );//end user preference get
             });
 
             
+
+            /***********************************************************/
+            /**
+            * save preference
+            */
+            /**********************************************************/
+            var savePreference = function(){
+                for( var i = 0; i < prefData.length; i++){ 
+                   if(parseInt(prefData[i]['psfType']) == parseInt($scope.psfType.value)) {
+                     prefData.splice(i, 1); 
+                   }
+                }
+                prefData.push({
+                    'psfType': parseInt($scope.psfType.value),
+                    'preference': angular.toJson($scope.preference),
+                    'files': angular.toJson($scope.selectedFilesGridOptions.data)
+                });
+                UserPreferenceFactory.update({}, JSON.stringify({'pref':prefData}));
+            }
+
             // selected file
             $scope.selectedItem = null;
     
@@ -124,20 +154,10 @@ angular.module('microvolution.job-submit', [])
                 {'label': 'Light Sheet', 'value': 3},  
             ];
 
-            // $scope.psfTypeChange = function(){
-            //     if($scope.preference.psfType.value == 3){
-            //         $scope.preference.NA = 1.1;
-            //         $scope.preference.riPresetSelected = $scope.riPresets[2];
-            //         $scope.preference.nsPresetSelected = $scope.nsPresets[1];
-            //         $scope.preference.RI = 1.33;
-            //         $scope.preference.ns = 1.33;
-            //         $scope.preference.lightSheetIlluminationNA = 0.5;
-            //     }
-            // }
 
             $scope.resetPreference = function(){
-                //resetting ----
-                // todo
+                setPreferenceToDefault();
+                savePreference();
             }
             // psfModel
             $scope.psfModelTypes = [
@@ -343,13 +363,24 @@ angular.module('microvolution.job-submit', [])
                 }
             }
 
+            /************************************************************************************/
+            /********* psfType change ****************/
+            $scope.psfTypeChanged = function(){
+                $scope.selectedFilesGridOptions.data = [];
+                setPreferenceToDefault();
+                setCorrectPsfPref();
+                UserPreferenceFactory.update({}, 
+                    JSON.stringify({'psfType':parseInt($scope.psfType.value)})
+                );
+                savePreference();
+            };
 
             /*************************open file explroer*****************************************/
             $scope.openFilesExplorer = function(mode){
                 var $ctrl = this;
                 $ctrl.modalContents = {};
                 $ctrl.modalContents.mode = mode;
-                $ctrl.modalContents.source = 'job-submit-' + $scope.preference.psfType.value;
+                $ctrl.modalContents.source = 'job-submit-' + $scope.psfType.value;
                 if($ctrl.modalContents.mode == 'selectoutput'){
                     $ctrl.modalContents.title = "Select Output Folder";
                     if($scope.preference.outputBasePath == null || $scope.preference.outputBasePath.trim()=="")
@@ -389,6 +420,7 @@ angular.module('microvolution.job-submit', [])
                         var _pathParts = $ctrl.selected.split("/");
                         $scope.preference.outputBasePath = _pathParts.slice(0,-1).join("/");
                         $scope.preference.outputFolderName = _pathParts.slice(-1)[0];
+                        savePreference();
                     }
                     else if($ctrl.modalContents.mode === 'selectfiles'){
                         var selectedList = "";
@@ -445,6 +477,7 @@ angular.module('microvolution.job-submit', [])
                                     $scope.showAlertDialog("Failed to load " + selectedList);
                                 }
                                 $scope.loading = false;
+                                savePreference();
                             },
                             function (error) {
                                 $scope.loading = false;
@@ -496,6 +529,7 @@ angular.module('microvolution.job-submit', [])
                                     $scope.showAlertDialog("Failed to load " + $ctrl.selected);
                                 }
                                 $scope.loading = false;
+                                savePreference();
                             },
                             function (error) {
                                 $scope.loading = false;
@@ -578,6 +612,7 @@ angular.module('microvolution.job-submit', [])
                                     $scope.broadcastMessage("Failed to load " + $ctrl.selected);
                                 }
                                 $scope.loading = false;
+                                savePreference();
                             },
                             function (error) {
                                 $scope.loading = false;
@@ -585,7 +620,7 @@ angular.module('microvolution.job-submit', [])
                                 $scope.broadcastMessage("Error: Problem loading psf file:" + $ctrl.selected);
                             }
                         );
-                    }
+                    }                    
                 }, function () {
                   console.log('Modal dismissed at: ' + new Date());
                 });
@@ -593,20 +628,7 @@ angular.module('microvolution.job-submit', [])
 
             
 
-            /**********************************************************/
-            /***********************************************************/
-            /**
-            * save preference
-            */
-            var savePreference = function(){
-                //save it
-                var savedData = {"pref": {
-                                        "preference": angular.toJson($scope.preference), 
-                                        "files": angular.toJson($scope.selectedFilesGridOptions.data)
-                                        }
-                                };
-                UserPreferenceFactory.update({}, JSON.stringify(savedData));
-            }
+
 
             var toPythonBoolean = function (booleanValue){
             if(booleanValue == null || booleanValue == undefined)
@@ -673,7 +695,7 @@ angular.module('microvolution.job-submit', [])
                    'files': selectedFiles.join(),
                    'output': ($scope.preference.outputBasePath=='')? '': $scope.preference.outputBasePath+"/"+$scope.preference.outputFolderName,
                    //'prefFile': 'run.pref',
-                   'psfType': $scope.preference.psfType.value,
+                   'psfType': parseInt($scope.psfType.value),
                    'lightSheetIlluminationNA': $scope.preference.lightSheetIlluminationNA,
                    //////new stuff here////
                    'latSpacing': $scope.preference.lateralSpacing,
@@ -738,7 +760,7 @@ angular.module('microvolution.job-submit', [])
                 $scope.preference.prefilter = $scope.preFilterTypes[parseInt(data.preFilter)];
                 $scope.preference.psfFile = data.psfFile;
                 $scope.preference.psfModel = $scope.psfModelTypes[parseInt(data.psfModel)];
-                $scope.preference.psfType = $scope.psfTypes[parseInt(data.psfType)];
+                $scope.psfType = $scope.psfTypes[parseInt(data.psfType)];
                 $scope.preference.lightSheetIlluminationNA = parseFloat(data.lightSheetIlluminationNA);
                 $scope.preference.regularization = parseFloat(data.regularization);
                 $scope.preference.regularizationType = $scope.regularizationType[parseInt(data.regularizationType)];
@@ -805,7 +827,6 @@ angular.module('microvolution.job-submit', [])
                     'pinholes': null,
                     'wavelengths': null,
                     'iterations': null,
-                    'psfType': $scope.psfTypes[3],
                     'swapZT': false,
                     'swapPsfZT': false,
                     'outputBasePath': '',

@@ -7,9 +7,8 @@
     </div>
     <div layout="row" layout-align="space-around center" class="div-normal-height">
       <span class="md-primary">Illumination Type</span>
-      <md-select ng-model=preference.psfType
-      aria-label="psfType">
-        <md-option ng-value="APsfType" ng-repeat="APsfType in psfTypes" ng-selected="APsfType.value==preference.psfType.value"> 
+      <md-select ng-model=psfType ng-change="psfTypeChanged()" aria-label="psfType">
+        <md-option ng-value="APsfType" ng-repeat="APsfType in psfTypes" ng-selected="APsfType.value==psfType.value"> 
           {{ APsfType.label }}
         </md-option>
       </md-select>
@@ -110,18 +109,8 @@
                         </md-option>
                       </md-select>
                     </div>
-                    <!--div layout="row" layout-align="space-between center" class="div-normal-height">
-                      <span>Illumination Type</span>
-                      <md-select ng-model=preference.psfType
-                      aria-label="psfType">
-                        <md-option ng-value="APsfType" ng-repeat="APsfType in psfTypes" 
-                                                          ng-selected="APsfType.value==3"> 
-                          {{ APsfType.label }}
-                        </md-option>
-                      </md-select>
-                    </div-->
-
-                    <div ng-if="preference.psfType.value === 3" layout="row" layout-align="space-between center" class="div-normal-height">
+                    
+                    <div ng-if="psfType.value === 3" layout="row" layout-align="space-between center" class="div-normal-height">
                       <span>Light sheet illumination NA</span>
                       <input type="number" ng-model="preference.lightSheetIlluminationNA" />
                     </div>
@@ -160,7 +149,7 @@
                   </div>
                   <div>
                     <md-divider ></md-divider>
-                    <div layout="row" layout-align="space-around center" ng-if="preference.psfType.value==3">
+                    <div layout="row" layout-align="space-around center" ng-if="psfType.value==3">
                       <md-checkbox aria-label="deskew" ng-model="preference.deskew">
                         Deskew
                       </md-checkbox>
@@ -223,7 +212,7 @@
                           <th style="text-align: center">Iterations</th>
                           <th style="text-align: center" ng-if="preference.generatePsf">Emission Wavelength(mm)</th>
                           <th ng-if="preference.backgroundType === 'Manual'" style="text-align: center">Background</th>
-                          <th ng-if="preference.psfType.value == 1" style="text-align: center">Backprojected pinhole radius(nm)</th>
+                          <th ng-if="psfType.value == 1" style="text-align: center">Backprojected pinhole radius(nm)</th>
                         </tr>
                       </thead>
                        <tbody>
@@ -240,7 +229,7 @@
                             <input type="number" name="input" ng-model=channel.background>
                           </td>
 
-                          <td ng-if="preference.psfType.value === 1" style="text-align: center">
+                          <td ng-if="psfType.value === 1" style="text-align: center">
                             <input type="number" name="input" ng-model=channel.pinhole>
                           </td>
 

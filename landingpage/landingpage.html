@@ -1,13 +1,13 @@
 <!-- Page Content -->
     <div class="container">
         <br />
-        <div ng-show="signed_in!=true">
+        <div ng-show="!session || !session.has_oauth_access_token">
             <h2>
                 <b>You are not sign in.</b>
             </h2>
             <p>Please sign in to continue.</p>
         </div>
-        <div ng-show="signed_in==true">
+        <div ng-show="session && session.has_oauth_access_token">
             <h2>
                 <b>You are already signed in.</b>
             </h2>
