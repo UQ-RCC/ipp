@@ -18,12 +18,13 @@ angular.module('microvolution.partials', ['ngRoute', 'ngResource'])
         function ($scope, $rootScope, $mdMedia, $location) {
             //document.getElementById("myFooter").style.visibility="hidden";
             var path = $location.path().replace(/\//g,'') + "-btn";
+            document.getElementById("home-btn").className="menu__link";
             document.getElementById("joblistmgr").className="menu__link";
             document.getElementById("jobsubmitmgr").className="menu__link";
             document.getElementById("convertermgr").className="menu__link";
             document.getElementById("filesmanagermgr").className="menu__link";
             document.getElementById("prepmgr").className="menu__link";
-            ["home-btn", "contact-btn", "faq-btn"].forEach(function(item){
+            ["contact-btn"].forEach(function(item){
                 if(item == path){
                     document.getElementById(item).className="menu__link active";
                 }

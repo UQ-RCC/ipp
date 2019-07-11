@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('microvolution.job-submit', [])
+angular.module('microvolution.job-submit', ['ngRoute', 'ngResource'])
 
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/job-submit', {
@@ -60,6 +60,7 @@ angular.module('microvolution.job-submit', [])
             /*invokve the checkSesion method from main*/
             /************************************************************/
             $scope.checkSession(function(){
+                                console.log("checkig session...");
                 document.getElementById("home-btn").className="menu__link";
                 document.getElementById("contact-btn").className="menu__link";
                 document.getElementById("login").style.display="none";

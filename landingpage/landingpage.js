@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('microvolution.landingpage', [])
+angular.module('microvolution.landingpage', ['ngRoute', 'ngResource'])
 
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/landingpage', {

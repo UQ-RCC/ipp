@@ -6,7 +6,7 @@ angular.module('microvolution', [
     'ngRoute',
     'ui.grid', 
     'ui.bootstrap',
-    'as.sortable',
+    //'as.sortable',
     'ui.grid.selection',
     'microvolution.job-list',
     'microvolution.job-submit',
@@ -25,7 +25,6 @@ angular.module('microvolution', [
         }])
     .constant('settings', {
         'URLs': {
-            'staticHomePage': 'http://localhost/',
             'base': '/client/',
             'apiBase': '/client/api/',
             'oauthStart': 'login',
@@ -149,6 +148,7 @@ angular.module('microvolution', [
         // Called any time the login popup closes
         var onLoginWindowClose = function() {
             SessionInfoFactory.get({}, function(data) {
+                console.log(data);
                 if (data.has_oauth_access_token === "true") {
                     document.getElementById("home-btn").style.display="none";
                     document.getElementById("login").style.display="none";
@@ -197,9 +197,11 @@ angular.module('microvolution', [
         $scope.checkSession = function(onValidAccessTokenCallback){
             SessionInfoFactory.get({}, function(data) {
                 if (data.has_oauth_access_token !== "true") {
+                    console.log("to langding page");
                     $location.path("/landingpage");
                     return;
                 } else {
+                    console.log("login");
                     $scope.session = data;
                     AccessTokenFactory.get({}).$promise.then(function (tokenData) {
                         TokenHandler.set(tokenData.access_token);
@@ -240,7 +242,7 @@ angular.module('microvolution', [
                     document.getElementById("prepmgr").style.display="none";
                 }
 
-                $location.path(settings.URLs.staticHomePage);
+                $location.path('/landingpage');
             });
         };
 

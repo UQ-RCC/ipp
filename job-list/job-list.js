@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('microvolution.job-list', [])
+angular.module('microvolution.job-list', ['ngRoute', 'ngResource'])
 
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/job-list', {

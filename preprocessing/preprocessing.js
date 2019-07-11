@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('microvolution.preprocessing', [])
+angular.module('microvolution.preprocessing', ['ngRoute', 'ngResource'])
 
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/preprocessing', {

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('microvolution.converter', [])
+angular.module('microvolution.converter', ['ngRoute', 'ngResource'])
 
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider.when('/converter', {
@@ -17,6 +17,7 @@ angular.module('microvolution.converter', [])
             
             // Gets the session data and redirects to the login screen if the user is not logged in
             $scope.checkSession(function(){
+                console.log("checkig session...");
 		        document.getElementById("home-btn").className="menu__link";
                 document.getElementById("contact-btn").className="menu__link";
                 document.getElementById("faq-btn").className="menu__link";
