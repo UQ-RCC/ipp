@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+  - "7"
+script: npm install && mkdir artefacts && tar -zcvf  artefacts/imbportal-$(git describe --tags --abbrev=0).tar.gz --exclude=./artefacts .
+install: true
+deploy:
+  provider: releases
+  api_key:
+    secure: "a0R45nEJc/Dow6bfMegxYgtr22NfrHp0pvGFp5IyRXRSUNkF25xtMgOEbRum0YrxurlMrEhiHPmU3uXtPFxBNPgXBJbLnvD4Maa3axTgp15MB9u0ThwgfiFCa7yLaOG2rpgFyYyzWYioS/5jjkZ6ieV1bq9u4+R80BidLo8XebnNzq+op4gauddlklZu6oX1sfVcRld9WFwluplwGQC0ZSlmT/0zjG7hD1dCVszbjydGImD3OV5WLB+F7x77G+4r7nabpvpDycv96QUbXcTsjSGTzL5utJFPmEFIWbzQoAqujuLQ/Cq2d1gXEz2NkCJWk2rR19bBQdD+eSaVtj9qEmFvfUttU5xSA9BuDk8+bCzSBAN2iZ85zXjGVvT5vWlT/AnOg99N87BfPA4IU+Djm4N6af3mrMkC2mjXLeju8o9Bma4GWzllxlIQepQC4yC+vv8jTO88WR4GM18u0ykkptejnj68j3pvdzOLLpN2EbmOsZvuG62aQ/vKev28b/QLqIQjAtFUYphFbdQln1Qi8X//m5apybR9KjHh3iw9R3Sqoevo4FKFkrrhmzV7M3w04Co1qfQWqGU988OVz2P93XpmmEnVGQNJ6GCRDry43KQ+MGFVPXllLSEKj2067tyQzv9Ef4+1Mv+hUWCQoF/7edzlfrP+H7rsgk1pE3nZSoY="
+  skip_cleanup: true
+  file_glob: true
+  file: artefacts/imbportal-*.tar.gz
+  draft: false
+  overwrite: true
+  on:
+    tags: true
