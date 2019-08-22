@@ -60,7 +60,7 @@ angular.
   }])
 
   .factory('UserPreferenceFactory', ['$resource', 'settings', function ($resource, settings) {
-      return $resource(settings.URLs.apiBase + 'preference', {}, {
+      return $resource(settings.URLs.apiBase + 'preference/wiener', {}, {
           get: { method: 'GET', isArray: false},
           update: { method: 'PUT', isArray: false}
       })
