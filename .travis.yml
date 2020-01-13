@@ -1,15 +1,26 @@
 language: node_js
 node_js:
   - "7"
-script: npm install && mkdir artefacts && tar -zcvf  artefacts/imbportal-$(git describe --tags --abbrev=0).tar.gz --exclude=./artefacts .
+
+script:
+  - npm install
+  - mkdir artifacts
+  - |
+    GIT_DESCRIBE=$(git describe --tags --abbrev=0)
+    tar -czf artifacts/imbportal-${GIT_DESCRIBE}.tar.gz \
+      --transform "s/^\./imbportal-${GIT_DESCRIBE}/" \
+      --exclude=./artifacts \
+      --exclude=./.git \
+      .
+
 install: true
 deploy:
   provider: releases
   api_key:
-    secure: "oqh3hEhBeXLyGUJsUqxaK0Vc8M5GNLaZbNSJIzj5PNbs5Z3h11gTGondCt8/XWlAFDUTx5rIOKkqGm3HHofbNEGNnNQc5Pb1FEbU2nPuq4fDaMlolon1EK7iKRxUt0+Z/sb++A0JfkEmL+KGoOm/mC3vguDW0Wr4upUjrD+d8Lrifm1CYnECkoJxfZ3hwsxxS0feHjIJenwC/E152QoLWy9T2K0vTP5hppDukOhWoDKucPdmZJoVaTdD3izvUBZlb8EdvT1Z+zNZtr1BZttrENSLEUE36SxMslWX8jkSM8WV+cN6K3zpy+FCJJrooV2IfXb8odHaw/5qeBIv1pQ4vR0QogMpBBm1yOmXTedyQ1BfPMrtgmHENTn3e/cbUcqPOlfHbbq8wlYIdsauNzIAWBkY+5HTxyYiXUSagtJjRrIqvjE6lCZtY9ZXzYw1USf6WgGK9tow6O6zulxPwvIj8VZzE7IiH83O/mibVnwp9jgFhMkcRd91LNxVkj0UQK5g2RK7x+jyanqPqyYsVPKpr33IhEb46MBumoY2VUJSwal3PXdev5Mfin3fPLFuIt+s5dg4GeWKX3IWoze2450jO0sjZwbPa/Ww7sXVtWPUZmGEVsxlYCbIbXVHG7rYB2SsxX0Rz8KuIdfmIe+zPdx+WN2e6QDL13AkUsNqW26xg7I="
+    secure: e38TkHQiGuD2//U3mJb/cnmltByr72sS2qpNNmSWkyh6vWjFGZXYfHDgT4BKHPxmbyJ3/D3DySQpw6oo1HpR7GxKmD1zqulUNQf1jedD0biYwxNQf1Ru+LvS4PRPnpDOV8Y0rulQ0qnrc+6hL3/kc1k4RTvSE0GcB/T1K4XXhCGSUh5lcDhtW80q7vq60wrQ4NfiXZZiaoOi2mN0n0WNj6elhKJ1j00EXmVFOwzPrSitR1UXbtEaP72LopegeIBADnQ7sK55uqhAgXvxdwEb1CI5kCWZV7wrnGIVY7UyOGlKyO2wWgoD8okjLDmUkztN8NFF77AzmCiWBwSx/CZklhAxQw1EQssrdQgprOmsZXwgRq/nbD/ASwiXOXQn+lmQ/DcI8lgIbQW6yTK1OQDrlPsG2dOENrT9efltJBocFdRjex+LiYvigxFJeBtNwKsJ14+aYdkoW4hJ5BPeutiGdpWdzG2++Ut0AfdRcatV/UNrxXKqZaXRSb9LY7gboyfUCvstbWPfXZWFSaPOaQezBiyF8P5v4SJ1CPXxT1C9UMeD07VDDJ7WXYeBodJ0Pgbm4JNlB2NKccp57YT2mR/VRgR7SZ1UkQZ7ILLItVLeXbf2jxeFnEP4uXn+fvxAPyaUxGiB87yw1mcK2gZ7N/Ekgn8xqUCv23frX0piBx4BdBU=
   skip_cleanup: true
   file_glob: true
-  file: artefacts/imbportal-*.tar.gz
+  file: artifacts/imbportal-*.tar.gz
   draft: false
   overwrite: true
   on:
