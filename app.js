@@ -31,7 +31,7 @@ angular.module('microvolution', [
             'logout': 'end_session?service=wiener',
             'sessionInfo': 'session_info?service=wiener',
             'accessToken': 'access_token?service=wiener',
-            'serverApiBase': 'https://imbmicroscopy.rcc.uq.edu.au/wienerbackend/api/',
+            'resourceApiBase': 'https://backend.nimrod-portal.cloud.edu.au/wienerbackend/api/',
             'home': 'execute/home',
             'stop': 'execute/stop',
             'listJobs': 'execute/listall',

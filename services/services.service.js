@@ -53,115 +53,115 @@ angular.module('microvolution.services')
     })
   }])
   .factory('UserHomeFactory', ['$resource', 'TokenHandler', 'settings', function ($resource, tokenHandler, settings) {
-    var resource = $resource(settings.URLs.serverApiBase + settings.URLs.home, {}, {
+    var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.home, {}, {
       query: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
     });
     return resource;
   }])
   .factory('ListFolderFactory', ['$resource', 'TokenHandler', 'settings', function ($resource, tokenHandler, settings) {
-    var resource = $resource(settings.URLs.serverApiBase + settings.URLs.listFolderBase64, {}, {
+    var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.listFolderBase64, {}, {
       query: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
     });
     return resource;
   }])
   .factory('ListTemplateFactory', ['$resource', 'TokenHandler', 'settings', function ($resource, tokenHandler, settings) {
-    var resource = $resource(settings.URLs.serverApiBase + settings.URLs.listTemplate, {}, {
+    var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.listTemplate, {}, {
       query: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
     });
     return resource;
   }])
   .factory('FileInfoFactory', ['$resource', 'TokenHandler', 'settings', function ($resource, tokenHandler, settings) {
-    var resource = $resource(settings.URLs.serverApiBase + settings.URLs.fileInfoBase64, {}, {
+    var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.fileInfoBase64, {}, {
       query: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
     });
     return resource;
   }])
   .factory('FilesInfoFactory', ['$resource', 'TokenHandler', 'settings', function ($resource, tokenHandler, settings) {
-    var resource = $resource(settings.URLs.serverApiBase + settings.URLs.filesInfoBase64, {}, {
+    var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.filesInfoBase64, {}, {
       query: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
     });
     return resource;
   }])
   .factory('FolderInfoFactory', ['$resource', 'TokenHandler', 'settings',
     function ($resource, tokenHandler, settings) {
-      var resource = $resource(settings.URLs.serverApiBase + settings.URLs.folderInfoBase64, {}, {
+      var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.folderInfoBase64, {}, {
         query: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
       });
       return resource;
     }])
   .factory('LoadTemplateFactory', ['$resource', 'TokenHandler', 'settings',
     function ($resource, tokenHandler, settings) {
-      var resource = $resource(settings.URLs.serverApiBase + settings.URLs.loadTemplate, {}, {
+      var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.loadTemplate, {}, {
         query: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
       });
       return resource;
     }])
   .factory('SaveTemplateFactory', ['$resource', 'TokenHandler', 'settings',
     function ($resource, tokenHandler, settings) {
-      var resource = $resource(settings.URLs.serverApiBase + settings.URLs.saveTemplateBase64, {}, {
+      var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.saveTemplateBase64, {}, {
         query: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
       });
       return resource;
     }])
   .factory('ExecuteJobFactory', ['$resource', 'TokenHandler', 'settings',
     function ($resource, tokenHandler, settings) {
-      var resource = $resource(settings.URLs.serverApiBase + settings.URLs.executeMicrovolutionBase64, {}, {
+      var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.executeMicrovolutionBase64, {}, {
         query: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
       });
       return resource;
     }])
   .factory('ListJobsFactory', ['$resource', 'TokenHandler', 'settings',
     function ($resource, tokenHandler, settings) {
-      var resource = $resource(settings.URLs.serverApiBase + settings.URLs.listJobs, {}, {
+      var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.listJobs, {}, {
         query: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
       });
       return resource;
     }])
   .factory('StopJobsFactory', ['$resource', 'TokenHandler', 'settings',
     function ($resource, tokenHandler, settings) {
-      var resource = $resource(settings.URLs.serverApiBase + settings.URLs.stop, {}, {
+      var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.stop, {}, {
         stop: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
       });
       return resource;
     }])
   .factory('ConverterFactory', ['$resource', 'TokenHandler', 'settings',
     function ($resource, tokenHandler, settings) {
-      var resource = $resource(settings.URLs.serverApiBase + settings.URLs.convertFileBase64, {}, {
+      var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.convertFileBase64, {}, {
         query: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
       });
       return resource;
     }])
   .factory('DeleteFilesFactory', ['$resource', 'TokenHandler', 'settings',
     function ($resource, tokenHandler, settings) {
-      var resource = $resource(settings.URLs.serverApiBase + settings.URLs.deleteBase64, {}, {
+      var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.deleteBase64, {}, {
         delete: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
       });
       return resource;
     }])
   .factory('CopyFilesFactory', ['$resource', 'TokenHandler', 'settings',
     function ($resource, tokenHandler, settings) {
-      var resource = $resource(settings.URLs.serverApiBase + settings.URLs.copyBase64, {}, {
+      var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.copyBase64, {}, {
         copy: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
       });
       return resource;
     }])
   .factory('MoveFilesFactory', ['$resource', 'TokenHandler', 'settings',
     function ($resource, tokenHandler, settings) {
-      var resource = $resource(settings.URLs.serverApiBase + settings.URLs.moveBase64, {}, {
+      var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.moveBase64, {}, {
         move: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
       });
       return resource;
     }])
   .factory('ListCopyingProcessFactory', ['$resource', 'TokenHandler', 'settings',
     function ($resource, tokenHandler, settings) {
-      var resource = $resource(settings.URLs.serverApiBase + settings.URLs.listCopyingProcess, {}, {
+      var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.listCopyingProcess, {}, {
         list: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
       });
       return resource;
     }])
   .factory('PreprocessFactory', ['$resource', 'TokenHandler', 'settings',
     function ($resource, tokenHandler, settings) {
-      var resource = $resource(settings.URLs.serverApiBase + settings.URLs.preprocess, {}, {
+      var resource = $resource(settings.URLs.resourceApiBase + settings.URLs.preprocess, {}, {
         process: tokenHandler.wrapConfig({ method: 'GET', isArray: false }),
       });
       return resource;
