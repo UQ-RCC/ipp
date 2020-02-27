@@ -114,7 +114,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource'])
                     'files': angular.toJson($scope.selectedFilesGridOptions.data)
                 });
                 userData['pref'] = prefData;
-                UserPreferenceFactory.update({}, JSON.stringify(userData));
+                UserPreferenceFactory.update({}, angular.toJson(userData));
             }
 
             // selected file
@@ -311,7 +311,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource'])
                     // save preference
                     savePreference();
                     var executioninfo = {   
-                        "executioninfo": btoa(JSON.stringify(formData)),
+                        "executioninfo": btoa(angular.toJson(formData)),
                         "instances": formData.instances,
                         "arrayMax":formData.arrayMax,
                         "mem": formData.mem,
@@ -374,7 +374,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource'])
                 setPreferenceToDefault();
                 setCorrectPsfPref();
                 userData['psfType'] = parseInt($scope.psfType.value);
-                UserPreferenceFactory.update({}, JSON.stringify(userData));
+                UserPreferenceFactory.update({}, angular.toJson(userData));
                 savePreference();
             };
 
@@ -546,7 +546,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource'])
                         var formData = getFormData();
                         //console.log("@newtemplate");
                         //console.log(formData);
-                        SaveTemplateFactory.query({"templateinfo": btoa(JSON.stringify(formData)),
+                        SaveTemplateFactory.query({"templateinfo": btoa(angular.toJson(formData)),
                                           "templateName": templateName
                                         }).$promise.then(
                             function(returnData) {

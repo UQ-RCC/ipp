@@ -138,7 +138,7 @@ angular.module('microvolution.converter', ['ngRoute', 'ngResource'])
                                         "files": angular.toJson($scope.selectedFilesGridOptions.data)
                                         }
                                 };
-                UserPreferenceFactory.update({}, JSON.stringify(savedData));
+                UserPreferenceFactory.update({}, angular.toJson(savedData));
             };
 
             var getConvertingOptions = function(){

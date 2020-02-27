@@ -106,7 +106,7 @@ angular.module('microvolution.files-manager', ['ngRoute', 'ngResource'])
                         lastPaths['files-manager'] = $scope.filesmanagerOptions.currentpath;
                         // save to currentpath
                         userPref['lastPaths'] = lastPaths;
-                        UserPreferenceFactory.update({}, JSON.stringify(userPref));
+                        UserPreferenceFactory.update({}, angular.toJson(userPref));
                         
                     }
                 ),
@@ -218,7 +218,7 @@ angular.module('microvolution.files-manager', ['ngRoute', 'ngResource'])
                 $scope.filesmanagerOptions.shortcuts.push({'label': shortcutName, 'path': shortcutPath});
                 // save it to preference
                 userPref['bookmarks'] = $scope.filesmanagerOptions.shortcuts
-                UserPreferenceFactory.update({}, JSON.stringify(userPref));
+                UserPreferenceFactory.update({}, angular.toJson(userPref));
             };
 
             $scope.removeShortcut = function(shortcut){
@@ -230,7 +230,7 @@ angular.module('microvolution.files-manager', ['ngRoute', 'ngResource'])
                     }
                 }
                 userPref['bookmarks'] = $scope.filesmanagerOptions.shortcuts
-                UserPreferenceFactory.update({}, JSON.stringify(userPref));
+                UserPreferenceFactory.update({}, angular.toJson(userPref));
             }
 
             $scope.visitShortcut = function(shortcutPath){

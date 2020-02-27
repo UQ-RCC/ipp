@@ -245,7 +245,7 @@ angular.module('microvolution.preprocessing', ['ngRoute', 'ngResource'])
             var savePreference = function(){
                 //save it
                 userPref['preprocessing'] = scope.prepConfig;
-                UserPreferenceFactory.update({}, JSON.stringify(userPref));
+                UserPreferenceFactory.update({}, angular.toJson(userPref));
             }
 
 
@@ -263,7 +263,7 @@ angular.module('microvolution.preprocessing', ['ngRoute', 'ngResource'])
                 var submitJson = { 
                                     "usermail": $scope.session.email,
                                     "output": $scope.prepConfig.output,
-                                    "prepinfo": btoa(JSON.stringify($scope.prepConfig))
+                                    "prepinfo": btoa(angular.toJson($scope.prepConfig))
                                 }
                 PreprocessFactory.process(submitJson)
                    .$promise.then(
