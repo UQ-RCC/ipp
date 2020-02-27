@@ -32,20 +32,23 @@ angular.module('microvolution.preprocessing', ['ngRoute', 'ngResource'])
                 document.getElementById("filesmanagermgr").className="menu__link";
                 document.getElementById("prepmgr").style.display="block";
                 document.getElementById("prepmgr").className="menu__link active";
+
+                var userPref = {};
+
                 UserPreferenceFactory.get().$promise.then(
                     function (data) {
-                        if(data.hasOwnProperty("preprocessing")){
-                            $scope.prepConfig = JSON.parse(data["preprocessing"]);
-                        } 
-                        else{
+                        userPref = data;
+                        if(userPref.hasOwnProperty("preprocessing"))
+                            $scope.prepConfig = JSON.parse(userPref["preprocessing"]);
+                        else
                             setConfigToDefault();
-                        } //end else
+                        
                         $scope.selectedFilesGridOptions.data = $scope.prepConfig["files"];
+                        
                         if($scope.selectedFilesGridOptions.data.length > 0)
                             $timeout(function () {
                                 $scope.gridApi.selection.selectRow($scope.selectedFilesGridOptions.data[0]);
-                            },
-                            100);
+                            }, 100);
                     }
                 );
             });
@@ -241,10 +244,8 @@ angular.module('microvolution.preprocessing', ['ngRoute', 'ngResource'])
             */
             var savePreference = function(){
                 //save it
-                UserPreferenceFactory.update({}, JSON.stringify(
-                    {
-                        "preprocessing": angular.toJson($scope.prepConfig) 
-                    }));
+                userPref['preprocessing'] = scope.prepConfig;
+                UserPreferenceFactory.update({}, JSON.stringify(userPref));
             }
 
 

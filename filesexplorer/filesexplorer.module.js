@@ -5,81 +5,81 @@ angular
 	.controller('ModalInstanceCtrl', ['$scope', '$uibModalInstance', 
     'modalContents', 'ListFolderFactory', 'UserPreferenceFactory',
     function ($scope, $uibModalInstance, 
-      modalContents, ListFolderFactory, UserPreferenceFactory) {
-      var $ctrl = this; 
-      var lastPaths = null;
-      $ctrl.modalContents = modalContents;
-      $ctrl.modalContents.loading = false;
-      $ctrl.modalContents.filesFolderList = [];
-      if($ctrl.modalContents.initialPath == null || $ctrl.modalContents.initialPath.trim()=="")
-        $ctrl.modalContents.currentpath = "/afm01"; //"/afm01/Q0703"; 
-      else
-        $ctrl.modalContents.currentpath = $ctrl.modalContents.initialPath;    
-      $ctrl.modalContents.selectAll = false;
-      $ctrl.modalContents.extensions = ["tiff","tif", "nd2", "ims", "sld"];
-      //$ctrl.modalContents.extension = "";
-      $ctrl.modalContents.newItem = "";
-      if($ctrl.modalContents.initialNewItem != null && $ctrl.modalContents.initialNewItem.trim()!="")
-        $ctrl.modalContents.newItem =  $ctrl.modalContents.initialNewItem;    
-      $ctrl.modalContents.selectedItems = [];
-      $ctrl.selected = {};
-      $ctrl.bookmarkEdit = false;
+        modalContents, ListFolderFactory, UserPreferenceFactory) {
+        var $ctrl = this; 
+        var lastPaths = null;
+        $ctrl.modalContents = modalContents;
+        $ctrl.modalContents.loading = false;
+        $ctrl.modalContents.filesFolderList = [];
+        if($ctrl.modalContents.initialPath == null || $ctrl.modalContents.initialPath.trim()=="")
+          $ctrl.modalContents.currentpath = "/afm01"; //"/afm01/Q0703"; 
+        else
+          $ctrl.modalContents.currentpath = $ctrl.modalContents.initialPath;    
+        $ctrl.modalContents.selectAll = false;
+        $ctrl.modalContents.extensions = ["tiff","tif", "nd2", "ims", "sld"];
+        //$ctrl.modalContents.extension = "";
+        $ctrl.modalContents.newItem = "";
+        if($ctrl.modalContents.initialNewItem != null && $ctrl.modalContents.initialNewItem.trim()!="")
+          $ctrl.modalContents.newItem =  $ctrl.modalContents.initialNewItem;    
+        $ctrl.modalContents.selectedItems = [];
+        $ctrl.selected = {};
+        $ctrl.bookmarkEdit = false;
+        var userPref = {};
 
-      /**
-      * list dir
-      */
-      var ls = function(newPath, oldPath){
-        if(newPath == null)
-            return;
-        if(!newPath.endsWith("/"))
-            newPath = newPath + "/";
-        $ctrl.modalContents.loading = true;
-        ListFolderFactory.query({
-          'folderpath': btoa(newPath)
-        }).$promise.then(
-           function(returnData){
-              //for some reason 500 is considered success :-s
-              if(returnData.status == 500){
-                  $ctrl.modalContents.loading = false;
-                  $ctrl.modalContents.currentpath = oldPath;
-                  $scope.broadcastMessage("Error loading:" + newPath + ". You probably do not have permission");
-                  return;
-              }
-              var data = returnData.commandResult;
-              if(data == null){
-                  $ctrl.modalContents.loading = false;
-                  return;
-              }                                            
-              data.forEach(function(element) {
-                  element.children = [];
-                  element.type = 'f';
-                  if(['d', 'l'].includes(element.permission.charAt(0))){
-                      element.type = element.permission.charAt(0);
-                      element.children.push({name: "", children: []})
-                      // symlink
-                      if(element.type==='l')
-                          element.name = element.name.split("->")[0].trim();
-                  }
-                  element.path = newPath + element.name;
-                  element.selected = false;
-              });
-              $ctrl.modalContents.filesFolderList = data;
-              $ctrl.modalContents.loading = false;
-              $ctrl.modalContents.currentpath = newPath;
-              lastPaths[$ctrl.modalContents.source][$ctrl.modalContents.mode] 
-                                  = $ctrl.modalContents.currentpath;
-              // save to currentpath
-              UserPreferenceFactory.update({}, 
-                    JSON.stringify({'lastPaths':  angular.toJson( lastPaths )})
-              );
-	        }
-	    ),
-	    function (error) {
-	        console.log("Error: failed to load:" + newPath);
-	        $ctrl.modalContents.loading = false;
-	        $ctrl.modalContents.currentpath = oldPath;
-	        $scope.broadcastMessage("Error loading:" + newPath + ". You probably do not have permission");
-	    }                 
+        /**
+        * list dir
+        */
+        var ls = function(newPath, oldPath){
+          if(newPath == null)
+              return;
+          if(!newPath.endsWith("/"))
+              newPath = newPath + "/";
+          $ctrl.modalContents.loading = true;
+          ListFolderFactory.query({
+            'folderpath': btoa(newPath)
+          }).$promise.then(
+            function(returnData){
+                //for some reason 500 is considered success :-s
+                if(returnData.status == 500){
+                    $ctrl.modalContents.loading = false;
+                    $ctrl.modalContents.currentpath = oldPath;
+                    $scope.broadcastMessage("Error loading:" + newPath + ". You probably do not have permission");
+                    return;
+                }
+                var data = returnData.commandResult;
+                if(data == null){
+                    $ctrl.modalContents.loading = false;
+                    return;
+                }                                            
+                data.forEach(function(element) {
+                    element.children = [];
+                    element.type = 'f';
+                    if(['d', 'l'].includes(element.permission.charAt(0))){
+                        element.type = element.permission.charAt(0);
+                        element.children.push({name: "", children: []})
+                        // symlink
+                        if(element.type==='l')
+                            element.name = element.name.split("->")[0].trim();
+                    }
+                    element.path = newPath + element.name;
+                    element.selected = false;
+                });
+                $ctrl.modalContents.filesFolderList = data;
+                $ctrl.modalContents.loading = false;
+                $ctrl.modalContents.currentpath = newPath;
+                lastPaths[$ctrl.modalContents.source][$ctrl.modalContents.mode] 
+                                    = $ctrl.modalContents.currentpath;
+                // save to currentpath
+                userPref['lastPaths'] = lastPaths;
+                UserPreferenceFactory.update({}, JSON.stringify(userPref));
+            }
+        ),
+        function (error) {
+            console.log("Error: failed to load:" + newPath);
+            $ctrl.modalContents.loading = false;
+            $ctrl.modalContents.currentpath = oldPath;
+            $scope.broadcastMessage("Error loading:" + newPath + ". You probably do not have permission");
+        }                 
       };
 
       $ctrl.copyCurrentPathToClipboard = function(){
@@ -136,45 +136,47 @@ angular
         // query the list of bookmarks
         UserPreferenceFactory.get().$promise.then(
             function (data) {
-            	// bookmarks
-            	if(data.hasOwnProperty("bookmarks"))
-        			$ctrl.modalContents.shortcuts = JSON.parse(data["bookmarks"]);
-        		else
+              userPref = data;
+              // bookmarks
+              console.log(userPref);
+            	if(userPref.hasOwnProperty("bookmarks"))
+        			  $ctrl.modalContents.shortcuts = userPref["bookmarks"];
+        		  else
         		    $ctrl.modalContents.shortcuts = []; 
-        		// home   
-        		var hasHome = false;
-        		$ctrl.modalContents.shortcuts.forEach(function(item){
-		            if(item.label == 'home'){
-		                hasHome = true;
-		            }
-		        });
-		        if(!hasHome){
-		        	$ctrl.modalContents.shortcuts.unshift({'label': 'home', 'path':home})
-		        }
-		        // last path
-            if(data.hasOwnProperty("lastPaths"))
-                lastPaths = JSON.parse(data['lastPaths']);
-            else    
-                lastPaths = {};                        
-            if(!lastPaths.hasOwnProperty($ctrl.modalContents.source))
-              lastPaths[$ctrl.modalContents.source] = {};
-            var lastPathSourceMode = lastPaths[$ctrl.modalContents.source][$ctrl.modalContents.mode];
-            // only set to last path if initialPath is not empty
-        		if( lastPathSourceMode && 
-              ($ctrl.modalContents.initialPath == null || 
-                $ctrl.modalContents.initialPath.trim()=="") ){
-        			$ctrl.modalContents.currentpath = lastPathSourceMode;
-        		} 
-        		// load it
-        		//default path
-		        createQuickNavs($ctrl.modalContents.currentpath);
-		        if(['loadtemplate', 'newtemplate'].includes($ctrl.modalContents.mode)){
-		            createQuickNavs(home + "/.microvolution");
-		            ls(home + "/.microvolution", "");
-		        }
-		        else
-		            ls($ctrl.modalContents.currentpath, "");
-            }
+              // home   
+              var hasHome = false;
+              $ctrl.modalContents.shortcuts.forEach(function(item){
+                  if(item.label == 'home'){
+                      hasHome = true;
+                  }
+              });
+              if(!hasHome){
+                $ctrl.modalContents.shortcuts.unshift({'label': 'home', 'path':home})
+              }
+              // last path
+              if(userPref.hasOwnProperty("lastPaths"))
+                  lastPaths = userPref['lastPaths'];
+              else    
+                  lastPaths = {};                        
+              if(!lastPaths.hasOwnProperty($ctrl.modalContents.source))
+                lastPaths[$ctrl.modalContents.source] = {};
+              var lastPathSourceMode = lastPaths[$ctrl.modalContents.source][$ctrl.modalContents.mode];
+              // only set to last path if initialPath is not empty
+              if( lastPathSourceMode && 
+                ($ctrl.modalContents.initialPath == null || 
+                  $ctrl.modalContents.initialPath.trim()=="") ){
+                $ctrl.modalContents.currentpath = lastPathSourceMode;
+              } 
+              // load it
+              //default path
+              createQuickNavs($ctrl.modalContents.currentpath);
+              if(['loadtemplate', 'newtemplate'].includes($ctrl.modalContents.mode)){
+                  createQuickNavs(home + "/.microvolution");
+                  ls(home + "/.microvolution", "");
+              }
+              else
+                  ls($ctrl.modalContents.currentpath, "");
+          }
         );
       };    
 
@@ -183,25 +185,25 @@ angular
       };
 
       $ctrl.addShortcut = function (shortcutPath) {
-      	shortcutPath = shortcutPath.replace(/\/$/, "");
-      	var shortcutName = shortcutPath.substring(shortcutPath.lastIndexOf('/')+1);
-      	// add it to the existing paths
-      	$ctrl.modalContents.shortcuts.push({'label': shortcutName, 'path': shortcutPath});
-      	// save it to preference
-      	var bookmarks = {'bookmarks':  angular.toJson( $ctrl.modalContents.shortcuts )};
-      	UserPreferenceFactory.update({}, JSON.stringify(bookmarks));
+        shortcutPath = shortcutPath.replace(/\/$/, "");
+        var shortcutName = shortcutPath.substring(shortcutPath.lastIndexOf('/')+1);
+        // add it to the existing paths
+        $ctrl.modalContents.shortcuts.push({'label': shortcutName, 'path': shortcutPath});
+        // save it to preference
+        userPref['bookmarks'] = $ctrl.modalContents.shortcuts;
+        UserPreferenceFactory.update({}, JSON.stringify(userPref));
       };
 
       $ctrl.removeShortcut = function(shortcut){
       	for(var i = $ctrl.modalContents.shortcuts.length - 1; i >= 0; i--) {
       		var item = $ctrl.modalContents.shortcuts[i];
-		    if(item.label == shortcut.label && item.path == shortcut.path) {
-		       $ctrl.modalContents.shortcuts.splice(i, 1);
-		       break;
-		    }
-		}
-      	var bookmarks = {'bookmarks':  angular.toJson( $ctrl.modalContents.shortcuts )};
-      	UserPreferenceFactory.update({}, JSON.stringify(bookmarks));
+          if(item.label == shortcut.label && item.path == shortcut.path) {
+            $ctrl.modalContents.shortcuts.splice(i, 1);
+            break;
+          }
+        }
+        userPref['bookmarks'] = $ctrl.modalContents.shortcuts;
+        UserPreferenceFactory.update({}, JSON.stringify(userPref));
       }
 
       $ctrl.isLoading = function () {

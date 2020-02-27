@@ -22,6 +22,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource'])
             $scope.loading = false;
             // preference data
             var prefData = [];
+            var userData = {};
                 
             /************************************************************/
             /**/
@@ -60,7 +61,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource'])
             /*invokve the checkSesion method from main*/
             /************************************************************/
             $scope.checkSession(function(){
-                                console.log("checkig session...");
+                console.log("checkig session...");
                 document.getElementById("home-btn").className="menu__link";
                 document.getElementById("contact-btn").className="menu__link";
                 document.getElementById("login").style.display="none";
@@ -80,13 +81,14 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource'])
                 $scope.psfType = $scope.psfTypes[3];
                 UserPreferenceFactory.get().$promise.then(
                     function (data) {
+                        userData = data;
                         // psfTYpe
-                        if(data.hasOwnProperty("psfType")){
-                            $scope.psfType = $scope.psfTypes[parseInt(data['psfType'])];
+                        if(userData.hasOwnProperty("psfType")){
+                            $scope.psfType = $scope.psfTypes[parseInt(userData["psfType"])];
                         }
                         //pref
-                        if(data.hasOwnProperty("pref")){
-                            prefData = data["pref"];
+                        if(userData.hasOwnProperty("pref")){
+                            prefData = userData["pref"];
                             setCorrectPsfPref();
                         }
                     }
@@ -111,7 +113,8 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource'])
                     'preference': angular.toJson($scope.preference),
                     'files': angular.toJson($scope.selectedFilesGridOptions.data)
                 });
-                UserPreferenceFactory.update({}, JSON.stringify({'pref':prefData}));
+                userData['pref'] = prefData;
+                UserPreferenceFactory.update({}, JSON.stringify(userData));
             }
 
             // selected file
@@ -370,9 +373,8 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource'])
                 $scope.selectedFilesGridOptions.data = [];
                 setPreferenceToDefault();
                 setCorrectPsfPref();
-                UserPreferenceFactory.update({}, 
-                    JSON.stringify({'psfType':parseInt($scope.psfType.value)})
-                );
+                userData['psfType'] = parseInt($scope.psfType.value);
+                UserPreferenceFactory.update({}, JSON.stringify(userData));
                 savePreference();
             };
 

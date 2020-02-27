@@ -17,7 +17,7 @@ angular.module('microvolution.files-manager', ['ngRoute', 'ngResource'])
             DeleteFilesFactory, CopyFilesFactory, MoveFilesFactory, ListCopyingProcessFactory) {
             
             //refresh experiment
-            var filesListRefreshTimer, lastPaths;
+            var filesListRefreshTimer, lastPaths, userPref;
             $scope.filesmanagerOptions = {
                 'currentpath': "/afm01",
                 'selectAll': false,
@@ -105,9 +105,9 @@ angular.module('microvolution.files-manager', ['ngRoute', 'ngResource'])
                         $scope.filesmanagerOptions.currentpath = newPath;
                         lastPaths['files-manager'] = $scope.filesmanagerOptions.currentpath;
                         // save to currentpath
-                        UserPreferenceFactory.update({}, 
-                            JSON.stringify({'lastPaths':  angular.toJson( lastPaths )})
-                        );
+                        userPref['lastPaths'] = lastPaths;
+                        UserPreferenceFactory.update({}, JSON.stringify(userPref));
+                        
                     }
                 ),
                 function (error) {
@@ -143,9 +143,11 @@ angular.module('microvolution.files-manager', ['ngRoute', 'ngResource'])
                 // query the list of bookmarks
                 UserPreferenceFactory.get().$promise.then(
                     function (data) {
+                        userPref = data;
                         // bookmarks
-                        if(data.hasOwnProperty("bookmarks"))
-                            $scope.filesmanagerOptions.shortcuts = JSON.parse(data["bookmarks"]);
+                        console.log(userPref);
+                        if(userPref.hasOwnProperty("bookmarks"))
+                            $scope.filesmanagerOptions.shortcuts = userPref["bookmarks"];
                         else
                             $scope.filesmanagerOptions.shortcuts = []; 
                         // home   
@@ -159,8 +161,8 @@ angular.module('microvolution.files-manager', ['ngRoute', 'ngResource'])
                             $scope.filesmanagerOptions.shortcuts.unshift({'label': 'home', 'path':home})
                         }
                         // last path
-                        if(data.hasOwnProperty("lastPaths"))
-                            lastPaths = JSON.parse(data['lastPaths']);
+                        if(userPref.hasOwnProperty("lastPaths"))
+                            lastPaths = userPref['lastPaths'];
                         else    
                             lastPaths = {};
                         if(!lastPaths.hasOwnProperty('files-manager'))
@@ -215,8 +217,8 @@ angular.module('microvolution.files-manager', ['ngRoute', 'ngResource'])
                 // add it to the existing paths
                 $scope.filesmanagerOptions.shortcuts.push({'label': shortcutName, 'path': shortcutPath});
                 // save it to preference
-                var bookmarks = {'bookmarks':  angular.toJson( $scope.filesmanagerOptions.shortcuts )};
-                UserPreferenceFactory.update({}, JSON.stringify(bookmarks));
+                userPref['bookmarks'] = $scope.filesmanagerOptions.shortcuts
+                UserPreferenceFactory.update({}, JSON.stringify(userPref));
             };
 
             $scope.removeShortcut = function(shortcut){
@@ -227,8 +229,8 @@ angular.module('microvolution.files-manager', ['ngRoute', 'ngResource'])
                        break;
                     }
                 }
-                var bookmarks = {'bookmarks':  angular.toJson( $scope.filesmanagerOptions.shortcuts )};
-                UserPreferenceFactory.update({}, JSON.stringify(bookmarks));
+                userPref['bookmarks'] = $scope.filesmanagerOptions.shortcuts
+                UserPreferenceFactory.update({}, JSON.stringify(userPref));
             }
 
             $scope.visitShortcut = function(shortcutPath){
