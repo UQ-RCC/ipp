@@ -1,0 +1,14 @@
+.page-feedback-form {
+  margin: 2rem 0;
+  &__title, &__title.icon {
+    font-size: 1.1rem;
+    padding-left: 2rem;
+    text-indent: -2rem;
+    line-height: normal;
+  }
+
+  &__content {
+    padding-top: 1.5rem;
+    display: none;
+  }
+}

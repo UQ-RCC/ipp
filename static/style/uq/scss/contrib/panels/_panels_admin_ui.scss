@@ -1,0 +1,7 @@
+// Define width, panel admin UI modified by loosely scoped Zurb Foundation selector
+.panels-section-columns { width: 100%; }
+
+// Remove dirty dropshadow from panels IPE black bar
+div#panels-ipe-control-container {
+  box-shadow: none;
+}

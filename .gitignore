@@ -1,5 +1,6 @@
-/bower_components/
-/bin/
+.DS_Store
 /node_modules/
-package-lock.json
-/artifacts/
+/src/node_modules/@sapper/
+yarn-error.log
+/cypress/screenshots/
+/__sapper__/

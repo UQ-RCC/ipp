@@ -1,0 +1,28 @@
+// Tag styles for terms
+
+.tags {
+  &:before {
+    @include fa-icon;
+    content: "\f02c"; //fa-tags
+    display: block;
+    float: left;
+    margin-top: 0.3rem;
+    margin-right: 0.5rem;
+  }
+  // Target <a> as it isn't always possible to apply a class to tag links within Drupal.
+  a, &__tag {
+    background: $tags-link-bg;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin: 0 4px 4px 0;
+    display: inline-block;
+    float: left;
+    color: #000;
+    font-size: 0.875rem;
+    &:hover {
+      color: #fff;
+      background: $link-hover-color;
+      text-decoration: none;
+    }
+  }
+}

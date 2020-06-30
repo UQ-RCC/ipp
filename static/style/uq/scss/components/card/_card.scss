@@ -1,0 +1,352 @@
+// Cards
+// Used in the Grid component
+//
+// Variants:
+// .card--background-image - Overlays the content on the image when it is used as an inline background image style.
+// .card--square - Forces the card to equal height and width dimensions. For use with .card--background-image.
+// .card--portrait - Forces the card to portrait dimensions. For use with .card--background-image.
+// .card--landscape - Forces the card to landscape dimensions. For use with .card--background-image.
+// .card--full-width - Forces the card to full-width landscape dimensions. For use with .card--background-image.
+// .card--shaded - Applies a shaded gray background color to the whole card.
+// .card--compact - A tighter layout with a landscape image and no summary.
+// .card--horizontal - A full width horizontal layout with a landscape image.
+//
+
+// Variables
+$card-square-height: 22rem;
+$card-square-width: 22rem;
+$card-portrait-height: 28rem;
+$card-portrait-width: 22rem;
+$card-landscape-height: 22rem;
+$card-landscape-width: 34rem;
+$card-full-height: 22rem;
+$card-full-width: 134rem;
+$card-summary-lines-to-show: 4;
+
+.card {
+  position: relative;
+  margin-bottom: 1.5rem;
+  background-color: #fff;
+
+  &__wrapper {
+    margin-bottom: 1.5rem;
+  }
+
+  &__header {
+    transition: all ease 0.35s;
+  }
+
+  &__footer {
+    .card__link-column {
+      border-top: 1px solid #eee;
+      & + .card__link-column {
+        border-left: 1px solid #eee;
+      }
+    }
+    .card__link {
+      padding: 1rem 1.8rem 1rem 1rem;
+      display: block;
+      position: relative;
+      &:after {
+        @include fa-icon;
+        content: "\f105";
+        position: absolute;
+        top: 50%;
+        right: 1rem;
+        margin-top: -0.5rem;
+        opacity: 0.5;
+      }
+      &:hover {
+        &:after {
+          opacity: 1;
+          text-decoration: none;
+        }
+      }
+    }
+  }
+
+  &__body {
+    transition: all ease 0.35s;
+  }
+
+  &__content {
+    padding: 1rem;
+  }
+
+  // Force image heights to be the same for cards sitting next to each other.
+  &__image-container {
+    height: 18rem;
+    @include background-cover();
+    overflow: hidden;
+    position: relative;
+  }
+
+  &__image-bg_link {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__image {
+    width: 100%;
+  }
+
+  &__title {
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+    transition: all ease 0.35s;
+  }
+
+  &__date {
+    font-weight: 400;
+  }
+
+  &__location {
+    &:before {
+      @include fa-icon;
+      content: "\f041";
+      margin-right: 0.5rem;
+    }
+  }
+
+  &__link {
+    border-color: inherit;
+  }
+
+  // Background image with content overlaid.
+  &--background-image {
+    @extend %light-palette;
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+    background-size: cover;
+    background-position: 50% 50%;
+    overflow: hidden;
+    &:before {
+      content: "";
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      opacity: 0.2;
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      @media #{$large-up} {
+        transition: all ease 0.35s;
+      }
+    }
+    &:hover {
+      &:before {
+        opacity: 0.5;
+      }
+    }
+    .card__header, .card__body, .card__footer {
+      position: relative;
+      z-index: 2;
+    }
+    .card__footer {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      text-align: left;
+      background: rgba(0, 0, 0, 0.4);
+      .card__link-column {
+        border-color: rgba(255, 255, 255, 0.4);
+        & + .card__link-column {
+          border-color: rgba(255, 255, 255, 0.4);
+        }
+      }
+      .card__link {
+        @extend %light-palette;
+      }
+    }
+    .card__title {
+      margin-bottom: 0;
+      @media #{$large-up} {
+        transform: translate3d(0, 2rem, 0);
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+        &:after {
+          content: "View";
+          text-transform: uppercase;
+          clear: both;
+          display: table;
+          font-weight: 500;
+          font-size: 1rem;
+          border: 2px solid $uq-gold;
+          color: $uq-gold;
+          visibility: hidden;
+          opacity: 0;
+          margin: 0.7rem auto 0;
+          padding: 0.3rem 1.2rem;
+          transition: all ease 0.35s;
+          background-color: rgba(0,0,0,0.3);
+        }
+      }
+    }
+    .card__summary {
+      display: block; /* Fallback for non-webkit */
+      display: -webkit-box;
+      max-height: $base-font-size * $base-line-height-ratio * $card-summary-lines-to-show; /* Fallback for non-webkit */
+      font-size: $base-font-size;
+      line-height: $base-line-height;
+      -webkit-line-clamp: $card-summary-lines-to-show;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  // Primary link
+  &__primary-link {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    &:hover, &:focus {
+      text-decoration: none;
+      // Background image variant with primary link
+      .card--background-image {
+        .card__title {
+          @media #{$large-up} {
+            transform: translate3d(0, 0, 0);
+          }
+        }
+        .card__title {
+          @media #{$large-up} {
+            &:after {
+              visibility: visible;
+              opacity: 1;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Force square format
+  &--square {
+    height: $card-square-height;
+    width: $card-square-width;
+    max-width: 100%;
+    @media #{$small-only} {
+      width: $card-full-width;
+    }
+    &:before {
+      height: $card-square-height; // Because IE thinks 100% height is 100% of the table-cell content not the parent it is applied to.
+    }
+  }
+
+  // Force portrait format
+  &--portrait {
+    height: $card-portrait-height;
+    width: $card-portrait-width;
+    max-width: 100%;
+    @media #{$small-only} {
+      width: $card-full-width;
+    }
+    &:before {
+      height: $card-portrait-height; // Because IE thinks 100% height is 100% of the table-cell content not the parent it is applied to.
+    }
+  }
+
+  // Force landscape format
+  &--landscape {
+    height: $card-landscape-height;
+    width: $card-landscape-width;
+    max-width: 100%;
+    @media #{$small-only} {
+      width: $card-full-width;
+    }
+    &:before {
+      height: $card-landscape-height; // Because IE thinks 100% height is 100% of the table-cell content not the parent it is applied to.
+    }
+  }
+
+  // Force full width format
+  &--full-width {
+    height: $card-full-height;
+    width: $card-full-width;
+    max-width: 100%;
+    &:before {
+      height: $card-full-height; // Because IE thinks 100% height is 100% of the table-cell content not the parent it is applied to.
+    }
+  }
+
+  // Shaded
+  &--shaded {
+    background-color: $card-shaded-bg;
+  }
+
+  // Compact
+  &--compact {
+    margin-bottom: 0.5rem;
+    .card__image-container {
+      height: 12rem;
+    }
+    .card__title {
+      font-size: 1.425rem;
+    }
+  }
+
+  // Horizontal layout
+  &--horizontal {
+    margin-bottom: 1.5rem;
+    @media #{$medium-up} {
+      height: 18rem;
+    }
+    .card__content {
+      @media #{$medium-up} {
+        height: 18rem;
+        width: 50%;
+        padding-left: 2rem;
+        display: table-cell;
+        vertical-align: middle;
+      }
+    }
+    .card__image-container {
+      @media #{$medium-up} {
+        @include grid-column(
+            $columns: 6,
+            $float: left
+        );
+      }
+    }
+    &.card--media-right {
+      @media #{$medium-up} {
+        .card__image-container {
+          float: right;
+        }
+      }
+    }
+    .card__title {
+      font-size: 1.875rem;
+    }
+  }
+}
+
+// Fix for 3 column layout with more than 3 cards at medium breakpoint going out of alignment due to .row's
+// Class generated from paragraphs bundle name in uq_field_formatter module.
+.cardgrid-wrapper {
+  .row {
+    &::before, &::after {
+      display: inline;
+      @media #{$large-up}{
+        display: table;
+      }
+    }
+  }
+  &--media-right {
+    .card {
+      @extend .card--media-right;
+    }
+  }
+  &--shaded {
+    .card {
+      @extend .card--shaded;
+    }
+  }
+}

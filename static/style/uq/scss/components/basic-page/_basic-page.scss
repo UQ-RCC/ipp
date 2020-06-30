@@ -1,0 +1,82 @@
+// Basic page content type
+
+.basic-page {
+  .page {
+    &__image {
+      max-width: 100%;
+      @media #{$medium-up} {
+        max-width: 50%;
+      }
+      &--right {
+        margin-bottom: 1.5rem;
+        @media #{$medium-up} {
+          float: right;
+          margin-left: 1.5rem;
+        }
+      }
+    }
+  }
+  &__teaser-image {
+    max-height: 11rem;
+    overflow: hidden;
+  }
+}
+
+// Teaser
+.basic-page--teaser {
+  .basic-page {
+    &__title {
+      font-size: 1.2rem;
+      margin-bottom: 0;
+      @media #{$medium-up} {
+        font-size: 1.5rem;
+      }
+      & + .basic-page__summary {
+        margin-top: 0.5rem;
+      }
+    }
+  }
+}
+
+// Compact
+.basic-page--compact {
+  .basic-page {
+    &__title {
+      font-size: 1.2rem;
+      margin-bottom: 0;
+      @media #{$medium-up} {
+        font-size: 1.4rem;
+      }
+    }
+    &__media {
+      display: table-cell;
+      padding-right: 1rem;
+      vertical-align: middle;
+    }
+    &__wrapper {
+      display: table;
+      table-layout: fixed;
+    }
+
+    &__content {
+      display: table-cell;
+      vertical-align: middle;
+      overflow: visible;
+    }
+    &__teaser-image {
+      width: 110px;
+    }
+  }
+}
+
+// Hero banner variant for basic page
+.hero-banner--basic-page {
+  margin-bottom: 1.5rem!important;
+}
+
+// Scaling when in small columns
+.large-3, .large-4 {
+  .basic-page__title {
+    font-size: 1.2rem;
+  }
+}

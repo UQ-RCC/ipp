@@ -1,0 +1,97 @@
+// Notices
+//
+// Variants:
+// .notice--help - Adds a question mark icon before the notice
+// .notice--information - Adds a information icon before the notice
+// .notice--important - Adds an exclamation mark icon before the notice
+// .notice--outline - Adds a border around the notice
+
+@mixin notice-icon {
+  font-size: 1.3rem;
+  color: $uq-purple;
+  position: absolute;
+  top: 0.35em;
+  left: 0;
+}
+
+.notice {
+  padding-left: 1.8rem;
+  margin: 1.5rem 0 1.5rem 0;
+  position: relative;
+  @media #{$medium-up} {
+    padding-left: 2.6rem;
+    margin: 1.5rem 0 1.5rem 0.7rem;
+  }
+  // Remove top margin from first child element so maintain alignment with icon.
+  *:first-child {
+    margin-top: 0;
+  }
+  *:last-child {
+    margin-bottom: 0;
+  }
+  // Headings within notice container
+  h2, h3, h4, h5, h6 {
+    color: $uq-purple;
+  }
+  &--help {
+    &:before {
+      @include uq-icon;
+      content: "\E822"; // .icon-uq-question-circle
+      @include notice-icon;
+      @media #{$medium-up} {
+        font-size: 1.8rem;
+        top: 0.25em;
+      }
+    }
+  }
+  &--information, &--info {
+    &:before {
+      @include fa-icon;
+      content: "\f05a"; // .fa-info-circle
+      @include notice-icon;
+      @media #{$medium-up} {
+        font-size: 2rem;
+        top: 0.25em;
+      }
+    }
+  }
+  &--important {
+    &:before {
+      @include uq-icon;
+      content: "\e817"; // .icon-uq-alert-circle
+      @include notice-icon;
+      @media #{$medium-up} {
+        font-size: 1.8rem;
+        top: 0.25em;
+      }
+    }
+  }
+  &--outline {
+    border: 1px dashed $uq-purple;
+    padding: 1rem;
+    &.notice--help, &.notice--important, &.notice--information, &.notice--info {
+      padding: 1rem 1rem 1rem 2.8rem;
+      @media #{$medium-up} {
+        padding-left: 3.6rem;
+      }
+      &:before {
+        top: 1.35rem;
+        left: 1rem;
+      }
+    }
+  }
+  &--bar {
+    border-left: 8px solid #eee;
+    padding-left: 1.2rem;
+  }
+}
+
+// Headings with notice styles applied directly
+h2, h3, h4, h5, h6 {
+  &.notice {
+    color: $uq-purple;
+    &:before {
+      top: 0.25em;
+    }
+  }
+}

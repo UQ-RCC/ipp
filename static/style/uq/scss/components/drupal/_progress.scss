@@ -1,0 +1,94 @@
+//
+// Progress bar
+//
+// Source: Zen, modified to use uq_standard variables
+//
+
+.progress-bar,
+%progress-bar {
+  font-weight: bold;
+
+  &--disabled {
+  }
+
+  &__bar {
+    @include border-radius(3px);
+    margin: 0 .2em;
+    border: 1px solid $progress-bar-border-color;
+    background-color: $progress-bar-bg;
+  }
+
+  &__fill {
+    height: 1.5em;
+    width: 5px;
+    background: $progress-bar-fill-bg;
+  }
+
+  &__percentage {
+    float: right;
+  }
+
+  &--ajax {
+    display: inline-block;
+  }
+
+  &--ajax__throbber {
+    background: image-url('../images/throbber.gif') no-repeat 0 -18px transparent;
+    float: left;
+    height: 15px;
+    margin: 2px;
+    width: 15px;
+
+    tr & {
+      margin: 0 2px;
+    }
+  }
+
+  &--ajax__message {
+    padding-left: 20px;
+  }
+
+  &--ajax__bar {
+    width: 16em;
+  }
+}
+
+//
+// Drupal selectors.
+//
+
+.progress {
+  @extend %progress-bar;
+
+  .bar {
+    @extend %progress-bar__bar;
+  }
+
+  .filled {
+    @extend %progress-bar__fill;
+  }
+
+  .percentage {
+    @extend %progress-bar__percentage;
+  }
+}
+
+.progress-disabled {
+//  @extend %progress-bar--disabled;
+}
+
+.ajax-progress {
+  @extend %progress-bar--ajax;
+
+  .throbber {
+    @extend %progress-bar--ajax__throbber;
+  }
+
+  .message {
+    @extend %progress-bar--ajax__message;
+  }
+}
+
+.ajax-progress-bar {
+  @extend %progress-bar--ajax__bar;
+}

@@ -1,0 +1,14 @@
+.job {
+  clear: both;
+  &__title {
+    float: left;
+  }
+  &__company-name {
+    &:before {
+      content: ", ";
+      margin-right: 0.3rem;
+      float: left;
+    }
+  }
+  &__company-location {}
+}

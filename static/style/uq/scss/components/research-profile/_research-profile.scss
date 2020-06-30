@@ -1,0 +1,59 @@
+// Research profile content type
+
+.research-profile {
+  &__teaser-image {
+    max-height: 11rem;
+    overflow: hidden;
+  }
+  &__projects-list {
+    margin-bottom: 2.5rem;
+  }
+}
+
+// Teaser viewmode specific styles
+.research-profile--teaser {
+  .research-profile {
+    &__title {
+      @media #{$small-only} {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
+
+// Compact viewmode
+.research-profile--compact {
+  .research-profile {
+    &__wrapper {
+      display: table;
+      table-layout: fixed;
+    }
+
+    &__content {
+      display: table-cell;
+      vertical-align: middle;
+      overflow: visible;
+    }
+    &__media {
+      display: table-cell;
+      padding-right: 1rem;
+      vertical-align: middle;
+    }
+    &__teaser-image {
+      width: 110px;
+    }
+    &__title {
+      margin-bottom: 0;
+      @media #{$small-only} {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
+
+// Scaling when in small columns
+.large-3, .large-4 {
+  .research-profile__title {
+    font-size: 1.2rem;
+  }
+}

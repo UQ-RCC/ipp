@@ -1,0 +1,45 @@
+.block-workbench {
+  position: relative;
+  .workbench-info-block {
+    background: #FCF8E3;
+    border: 1px solid #ed5;
+    padding: 1em;
+    color: #555;
+    font-size: 0.85rem;
+    line-height: 1.25rem;
+    display: inline-block;
+    width: 100%;
+    em {
+      font-weight: 400;
+      color: #222;
+      font-style: normal;
+    }
+  }
+
+  .workbench-moderation-moderate-form {
+    display: block;
+    .form-item-state {
+
+    }
+    .form-select {
+      float: left;
+      height: 2.5em;
+      width: 15rem;
+      line-height: 2.5em;
+      padding: 0 1em;
+      margin: 0 0.5rem 0 0;
+    }
+    .form-submit:hover, .form-submit:focus {
+      background-color: #005CA7;
+    }
+    .form-submit {
+      float: left;
+      height: 2.5em;
+      line-height: 2.5em;
+      padding: 0 2em;
+      margin: 0;
+      font-size: inherit;
+      background-color: #2377CB;
+    }
+  }
+}

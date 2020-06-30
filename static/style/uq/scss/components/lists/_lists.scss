@@ -1,0 +1,80 @@
+// Lists
+// For listing of content such as node teasers. It can be applied to <ul> and <div> elements alike.
+//
+// Variants:
+// .vertical-list
+// .vertical-list--ruled - Adds a bottom border on each list item to separate them.
+// .vertical-list--shaded - Adds light grey background to each item and separates them with a small gap.
+// .horizontal-list
+// .horizontal-list--ruled - Adds a right border on each list item to separate them.
+
+.vertical-list {
+  list-style-type: none;
+  padding: 0;
+  margin-bottom: 1rem;
+  &__title {
+    font-size: 1.375rem;
+  }
+  &__item {
+    list-style: none;
+    padding: 0.75rem 0;
+  }
+  &--large-spacing {
+    .vertical-list__item {
+      padding: 2rem 0;
+    }
+  }
+  &--ruled {
+    .vertical-list__title {
+      border-top: 2px solid $vertical-list-border;
+      padding-top: 2rem;
+    }
+    .vertical-list__item {
+      padding-top: 0.75rem;
+      border-bottom: 1px solid $vertical-list-border;
+      &:first-child {
+        padding-top: 0;
+      }
+      &--first {
+        padding-top: 0.75rem;
+        border-top: 1px solid $vertical-list-border;
+      }
+    }
+  }
+  &--shaded {
+    .vertical-list__item {
+      background: $pane-shaded-bg;
+      padding: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+.horizontal-list {
+  list-style-type: none;
+  padding: 0;
+  margin-bottom: 1rem;
+  display: inline-block;
+  &__title {
+    font-size: 1.375rem;
+  }
+  &__item {
+    list-style: none;
+    padding: 0 0.75rem;
+    margin: 0 0 0.75rem 0;
+    float: left;
+  }
+  &--ruled {
+    .horizontal-list__title {
+      border-top: 2px solid $vertical-list-border;
+      padding-top: 2rem;
+    }
+    .horizontal-list__item {
+      padding-right: 0.75rem;
+      border-right: 1px solid $vertical-list-border;
+      &:last-child {
+        border: 0;
+      }
+    }
+  }
+}

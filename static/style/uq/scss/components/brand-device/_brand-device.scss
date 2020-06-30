@@ -1,0 +1,243 @@
+// Branding line and circles
+//
+// Variants
+// .brand-device--divider-block-grid-2 - Applied to block-grid lists to use the brand device as a divider between columns.
+// .brand-device--background - Adds vertical background in the middle of a Section with a stub at the bottom. Used with .brand-device--timeline variant
+// .brand-device--divider-top - Adds a brand device top border to the element. Used on sections in conjunction with .brand-device--timeline
+// .brand-device--divider-bottom - Adds a brand device bottom border to the element. Used on sections in conjunction with .brand-device--timeline
+// .brand-device--timeline - Applied to block-grid list. Automatically applies left and right stubs to each <li> with a vertical offset to give a timeline appearance.
+// .brand-device--stub-left - Manually applied left side device stub.
+// .brand-device--stub-right - Manually applied right side device stub.
+//
+
+@mixin brand-device-circle-solid {
+  content: "";
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  background: $brand-device-connector;
+  border: 1px solid $brand-device-connector;
+  border-radius: 50%;
+}
+
+@mixin brand-device-circle-hollow {
+  content: "";
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  background: #fff;
+  border: 1px solid $brand-device-connector;
+  border-radius: 50%;
+}
+
+.brand-device {
+  position: relative;
+
+  // Background variant
+  &--background {
+    @media #{$medium-up} {
+      position: relative;
+      overflow: visible !important;
+      &:before {
+        content: "";
+        width: 1px;
+        height: 100%;
+        display: block;
+        position: absolute;
+        left: 50%;
+        top: 0;
+        background: $brand-device-connector;
+        z-index: -1;
+      }
+      &:after {
+        @include brand-device-circle-hollow;
+        position: absolute;
+        bottom: -0.5rem;
+        left: 50%;
+        margin-left: -0.5rem;
+        z-index: 500;
+      }
+      &-end {
+        &:after {
+          @include brand-device-circle-hollow;
+        }
+      }
+    }
+  }
+
+  &--stub-left {
+    padding-left: 4rem !important;
+    &:before {
+      content: "";
+      width: 3rem;
+      height: 1px;
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: $brand-device-connector;
+      z-index: -1;
+    }
+    &:after {
+      @include brand-device-circle-hollow;
+      position: absolute;
+      top: -0.5rem;
+      left: -0.5rem;
+      z-index: 500;
+    }
+  }
+
+  &--stub-right {
+    padding-right: 4rem !important;
+    &:before {
+      content: "";
+      width: 3rem;
+      height: 1px;
+      display: block;
+      position: absolute;
+      right: 0;
+      top: 0;
+      background: $brand-device-connector;
+      z-index: -1;
+    }
+    &:after {
+      @include brand-device-circle-hollow;
+      position: absolute;
+      top: -0.5rem;
+      right: -0.5rem;
+      z-index: 500;
+    }
+  }
+
+  // Timeline
+  &--timeline {
+    list-style: none;
+    > li {
+      position: relative;
+      @media #{$medium-up} {
+        float: left;
+        clear: none;
+      }
+      &:nth-child(odd) {
+        @extend .brand-device--stub-right;
+        @media #{$small-only} {
+          padding-right: 0 !important;
+          &:before, &:after {
+            display: none;
+          }
+        }
+      }
+      &:nth-child(even) {
+        @extend .brand-device--stub-left;
+        margin-top: 3rem;
+        @media #{$small-only} {
+          margin-top: 0;
+          padding-left: 0 !important;
+          &:before, &:after {
+            display: none;
+          }
+        }
+      }
+      &.last {
+        padding-bottom: 0;
+      }
+    }
+  }
+
+  // Divider
+  &--divider-top {
+    border-top: 1px solid $brand-device-connector;
+    position: relative;
+    overflow: visible !important;
+    &:after {
+      @include brand-device-circle-hollow;
+      position: absolute;
+      z-index: 500;
+      top: -0.5rem;
+      left: 50%;
+      margin-left: -0.5rem;
+    }
+  }
+  &--divider-bottom {
+    border-bottom: 1px solid $brand-device-connector;
+    position: relative;
+    overflow: visible !important;
+    &:after {
+      @include brand-device-circle-hollow;
+      position: absolute;
+      z-index: 500;
+      bottom: -0.5rem;
+      left: 50%;
+      margin-left: -0.5rem;
+    }
+  }
+
+  // Applied to block-grid lists to use the brand device as a divider between columns.
+  &--divider-block-grid-2 {
+    @media #{$medium-up} {
+      li {
+        position: relative;
+        &:nth-child(odd) {
+          border-right: 1px solid $brand-device-connector;
+          padding-right: 2rem;
+        }
+        &:nth-child(even) {
+          border-left: 1px solid $brand-device-connector;
+          padding-left: 2rem;
+          margin-left: -1px;
+        }
+        &:first-child {
+          &:before {
+            @include brand-device-circle-hollow;
+            position: absolute;
+            top: 0;
+            right: -0.5rem;
+            z-index: 500;
+          }
+        }
+        &:last-child {
+          &:before {
+            @include brand-device-circle-hollow;
+            position: absolute;
+            bottom: 0;
+            right: -0.5rem;
+          }
+        }
+        &:last-child:nth-child(odd) {
+          &:before {
+            right: -0.5rem;
+          }
+        }
+        &:last-child:nth-child(even) {
+          &:before {
+            left: -0.5rem;
+          }
+        }
+        // Prevent border going further than last dot if second last item is longer.
+        &:nth-last-child(2) {
+          border: 0;
+        }
+      }
+    }
+
+    @media #{$small-only} {
+      li {
+        position: relative;
+        margin: 0 0 0 -0.5rem;
+        padding-left: 1.5rem !important;
+        border-left: 1px solid $brand-device-connector;
+
+        &:before {
+          @include brand-device-circle-hollow;
+          position: absolute;
+          top: 0;
+          left: -0.5rem;
+        }
+
+        &:last-child {
+          border-left: 0;
+        }
+      }
+    }
+  }
+}

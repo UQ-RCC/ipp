@@ -1,0 +1,35 @@
+// Menu Block Two Column
+// Custom view mode for the Menu Block module https://www.drupal.org/project/menu_block
+//
+
+.menu-block {
+  &--two-column {
+    margin-bottom: 1.5rem;
+    ol {
+      margin: 0;
+      padding-left: 1.5rem;
+      li {
+        color: $menu-block-two-column-link-color;
+        font-weight: 400;
+        margin-bottom: 0.5rem;
+        @media #{$medium-up}{
+          margin-bottom: 1.5rem;
+        }
+        &.active {
+          color: $menu-block-two-column-inactive-link-color;
+          a {
+            color: $menu-block-two-column-inactive-link-color;
+            &:hover {
+              text-decoration: none;
+            }
+          }
+        }
+      }
+    }
+  }
+  &--bordered {
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid $menu-block-two-column-border-color;
+    margin-bottom: 1.5rem;
+  }
+}

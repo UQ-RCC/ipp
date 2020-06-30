@@ -1,0 +1,11 @@
+// Video Embed Field module
+// https://www.drupal.org/project/video_embed_field
+
+.embedded-video {
+  @include flex-video-container();
+  padding-bottom: $flex-video-widescreen-padding-bottom; // Apply .widescreen
+  padding-top: 0; // Apply .vimeo
+}
+.video-embed-description {
+  text-align: center;
+}

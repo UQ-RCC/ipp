@@ -1,0 +1,33 @@
+// Breadcrumb trail
+.breadcrumb-trail, .pane-term-breadcrumb {
+  color: $breadcrumb-link;
+  a {
+    color: $breadcrumb-link;
+  }
+}
+
+.breadcrumb {
+  margin: 0 0.2rem;
+}
+
+.breadcrumb-home {
+  font-size: 1.3rem;
+}
+
+// Term breadcrumbs
+.pane-term-breadcrumb {
+  ul {
+    margin-top: 0;
+    padding: 0;
+  }
+  li {
+    list-style: none;
+    display: inline;
+    & + li {
+      &:before {
+        content: " / ";
+        padding: 0 0.3rem;
+      }
+    }
+  }
+}

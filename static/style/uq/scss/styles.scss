@@ -1,0 +1,44 @@
+/**
+ * @file
+ * Styles are organized using the SMACSS technique. @see http://smacss.com/book/
+ */
+
+
+// Import Sass mixins, variables, Compass modules, etc.
+@import 'init';
+
+// Base
+//
+// These are the base styles applied to HTML elements. A customized normalize is added first, then base partials.
+//
+// Styleguide 1
+@import 'base/*.*';
+
+// Layouts
+//
+// The layout styling for major parts of the page that are included with the
+// theme. Note: some Panels layouts are included in other parts of the system
+// and are not documented.
+//
+// Styleguide 2
+@import 'layouts/**/*.*';
+
+// Components
+//
+// Design components are reusable designs that can be applied using just the CSS
+// class names specified in the component.
+//
+// Styleguide 3
+@import 'components/**/*.*';
+
+
+// Templates
+//
+// Templates are mashups of different components as they would be used around the website.
+//
+// Styleguide 4
+// @import 'templates/*.*';
+
+
+// Contrib specific components and utilities
+@import 'contrib/**/*.*';

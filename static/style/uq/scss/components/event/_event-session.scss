@@ -1,0 +1,167 @@
+// Event session content type
+
+.event-session {
+  &__date {
+    margin-bottom: 0.5rem;
+    .date-display-start, .date-display-end {
+      font-weight: 500;
+    }
+  }
+  &__calendar-add-link {
+    display: inline-block;
+    margin: 0 0.5rem;
+  }
+  &__teaser-image {
+    max-height: 11rem;
+    overflow: hidden;
+  }
+}
+
+// Event session page
+.event-session-page {
+  .pane-event-session-page-header {
+    .panel-separator {
+      display: none;
+    }
+  }
+  // Parent event description displayed on event session page
+  .event__description {
+    margin: 1.5rem 0;
+  }
+  .event__register-link {
+    margin-top: 1rem;
+  }
+  // Parent event title as sub-title
+  .event__title.page__sub-title {
+    margin-bottom: 0.5rem;
+    a:before {
+      @include fa-icon;
+      content: "\f104"; // .fa-angle-left
+      margin-right: 0.5rem;
+    }
+  }
+  .event-session__date {
+    display: inline-block;
+  }
+  .event-session__calendar-add-link {
+    font-size: 1.2rem;
+  }
+  .event-session {
+    &__status {
+      &--cancelled {
+        background: $messages-error-bg;
+        color: $messages-error-color;
+        padding: 0.5rem 1rem;
+        margin-top: 1rem;
+        font-weight: 500;
+        &:before {
+          @include uq-icon;
+          content: '\e817'; // .icon-uq-alert-circle
+          float: left;
+          margin-top: 0.2rem;
+          margin-right: 0.7rem;
+        }
+      }
+    }
+    &__status-message {
+      background: $messages-error-bg;
+      color: $messages-error-color;
+      padding: 0.5rem 0.5rem 0.5rem 2.7rem;
+    }
+  }
+}
+
+// Teaser display
+.event-session--teaser {
+  .event-session {
+    &__title {
+      margin-bottom: 0.5rem;
+      @media #{$small-only} {
+        font-size: 1.2rem;
+      }
+    }
+    &__date {
+      font-weight: 500;
+      display: inline-block;
+      margin-right: 0.5rem;
+      & + .event-session__parent-title {
+        &:before {
+          content: '|';
+          margin-right: 0.5rem;
+        }
+      }
+    }
+    .date-display-single {
+      display: block;
+    }
+    &__status {
+      &--cancelled {
+        color: $messages-error-bg;
+      }
+    }
+    &__parent-title {
+      display: inline-block;
+    }
+  }
+}
+
+// Compact display
+.event-session--compact {
+  .event-session {
+    &__title {
+      margin-bottom: 0;
+      @media #{$small-only} {
+        font-size: 1.2rem;
+      }
+    }
+    &__status {
+      color: #777;
+      font-size: 0.875rem;
+      &--cancelled {
+        color: $messages-error-bg;
+      }
+    }
+    &__wrapper {
+      display: table;
+      table-layout: fixed;
+    }
+    &__content {
+      display: table-cell;
+      vertical-align: middle;
+      overflow: visible;
+    }
+    &__media {
+      display: table-cell;
+      padding-right: 1rem;
+      vertical-align: middle;
+    }
+    &__teaser-image {
+      width: 110px;
+    }
+    &__publish-date {
+      color: #777;
+      font-size: 0.875rem;
+      .date-display-single {
+        & + .date-display-single:before {
+          content: ", ";
+        }
+      }
+    }
+  }
+}
+
+// Session teasers on the parent event page
+.event-page {
+  .event-session--teaser {
+    .event-session__parent-title {
+      display: none; // Hide link to parent event when session teaser is displayed on the parent event page.
+    }
+  }
+}
+
+// Scaling when in small columns
+.large-3, .large-4 {
+  .event-session__title {
+    font-size: 1.2rem;
+  }
+}

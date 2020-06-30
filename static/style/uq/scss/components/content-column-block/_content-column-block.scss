@@ -1,0 +1,37 @@
+.content-column-block {
+  @extend .light-palette;
+  @extend .dark-tint;
+
+  &__left {
+    position: relative;
+    z-index: 2;
+    .pane {
+      background: #276ed2;
+    }
+    .odd .pane {
+      background: #22487e;
+    }
+  }
+
+  &__middle {
+    position: relative;
+    z-index: 2;
+  }
+
+  &__right {
+    position: relative;
+    z-index: 2;
+  }
+  
+  .pane {
+    margin-bottom: 0;
+  }
+
+  .pane__title {
+    @extend .light-palette;
+    font-size: 1.5rem;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    padding-bottom: 0.3rem;
+  }
+}

@@ -1,0 +1,51 @@
+// CIBTvisas travel visa widget
+// Provided by uq_widgets in uq_components
+
+#cibtWidgetLoaderDiv {
+  #cibtvisareqwidget {
+    display: inline-block;
+    height: auto !important;
+    border-radius: 10px;
+    div {
+      line-height: normal;
+    }
+    select {
+      height: auto;
+      margin-bottom: 0;
+    }
+    .cibtvisareqwidgetheadline, .textcolor_nationality, .textcolor_destination, .textcolor_radio, .findout, .html_answer, .findout_common {
+      font-family: $roboto;
+    }
+    .cibtvisareqwidgetheadline {
+      height: auto;
+      background: none;
+      margin-bottom: 5px;
+      padding-bottom: 5px;
+      font-size: 18px;
+    }
+    .textcolor_footer {
+      margin-bottom: 13px;
+      img {
+        margin-left: 0;
+      }
+    }
+    .findout {
+      background-color: #e12929;
+      height: 31px;
+      padding-top: 3px;
+    }
+    .findout_common {
+      background-color: #1046a5;
+    }
+    .findout_yes {
+      height: 31px;
+      margin: 0 auto;
+    }
+    .textcolor_radio {
+      margin-top: 5px;
+    }
+    #cibtreason2 {
+      margin-left: 5px;
+    }
+  }
+}

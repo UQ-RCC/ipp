@@ -1,0 +1,197 @@
+// Blog post content type
+
+.blog-post {
+  &__title {
+  }
+  &__published-date {
+  }
+  &__body {
+  }
+  &__social-sharing {
+    margin: 0.5rem 0;
+  }
+  &__related-content {
+    //display: inline-block;
+    clear: both;
+  }
+  &__pager {
+    margin-top: 1.5rem;
+    .prev {
+      text-align: left;
+      float: left;
+      position: relative;
+      white-space: normal;
+      padding-top: 0.9rem;
+      a {
+        @extend .link-previous;
+        font-size: 1rem !important; // Important used to override load order because the previous-next-links component is included after. It's a dirty hack but the least worst option at the time.
+        &:hover {
+          text-decoration: none;
+
+        }
+      }
+    }
+    .next {
+      text-align: right;
+      float: right;
+      position: relative;
+      white-space: normal;
+      padding-top: 0.9rem;
+      a {
+        @extend .link-next;
+        font-size: 1rem !important; // Important used to override load order because the previous-next-links component is included after. It's a dirty hack but the least worst option at the time.
+        &:hover {
+          text-decoration: none;
+        }
+      }
+    }
+  }
+  &__last-updated {
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    .pane-title {
+      float: left;
+      margin-right: 0.5rem;
+    }
+  }
+  &__teaser-image {
+    max-height: 11rem;
+    overflow: hidden;
+  }
+}
+
+// Blog post node page
+.blog-post-page {
+  .blog-post {
+    &__body {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #eee;
+    }
+    &__author {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #eee;
+      .pane-title {
+        font-weight: 500;
+        font-size: 1.2rem;
+        margin-bottom: 0.3rem;
+      }
+      &-byline {
+        // When used with hero image
+        &--has-hero-image {
+          .blog-author--byline {
+            float: none;
+            .person__display-name, .blog-author__name {
+              border: none;
+            }
+          }
+        }
+      }
+    }
+    &__published-date {
+      padding-top: 0.2rem;
+      @media #{$small-only} {
+        clear: both;
+      }
+    }
+  }
+}
+
+// Teaser viewmode
+.blog-post--teaser {
+  .blog-post {
+    &__title {
+      @media #{$small-only} {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
+
+// Compact viewmode
+.blog-post--compact {
+  .blog-post {
+    &__wrapper {
+      display: table;
+      table-layout: fixed;
+    }
+    &__content {
+      display: table-cell;
+      vertical-align: middle;
+      height: 110px; // Match the height of the thumbnail image for when an article doesn't have an image.
+      overflow: visible;
+    }
+    &__title {
+      margin-bottom: 0;
+      @media #{$small-only} {
+        font-size: 1.2rem;
+      }
+    }
+    &__publish-date {
+      color: #777;
+      font-size: 0.875rem;
+    }
+    &__media {
+      display: table-cell;
+      padding-right: 1rem;
+      vertical-align: middle;
+    }
+    &__teaser-image {
+      width: 110px;
+    }
+  }
+}
+
+.hero-banner--blog-post {
+  margin-bottom: 1.5rem !important;
+}
+
+// Scaling when in small columns
+.large-3, .large-4 {
+  .blog-post__title {
+    font-size: 1.2rem;
+  }
+}
+
+// Blog author paragraph
+.blog-author {
+  &__photo {
+    float: left;
+  }
+  &__name {
+
+  }
+  &__bio {
+
+  }
+  &--byline {
+    @media #{$medium-up} {
+      float: left;
+    }
+    .person, .blog-author {
+      &__display-name, &__name {
+        display: inline-block;
+        padding: 0.2rem 1rem 0.2rem 0;
+        @media #{$medium-up} {
+          margin-right: 1rem;
+          border-right: 1px solid #ccc;
+        }
+        &:before {
+          content: "Posted by "; // Added this way because entity reference and custom authors are rendered with different markup structures.
+        }
+        div {
+          display: inline;
+        }
+      }
+      &__photo {
+        width: 2rem;
+        height: 2rem;
+        float: left;
+        margin-right: 0.5rem;
+        border-radius: 50%;
+        overflow: hidden;
+      }
+    }
+  }
+}

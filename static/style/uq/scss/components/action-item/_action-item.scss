@@ -1,0 +1,126 @@
+// Action item
+//
+// Variants:
+//
+// .action-item--shaded - Provides a subtle grey colour variant
+// .action-item--primary - Strong colour variant in keeping with .button--primary
+//
+// .action-item--phone - Applies phone icon
+// .action-item--email - Applies email icon
+// .action-item--web - Applies web icon
+// .action-item--download - Applies download icon
+// .action-item--external - Applies external link icon
+
+.action-item {
+  display: block;
+  position: relative;
+  padding: 1rem 1rem 1rem 4.4rem;
+  color: $body-font-color;
+  margin-bottom: 1px;
+  word-wrap: break-word;
+  overflow: hidden;
+
+  // Icons can either be added within the <a> or by using an icon variant class on the <a>
+  &__icon, &--phone, &--email, &--web, &--download, &--external {
+    &:before {
+      padding: 1.2rem;
+      display: inline-block;
+      width: 3.4rem;
+      text-align: center;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      -ms-transform: translateY(-50%);
+      -webkit-transform: translateY(-50%);
+      transform: translateY(-50%);
+      height: 100%;
+    }
+  }
+  &--phone {
+    &:before {
+      @include fa-icon();
+      content: '\f095'; // .fa-phone
+    }
+  }
+  &--email {
+    &:before {
+      @include fa-icon();
+      content: '\f0e0'; // .fa-envelope
+    }
+  }
+  &--web {
+    &:before {
+      @include fa-icon();
+      content: '\f0ac'; // .fa-globe
+    }
+  }
+  &--download {
+    &:before {
+      @include fa-icon();
+      content: '\f019'; // .fa-download
+    }
+  }
+  &--external {
+    &:before {
+      @include fa-icon();
+      content: '\f08e'; // .fa-external-link
+    }
+  }
+  &__icon {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    height: 100%;
+  }
+  &__label {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    display: block;
+    line-height: 1;
+  }
+  &:hover {
+    text-decoration: none;
+    background: darken($link-color, 2);
+    color: #fff;
+  }
+
+  // Shaded variant
+  &--shaded {
+    background: $action-item-bg;
+    transition: background 0.2s ease;
+    &:before, .action-item__icon:before {
+      background: $action-item-icon-bg;
+      color: #fff;
+    }
+    &:hover {
+      color: $body-font-color;
+      background: darken($action-item-bg, 2);
+      &:before, .action-item__icon:before {
+        background: darken($action-item-icon-bg, 4);
+      }
+    }
+  }
+
+  // Primary variant
+  &--primary {
+    background: $link-color;
+    color: #fff;
+    &:before, .action-item__icon:before {
+      background: $link-active-color;
+    }
+    &:hover {
+      background: darken($link-color, 2);
+      color: #fff;
+      &:before, .action-item__icon:before {
+        background: darken($link-active-color, 4);
+      }
+    }
+    &:focus {
+      color: #fff;
+      text-decoration: none;
+    }
+  }
+}

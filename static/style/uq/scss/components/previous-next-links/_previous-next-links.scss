@@ -1,0 +1,64 @@
+// Link to previous page/step
+@mixin previous-next-links {
+  font-size: 1.7rem;
+  font-weight: 400;
+  line-height: 1.2;
+  display: block;
+  &__description {
+    display: block;
+    clear: both;
+    font-size: 1rem;
+    font-weight: 300;
+    font-style: italic;
+  }
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.previous-next-links {
+  margin: 3.5rem 0;
+}
+
+.link-previous {
+  @include previous-next-links;
+  padding-left: 2rem;
+  &:before {
+    @include uq-icon;
+    content: "\e82e"; // uq-angle-left
+    color: #ddd;
+    font-size: 3rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: all ease 0.2s;
+  }
+  &:hover {
+    &:before {
+      left: -0.5rem;
+    }
+  }
+}
+
+// Link to next page/step
+.link-next {
+  @include previous-next-links;
+  padding-right: 2rem;
+  float:right;
+  text-align: right;
+  &:after {
+    @include uq-icon;
+    content: "\E819"; // uq-angle-right
+    color: #ddd;
+    font-size: 3rem;
+    position: absolute;
+    top: 0;
+    right: 0;
+    transition: all ease 0.2s;
+  }
+  &:hover {
+    &:after {
+      right: -0.5rem;
+    }
+  }
+}

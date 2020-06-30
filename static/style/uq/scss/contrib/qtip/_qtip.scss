@@ -1,0 +1,16 @@
+// qTip tooltips
+// https://www.drupal.org/project/qtip
+
+// UQ Tooltip on Click instance
+.qtip-link.qtip-instance-tooltip_on_click {
+  color: $link-color;
+  cursor: pointer;
+  border-bottom: 1px dotted;
+}
+
+// Tooltip content
+.uq-qtip {
+  font-size: $base-font-size;
+  line-height: $base-line-height;
+  padding: 0.3rem;
+}

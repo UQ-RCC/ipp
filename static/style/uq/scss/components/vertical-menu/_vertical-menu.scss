@@ -1,0 +1,155 @@
+// Vertical menu for side menus on page.
+//
+// Variants:
+// .vertical-menu--shaded - Adds a grey bg to the menu and tweaks hover/active states
+//
+
+.vertical-menu {
+  margin-bottom: 2.5rem;
+  clear: both;
+  .vertical-menu__title, .block-title {
+    font-size: 1.475rem;
+    padding: 0;
+    margin: 0;
+  }
+  .menu {
+    margin: 0;
+    padding: 0;
+    .menu__item, li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      .menu__link, a {
+        display: block;
+        border-bottom: 1px solid $vertical-menu-link-border;
+        text-decoration: none;
+        padding: 0.8rem 0;
+        width: 100%;
+        position: relative;
+        @media #{$large-up} {
+          transition: ease border, padding 0.15s;
+          transition-delay: 0.15s;
+        }
+        // Apply external link icon style if detected as external.
+        @include external-auto-detect;
+        &:hover {
+          @media #{$large-up} {
+            border-left: 3px solid $link-color;
+            padding-left: 0.5rem;
+          }
+        }
+        &.active {
+          color: $vertical-menu-link-active;
+          font-weight: 400;
+          // Hide arrow icon on active item if it has no children
+          &.active-trail {
+            &:after {
+              //display: none;
+            }
+          }
+        }
+      }
+      // Dropdown link for mobile to show children
+      .menu__dropdown-link {
+        display: none;
+      }
+
+      //Parent Collapsed
+      &.collapsed, &.expanded {
+        > a {
+          padding-right: 1rem;
+          // Arrow right to indicate closed parent
+          &:after {
+            @include fa-icon;
+            content: "\f105"; // FontAwesome angle-right
+            position: absolute;
+            top: 1.0625rem;
+            right: 0;
+            font-size: 0.875rem;
+          }
+        }
+      }
+      // Parent Expanded
+      &.expanded {
+        > a.active-trail {
+          padding-right: 1rem;
+          // Arrow down to indicate open parent
+          &:after {
+            @include fa-icon;
+            content: "\f107"; // FontAwesome angle-down
+            position: absolute;
+            top: 1.0625rem;
+            right: 0;
+            font-size: 0.875rem;
+          }
+        }
+        &.active-trail {
+          > .menu__dropdown {
+            display: block;
+          }
+        }
+      }
+    }
+    // Second level
+    .menu, .menu__dropdown {
+      padding-left: 1rem;
+      display: none;
+
+      // Third level - Only show 2 levels at a time. Navigation follows user down each level.
+      .menu__dropdown {
+        display: none;
+      }
+    }
+  }
+  // shaded variant of vertical-menu
+  &--shaded {
+    .menu {
+      border-top: 2px solid tint($uq-purple, 60);
+      .menu__item, li {
+        .menu__link, a {
+          background-color: $vertical-menu-shaded-bg-color;
+          padding: 0.8rem 1.2rem;
+          border-bottom-color: #fff;
+          color: #000;
+          &:hover {
+            background-color: darken($vertical-menu-shaded-bg-color, 5);
+            border-left: 0;
+            padding-left: 1.2rem;
+          }
+          &.active {
+            background-color: darken($vertical-menu-shaded-bg-color, 5);
+          }
+        }
+        &.collapsed, &.expanded {
+          > a, > a.active-trail {
+            &:after {
+              right: 1.2rem;
+            }
+          }
+        }
+        &.expanded {
+          li.active-trail {
+            a {
+              background-color: lighten($vertical-menu-shaded-bg-color, 1);
+            }
+          }
+          .menu__dropdown {
+            padding-left: 0;
+            > li {
+              > a {
+                padding-left: 1.6rem;
+              }
+              > .menu__dropdown {
+                > li {
+                  > a {
+                    padding-left: 2rem;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

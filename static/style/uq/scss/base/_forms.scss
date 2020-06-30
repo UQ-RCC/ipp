@@ -1,0 +1,112 @@
+// Foundation Button partial is included via Foundation Forms partial
+
+label {
+  font-weight: 500;
+}
+
+// Labels for checkbox and radio buttons
+input[type="checkbox"] + label, input[type="radio"] + label {
+  font-weight: 300;
+  max-width: 80%; // So long labels on multiple lines don't break around the radio/checkbox
+  vertical-align: top;
+  margin-bottom: 1rem;
+  @media #{$medium-up} {
+    max-width: 90%;
+  }
+}
+
+input[type="submit"] {
+  @include button;
+}
+
+input[type="submit"][disabled] {
+  @include button(
+  $disabled:true
+  );
+  cursor: not-allowed;
+}
+
+// Override Foundation which removes bottom margin from fields which have errors.
+input.error,
+textarea.error {
+  margin-bottom: 1rem;
+}
+
+input.field-add-more-submit {
+  float: right;
+  clear: both;
+}
+
+input[type="reset"] {
+  @include button-base;
+  @include button-size;
+  @extend .button.alert;
+}
+
+.form-required {
+  color: $form-required-color;
+}
+
+// Visually connect file uploads to the upload button.
+.form-managed-file .form-file {
+  border: 1px dashed #ddd;
+  border-right: 0;
+  padding: 0.8rem;
+  background: transparent;
+}
+
+.form-radios, .form-checkboxes {
+  margin-bottom: 1rem;
+}
+
+.captcha {
+  margin: 1rem 0;
+  img {
+    margin-bottom: 0.5rem;
+  }
+}
+
+// Override Foundation default full width for input fields.
+input[type="text"], input[type="password"], input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="month"], input[type="week"], input[type="email"], input[type="number"], input[type="search"], input[type="tel"], input[type="time"], input[type="url"], input[type="color"], input[type="file"] {
+  @media #{$medium-up}{
+    width: auto;
+    max-width: 100%;
+  }
+}
+
+.description {
+  font-style: italic;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  color: #666;
+}
+
+// Move description closer to input fields
+input, textarea, .resizable-textarea, .date-date {
+  & + .description {
+    margin-top: -0.8rem;
+  }
+}
+
+.field-multiple-drag {
+  background: repeating-linear-gradient(
+    -55deg,
+    #fff,
+    #fff 2px,
+    #f2f2f2 2px,
+    #f2f2f2 4px
+  );
+  .handle {
+    width: 0;
+    &:before {
+      @include fa-icon;
+      content: "\f047";
+      color: #777;
+    }
+  }
+}
+
+select[multiple=multiple] {
+  height: auto;
+  max-height: 4rem;
+}

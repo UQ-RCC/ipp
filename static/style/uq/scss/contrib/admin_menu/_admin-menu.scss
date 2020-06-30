@@ -1,0 +1,34 @@
+//
+// Admin menu overrides
+//
+//
+
+.admin-menu-search {
+  display: none;
+
+  @media #{$large-up} {
+    display: block;
+  }
+
+  input {
+    height: auto;
+  }
+}
+
+// admin_menu wraps on two lines, push body down
+html body.admin-menu {
+  margin-top: 29px !important;
+  @media #{$small-only} {
+    margin-top: 52px !important;
+  }
+}
+
+// Improve menu legibility
+#admin-menu .dropdown li li {
+  filter: Alpha(opacity=100);
+  opacity: 1;
+}
+
+#admin-menu > div > .dropdown > li > a {
+  padding: 3px 10px 3px;
+}

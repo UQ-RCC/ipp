@@ -1,0 +1,54 @@
+// Sticky sidebar block
+
+.sticky-sidebar {
+  @media #{$xlarge-up} {
+    position: fixed;
+    top: 350px;
+    right: 0;
+    z-index: 999;
+    width: 14rem;
+    max-width: 80%;
+  }
+  &__list {
+    margin: 0;
+    padding: 0;
+  }
+  &__item {
+    list-style: none;
+    margin-bottom: 1px;
+    padding: 0;
+  }
+  &__link {
+    margin: 0;
+  }
+}
+
+// Position contextual links in a fixed position element.
+.block-uq-sticky-sidebar {
+  @media #{$xlarge-up} {
+    position: fixed;
+    top: 350px;
+    right: 0;
+    z-index: 999;
+    width: 14rem;
+    max-width: 80%;
+  }
+  div.contextual-links-wrapper {
+    position: relative;
+    float: right;
+    z-index: 9999;
+  }
+}
+
+// Show sidebar location for admin if there are no buttons in it
+.admin-menu {
+  .block-uq-sticky-sidebar {
+    border: 2px dashed $messages-warning-border-color;
+    padding: 0.5rem;
+    &:after {
+      display: block;
+      content: "Edit sticky sidebar";
+      color: $messages-warning-border-color;
+    }
+  }
+}

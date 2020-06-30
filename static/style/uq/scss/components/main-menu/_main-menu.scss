@@ -1,0 +1,263 @@
+// Top_menu (Blackmenu) : primary navigation
+.main-menu {
+  margin: 0;
+  padding: 0;
+  background: $main-menu-bg-color;
+  color: $main-menu-color;
+  display: block;
+  width: 100%;
+  // Drupal override to hide the main-menu block title
+  .block__title {
+    display: none;
+  }
+
+  // Mobile menu open/close button
+  &__mobile-menu {
+    text-align: right;
+    width: 100%;
+    clear: both;
+  }
+  &__mobile-menu-link {
+    display: inline-block;
+    padding: 1rem;
+    color: $main-menu-color;
+    font-size: 1.2rem;
+    font-weight: 400;
+    // Custom breakpoint to handle a special case that Foundation 5 doesn't do well.
+    @media #{$large-up} {
+      display: none;
+    }
+    &:hover, &:focus {
+      color: $main-menu-color;
+      text-decoration: none;
+    }
+    .icon {
+      font-size: 1.5rem;
+      margin-right: 0.3rem;
+    }
+  }
+
+  // Start of the menu <ul>
+  .menu {
+    @include grid-row();
+    height: 0;
+    visibility: hidden;
+    overflow: hidden;
+    clear: left;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid $main-menu-border;
+    @media #{$large-up} {
+      height: auto;
+      visibility: visible;
+      overflow: visible;
+      border: 0;
+    }
+    &.mobile-open {
+      height: auto;
+      visibility: visible;
+      overflow: visible;
+    }
+    // <li> level
+    .leaf, .expanded, .collapsed {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      background: none;
+      position: relative;
+      border-bottom: 1px solid $main-menu-border;
+      &:last-child, &.last {
+        border: 0;
+      }
+      @media #{$large-up} {
+        border: 0;
+        float: left;
+        &:hover {
+          background: $main-menu-bg-hover;
+        }
+        &:last-child, &.last {
+          // Prevent sub-menu on last top level item from scrolling off the screen on smaller desktop sizes
+          .menu__dropdown {
+            right: 0;
+          }
+        }
+      }
+      // <a>
+      .menu__link {
+        display: block;
+        margin: 0;
+        padding: 1.3em;
+        text-decoration: none;
+        color: $main-menu-color;
+        @media #{$large-up} {
+          padding: 1.3em 1.8rem;
+          border-bottom: 2px solid transparent;
+        }
+        &:visited {
+          text-decoration: none;
+        }
+        &:hover {
+          background: $main-menu-bg-hover;
+        }
+        &.menu__dropdown-link {
+          @media #{$large-up} {
+            display: none;
+          }
+        }
+      }
+      // Active menu trail
+      .menu__link.active-trail {
+        border-left: 3px solid tint($uq-purple, 60);
+        @media #{$large-up} {
+          border-left: 0;
+          border-bottom: 2px solid tint($uq-purple, 60);
+        }
+      }
+      // Active menu item
+      .menu__link.active {
+        border-left: 3px solid $uq-purple;
+        @media #{$large-up} {
+          border-left: 0;
+          border-bottom: 2px solid $uq-purple;
+        }
+      }
+      // Items with children
+      &.expanded {
+        // Down arrow to indicate this item has children
+        position: relative;
+        .menu__link {
+          padding-right: 4rem;
+          @media #{$large-up} {
+            padding-right: 2rem;
+            &:after {
+              @include fa-icon;
+              content: "\f107"; // FontAwesome angle-down
+              font-size: 0.875rem;
+              color: #ccc;
+              position: absolute;
+              right: 1rem;
+              top: 50%;
+              margin-top: -0.4375rem;
+            }
+          }
+        }
+        // Button to expand menu with children
+        .menu__dropdown-link {
+          position: absolute;
+          top: 0;
+          right: 0;
+          z-index: 1000;
+          padding: 1.3rem;
+          display: block;
+          border-left: 1px solid $main-menu-border;
+          background: $main-menu-bg-color;
+          &:before {
+            @include fa-icon;
+            content: "\f107"; // FontAwesome angle-down
+            right: 1rem;
+            top: 50%;
+            margin-top: -0.4375rem;
+          }
+          &:hover {
+            background: $main-menu-bg-hover;
+          }
+          @media #{$large-up} {
+            display: none;
+          }
+          // On mobile, when child menu is open
+          &.dropdown-open {
+            background: $main-menu-secondary-bg-color;
+            &:before {
+              content: "\f106"; // FontAwesome angle-up
+            }
+          }
+        }
+      }
+      @media #{$large-up} {
+        // Show drop down menu on hover
+        &:hover .menu, .menu__link:hover .menu,
+        &:hover > .menu, .menu__link:hover > .menu,
+        &:hover .menu__dropdown, .menu__link:hover .menu__dropdown,
+        &:hover > .menu__dropdown, .menu__link:hover > .menu__dropdown {
+          display: block;
+          // Prevent 3rd level showing
+          .menu, .menu__dropdown {
+            display: none;
+          }
+        }
+      }
+    }
+    // Drop down menu
+    .menu, .menu__dropdown {
+      z-index: 1000;
+      display: none;
+      padding: 0;
+      @media #{$large-up} {
+        position: absolute;
+        width: 20rem;
+      }
+      .leaf, .expanded, .collapsed {
+        width: 100%;
+        clear: both;
+        &:first-child {
+          border-top: 1px solid $main-menu-border;
+        }
+        @media #{$large-up} {
+          border-top: 1px solid $main-menu-border;
+          &:first-child {
+            border-top: none;
+          }
+        }
+        .menu__link {
+          padding-left: 2.5rem;
+          background: $main-menu-secondary-bg-color;
+          @media #{$large-up} {
+            padding-left: 1.3rem;
+            padding-top: 1.1rem;
+            padding-bottom: 1.1rem;
+            background: $main-menu-bg-hover;
+          }
+          &:hover {
+            background: $main-menu-border;
+          }
+          &:after {
+            display: none;
+          }
+        }
+        &.expanded {
+          &:after {
+            border: none;
+          }
+          @media #{$large-up} {
+            .menu__link {
+              &:after {
+                display: none;
+              }
+            }
+          }
+        }
+      }
+      // Active sub-menu trail
+      .menu__link.active-trail {
+        border-bottom: 0;
+        border-left: 3px dotted tint($uq-purple, 80);
+      }
+      // Active sub-menu item
+      .menu__link.active {
+        border-left: 3px solid $uq-purple;
+        @media #{$large-up} {
+          border-bottom: 0;
+          background-color: darken($main-menu-bg-hover, 3.5%);
+        }
+      }
+
+      // Child menu expanded on mobile
+      &.expand {
+        display: block;
+        @media #{$large-up} {
+          display: none;
+        }
+      }
+    }
+  }
+}

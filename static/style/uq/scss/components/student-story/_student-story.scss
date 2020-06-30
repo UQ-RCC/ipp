@@ -1,0 +1,117 @@
+.student-story {
+  &__display-name {}
+  &__postnominal {}
+  &__jobs {}
+  &__qualifications {}
+  &__photo {}
+  &__nationality {}
+  &__summary {}
+  &__quote {}
+  &__awards {}
+  &__body {}
+}
+
+// Student story page
+.student-story-page {
+  .student-story {
+    &__display-name {
+      display: inline-block;
+    }
+    &__postnominal {
+      display: inline-block;
+      margin-left: 0.5rem;
+    }
+    &__qualifications {
+      margin-bottom: 1rem;
+    }
+    &__photo {
+      margin-bottom: 1rem;
+    }
+    &__quote {
+      font-size: 1.375rem;
+      font-weight: 100;
+    }
+  }
+
+  .pane-node-title + .panel-separator {
+    display: none;
+  }
+}
+
+.student-story--teaser {
+  .qualification {
+    margin-bottom: 0;
+  }
+}
+
+.student-story--compact {
+  .student-story {
+    &__wrapper {
+      display: table;
+      table-layout: fixed;
+    }
+
+    &__content {
+      display: table-cell;
+      vertical-align: middle;
+      height: 110px; // Match the height of the thumbnail image for when an article doesn't have an image.
+      overflow: visible;
+    }
+
+    &__title {
+      margin-bottom: 0;
+      @media #{$small-only} {
+        font-size: 1.2rem;
+      }
+    }
+
+    &__media {
+      display: table-cell;
+      padding-right: 1rem;
+      vertical-align: middle;
+    }
+
+    &__photo {
+      width: 110px;
+    }
+
+    &__quote {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+  .qualification {
+    margin-bottom: 0;
+  }
+}
+
+.card {
+  .student-story {
+    &__quote {
+      margin-left: 1.3rem;
+      margin-right: 0;
+      padding-left: 0;
+      text-indent: -1.3rem;
+      font-size: 1.175rem;
+      font-weight: 100;
+      border: 0;
+      &:before, &:after {
+        content: "“ ";
+        font-size: 1.8rem;
+        font-family: "Times New Roman", Arial;
+        font-weight: 800;
+        opacity: 0.2;
+      }
+      &:after {
+        content: " ”";
+      }
+    }
+  }
+}
+
+// Scaling when in small columns
+.large-3, .large-4 {
+  .student-story__display-name {
+    font-size: 1.2rem;
+  }
+}

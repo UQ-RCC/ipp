@@ -1,0 +1,24 @@
+// Word break
+//
+// Used to split large headings and control where the line breaks at specific responsive breakpoints
+// Note: <wbr> provides this functionality but lacks cross browser support and granular screen size control
+//
+
+.wbr, .word-break {
+  display: inline;
+  &--xlarge-up {
+    @media #{$xlarge-up}{
+      display: block;
+    }
+  }
+  &--large-up {
+    @media #{$large-up}{
+      display: block;
+    }
+  }
+  &--medium-up {
+    @media #{$medium-up}{
+      display: block;
+    }
+  }
+}

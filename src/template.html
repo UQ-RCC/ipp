@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang='en'>
+<head>
+	<meta charset='utf-8'>
+	<meta name='viewport' content='width=device-width,initial-scale=1.0'>
+
+	%sapper.base%
+
+	<link rel="shortcut icon" href="https://web-publishing.uq.edu.au/sites/all/themes/custom/uq_standard/favicon.ico" type="image/vnd.microsoft.icon" />
+
+	<!-- Sapper generates a <style> tag containing critical CSS
+	     for the current page. CSS for the rest of the app is
+	     lazily loaded when it precaches secondary pages -->
+	%sapper.styles%
+	<style type="text/css" media="all">
+		@import url("style/uq/css/styles.css");
+	</style>
+	<style type="text/css" media="print">
+		@import url("style/uq/css/print.css");
+	</style>
+		
+	<!-- This contains the contents of the <svelte:head> component, if
+	     the current page has one -->
+		 <title>IMB Image Processing Portal - The University of Queensland, Australia</title>
+	%sapper.head%
+
+</head>
+<body class="html front page-home">
+	<!-- HEADER -->
+	<div class="site-header">
+			<div class="site-header__global-menu">
+				<div class="global-menu hide-for-small-only">
+				<ul class="global-menu__list">
+					<li class="global-menu__item"><a href="https://www.uq.edu.au/" accesskey="1" class="global-menu__link">UQ Home</a></li>
+					<li class="global-menu__item"><a href="https://www.uq.edu.au/contacts/" accesskey="2" class="global-menu__link">Contacts</a></li>
+					<li class="global-menu__item"><a href="https://www.uq.edu.au/study/" accesskey="3" class="global-menu__link">Study</a></li>
+					<li class="global-menu__item"><a href="https://www.uq.edu.au/maps/" accesskey="4" class="global-menu__link">Maps</a></li>
+					<li class="global-menu__item"><a href="https://www.uq.edu.au/news/" accesskey="5" class="global-menu__link">News</a></li>
+					<li class="global-menu__item"><a href="https://www.uq.edu.au/events/" accesskey="6" class="global-menu__link">Events</a></li>
+					<li class="global-menu__item"><a href="https://www.library.uq.edu.au/" accesskey="7" class="global-menu__link">Library</a></li>
+					<li class="global-menu__item"><a href="https://www.uq.edu.au/giving/" class="global-menu__link">Give now</a></li>
+					<li class="global-menu__item"><a href="https://my.uq.edu.au/" accesskey="8" class="global-menu__link">my.UQ</a></li>
+				</ul>
+				</div>
+			</div>
+			<div class="site-header__content">
+				<div class="columns medium-11 large-8"> <a href="https://www.uq.edu.au/" title="UQ Homepage" class="uq-logo">The University of Queensland</a>
+				<h2 class="site-title has-2-lines"><a class="site-title__link" rel="home" title="IMB Image Processing Portal" href="https://imb.uq.edu.au/">IMB Image Processing Portal<br>
+					</a></h2>
+				</div>
+			</div>
+		</div>
+
+	<!-- BODY -->
+	<div id='sapper' class='page'>%sapper.html%</div>
+
+	<!-- FOOTER -->
+	<div class="page">
+		<div class="page__content"> 
+			<div class="panel-separator"></div>
+			<div class="section--centered section">
+				<div class="section__container">
+					<div class="section__header">
+						<h2 class="section__title">Partners</h2>
+					</div>
+					<div class="section__content">
+						<p style="text-align:center">
+							<a href="https://rcc.uq.edu.au/">
+								<img alt="Research Computing Centre - UQ" height="120" src="rcc-logo.jpg" width="200" />
+							</a> 
+							<a href="https://imb.uq.edu.au/">
+								<img alt="IMB" height="120" src="IMB-logo.png" width="200" style="background-color:black;" />
+							</a>
+							<a href="https://www.tern.org.au/">
+								<img alt="TERN" height="120" src="tern-logo.png" width="200" />
+							</a>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div id="site-footer" class="site-footer">
+		<div class="site-footer__content">
+			<div class="row">
+			<div class="columns large-9 medium-8"> <span class="footer__copyright">&copy; The University of Queensland</span>
+				<div class="footer__contact"> Enquiries: <a href="tel:+61733651111" class="footer__link footer__enquiries-phone">+61 7 3365 1111</a> &nbsp; | &nbsp; <a href="https://uq.edu.au/contacts" class="footer__link footer__contacts-link">Contact directory</a> </div>
+				<div class="footer__meta"> <abbr title="Australian Business Number">ABN</abbr>: 63 942 912 684 &nbsp; | &nbsp; <abbr title="Commonwealth Register of Institutions and Courses for Overseas Students">CRICOS</abbr> Provider No: <a class="footer__link cricos__link" href="https://www.uq.edu.au/about/cricos-link" rel="external">00025B</a> </div>
+			</div>
+			<div class="columns large-3 medium-4">
+				<div class="site-footer__emergency-contact"> <strong class="site-footer__sub-title">Emergency</strong><br>
+				Phone: <a href="tel:+61733653333" class="footer__link footer__emergency-phone">3365 3333</a> </div>
+			</div>
+			</div>
+			<div class="row">
+			<div class="site-footer__footer">
+				<div class="columns large-9 medium-8"> <a href="https://www.uq.edu.au/terms-of-use/" rel="external" class="footer__link footer__terms-link">Privacy &amp; Terms of use</a> &nbsp; | &nbsp; <a href="https://www.uq.edu.au/feedback?r=https%3A//engage.uq.edu.au/" rel="external" class="footer__link footer__feedback-link">Feedback</a> </div>
+			<div class="columns large-3 medium-4">Release %GIT_DESCRIBE%</div>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Sapper creates a <script> tag containing `src/client.js`
+	     and anything else it needs to hydrate the app and
+	     initialise the router -->
+	%sapper.scripts%
+</body>
+</html>
