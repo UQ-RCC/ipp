@@ -31,7 +31,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource'])
                 prefData.forEach(function(prefJson){
                     if(parseInt(prefJson['psfType']) == parseInt($scope.psfType.value)){
                         if(prefJson.hasOwnProperty('preference')){
-                            var psfPrefData = JSON.parse(prefJson['preference']);
+			    var psfPrefData = prefJson['preference'];
                             if(psfPrefData.mem > 384)
                                 psfPrefData.mem = 100;
                             if(!psfPrefData.hasOwnProperty('separateOutputs'))
@@ -50,8 +50,7 @@ angular.module('microvolution.job-submit', ['ngRoute', 'ngResource'])
                             $scope.preference = psfPrefData;
                         }
                         if(prefJson.hasOwnProperty("files")){
-                            $scope.selectedFilesGridOptions.data = 
-                                            JSON.parse(prefJson["files"]);
+                            $scope.selectedFilesGridOptions.data = prefJson["files"];
                         }
                     }
                 });

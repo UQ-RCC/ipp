@@ -70,7 +70,7 @@ angular
                 lastPaths[$ctrl.modalContents.source][$ctrl.modalContents.mode] 
                                     = $ctrl.modalContents.currentpath;
                 // save to currentpath
-                userPref['lastPaths'] = lastPaths;
+                userPref['lastPath'] = lastPaths;
                 UserPreferenceFactory.update({}, angular.toJson(userPref));
             }
         ),
@@ -139,8 +139,8 @@ angular
               userPref = data;
               // bookmarks
               console.log(userPref);
-            	if(userPref.hasOwnProperty("bookmarks"))
-        			  $ctrl.modalContents.shortcuts = userPref["bookmarks"];
+            	if(userPref.hasOwnProperty("bookmark"))
+        			  $ctrl.modalContents.shortcuts = userPref["bookmark"];
         		  else
         		    $ctrl.modalContents.shortcuts = []; 
               // home   
@@ -154,8 +154,8 @@ angular
                 $ctrl.modalContents.shortcuts.unshift({'label': 'home', 'path':home})
               }
               // last path
-              if(userPref.hasOwnProperty("lastPaths"))
-                  lastPaths = userPref['lastPaths'];
+              if(userPref.hasOwnProperty("lastPath"))
+                  lastPaths = userPref['lastPath'];
               else    
                   lastPaths = {};                        
               if(!lastPaths.hasOwnProperty($ctrl.modalContents.source))
@@ -190,7 +190,7 @@ angular
         // add it to the existing paths
         $ctrl.modalContents.shortcuts.push({'label': shortcutName, 'path': shortcutPath});
         // save it to preference
-        userPref['bookmarks'] = $ctrl.modalContents.shortcuts;
+        userPref['bookmark'] = $ctrl.modalContents.shortcuts;
         UserPreferenceFactory.update({}, angular.toJson(userPref));
       };
 
@@ -202,7 +202,7 @@ angular
             break;
           }
         }
-        userPref['bookmarks'] = $ctrl.modalContents.shortcuts;
+        userPref['bookmark'] = $ctrl.modalContents.shortcuts;
         UserPreferenceFactory.update({}, angular.toJson(userPref));
       }
 
