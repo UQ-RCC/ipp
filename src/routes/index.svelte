@@ -6,18 +6,22 @@
 		display: block;
     }
 </style>
-<script>
-	import { stores } from '@sapper/app';
 
-	const { page, session } = stores();
+<script>
+	import { goto } from '@sapper/app';
+	import { onMount } from 'svelte';
+
+	import { mysession } from '../node_modules/mystore.js';
+	mysession.useLocalStorage();
+
 </script>
 
 <svelte:head>
-	<title>IMB Image Processing Portal - Index</title>
+	<title>Image Processing Portal - Index</title>
 </svelte:head>
 
 <pbody>
-	{#if $session && $session.user}
+	{#if $mysession && $mysession.authenticated } 
 		<h1>You are already signed in.</h1>
 	{:else}
 		<h1>You are not signed in.</h1>

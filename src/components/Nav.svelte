@@ -1,30 +1,10 @@
 <script>
-	import { stores } from '@sapper/app';
+	import { goto, stores } from '@sapper/app';
+	const { page } = stores();
 
-	const { page, session } = stores();
-
-	function signout(event){
-		console.log("signing out");
-	}
-
-	function signin(event) {
-		console.log("signing in");
-
-		var base = 'https://nimrod.rcc.uq.edu.au/client/', oauthStart = 'login', service = 'wiener';
-		var url = base + oauthStart + "?service="+service;
-		var width = 800, 
-			height = 600;
-		var left = screen.width/2 - width/2,
-			top = screen.height/2 - height/2;
-
-		
-		var loginWindow = window.open('about:blank', 
-										'', 
-										"top=" + top + ",left=" + left + ",width="+width+",height="+height
-										);
-		loginWindow.location = url;
-		
-	};
+	import { mysession } from '../node_modules/mystore.js';
+	mysession.useLocalStorage();
+	
 </script>
 
 
@@ -44,7 +24,7 @@
 						</a>
 					</li>
 
-					{#if $session && $session.user}
+					{#if $mysession && $mysession.authenticated}
 						<li class="leaf">
 							<a class="menu__link" class:active="{$page.path === '/filesmanager'}" href="/filesmanager">
 								FilesManager
@@ -72,14 +52,14 @@
 						</li>
 
 						<li class="leaf">
-							<a id="logout-btn" on:click="{signout}" class="menu__link">
-								Logout
+							<a class="menu__link" class:active="{$page.path === '/logout'}" href="/logout">
+								Signout
 							</a>
 						</li>					
 					{:else}
 						<li class="leaf">
-							<a id="login" on:click="{signin}" class="menu__link">
-								Sign in
+							<a class="menu__link" class:active="{$page.path === '/logout'}" href="/login">
+								Signin
 							</a>
 						</li>
 					{/if}
