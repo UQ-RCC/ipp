@@ -1,8 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
-	import { mysession } from '../node_modules/mystore.js';
-	mysession.useLocalStorage();
-
+	import { mysession } from '../../storage.js';
+	
 	onMount(() => {
 		console.log("????????????????checking @ deconvoltuion");
 		console.log($mysession);

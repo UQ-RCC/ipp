@@ -1,5 +1,3 @@
-const base = 'https://conduit.productionready.io/api';
-
 function send({ method, path, data, token }) {
 	const fetch = process.browser ? window.fetch : require('node-fetch').default;
 
@@ -15,7 +13,7 @@ function send({ method, path, data, token }) {
         opts.headers['Authorization'] = `Bearer ${token}`;
 	}
 
-	return fetch(`${base}/${path}`, opts)
+	return fetch(`${path}`, opts)
 		.then(r => r.text())
 		.then(json => {
 			try {

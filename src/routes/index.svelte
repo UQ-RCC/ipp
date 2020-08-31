@@ -11,9 +11,8 @@
 	import { goto } from '@sapper/app';
 	import { onMount } from 'svelte';
 
-	import { mysession } from '../node_modules/mystore.js';
-	mysession.useLocalStorage();
-
+	import { mysession } from '../storage.js';
+	
 </script>
 
 <svelte:head>
