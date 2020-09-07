@@ -1,9 +1,24 @@
-IMBMicroscopy portal
-********************
+# ipp
 
-Front end for the IMBMicroscopy portal.
+## Project setup
+```
+yarn install
+```
 
+### Compiles and hot-reloads for development
+```
+yarn serve
+```
 
-Releases:
----------
-* Version 1.0
+### Compiles and minifies for production
+```
+yarn build
+```
+
+### Lints and fixes files
+```
+yarn lint
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
