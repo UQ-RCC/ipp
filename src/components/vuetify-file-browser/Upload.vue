@@ -175,9 +175,8 @@ export default {
             };
 
             this.uploading = true;
-            let response = await this.axios.request(config);
+            await this.axios.request(config);
             this.uploading = false;
-            console.log(response);
             this.$emit("uploaded");
         }
     },

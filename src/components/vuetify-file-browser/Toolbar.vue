@@ -1,7 +1,7 @@
 <template>
     <v-toolbar flat dense color="blue-grey lighten-5">
         <v-toolbar-items>
-            <!-- <v-menu offset-y v-if="storages.length > 1">
+            <v-menu offset-y v-if="storages.length > 1">
                 <template v-slot:activator="{ on }">
                     <v-btn icon class="storage-select-button mr-3" v-on="on">
                         <v-icon>mdi-arrow-down-drop-circle-outline</v-icon>
@@ -20,7 +20,7 @@
                         <v-list-item-title>{{ item.name }}</v-list-item-title>
                     </v-list-item>
                 </v-list>
-            </v-menu> -->
+            </v-menu>
             <v-btn text :input-value="path === '/'" @click="changePath('/')">
                 <v-icon class="mr-2">{{storageObject.icon}}</v-icon>
                 {{storageObject.name}}
@@ -119,12 +119,12 @@ export default {
         }
     },
     methods: {
-        // changeStorage(code) {
-        //     if (this.storage != code) {
-        //         this.$emit("storage-changed", code);
-        //         this.$emit("path-changed", "");
-        //     }
-        // },
+        changeStorage(code) {
+            if (this.storage != code) {
+                this.$emit("storage-changed", code);
+                this.$emit("path-changed", "");
+            }
+        },
         changePath(path) {
             this.$emit("path-changed", path);
         },
@@ -136,10 +136,10 @@ export default {
                         : segments[segments.length - 2].path;
             this.changePath(path);
         },
-        // async addFiles(event) {
-        //     this.$emit("add-files", event.target.files);
-        //     this.$refs.inputUpload.value = "";
-        // },
+        async addFiles(event) {
+            this.$emit("add-files", event.target.files);
+            this.$refs.inputUpload.value = "";
+        },
         async mkdir() {
             this.$emit("loading", true);
             let url = this.endpoints.mkdir.url

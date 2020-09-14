@@ -1,38 +1,32 @@
 <template>
-  <div id="app">
-    <NavigationBar/>
-    <div class="page">
-      <div class="section__container">
-        <div class="section__content">
-          <router-view />
-          <notifications group="sysnotif" position="top left"/> 
-        </div>
-      </div>
-    </div>
-  </div>
+    <v-app id="app">
+        <navbar />
+        <v-main>
+            <notifications group="sysnotif" position="top left"/> 
+            <v-container>
+                <router-view />
+            </v-container>
+        </v-main>
+    </v-app>
 </template>
 
 <script>
-import NavigationBar from './components/NavigationBar.vue'
+import Navbar from "./components/Navbar";
 
 export default {
-  name: 'App',
-  components: {
-    NavigationBar
-  }
-}
+    name: "App",
+    components: {
+        Navbar
+    }
+};
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: left;
-  color: #2c3e50;
-  background: #FFFFFF;
-  margin-top: 5px;
+* {
+    text-transform: initial;
 }
 
+.v-list-group__header__prepend-icon {
+    margin-right: 10px;
+}
 </style>
-

@@ -1,0 +1,140 @@
+<template>
+    <div>
+        <v-app-bar
+            dense
+            flat
+            fixed
+            :clipped-left="$vuetify.breakpoint.lgAndUp"
+            app
+            dark
+            color="#49075e"
+        >
+            <v-app-bar-nav-icon @click.stop="drawer = !drawer" class="mr-0"></v-app-bar-nav-icon>
+            <v-toolbar-title>
+                <v-btn text to="/">
+                    <span class="title">Image Processing Portal</span>
+                </v-btn>
+            </v-toolbar-title>
+            <div class="flex-grow-1"></div>
+            <div v-if="$vuetify.breakpoint.smAndUp">
+                <span>{{ this.greeting }}</span>
+                <v-menu
+                    left
+                    bottom
+                >
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                        icon
+                        v-bind="attrs"
+                        v-on="on"
+                    >
+                        <v-icon>mdi-menu-down</v-icon>
+                    </v-btn>
+                    </template>
+
+                    <v-list dense>
+                        <v-list-item
+                            @click="signout()"
+                        >
+                        <v-list-item-icon>
+                            <v-icon>mdi-logout</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>Logout</v-list-item-title>
+                    </v-list-item>
+                    </v-list>
+                </v-menu>
+
+            </div>
+        </v-app-bar>
+        <v-navigation-drawer v-model="drawer" fixed app :clipped="$vuetify.breakpoint.lgAndUp">
+            <v-list>
+                <v-list-item to="/">
+                    <v-list-item-icon>
+                        <v-icon>mdi-home</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title class="ml-n5">Home</v-list-item-title>
+                </v-list-item>
+
+                <v-list-item to="/filesmanager">
+                    <v-list-item-icon>
+                        <v-icon>mdi-folder-multiple</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title class="ml-n5">FilesManager</v-list-item-title>
+                </v-list-item>
+                <v-list-item to="/converter">
+                    <v-list-item-icon>
+                        <v-icon>mdi-arrow-left-right</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title class="ml-n5">Converter</v-list-item-title>
+                </v-list-item>
+                <v-list-item to="/preprocessing">
+                    <v-list-item-icon>
+                        <v-icon>mdi-scissors-cutting</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title class="ml-n5">Preprocessing</v-list-item-title>
+                </v-list-item>
+
+                <v-list-item to="/deconvolution">
+                    <v-list-item-icon>
+                        <v-icon>mdi-send</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title class="ml-n5">Deconvolution</v-list-item-title>
+                </v-list-item>
+
+
+                <v-list-item to="/jobs">
+                    <v-list-item-icon>
+                        <v-icon>mdi-history</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title class="ml-n5">Jobs</v-list-item-title>
+                </v-list-item>
+
+                <v-list-item to="/release">
+                    <v-list-item-icon>
+                        <v-icon>mdi-information-variant</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title class="ml-n5">Release</v-list-item-title>
+                </v-list-item>
+
+
+                <v-list-item to="/admin">
+                    <v-list-item-icon>
+                        <v-icon>mdi-account-supervisor</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title class="ml-n5">Admin</v-list-item-title>
+                </v-list-item>
+
+                
+                <v-list-item to="/" disabled>
+                    <v-list-item-icon>
+                        <v-icon>mdi-help-circle-outline</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title class="ml-n5">Documentation</v-list-item-title>
+                </v-list-item>
+            </v-list>
+        </v-navigation-drawer>
+    </div>
+</template>
+
+<script>
+    import Config from '../config'
+    export default {
+        data: () => ({
+            drawer: null
+        }),
+        computed: {
+            greeting: function() {
+                return this.$keycloak && this.$keycloak.idTokenParsed ? this.$keycloak.idTokenParsed.email  : 'Error'
+            }
+        },
+        methods: {
+            signout: function(){
+                console.log("signing out...")
+                this.$keycloak.logout({'redirectUri': Config.signoutUrl})
+            }
+        }
+    }
+</script>
+
+<style>
+</style>

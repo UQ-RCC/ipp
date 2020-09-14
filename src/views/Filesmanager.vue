@@ -15,7 +15,7 @@
 
 <script>
     // import * as api from '@/api'
-    import FileBrowser from "./Filebrowser/index.js";
+    import FileBrowser from "../components/vuetify-file-browser/";
 
     export default {
         name: 'Filesmanager',
