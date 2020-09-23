@@ -1,6 +1,6 @@
 <template>
-    <v-card flat tile width="250" min-height="380" class="d-flex flex-column folders-tree-card">
-        <div class="grow scroll-x">
+    <v-card flat tile class="d-flex flex-column folders-tree-card">
+        <div class="scroll-y scroll-x">
             <v-treeview
                 :open="open"
                 :active="active"
@@ -11,6 +11,8 @@
                 item-key="path"
                 item-text="basename"
                 dense
+                rounded
+                hoverable
                 activatable
                 transition
                 class="folders-tree"
@@ -34,26 +36,6 @@
                 </template>
             </v-treeview>
         </div>
-        <v-divider></v-divider>
-        <v-toolbar dense flat class="shrink">
-            <v-text-field
-                solo
-                flat
-                hide-details
-                label="Filter"
-                v-model="filter"
-                prepend-inner-icon="mdi-filter-outline"
-                class="ml-n3"
-            ></v-text-field>
-            <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                    <v-btn icon @click="init" v-on="on">
-                        <v-icon>mdi-collapse-all-outline</v-icon>
-                    </v-btn>
-                </template>
-                <span>Collapse All</span>
-            </v-tooltip>
-        </v-toolbar>
     </v-card>
 </template>
 
@@ -86,9 +68,9 @@ export default {
                     {
                         type: "dir",
                         path: "/",
-                        basename: "root",
+                        basename: "/",
                         extension: "",
-                        name: "root",
+                        name: "/",
                         children: []
                     }
                 ];
@@ -172,15 +154,20 @@ export default {
 
 <style lang="scss" scoped>
 .folders-tree-card {
-    height: 100%;
-
+    height: 440px;
+    width: 350px;
+    
     .scroll-x {
         overflow-x: auto;
     }
 
+    .scroll-y {
+        overflow-y: auto;
+    }
+
     ::v-deep .folders-tree {
         width: fit-content;
-        min-width: 250px;
+        min-width: 320px;
 
         .v-treeview-node {
             cursor: pointer;

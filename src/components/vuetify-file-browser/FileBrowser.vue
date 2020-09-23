@@ -1,5 +1,5 @@
 <template>
-    <v-card class="mx-auto" :loading="loading > 0">
+    <v-card  :loading="loading > 0">
         <toolbar
             :path="path"
             :storages="storagesArray"
@@ -11,19 +11,24 @@
             v-on:add-files="addUploadingFiles"
             v-on:folder-created="refreshPending = true"
         ></toolbar>
-        <v-row no-gutters>
+        <v-row>
             <v-col v-if="tree && $vuetify.breakpoint.smAndUp" sm="auto">
-                <tree
-                    :path="path"
-                    :storage="activeStorage"
-                    :icons="icons"
-                    :endpoints="endpoints"
-                    :axios="axiosInstance"
-                    :refreshPending="refreshPending"
-                    v-on:path-changed="pathChanged"
-                    v-on:loading="loadingChanged"
-                    v-on:refreshed="refreshPending = false"
-                ></tree>
+                <v-col no-gutters>
+                    <tree
+                        :path="path"
+                        :storage="activeStorage"
+                        :icons="icons"
+                        :endpoints="endpoints"
+                        :axios="axiosInstance"
+                        :refreshPending="refreshPending"
+                        v-on:path-changed="pathChanged"
+                        v-on:loading="loadingChanged"
+                        v-on:refreshed="refreshPending = false"
+                    ></tree>
+                    <v-divider horizontal></v-divider>
+                    <bookmark>
+                    </bookmark>
+                </v-col>
             </v-col>
             <v-divider v-if="tree" vertical></v-divider>
             <v-col>
@@ -66,24 +71,16 @@ import axios from "axios";
 import Toolbar from "./Toolbar.vue";
 import Tree from "./Tree.vue";
 import List from "./List.vue";
+import Bookmark from "./Bookmark.vue";
 import Upload from "./Upload.vue";
+
 
 const availableStorages = [
     {
-        name: "Local",
+        name: "/",
         code: "local",
-        icon: "mdi-folder-multiple-outline"
-    },
-    {
-        name: "Amazon S3",
-        code: "s3",
-        icon: "mdi-amazon-drive"
+        icon: "mdi-database"
     }
-    /*{
-        name: "Dropbox",
-        code: "dropbox",
-        icon: "mdi-dropbox"
-    }*/
 ];
 
 const endpoints = {
@@ -120,7 +117,8 @@ export default {
         Toolbar,
         Tree,
         List,
-        Upload
+        Upload,
+        Bookmark
     },
     model: {
         prop: "path",

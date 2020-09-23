@@ -17,7 +17,7 @@
             </v-toolbar-title>
             <div class="flex-grow-1"></div>
             <div v-if="$vuetify.breakpoint.smAndUp">
-                <span>{{ this.greeting }}</span>
+                <span>{{ this.email }}</span>
                 <v-menu
                     left
                     bottom
@@ -97,7 +97,7 @@
                 </v-list-item>
 
 
-                <v-list-item to="/admin">
+                <v-list-item to="/admin" v-if="this.is_admin">
                     <v-list-item-icon>
                         <v-icon>mdi-account-supervisor</v-icon>
                     </v-list-item-icon>
@@ -123,13 +123,16 @@
             drawer: null
         }),
         computed: {
-            greeting: function() {
-                return this.$keycloak && this.$keycloak.idTokenParsed ? this.$keycloak.idTokenParsed.email  : 'Error'
+            email: function() {
+                return this.$keycloak && this.$keycloak.idTokenParsed ? this.$keycloak.idTokenParsed.email  : ''
+            },
+            is_admin: function() {
+                return this.$keycloak.hasRealmRole("admin")
             }
         },
         methods: {
             signout: function(){
-                console.log("signing out...")
+                // signout
                 this.$keycloak.logout({'redirectUri': Config.signoutUrl})
             }
         }

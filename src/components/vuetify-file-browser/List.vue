@@ -1,6 +1,25 @@
 <template>
-    <v-card flat tile min-height="380" class="d-flex flex-column">
+    <v-card flat tile class="d-flex flex-column">
         <confirm ref="confirm"></confirm>
+        <v-toolbar v-if="path && isDir" dense flat class="shrink">
+            <v-text-field
+                solo
+                flat
+                hide-details
+                label="Filter"
+                v-model="filter"
+                prepend-inner-icon="mdi-filter-outline"
+                class="ml-n3"
+            ></v-text-field>
+            <v-btn icon v-if="false">
+                <v-icon>mdi-eye-settings-outline</v-icon>
+            </v-btn>
+            <v-btn icon @click="load">
+                <v-icon>mdi-refresh</v-icon>
+            </v-btn>
+        </v-toolbar>
+        <v-divider v-if="path && isDir"></v-divider>
+        
         <v-card-text
             v-if="!path"
             class="grow d-flex justify-center align-center grey--text"
@@ -71,29 +90,11 @@
             v-else
             class="grow d-flex justify-center align-center grey--text py-5"
         >The folder is empty</v-card-text>
-        <v-divider v-if="path"></v-divider>
-        <v-toolbar v-if="false && path && isFile" dense flat class="shrink">
+        <!-- <v-toolbar v-if="false && path && isFile" dense flat class="shrink">
             <v-btn icon>
                 <v-icon>mdi-download</v-icon>
             </v-btn>
-        </v-toolbar>
-        <v-toolbar v-if="path && isDir" dense flat class="shrink">
-            <v-text-field
-                solo
-                flat
-                hide-details
-                label="Filter"
-                v-model="filter"
-                prepend-inner-icon="mdi-filter-outline"
-                class="ml-n3"
-            ></v-text-field>
-            <v-btn icon v-if="false">
-                <v-icon>mdi-eye-settings-outline</v-icon>
-            </v-btn>
-            <v-btn icon @click="load">
-                <v-icon>mdi-refresh</v-icon>
-            </v-btn>
-        </v-toolbar>
+        </v-toolbar> -->
     </v-card>
 </template>
 
@@ -205,6 +206,8 @@ export default {
 
 <style lang="scss" scoped>
 .v-card {
-    height: 100%;
+    height: 750px;
+    overflow-x: auto;
+    overflow-y: auto;
 }
 </style>
