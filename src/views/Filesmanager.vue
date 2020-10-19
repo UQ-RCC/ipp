@@ -3,8 +3,6 @@
         <v-row>
             <v-col>
                 <file-browser
-                    :axiosConfig="{baseURL: 'https://vuetify-file-browser-server.herokuapp.com/'}"
-                    :maxUploadFileSize="0"
                 />
             </v-col>
         </v-row>
@@ -18,7 +16,7 @@
     import FileBrowser from "../components/vuetify-file-browser/";
 
     export default {
-        name: 'Filesmanager',
+        name: 'FilesManager',
         components: {
             FileBrowser
         },

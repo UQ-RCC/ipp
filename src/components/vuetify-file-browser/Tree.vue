@@ -40,14 +40,15 @@
 </template>
 
 <script>
+import FilesAPI from "@/api/FilesAPI";
 export default {
+    name: 'Tree',
     props: {
         icons: Object,
-        storage: String,
         path: String,
-        endpoints: Object,
-        axios: Function,
-        refreshPending: Boolean
+        refreshPending: Boolean,
+        parentComponent: String,
+        mode: String
     },
     data() {
         return {
@@ -81,23 +82,23 @@ export default {
         },
         async readFolder(item) {
             this.$emit("loading", true);
-            let url = this.endpoints.list.url
-                .replace(new RegExp("{storage}", "g"), this.storage)
-                .replace(new RegExp("{path}", "g"), item.path);
-
-            let config = {
-                url,
-                method: this.endpoints.list.method || "get"
-            };
-
-            let response = await this.axios.request(config);
-
+            let response = await FilesAPI.list(item.path);
             // eslint-disable-next-line require-atomic-updates
-            item.children = response.data.map(item => {
-                if (item.type === "dir") {
-                    item.children = [];
+            item.children = response.commandResult.map(responseItem => {
+                responseItem.type = "file";
+                responseItem.basename = responseItem.name;
+                responseItem.extension = "";
+                let _extension = responseItem.name.split(".")[1];
+                if ( _extension)
+                    responseItem.extension = _extension;
+                responseItem.path = item.path + responseItem.name;    
+                // folder or symlink
+                if(['d', 'l'].includes(responseItem.permission.charAt(0))){
+                    responseItem.type = "dir";
+                    responseItem.children = [];
+                    responseItem.path = responseItem.path + "/";
                 }
-                return item;
+                return responseItem;
             });
 
             this.$emit("loading", false);
@@ -154,7 +155,7 @@ export default {
 
 <style lang="scss" scoped>
 .folders-tree-card {
-    height: 440px;
+    height: 400px;
     width: 350px;
     
     .scroll-x {

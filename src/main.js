@@ -36,6 +36,7 @@ let keycloak = Keycloak({
       window.location.reload()
     } else {
       Vue.$log.info("Authenticated")
+      Vue.$log.info(keycloak)
       Vue.notify({
         group: 'sysnotif',
         type: 'warn',
@@ -64,7 +65,7 @@ let keycloak = Keycloak({
   
   
   keycloak.onTokenExpired = function() {
-    keycloak.updateToken(5).success(function(refreshed) {
+    keycloak.updateToken(Config.keycloak.minValidity).success(function(refreshed) {
       if (refreshed) {
         Vue.$log.info('Token refreshed' + refreshed)
       } else {

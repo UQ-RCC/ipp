@@ -2,13 +2,9 @@
     <v-card  :loading="loading > 0">
         <toolbar
             :path="path"
-            :storages="storagesArray"
-            :storage="activeStorage"
-            :endpoints="endpoints"
-            :axios="axiosInstance"
-            v-on:storage-changed="storageChanged"
+            :parentComponent="parentComponent"
+            :mode="mode"
             v-on:path-changed="pathChanged"
-            v-on:add-files="addUploadingFiles"
             v-on:folder-created="refreshPending = true"
         ></toolbar>
         <v-row>
@@ -16,11 +12,10 @@
                 <v-col no-gutters>
                     <tree
                         :path="path"
-                        :storage="activeStorage"
                         :icons="icons"
-                        :endpoints="endpoints"
-                        :axios="axiosInstance"
                         :refreshPending="refreshPending"
+                        :parentComponent="parentComponent"
+                        :mode="mode"
                         v-on:path-changed="pathChanged"
                         v-on:loading="loadingChanged"
                         v-on:refreshed="refreshPending = false"
@@ -34,11 +29,10 @@
             <v-col>
                 <list
                     :path="path"
-                    :storage="activeStorage"
                     :icons="icons"
-                    :endpoints="endpoints"
-                    :axios="axiosInstance"
                     :refreshPending="refreshPending"
+                    :parentComponent="parentComponent"
+                    :mode="mode"
                     v-on:path-changed="pathChanged"
                     v-on:loading="loadingChanged"
                     v-on:refreshed="refreshPending = false"
@@ -46,49 +40,14 @@
                 ></list>
             </v-col>
         </v-row>
-        <upload
-            v-if="uploadingFiles !== false"
-            :path="path"
-            :storage="activeStorage"
-            :files="uploadingFiles"
-            :icons="icons"
-            :axios="axiosInstance"
-            :endpoint="endpoints.upload"
-            :maxUploadFilesCount="maxUploadFilesCount"
-            :maxUploadFileSize="maxUploadFileSize"
-            v-on:add-files="addUploadingFiles"
-            v-on:remove-file="removeUploadingFile"
-            v-on:clear-files="uploadingFiles = []"
-            v-on:cancel="uploadingFiles = false"
-            v-on:uploaded="uploaded"
-        ></upload>
     </v-card>
 </template>
 
 <script>
-import axios from "axios";
-
 import Toolbar from "./Toolbar.vue";
 import Tree from "./Tree.vue";
 import List from "./List.vue";
 import Bookmark from "./Bookmark.vue";
-import Upload from "./Upload.vue";
-
-
-const availableStorages = [
-    {
-        name: "/",
-        code: "local",
-        icon: "mdi-database"
-    }
-];
-
-const endpoints = {
-    list: { url: "/storage/{storage}/list?path={path}", method: "get" },
-    upload: { url: "/storage/{storage}/upload?path={path}", method: "post" },
-    mkdir: { url: "/storage/{storage}/mkdir?path={path}", method: "post" },
-    delete: { url: "/storage/{storage}/delete?path={path}", method: "post" }
-};
 
 const fileIcons = {
     zip: "mdi-folder-zip-outline",
@@ -102,22 +61,26 @@ const fileIcons = {
     png: "mdi-file-image",
     jpg: "mdi-file-image",
     jpeg: "mdi-file-image",
+    tif: "mdi-file-image",
+    tiff: "mdi-file-image",
     mp4: "mdi-filmstrip",
     mkv: "mdi-filmstrip",
     avi: "mdi-filmstrip",
     wmv: "mdi-filmstrip",
     mov: "mdi-filmstrip",
     txt: "mdi-file-document-outline",
+    properties: "mdi-file-document-outline",
     xls: "mdi-file-excel",
+    out: "mdi-file-document-outline",
     other: "mdi-file-outline"
 };
 
 export default {
+    name: 'FileBrowser',
     components: {
         Toolbar,
         Tree,
         List,
-        Upload,
         Bookmark
     },
     model: {
@@ -126,46 +89,25 @@ export default {
     },
     props: {
         // comma-separated list of active storage codes
-        storages: {
-            type: String,
-            default: () => availableStorages.map(item => item.code).join(",")
-        },
-        // code of default storage
-        storage: { type: String, default: "local" },
         // show tree view
         tree: { type: Boolean, default: true },
         // file icons set
         icons: { type: Object, default: () => fileIcons },
-        // custom backend endpoints
-        endpoints: { type: Object, default: () => endpoints },
-        // custom axios instance
-        axios: { type: Function },
-        // custom configuration for internal axios instance
-        axiosConfig: { type: Object, default: () => {} },
-        // max files count to upload at once. Unlimited by default
-        maxUploadFilesCount: { type: Number, default: 0 },
-        // max file size to upload. Unlimited by default
-        maxUploadFileSize: { type: Number, default: 0 }
+        // called from which component
+        parentComponent: { type: String, default: "FilesManager"},
+        // mode: manage, selectfile, selectfolder, selectfolders
+        mode: {type: String, default: 'manage'},
+        // initial path
+        initialPath: {type: String, default: '/'}
     },
     data() {
         return {
             loading: 0,
             path: "",
-            activeStorage: null,
-            uploadingFiles: false, // or an Array of files
-            refreshPending: false,
-            axiosInstance: null
+            refreshPending: false
         };
     },
     computed: {
-        storagesArray() {
-            let storageCodes = this.storages.split(","),
-                result = [];
-            storageCodes.forEach(code => {
-                result.push(availableStorages.find(item => item.code == code));
-            });
-            return result;
-        }
     },
     methods: {
         loadingChanged(loading) {
@@ -175,48 +117,20 @@ export default {
                 this.loading--;
             }
         },
-        storageChanged(storage) {
-            this.activeStorage = storage;
-        },
-        addUploadingFiles(files) {
-            files = Array.from(files);
-
-            if (this.maxUploadFileSize) {
-                files = files.filter(
-                    file => file.size <= this.maxUploadFileSize
-                );
-            }
-
-            if (this.uploadingFiles === false) {
-                this.uploadingFiles = [];
-            }
-            
-            if (this.maxUploadFilesCount && this.uploadingFiles.length + files.length > this.maxUploadFilesCount) {
-                files = files.slice(0, this.maxUploadFilesCount - this.uploadingFiles.length);
-            }
-
-            this.uploadingFiles.push(...files);
-        },
-        removeUploadingFile(index) {
-            this.uploadingFiles.splice(index, 1);
-        },
-        uploaded() {
-            this.uploadingFiles = false;
-            this.refreshPending = true;
-        },
         pathChanged(path) {
-            this.path = path;
-            this.$emit("change", path);
+            if(path){
+                this.path = path;
+                this.$emit("change", path);                
+            }
         }
-    },
-    created() {
-        this.activeStorage = this.storage;
-        this.axiosInstance = this.axios || axios.create(this.axiosConfig);
     },
     mounted() {
-        if (!this.path && !(this.tree && this.$vuetify.breakpoint.smAndUp)) {
-            this.pathChanged("/");
-        }
+        if(this.initialPath && this.initialPath !== '/')
+                this.pathChanged(this.initialPath);
+        else if (!this.path && !(this.tree && this.$vuetify.breakpoint.smAndUp)) {
+                console.log("in here");
+                this.pathChanged("/");
+            }
     }
 };
 </script>

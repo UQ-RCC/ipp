@@ -2,18 +2,33 @@
     <v-card flat tile class="d-flex flex-column">
         <confirm ref="confirm"></confirm>
         <v-toolbar v-if="path && isDir" dense flat class="shrink">
+            <v-tooltip bottom class="ml-n1" v-if="mode === 'selectflies'">
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                    icon 
+                    @click="selectall"
+                    v-bind="attrs"
+                    v-on="on"
+                    >
+                    <v-icon>mdi-select-all</v-icon>
+                    </v-btn>
+                </template>
+                <span>Select all files</span>
+            </v-tooltip>
+
             <v-text-field
                 solo
                 flat
                 hide-details
-                label="Filter"
+                label="Regex filter"
                 v-model="filter"
                 prepend-inner-icon="mdi-filter-outline"
-                class="ml-n3"
+                class="ml-n1"
             ></v-text-field>
             <v-btn icon v-if="false">
                 <v-icon>mdi-eye-settings-outline</v-icon>
             </v-btn>
+
             <v-btn icon @click="load">
                 <v-icon>mdi-refresh</v-icon>
             </v-btn>
@@ -30,7 +45,19 @@
         >File: {{ path }}</v-card-text>
         <v-card-text v-else-if="dirs.length || files.length" class="grow">
             <v-list subheader v-if="dirs.length">
-                <v-subheader>Folders</v-subheader>
+                <v-subheader>
+                    <v-row>
+                        <v-col>
+                            Folders
+                        </v-col>
+                        <v-col>
+                            <h4 align="right">
+                            {{ dirs.length }} folders
+                            </h4>
+                        </v-col>
+                    </v-row>
+                </v-subheader>
+                
                 <v-list-item
                     v-for="item in dirs"
                     :key="item.basename"
@@ -55,20 +82,35 @@
             </v-list>
             <v-divider v-if="dirs.length && files.length"></v-divider>
             <v-list subheader v-if="files.length">
-                <v-subheader>Files</v-subheader>
+                <v-subheader>
+                    <v-row>
+                        <v-col>
+                            Files
+                        </v-col>
+                        <v-col>
+                            <h4 align="right">
+                            {{ files.length }} files
+                            </h4>
+                        </v-col>
+                    </v-row>
+                </v-subheader>
                 <v-list-item
                     v-for="item in files"
                     :key="item.basename"
-                    @click="changePath(item.path)"
+                    
                     class="pl-0"
                 >
+                    <v-list-item-action v-if="mode === 'selectflies'">
+                        <v-checkbox @click.stop="deleteItem(item)" v-model="item.selected"></v-checkbox>
+                    </v-list-item-action>
+                    
                     <v-list-item-avatar class="ma-0">
                         <v-icon>{{ icons[item.extension.toLowerCase()] || icons['other'] }}</v-icon>
                     </v-list-item-avatar>
 
                     <v-list-item-content class="py-2">
                         <v-list-item-title v-text="item.basename"></v-list-item-title>
-                        <v-list-item-subtitle>{{ formatBytes(item.size) }}</v-list-item-subtitle>
+                        <v-list-item-subtitle>{{ item.size }}</v-list-item-subtitle>
                     </v-list-item-content>
 
                     <v-list-item-action>
@@ -90,26 +132,22 @@
             v-else
             class="grow d-flex justify-center align-center grey--text py-5"
         >The folder is empty</v-card-text>
-        <!-- <v-toolbar v-if="false && path && isFile" dense flat class="shrink">
-            <v-btn icon>
-                <v-icon>mdi-download</v-icon>
-            </v-btn>
-        </v-toolbar> -->
     </v-card>
 </template>
 
 <script>
 import { formatBytes } from "./util";
 import Confirm from "./Confirm.vue";
+import FilesAPI from "@/api/FilesAPI";
 
 export default {
+    name: 'List',
     props: {
         icons: Object,
-        storage: String,
         path: String,
-        endpoints: Object,
-        axios: Function,
-        refreshPending: Boolean
+        refreshPending: Boolean,
+        parentComponent: String,
+        mode: String
     },
     components: {
         Confirm
@@ -117,20 +155,21 @@ export default {
     data() {
         return {
             items: [],
-            filter: ""
+            filter: "",
+            filterRegex: RegExp("")
         };
     },
     computed: {
         dirs() {
             return this.items.filter(
                 item =>
-                    item.type === "dir" && item.basename.includes(this.filter)
+                    item.type === "dir" && item.basename.match(this.filterRegex)
             );
         },
         files() {
             return this.items.filter(
                 item =>
-                    item.type === "file" && item.basename.includes(this.filter)
+                    item.type === "file" && item.basename.match(this.filterRegex)
             );
         },
         isDir() {
@@ -148,17 +187,23 @@ export default {
         async load() {
             this.$emit("loading", true);
             if (this.isDir) {
-                let url = this.endpoints.list.url
-                    .replace(new RegExp("{storage}", "g"), this.storage)
-                    .replace(new RegExp("{path}", "g"), this.path);
-
-                let config = {
-                    url,
-                    method: this.endpoints.list.method || "get"
-                };
-
-                let response = await this.axios.request(config);
-                this.items = response.data;
+                let response = await FilesAPI.list(this.path);
+                this.items = response.commandResult.map(responseItem => {
+                    responseItem.type = "file";
+                    responseItem.basename = responseItem.name;
+                    responseItem.extension = "";
+                    let _extension = responseItem.name.split(".")[1];
+                    if ( _extension)
+                        responseItem.extension = _extension;
+                    responseItem.path = this.path + responseItem.name;    
+                    // folder or symlink
+                    if(['d', 'l'].includes(responseItem.permission.charAt(0))){
+                        responseItem.type = "dir";
+                        responseItem.children = [];
+                        responseItem.path = responseItem.path + "/";
+                    }
+                    return responseItem;
+                });
             } else {
                 // TODO: load file
             }
@@ -174,30 +219,39 @@ export default {
 
             if (confirmed) {
                 this.$emit("loading", true);
-                let url = this.endpoints.delete.url
-                    .replace(new RegExp("{storage}", "g"), this.storage)
-                    .replace(new RegExp("{path}", "g"), item.path);
-
-                let config = {
-                    url,
-                    method: this.endpoints.delete.method || "post"
-                };
-
-                await this.axios.request(config);
+                await FilesAPI.delete(item.path);
                 this.$emit("file-deleted");
                 this.$emit("loading", false);
             }
+        },
+        // select all items
+        selectall(){
+
+        },
+        regexFilter(){
+            return this.filter;
         }
+
     },
     watch: {
         async path() {
             this.items = [];
             await this.load();
+            this.filter = "";
         },
         async refreshPending() {
             if (this.refreshPending) {
                 await this.load();
                 this.$emit("refreshed");
+            }
+        }, 
+        filter(){
+            try {
+                this.filterRegex = new RegExp(this.filter);
+            } catch(e) {
+                console.log("---------");
+                console.log(e);
+                this.filterRegex = null;
             }
         }
     }
@@ -206,8 +260,10 @@ export default {
 
 <style lang="scss" scoped>
 .v-card {
-    height: 750px;
+    height: 600px;
     overflow-x: auto;
     overflow-y: auto;
 }
+
+
 </style>

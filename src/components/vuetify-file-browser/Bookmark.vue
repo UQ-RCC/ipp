@@ -57,7 +57,7 @@
 
 <style lang="scss" scoped>
 .bookmark-card {
-    height: 300px;
+    height: 200px;
     width: 350px;
     
     .scroll-x {

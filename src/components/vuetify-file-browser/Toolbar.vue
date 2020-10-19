@@ -1,29 +1,45 @@
 <template>
     <v-toolbar flat dense color="blue-grey lighten-5">
+        <file-browser-dialog ref="filedialog" />
+
         <v-toolbar-items>
-            <v-menu offset-y v-if="storages.length > 1">
-                <template v-slot:activator="{ on }">
-                    <v-btn icon class="storage-select-button mr-3" v-on="on">
-                        <v-icon>mdi-arrow-down-drop-circle-outline</v-icon>
-                    </v-btn>
+
+            <v-menu offset-y>
+                <template v-slot:activator="{ on: menu, attrs }">
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on: tooltip }">
+                            <v-btn icon class="recent-select-button mr-3" v-bind="attrs" v-on="{ ...tooltip, ...menu }">
+                                <v-icon>mdi-chevron-down</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Recent paths</span>
+                    </v-tooltip>
                 </template>
-                <v-list class="storage-select-list">
-                    <v-list-item
-                        v-for="(item, index) in storages"
-                        :key="index"
-                        :disabled="item.code === storageObject.code"
-                        @click="changeStorage(item.code)"
-                    >
+                <v-list class="recent-select-list">
+                    <v-subheader>Recent paths</v-subheader>
+                    <v-list-item @click="changePath('/afm01/Q0/Q0703/')">
                         <v-list-item-icon>
-                            <v-icon v-text="item.icon"></v-icon>
+                            <v-icon>mdi-folder</v-icon>
                         </v-list-item-icon>
-                        <v-list-item-title>{{ item.name }}</v-list-item-title>
+                        <v-list-item-title>/afm01/Q0/Q0703/</v-list-item-title>
                     </v-list-item>
-                </v-list>
+                    <v-list-item @click="changePath('/scratch/eait/uqhngu36/test/nick-test2/')">
+                        <v-list-item-icon>
+                            <v-icon>mdi-folder</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>/scratch/eait/uqhngu36/test/nick-test2/</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="changePath('/afm02/Q0/')">
+                        <v-list-item-icon>
+                            <v-icon>mdi-folder</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>/afm02/Q0/</v-list-item-title>
+                    </v-list-item>
+                </v-list>                
             </v-menu>
+
             <v-btn text :input-value="path === '/'" @click="changePath('/')">
-                <v-icon class="mr-2">{{storageObject.icon}}</v-icon>
-                {{storageObject.name}}
+                /
             </v-btn>
             <template v-for="(segment, index) in pathSegments">
                 <v-icon :key="index + '-icon'">mdi-chevron-right</v-icon>
@@ -46,7 +62,13 @@
                 </template>
                 <span v-if="pathSegments.length === 1">Up to "root"</span>
                 <span v-else>Up to "{{pathSegments[pathSegments.length - 2].name}}"</span>
-            </v-tooltip>
+            </v-tooltip>            
+
+            <v-btn icon title="Copy Folder" v-if="parentComponent.toLowerCase() == 'filesmanager'" @click="copyFolder('selectfolders')">
+                <v-icon>mdi-folder-move</v-icon>
+            </v-btn>
+
+            
             <v-menu
                 v-model="newFolderPopper"
                 :close-on-content-click="false"
@@ -54,10 +76,11 @@
                 offset-y
             >
                 <template v-slot:activator="{ on }">
-                    <v-btn v-if="path" icon v-on="on" title="Create Folder">
+                    <v-btn icon v-on="on" title="Create Folder">
                         <v-icon>mdi-folder-plus-outline</v-icon>
                     </v-btn>
                 </template>
+
                 <v-card>
                     <v-card-text>
                         <v-text-field label="Name" v-model="newFolderName" hide-details></v-text-field>
@@ -73,27 +96,43 @@
                         >Create Folder</v-btn>
                     </v-card-actions>
                 </v-card>
-            </v-menu>
-            <!-- <v-btn v-if="path" icon @click="$refs.inputUpload.click()" title="Upload Files">
-                <v-icon>mdi-plus-circle</v-icon>
-                <input v-show="false" ref="inputUpload" type="file" multiple @change="addFiles" />
-            </v-btn> -->
+            </v-menu> 
+
+            <template>
+                <v-btn icon title="Add to bookmark">
+                    <v-icon>mdi-bookmark-plus</v-icon>
+                </v-btn>
+            </template>
+
+
+            <template>
+                <v-btn icon title="Copy path to clipboard" @click="copyUrl">
+                    <v-icon>mdi-content-copy</v-icon>
+                </v-btn>
+            </template>
+
         </template>
     </v-toolbar>
 </template>
 
 <script>
+import FilesAPI from "@/api/FilesAPI";
+import Vue from 'vue';
+
 export default {
+    name: 'Toolbar',
+    components: {
+        FileBrowserDialog: () => import('../FileBrowserDialog.vue')
+    },
     props: {
-        storages: Array,
-        storage: String,
         path: String,
-        endpoints: Object,
-        axios: Function
+        parentComponent: String,
+        mode: String
     },
     data() {
         return {
             newFolderPopper: false,
+            copyFolderPopper: false,
             newFolderName: ""
         };
     },
@@ -114,18 +153,32 @@ export default {
 
             return segments;
         },
-        storageObject() {
-            return this.storages.find(item => item.code == this.storage);
-        }
     },
     methods: {
-        changeStorage(code) {
-            if (this.storage != code) {
-                this.$emit("storage-changed", code);
-                this.$emit("path-changed", "");
+        copyUrl() {
+            const el = document.createElement('textarea');  
+            el.value = this.path;                                 
+            el.setAttribute('readonly', '');                
+            el.style.position = 'absolute';                     
+            el.style.left = '-9999px';                      
+            document.body.appendChild(el);                  
+            const selected =  document.getSelection().rangeCount > 0  ? document.getSelection().getRangeAt(0) : false;                                    
+            el.select();                                    
+            document.execCommand('copy');                   
+            document.body.removeChild(el);                  
+            if (selected) {                                 
+                document.getSelection().removeAllRanges();    
+                document.getSelection().addRange(selected);   
             }
+            Vue.notify({
+                group: 'sysnotif',
+                type: 'info',
+                title: 'Copied',
+                text: 'Text successfully copied to clipboard!'
+            });
         },
         changePath(path) {
+            Vue.$log.info("change path:" + path);
             this.$emit("path-changed", path);
         },
         goUp() {
@@ -141,29 +194,34 @@ export default {
             this.$refs.inputUpload.value = "";
         },
         async mkdir() {
-            this.$emit("loading", true);
-            let url = this.endpoints.mkdir.url
-                .replace(new RegExp("{storage}", "g"), this.storage)
-                .replace(new RegExp("{path}", "g"), this.path + this.newFolderName);
+            if (this.path) {
+                this.$emit("loading", true);
+                await FilesAPI.mkdir(this.path);
+                this.$emit("folder-created", this.newFolderName);
+                this.newFolderPopper = false;
+                this.newFolderName = "";
+                this.$emit("loading", false);
+            }
+            else{
+                return;
+            }
 
-            let config = {
-                url,
-                method: this.endpoints.mkdir.method || "post"
-            };
-
-            await this.axios.request(config);
-            this.$emit("folder-created", this.newFolderName);
-            this.newFolderPopper = false;
-            this.newFolderName = "";
-            this.$emit("loading", false);
+        },
+        async copyFolder(mode){
+            let options = await this.$refs.filedialog.open(mode, 'FilesManager', this.path);
+            if (!options.cancelled) {
+                console.log("...........");
+                console.log(options.path);
+                //TODO: copy here
+            }
         }
+
     }
 };
 </script>
 
 <style lang="scss" scoped>
-/* Storage Menu - alternate appearance
-.storage-select-button ::v-deep .v-btn__content {
+.recent-select-button ::v-deep .v-btn__content {
     flex-wrap: wrap;
     font-size: 11px;
 
@@ -172,9 +230,8 @@ export default {
         font-size: 22px;
     }
 }
-*/
 
-.storage-select-list .v-list-item--disabled {
+.recent-select-list .v-list-item--disabled {
     background-color: rgba(0, 0, 0, 0.25);
     color: #fff;
 
