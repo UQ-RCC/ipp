@@ -4,8 +4,9 @@ WORKDIR /app
 RUN apk update
 RUN apk add --no-cache yarn
 
-RUN yarn install
 COPY . .
+
+RUN yarn install
 RUN yarn build
 
 
