@@ -31,6 +31,7 @@
                         :headers="selectedFilesTable.headers"
                         :items="selectedFilesTable.selectedFiles"
                         :single-select="true"
+                        :disable-pagination="true"
                         item-key="name"
                         show-select
                         class="elevation-1"
@@ -51,7 +52,7 @@
                                     <v-icon>mdi-folder-plus</v-icon>
                                 </v-btn>
                             </template>
-                            <span>Select folders</span>
+                            <span>Add series (folders)</span>
                         </v-tooltip>
 
                         <v-tooltip bottom>
@@ -66,7 +67,7 @@
                                     <v-icon>mdi-file-multiple</v-icon>
                                 </v-btn>
                             </template>
-                            <span>Select individual files</span>
+                            <span>Add individual files</span>
                         </v-tooltip>
 
                         <v-tooltip bottom>
@@ -103,13 +104,19 @@
                     ></v-text-field>
 
                     <div>
-                        <v-btn 
-                            class="my-1" 
-                            color="primary" 
-                            @click.stop="chooseOutputFolder"
-                            rounded dark large> 
-                            Choose Output Folder
-                        </v-btn>
+                        <v-tooltip bottom>
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn 
+                                    class="my-3" 
+                                    color="primary" 
+                                    @click.stop="chooseOutputFolder"
+                                    rounded dark large 
+                                    v-bind="attrs" v-on="on">
+                                    Choose Output Folder
+                                </v-btn>
+                            </template>
+                            <span>Select where to save the outputs</span>
+                        </v-tooltip>
                     </div>
 
                     <v-checkbox
@@ -145,35 +152,75 @@
 
                     <v-tab-item>
                         <v-card flat>
-                            <v-card-text>
-                                Main tab
-                            </v-card-text>
+                            <p />
+                            <deconvolution-main ref="decon-main"/>
                         </v-card>
                     </v-tab-item>
                     <v-tab-item>
                         <v-card flat>
-                            <v-card-text>
-                                Noise tab
-                            </v-card-text>
+                            <p />
+                            <deconvolution-noise ref="decon-noise"/>
                         </v-card>
                     </v-tab-item>
                     <v-tab-item>
                         <v-card flat>
-                            <v-card-text>
-                                Advanced tab
-                            </v-card-text>
+                            <p />
+                            <deconvolution-advanced ref="decon-advanced"/>
                         </v-card>
                     </v-tab-item>
                     <v-tab-item>
                         <v-card flat>
-                            <v-card-text>
-                                Device tab
-                            </v-card-text>
+                            <p />
+                            <deconvolution-devices ref="decon-devices"/>
                         </v-card>
                     </v-tab-item>
                 </v-tabs>
                 
             </v-col>
+        </v-row>
+        <v-divider horizontal></v-divider>
+        <v-row align="center" justify="center">
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn 
+                        class="my-3" 
+                        color="primary" 
+                        @click.stop="submit"
+                        rounded dark large 
+                        v-bind="attrs" v-on="on">
+                        Submit
+                    </v-btn>
+                </template>
+                <span>Submit for processing</span>
+            </v-tooltip>
+
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn 
+                        class="my-3" 
+                        color="primary" 
+                        @click.stop="saveTemplate"
+                        rounded dark large 
+                        v-bind="attrs" v-on="on">
+                        Save Template
+                    </v-btn>
+                </template>
+                <span>Save the template of the currently selected series</span>
+            </v-tooltip>
+
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn 
+                        class="my-3" 
+                        color="primary" 
+                        @click.stop="loadTemplate"
+                        rounded dark large 
+                        v-bind="attrs" v-on="on">
+                        Load Template
+                    </v-btn>
+                </template>
+                <span>Load a template and apply to the currently selected series</span>
+            </v-tooltip>
         </v-row>
 
     </v-form>    
@@ -182,11 +229,19 @@
 <script>
     // import * as api from '@/api'
     import FileBrowserDialog from '../components/FileBrowserDialog.vue'
+    import DeconvolutionMain from '../components/deconvolution/Main.vue'
+    import DeconvolutionNoise from '../components/deconvolution/NoiseSupression.vue'
+    import DeconvolutionAdvanced from '../components/deconvolution/Advanced.vue'
+    import DeconvolutionDevices from '../components/deconvolution/Devices.vue'
 
     export default {
         name: 'Deconvolution',
         components: {
-            FileBrowserDialog
+            FileBrowserDialog,
+            DeconvolutionMain,
+            DeconvolutionNoise,
+            DeconvolutionAdvanced,
+            DeconvolutionDevices
         },
         data() {
             return {
@@ -270,6 +325,15 @@
                     console.log("...........");
                     console.log(options.path);
                 }
+            },
+            submit(){
+                console.log("submit...");
+            },
+            saveTemplate(){
+                console.log("save...");
+            },
+            loadTemplate(){
+                console.log("load...");
             }
         }
     }
