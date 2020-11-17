@@ -4,10 +4,46 @@
         v-model="devices.valid"
         lazy-validation
         >
-        <v-row >
-
+        <v-row align="center" justify="center">
+            <v-switch
+                v-model="devices.autoDetect"
+                label="Autodetect"
+                >
+            </v-switch>
         </v-row>
-
+        <v-col align="center" justify="center">
+            <v-col cols="15" sm="3" md="4">
+                <v-text-field 
+                    dense 
+                    outlined
+                    type=number 
+                    label="Number of instances [nodes]" 
+                    v-model="devices.numberOfParallelJobs"
+                >
+                </v-text-field>
+            </v-col>
+            <v-col cols="15" sm="3" md="4">
+                <v-text-field 
+                    dense 
+                    outlined
+                    type=number 
+                    label="Memory per job (GBs)" 
+                    v-model="devices.mem"
+                >
+                </v-text-field>
+            </v-col>
+            <v-col cols="15" sm="3" md="4">
+                <v-text-field 
+                    dense 
+                    outlined
+                    type=number 
+                    label="Number of GPUs per job" 
+                    v-model="devices.gpus"
+                >
+                </v-text-field>
+            </v-col>
+        </v-col>
+        
     </v-form>
 
 </template>
@@ -22,7 +58,11 @@
         data() {
             return {
                 devices:{
-                    valid: true
+                    valid: true,
+                    autoDetect: false,
+                    numberOfParallelJobs: 1,
+                    mem: 100,
+                    gpus: 1, 
                 }
             }
         },

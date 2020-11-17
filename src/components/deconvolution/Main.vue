@@ -230,13 +230,15 @@
                             <v-text-field 
                                 v-model="main.deskewAngle"
                                 regular 
+                                type=number
                                 label="Angle">
                             </v-text-field>
                         </v-col>
                         <v-col cols="5" sm="3" md="3">
                             <v-text-field 
                                 v-model="main.deskewThreshold"
-                                regular 
+                                regular
+                                type=number 
                                 label="Backgrond">
                             </v-text-field>
                         </v-col>
@@ -253,81 +255,97 @@
                     <v-data-table
                         :headers="deskewMetadataTableHeaders"
                         :items="main.deskewMetadata"
+                        class="elevation-1"
                         hide-default-footer
                         >
-                            <template v-slot:item.unit="props">
-                                <v-edit-dialog
-                                    :return-value.sync="props.item.unit"
+                            <template v-slot:top>
+                                <v-dialog
+                                    v-model="deskewEditDialog"
+                                    max-width="500px"
                                 >
-                                {{ props.item.unit }}
-                                <template v-slot:input>
-                                    <v-text-field
-                                        v-model="props.item.unit"
-                                        :rules="[]"
-                                        label="Edit"
-                                        single-line
-                                        type=string
-                                    ></v-text-field>
-                                </template>
-                                </v-edit-dialog>
+                                    <v-card>
+                                        <v-card-title>
+                                        <span class="headline">Edit deskew metadata</span>
+                                        </v-card-title>
+
+                                        <v-card-text>
+                                            <v-container>
+                                                <v-row>
+                                                <v-col
+                                                    cols="12"
+                                                    sm="6"
+                                                    md="4"
+                                                >
+                                                    <v-text-field
+                                                        v-model="deskewEditedItem.unit"
+                                                        label="Unit"
+                                                    ></v-text-field>
+                                                </v-col>
+                                                <v-col
+                                                    cols="12"
+                                                    sm="6"
+                                                    md="4"
+                                                >
+                                                    <v-text-field
+                                                        v-model="deskewEditedItem.pixelWidth"
+                                                        label="Pixel Width" type="number"
+                                                    ></v-text-field>
+                                                </v-col>
+                                                <v-col
+                                                    cols="12"
+                                                    sm="6"
+                                                    md="4"
+                                                >
+                                                        <v-text-field
+                                                        v-model="deskewEditedItem.pixelHeight"
+                                                        label="Pixel Height" type="number"
+                                                    ></v-text-field>
+                                                </v-col>
+                                                <v-col
+                                                    cols="12"
+                                                    sm="6"
+                                                    md="4"
+                                                >
+                                                    <v-text-field
+                                                        v-model="deskewEditedItem.voxelDepth"
+                                                        label="Voxel Depth" type="number"
+                                                    ></v-text-field>
+                                                </v-col>
+                                                </v-row>
+                                            </v-container>
+                                        </v-card-text>
+
+                                        <v-card-actions>
+                                            <v-spacer></v-spacer>
+                                            <v-btn
+                                                color="blue darken-1"
+                                                text
+                                                @click="closeDeskewDialog"
+                                            >
+                                                Cancel
+                                            </v-btn>
+                                            <v-btn
+                                                color="blue darken-1"
+                                                text
+                                                @click="saveDeskewDialog"
+                                            >
+                                                Save
+                                            </v-btn>
+                                        </v-card-actions>
+                                    </v-card>
+                                    </v-dialog>
                             </template>
 
-                            <template v-slot:item.pixelWidth="props">
-                                <v-edit-dialog
-                                    :return-value.sync="props.item.pixelWidth"
+                            <template v-slot:item.actions="{ item }">
+                                <v-icon
+                                small
+                                class="mr-2"
+                                @click="editDeskewItem(item)"
                                 >
-                                {{ props.item.pixelWidth }}
-                                <template v-slot:input>
-                                    <v-text-field
-                                    v-model="props.item.pixelWidth"
-                                    :rules="[]"
-                                    label="Edit"
-                                    single-line
-                                    type=number
-                                    ></v-text-field>
-                                </template>
-                                </v-edit-dialog>
+                                mdi-pencil
+                                </v-icon>
                             </template>
-
-                            <template v-slot:item.pixelHeight="props">
-                                <v-edit-dialog
-                                    :return-value.sync="props.item.pixelHeight"
-                                >
-                                {{ props.item.pixelHeight }}
-                                <template v-slot:input>
-                                    <v-text-field
-                                    v-model="props.item.pixelHeight"
-                                    :rules="[]"
-                                    label="Edit"
-                                    single-line
-                                    type=number
-                                    ></v-text-field>
-                                </template>
-                                </v-edit-dialog>
-                            </template>
-
-                            <template v-slot:item.voxelDepth="props">
-                                <v-edit-dialog
-                                    :return-value.sync="props.item.voxelDepth"
-                                >
-                                {{ props.item.voxelDepth }}
-                                <template v-slot:input>
-                                    <v-text-field
-                                    v-model="props.item.voxelDepth"
-                                    :rules="[]"
-                                    label="Edit"
-                                    single-line
-                                    type=number
-                                    ></v-text-field>
-                                </template>
-                                </v-edit-dialog>
-                            </template>
-
                     </v-data-table>
-
-
-
-
                 </v-expansion-panel-content>
             </v-expansion-panel>
 
@@ -337,40 +355,86 @@
                     <v-data-table
                         :headers="channelTableHeaders"
                         :items="main.channels"
+                        class="elevation-1"
                         hide-default-footer
                         >
-                            <template v-slot:item.iterations="props">
-                                <v-edit-dialog
-                                    :return-value.sync="props.item.iterations"
+                            <template v-slot:top>
+                                <v-dialog
+                                    v-model="iterationsEditDialog"
+                                    max-width="500px"
                                 >
-                                {{ props.item.iterations }}
-                                <template v-slot:input>
-                                    <v-text-field
-                                        v-model="props.item.iterations"
-                                        :rules="[rules.positiveIteration]"
-                                        label="Edit"
-                                        single-line
-                                        type=number
-                                    ></v-text-field>
-                                </template>
-                                </v-edit-dialog>
+                                    <v-card>
+                                        <v-card-title>
+                                        <span class="headline">Edit channels</span>
+                                        </v-card-title>
+
+                                        <v-card-text>
+                                            <v-container>
+                                                <v-row>
+                                                    <v-col
+                                                        cols="12"
+                                                        sm="6"
+                                                        md="4"
+                                                    >
+                                                        <v-text-field
+                                                            v-model="iterationsEditedItem.name"
+                                                            label="Channel" disabled
+                                                        ></v-text-field>
+                                                    </v-col>
+                                                    <v-col
+                                                        cols="12"
+                                                        sm="6"
+                                                        md="4"
+                                                    >
+                                                        <v-text-field
+                                                            v-model="iterationsEditedItem.iterations"
+                                                            label="Iterations" type=number
+                                                        ></v-text-field>
+                                                    </v-col>
+                                                    <v-col
+                                                        cols="12"
+                                                        sm="6"
+                                                        md="4"
+                                                        v-if="main.backgroundType.value === -1"
+                                                    >
+                                                        <v-text-field
+                                                            v-model="iterationsEditedItem.background"
+                                                            label="Background" type=number
+                                                        ></v-text-field>
+                                                    </v-col>
+                                                </v-row>
+                                            </v-container>
+                                        </v-card-text>
+
+                                        <v-card-actions>
+                                            <v-spacer></v-spacer>
+                                            <v-btn
+                                                color="blue darken-1"
+                                                text
+                                                @click="closeIterationsDialog"
+                                            >
+                                                Cancel
+                                            </v-btn>
+                                            <v-btn
+                                                color="blue darken-1"
+                                                text
+                                                @click="saveIterationsDialog"
+                                            >
+                                                Save
+                                            </v-btn>
+                                        </v-card-actions>
+                                    </v-card>
+                                    </v-dialog>
                             </template>
 
-                            <template v-slot:item.background="props">
-                                <v-edit-dialog
-                                    :return-value.sync="props.item.background"
-                                >
-                                {{ props.item.background }}
-                                <template v-slot:input>
-                                    <v-text-field
-                                    v-model="props.item.background"
-                                    :rules="[rules.positiveBackground]"
-                                    label="Edit"
-                                    single-line
-                                    type=number
-                                    ></v-text-field>
-                                </template>
-                                </v-edit-dialog>
+                            <template v-slot:item.actions="{ item }">
+                                <v-icon
+                                    small
+                                    class="mr-2"
+                                    @click="editIterationsItem(item)"
+                                    >
+                                    mdi-pencil
+                                </v-icon>
                             </template>
 
                     </v-data-table>
@@ -419,7 +483,7 @@
                     axialSpacing:0, 
                     swapZT: false, 
                     selectedItem: {x: 100, y:100, z:1, c:1, t:1},
-                    psfModel: 0,
+                    psfModel: {label: 'Scalar', value: 0},
                     RI: 1.33, // Objective immersion RI
                     objectiveRIOption: 1.33,
                     ns: 1.33, // sample medium RI
@@ -430,10 +494,10 @@
                     deskewAngle: 0, 
                     deskewThreshold: 0,
                     deskewMetadata: [
-                        {unit: 'µm', pixelWidth: 0.104, pixelHeight: 0.104, voxelDepth: 0.268146}
+                        { unit: 'µm', pixelWidth: 0.104, pixelHeight: 0.104, voxelDepth: 0.268146 }
                     ],
 
-                    backgroundType: null,
+                    backgroundType: {'label': 'None', 'value': null},
                     channels: [
                         {name: 1, iterations: 10, background: 0}
                     ]
@@ -492,6 +556,10 @@
                         sortable: false,
                         value: 'background',
                     },
+                    {   text: 'Edit', 
+                        value: 'actions', 
+                        sortable: false 
+                    },
                 ],
                 deskewMetadataTableHeaders: [
                     {
@@ -518,7 +586,29 @@
                         sortable: false,
                         value: 'voxelDepth',
                     },
+                    {   
+                        text: 'Edit', 
+                        value: 'actions', 
+                        sortable: false 
+                    },
                 ],
+                //deskew edit
+                deskewEditDialog: false,
+                deskewEditedIndex: -1,
+                deskewEditedItem: {
+                    unit: '', 
+                    pixelWidth: 0, 
+                    pixelHeight: 0, 
+                    voxelDepth: 0
+                },
+                // iterations edit
+                iterationsEditDialog: false,
+                iterationsEditedIndex: -1,
+                iterationsEditedItem: {
+                    name: 0, 
+                    iterations: 0, 
+                    background: 0
+                },
             }
         },
         methods: {
@@ -555,7 +645,47 @@
                     this.channelTableHeaders[2].align = 'center';
                 else
                     this.channelTableHeaders[2].align = ' d-none'; 
-            }
+            },
+            // edit dekew
+            editDeskewItem (item) {
+                this.deskewEditedIndex = this.main.deskewMetadata.indexOf(item)
+                this.deskewEditedItem = Object.assign({}, item)
+                this.deskewEditDialog = true
+            },
+            closeDeskewDialog(){
+                this.deskewEditDialog = false
+                this.$nextTick(() => {
+                    this.deskewEditedItem = {}
+                    this.deskewEditedIndex = -1
+                })
+            },
+            saveDeskewDialog(){
+                if (this.deskewEditedIndex > -1) {
+                    Object.assign(this.main.deskewMetadata[this.deskewEditedIndex], this.deskewEditedItem)
+                }
+                this.closeDeskewDialog()
+            }, 
+            // edit dekew
+            editIterationsItem (item) {
+                this.iterationsEditedIndex = this.main.channels.indexOf(item)
+                this.iterationsEditedItem = Object.assign({}, item)
+                this.iterationsEditDialog = true
+            },
+            closeIterationsDialog(){
+                this.iterationsEditDialog = false
+                this.$nextTick(() => {
+                    this.iterationsEditedItem = {}
+                    this.iterationsEditedIndex = -1
+                })
+            },
+            saveIterationsDialog(){
+                if (this.iterationsEditedIndex > -1) {
+                    Object.assign(this.main.channels[this.iterationsEditedIndex], this.iterationsEditedItem)
+                }
+                this.closeIterationsDialog()
+            }, 
+
+
         },
         watch: {
             async path() {
