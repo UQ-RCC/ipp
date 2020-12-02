@@ -1,42 +1,53 @@
 <template>
     <v-card  :loading="loading > 0">
         <toolbar
-            :path="path"
-            :parentComponent="parentComponent"
-            :mode="mode"
-            v-on:path-changed="pathChanged"
-            v-on:folder-created="refreshPending = true"
+            :prefid = prefid
+            :path = path
+            :parentComponent = parentComponent
+            :mode = mode
+            :lastpaths = pref.lastpaths
+            v-on:bookmark-changed = bookmarkChanged
+            v-on:path-changed = pathChanged
+            v-on:folder-created = "refreshPending = true"
         ></toolbar>
         <v-row>
             <v-col v-if="tree && $vuetify.breakpoint.smAndUp" sm="auto">
                 <v-col no-gutters>
                     <tree
-                        :path="path"
-                        :icons="icons"
-                        :refreshPending="refreshPending"
-                        :parentComponent="parentComponent"
-                        :mode="mode"
-                        v-on:path-changed="pathChanged"
-                        v-on:loading="loadingChanged"
-                        v-on:refreshed="refreshPending = false"
+                        :path = path
+                        :icons = icons
+                        :refreshPending = refreshPending
+                        :parentComponent = parentComponent
+                        :mode = mode
+                        v-on:path-changed = pathChanged
+                        v-on:loading = loadingChanged
+                        v-on:refreshed = "refreshPending = false"
                     ></tree>
                     <v-divider horizontal></v-divider>
-                    <bookmark>
+                    <bookmark
+                        :parentComponent = parentComponent
+                        :prefid = prefid
+                        :bookmarks = pref.bookmarks
+                        v-on:bookmark-changed = bookmarkChanged
+                        v-on:path-changed = pathChanged
+                    >
                     </bookmark>
                 </v-col>
             </v-col>
             <v-divider v-if="tree" vertical></v-divider>
             <v-col>
                 <list
-                    :path="path"
-                    :icons="icons"
-                    :refreshPending="refreshPending"
-                    :parentComponent="parentComponent"
-                    :mode="mode"
-                    v-on:path-changed="pathChanged"
-                    v-on:loading="loadingChanged"
-                    v-on:refreshed="refreshPending = false"
-                    v-on:file-deleted="refreshPending = true"
+                    :path = path
+                    :icons = icons
+                    :refreshPending = refreshPending
+                    :parentComponent = parentComponent
+                    :mode = mode
+                    v-on:path-changed = pathChanged
+                    v-on:filter-changed = filterChanged
+                    v-on:selected-items-changed = selectedItemsChanged
+                    v-on:loading = loadingChanged
+                    v-on:refreshed = "refreshPending = false"
+                    v-on:file-deleted = "refreshPending = true"
                 ></list>
             </v-col>
         </v-row>
@@ -48,6 +59,8 @@ import Toolbar from "./Toolbar.vue";
 import Tree from "./Tree.vue";
 import List from "./List.vue";
 import Bookmark from "./Bookmark.vue";
+import PreferenceAPI from "@/api/PreferenceAPI";
+import Vue from 'vue';
 
 const fileIcons = {
     zip: "mdi-folder-zip-outline",
@@ -104,7 +117,10 @@ export default {
         return {
             loading: 0,
             path: "",
-            refreshPending: false
+            filter: "",
+            prefid: -1,
+            refreshPending: false,
+            pref: {}
         };
     },
     computed: {
@@ -120,17 +136,52 @@ export default {
         pathChanged(path) {
             if(path){
                 this.path = path;
-                this.$emit("change", path);                
+                this.$emit("change", path);
+                this.savePref()                
             }
+        },
+        filterChanged(filter) {
+            if(filter){
+                this.filter = filter;
+                this.$emit("filter", filter);
+                this.savePref()                
+            }
+        },
+        selectedItemsChanged(items){
+            this.$emit("selected", items);
+        },
+        async savePref(){
+            var new_pref = {
+                currentpath: this.path,
+                filters: this.filter
+            }
+            console.log(new_pref);
+            this.pref = await PreferenceAPI.update_filesxplorer_pref(this.parentComponent, this.prefid, new_pref);
+        },
+        async getPref(){
+            //get pref
+            this.pref = await PreferenceAPI.get_filesxplorer_pref(this.parentComponent);
+            Vue.$log.info('Pref response');
+            Vue.$log.info(this.pref);
+            // update pref
+            this.path = this.pref.currentpath;
+            this.filter = this.pref.filters;
+            this.prefid = this.pref.id;
+            Vue.$log.info(this.pref.lastpaths);
+        },
+        async bookmarkChanged(){
+            this.getPref();
         }
     },
     mounted() {
+        // init
         if(this.initialPath && this.initialPath !== '/')
                 this.pathChanged(this.initialPath);
         else if (!this.path && !(this.tree && this.$vuetify.breakpoint.smAndUp)) {
                 console.log("in here");
                 this.pathChanged("/");
-            }
+        }
+        this.getPref();
     }
 };
 </script>

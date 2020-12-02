@@ -316,6 +316,7 @@
                 if (!options.cancelled) {
                     console.log("...........");
                     console.log(options.path);
+                    console.log(options.selectedItems);
                 }
 
             },
@@ -323,7 +324,7 @@
                 let options = await this.$refs.filedialog.open('selectfilesinfolder', 'Deconvolution', '/');
                 if (!options.cancelled) {
                     console.log("...........");
-                    console.log(options.path);
+                    console.log(options.path + options.filter);
                 }
             },
             submit(){

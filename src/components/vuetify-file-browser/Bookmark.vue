@@ -3,26 +3,26 @@
         <div class="scroll-y scroll-x">
             <v-list dense>
                 <v-subheader>Bookmarks</v-subheader>
-                <v-list-item-group v-model="item" color="primary">
+                <v-list-item-group color="primary">
                     <v-list-item
-                        v-for="item in items"
-                        :key="item.name"
+                        v-for="bookmark in bookmarks"
+                        :key="bookmark.name"
+                        @click="changePath(bookmark.path)"
                     >
-
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn icon v-bind="attrs" v-on="on">
                                     <v-icon color="grey lighten-1">mdi-folder-outline</v-icon>
                                 </v-btn>
                             </template>
-                            <span>{{ item.path }}</span>
+                            <span>{{ bookmark.path }}</span>
                         </v-tooltip>
                         
                         <v-list-item-content>
-                            <v-list-item-title  v-text="item.name"></v-list-item-title>
+                            <v-list-item-title  v-text="bookmark.name"></v-list-item-title>
                         </v-list-item-content>
 
-                        <v-btn icon @click="deleteBookmark(item)">
+                        <v-btn icon @click="deleteBookmark(bookmark)">
                             <v-icon>mdi-delete-outline</v-icon>
                         </v-btn>
                     </v-list-item>
@@ -34,25 +34,35 @@
 </template>
 
 <script>
+    import PreferenceAPI from "@/api/PreferenceAPI";
+    import Vue from 'vue';
+    
     export default {
-    data: () => ({
-      item: 1,
-      items: [{"name": "blah1", "path": "/root/blah1/blah2/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/a/asdasd_asdasd/asdasd.asdasd/asdasdasd"}, 
-                {"name": "blah2", "path": "/root/blah1/blah2a/a/a/a/a/a/a/a/asdasd_asdasd/asdasd.asdasd/asdasdasd"}, 
-                {"name": "blah3", "path": "/root/blah1/blah2a/a/a/a/a/a/a/a/asdasd_asdasd/asdasd.asdasd/asdasdasd"}, 
-                {"name": "blah4", "path": "/root/blah1/blah2a/a/a/a/a/a/a/a/asdasd_asdasd/asdasd.asdasd/asdasdasd"}, 
-                {"name": "blah5", "path": "/root/blah1/blah2a/a/a/a/a/a/a/a/asdasd_asdasd/asdasd.asdasd/asdasdasd"}, 
-                {"name": "blah6", "path": "/root/blah1/blah2a/a/a/a/a/a/a/a/asdasd_asdasd/asdasd.asdasd/asdasdasd"}, 
-                {"name": "blah7", "path": "/root/blah1/blah2a/a/a/a/a/a/a/a/asdasd_asdasd/asdasd.asdasd/asdasdasd"}, 
-                {"name": "blah8", "path": "/root/blah1/blah2a/a/a/a/a/a/a/a/asdasd_asdasd/asdasd.asdasd/asdasdasd"}],
-    }),
-    methods: {
-        deleteBookmark(item) {
-            console.log('deleting');
-            console.log(item);
+        name: 'Bookmark',
+        props: {
+            parentComponent: String, 
+            prefid: Number,
+            bookmarks: Array
+        },
+        data: () => (
+            {
+            }
+        ),
+        methods: {
+            async deleteBookmark(item) {
+                Vue.$log.info('deleting');
+                Vue.$log.info(item);
+                await PreferenceAPI.remove_filexplorer_bookmark(this.parentComponent, this.prefid, item.id);
+                this.$emit("bookmark-changed");
+            },
+            async changePath(path){
+                Vue.$log.info("change path:" + path);
+                this.$emit("path-changed", path);
+            }
+        },
+        mounted() {
         }
     }
-  }
 </script>
 
 <style lang="scss" scoped>

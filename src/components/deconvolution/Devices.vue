@@ -13,34 +13,55 @@
         </v-row>
         <v-col align="center" justify="center">
             <v-col cols="15" sm="3" md="4">
-                <v-text-field 
-                    dense 
-                    outlined
-                    type=number 
-                    label="Number of instances [nodes]" 
-                    v-model="devices.numberOfParallelJobs"
-                >
-                </v-text-field>
+                <v-tooltip right>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-text-field 
+                            dense 
+                            outlined
+                            v-bind="attrs"
+                            v-on="on"
+                            type=number 
+                            label="Number of instances [nodes]" 
+                            v-model="devices.numberOfParallelJobs"
+                        >
+                        </v-text-field>
+                    </template>
+                    <span>The number of instances of Microvolution to be executed</span>
+                </v-tooltip>
             </v-col>
             <v-col cols="15" sm="3" md="4">
-                <v-text-field 
-                    dense 
-                    outlined
-                    type=number 
-                    label="Memory per job (GBs)" 
-                    v-model="devices.mem"
-                >
-                </v-text-field>
+                <v-tooltip right>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-text-field 
+                            dense 
+                            outlined
+                            v-bind="attrs"
+                            v-on="on"
+                            type=number 
+                            label="Memory per job (GBs)" 
+                            v-model="devices.mem"
+                        >
+                        </v-text-field>
+                    </template>
+                    <span>The amount of memory (in Gbs) for each instance</span>
+                </v-tooltip>
             </v-col>
             <v-col cols="15" sm="3" md="4">
-                <v-text-field 
-                    dense 
-                    outlined
-                    type=number 
-                    label="Number of GPUs per job" 
-                    v-model="devices.gpus"
-                >
-                </v-text-field>
+                <v-tooltip right>
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-text-field 
+                            dense 
+                            outlined
+                            v-bind="attrs"
+                            v-on="on"
+                            type=number 
+                            label="Number of GPUs per job" 
+                            v-model="devices.gpus"
+                        >
+                        </v-text-field>
+                    </template>
+                    <span>The number of GPUs to be used for each job (or instance)</span>
+                </v-tooltip>
             </v-col>
         </v-col>
         

@@ -11,6 +11,8 @@
                 :initialPath=options.initialPath
                 :mode = options.mode
                 v-on:change="pathChanged"
+                v-on:filter="filterChanged"
+                v-on:selected="selectedItemsChanged"
                 ref="filebrowser1"
             />
 
@@ -46,7 +48,8 @@
                 initialPath: '/',
                 path: '/bleh',
                 filter: '',
-                cancelled: false
+                cancelled: false,
+                selectedItems: []
             }
         }),
         computed: {
@@ -56,6 +59,9 @@
                 }
                 else if(this.options.mode === 'selectfiles'){
                     return 'Select files';
+                }
+                else if(this.options.mode === 'selectfile'){
+                    return 'Select a single file';
                 }
                 else if(this.options.mode === 'selectfolder'){
                     return 'Select a folder';
@@ -88,6 +94,14 @@
             },
             pathChanged(path) {
                 this.options.path = path;
+            },
+            filterChanged(filter) {
+                if(filter){
+                    this.options.filter = filter;
+                }
+            },
+            selectedItemsChanged(items){
+                this.options.selectedItems = items;
             }
         }
     }

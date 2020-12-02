@@ -2,7 +2,7 @@
     <v-card flat tile class="d-flex flex-column">
         <confirm ref="confirm"></confirm>
         <v-toolbar v-if="path && isDir" dense flat class="shrink">
-            <v-tooltip bottom class="ml-n1" v-if="mode === 'selectflies'">
+            <v-tooltip bottom class="ml-n1" v-if="mode === 'selectfiles'">
                 <template v-slot:activator="{ on, attrs }">
                     <v-btn
                     icon 
@@ -22,6 +22,7 @@
                 hide-details
                 label="Regex filter"
                 v-model="filter"
+                @change="filterChanged"
                 prepend-inner-icon="mdi-filter-outline"
                 class="ml-n1"
             ></v-text-field>
@@ -100,8 +101,8 @@
                     
                     class="pl-0"
                 >
-                    <v-list-item-action v-if="mode === 'selectflies'">
-                        <v-checkbox @click.stop="deleteItem(item)" v-model="item.selected"></v-checkbox>
+                    <v-list-item-action v-if="['selectfiles', 'selectfile'].includes(mode)">
+                        <v-checkbox @click.stop="selectItem(item)" v-model="item.selected"></v-checkbox>
                     </v-list-item-action>
                     
                     <v-list-item-avatar class="ma-0">
@@ -155,6 +156,7 @@ export default {
     data() {
         return {
             items: [],
+            selectedItems: [],
             filter: "",
             filterRegex: RegExp("")
         };
@@ -183,6 +185,9 @@ export default {
         formatBytes,
         changePath(path) {
             this.$emit("path-changed", path);
+        },
+        filterChanged() {
+            this.$emit("filter-changed", this.filter);
         },
         async load() {
             this.$emit("loading", true);
@@ -224,6 +229,14 @@ export default {
                 this.$emit("loading", false);
             }
         },
+        selectItem(item){
+            if (this.mode === 'selectfile'){
+                this.selectedItems.forEach(element => element.selected = false);
+                this.selectedItems = [];
+            }
+            this.selectedItems.push(item);
+            this.$emit("selected-items-changed", this.selectedItems);
+        },
         // select all items
         selectall(){
 
@@ -249,8 +262,6 @@ export default {
             try {
                 this.filterRegex = new RegExp(this.filter);
             } catch(e) {
-                console.log("---------");
-                console.log(e);
                 this.filterRegex = null;
             }
         }

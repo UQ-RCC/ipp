@@ -17,24 +17,20 @@
                 </template>
                 <v-list class="recent-select-list">
                     <v-subheader>Recent paths</v-subheader>
-                    <v-list-item @click="changePath('/afm01/Q0/Q0703/')">
-                        <v-list-item-icon>
-                            <v-icon>mdi-folder</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-title>/afm01/Q0/Q0703/</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click="changePath('/scratch/eait/uqhngu36/test/nick-test2/')">
-                        <v-list-item-icon>
-                            <v-icon>mdi-folder</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-title>/scratch/eait/uqhngu36/test/nick-test2/</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click="changePath('/afm02/Q0/')">
-                        <v-list-item-icon>
-                            <v-icon>mdi-folder</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-title>/afm02/Q0/</v-list-item-title>
-                    </v-list-item>
+                    <v-list-item-group color="primary">
+                        <v-list-item
+                            v-for="lastpath in lastpaths"
+                            :key="lastpath"
+                            @click="changePath(lastpath)"
+                            >
+                            <v-list-item-icon>
+                                <v-icon>mdi-folder</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title  v-text="lastpath"></v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                    </v-list-item-group>
                 </v-list>                
             </v-menu>
 
@@ -99,7 +95,7 @@
             </v-menu> 
 
             <template>
-                <v-btn icon title="Add to bookmark">
+                <v-btn icon title="Add to bookmark" @click="addBookmark">
                     <v-icon>mdi-bookmark-plus</v-icon>
                 </v-btn>
             </template>
@@ -117,6 +113,7 @@
 
 <script>
 import FilesAPI from "@/api/FilesAPI";
+import PreferenceAPI from "@/api/PreferenceAPI";
 import Vue from 'vue';
 
 export default {
@@ -127,7 +124,9 @@ export default {
     props: {
         path: String,
         parentComponent: String,
-        mode: String
+        prefid: Number,
+        mode: String,
+        lastpaths: Array
     },
     data() {
         return {
@@ -152,7 +151,7 @@ export default {
             });
 
             return segments;
-        },
+        }
     },
     methods: {
         copyUrl() {
@@ -205,17 +204,24 @@ export default {
             else{
                 return;
             }
-
         },
         async copyFolder(mode){
             let options = await this.$refs.filedialog.open(mode, 'FilesManager', this.path);
             if (!options.cancelled) {
-                console.log("...........");
-                console.log(options.path);
-                //TODO: copy here
+                Vue.$log.info("...........");
+                Vue.$log.info(options.path);
             }
+        },
+        async addBookmark() {
+            var new_bookmark = { 
+                name: this.path.replace(/\/$/, "").split("/").slice(-1)[0],
+                path: this.path
+            }
+            await PreferenceAPI.add_filexplorer_bookmark(this.parentComponent, this.prefid, new_bookmark);
+            this.$emit("bookmark-changed");
         }
-
+    },
+    mounted() {
     }
 };
 </script>

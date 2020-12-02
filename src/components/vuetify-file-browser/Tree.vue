@@ -41,6 +41,8 @@
 
 <script>
 import FilesAPI from "@/api/FilesAPI";
+import Vue from 'vue';
+
 export default {
     name: 'Tree',
     props: {
@@ -60,6 +62,7 @@ export default {
     },
     methods: {
         init() {
+            Vue.$log.info('@tree init, path=' + this.path);
             this.open = [];
             this.items = [];
             // set default files tree items (root item) in nextTick.
@@ -100,7 +103,6 @@ export default {
                 }
                 return responseItem;
             });
-
             this.$emit("loading", false);
         },
         activeChanged(active) {
@@ -127,17 +129,96 @@ export default {
                 }
             }
             return null;
+        },
+        async openPath(path) {
+            let pathsegments = path.replace(/^\//, "").replace(/\/$/, "").split("/");
+            // now we have pathSegments = ["a", "b", "c"] root folder is ignored
+            let stack = [];
+            stack.push(this.items[0]);
+            if (!this.open.includes('/')) {
+                this.open.push('/');
+            }
+            while (stack.length > 0 && pathsegments.length > 0) {
+                let node = stack.pop();
+
+                if (node.path == path) {
+                    return node;
+                } else {
+                    let found = false;
+                    let currentsegment = pathsegments.shift();
+                    // first search through children
+                    // if found, good
+                    // if not, query the API
+                    // if still notfound, throw error
+                    if (node.children && node.children.length) {
+                        for (let i = 0; i < node.children.length; i++) {
+                            if (node.children[i].basename == currentsegment) {
+                                stack.push(node.children[i]);
+                                found = true;
+                                if (!this.open.includes(node.children[i].path)) {
+                                    this.open.push(node.children[i].path);
+                                }
+                            }
+                        }
+                    } 
+                    if (!found){
+                        // try again
+                        // query 
+                        let response = await FilesAPI.list(node.path);
+                        node.children = response.commandResult.map(responseItem => {
+                            responseItem.type = "file";
+                            responseItem.basename = responseItem.name;
+                            responseItem.extension = "";
+                            let _extension = responseItem.name.split(".")[1];
+                            if ( _extension)
+                                responseItem.extension = _extension;
+                            responseItem.path = node.path + responseItem.name;    
+                            // folder or symlink
+                            if(['d', 'l'].includes(responseItem.permission.charAt(0))){
+                                responseItem.type = "dir";
+                                responseItem.children = [];
+                                responseItem.path = responseItem.path + "/";
+                            }
+                            return responseItem;
+                        });
+                        for (let i = 0; i < node.children.length; i++) {
+                            if (node.children[i].basename == currentsegment) {
+                                stack.push(node.children[i]);
+                                found = true;
+                                if (!this.open.includes(node.children[i].path)) {
+                                    this.open.push(node.children[i].path);
+                                }
+                            }
+                        }
+                        if(!found){
+                            console.log("not found problem>>>>>>>>>>>" + currentsegment)
+                        }
+                    }                    
+                } 
+            }
+            return null;
         }
     },
     watch: {
         storage() {
             this.init();
         },
-        path() {
-            this.active = [this.path];
-            if (!this.open.includes(this.path)) {
-                this.open.push(this.path);
+        async path() {
+            let item = this.findItem(this.path);
+            if (!item) {
+                await this.openPath(this.path);
             }
+            
+            this.active = [this.path];
+            // if (!this.open.includes(this.path)) {
+            //     this.open.push(this.path);
+            // }
+            
+            // await this.readFolder(item);
+            // Vue.$log.info("items >>> ");
+            // Vue.$log.info(this.items);
+            // Vue.$log.info("open >>> ");
+            // Vue.$log.info(this.open);
         },
         async refreshPending(){
             if (this.refreshPending) {

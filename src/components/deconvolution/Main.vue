@@ -5,6 +5,8 @@
         lazy-validation
         >
     
+        <file-browser-dialog ref="filedialog" />
+
         <v-expansion-panels
         v-model="panel"
         multiple
@@ -43,6 +45,11 @@
                             <v-col cols="5" sm="2" md="2">
                                 T: {{ main.swapZT ? main.selectedItem.t: main.selectedItem.z }}
                             </v-col>
+                            <v-switch
+                                v-model="main.swapZT"
+                                label="Swap Z and T dimensions"
+                                >
+                            </v-switch>
                         </v-row>
                 </v-expansion-panel-content>
             </v-expansion-panel>
@@ -104,11 +111,11 @@
                         </v-row>
                         <v-row>
                             <v-col cols="15" sm="3" md="4">
-                                <v-text-field regular label="Objective NA" type="number">
+                                <v-text-field regular label="Objective NA" type="number" v-model="main.NA">
                                 </v-text-field>
                             </v-col>
                             <v-col cols="15" sm="3" md="4">
-                                <v-text-field regular label="Light sheet illumination NA" type="number">
+                                <v-text-field regular label="Light sheet illumination NA" type="number" v-model="main.RI">
                                 </v-text-field>
                             </v-col>
                         </v-row>
@@ -145,7 +152,7 @@
                     <v-col v-if="!main.generatePsf">
                         <v-row align="center" justify="center">
                             <v-col cols="30" sm="6" md="7">
-                                <v-text-field regular label="PSF file">
+                                <v-text-field regular label="PSF file" v-model="main.psfFile">
                                 </v-text-field>
                             </v-col>
                             <v-tooltip bottom>
@@ -179,6 +186,11 @@
                             <v-col cols="5" sm="2" md="2">
                                 T: 10
                             </v-col>
+                                <v-switch
+                                v-model="main.swapPsfZT"
+                                label="Swap PSF Z and T dimensions"
+                                >
+                            </v-switch>
                         </v-row>
 
                         <v-row>
@@ -209,7 +221,7 @@
             <v-expansion-panel>
                 <v-expansion-panel-header>Deskew</v-expansion-panel-header>
                 <v-expansion-panel-content>
-                    <v-row align="center" justify="center">
+                    <v-row>
                         <v-col cols="20" sm="4" md="5">
                             <v-switch
                                 v-model="main.deskew"
@@ -225,7 +237,7 @@
                             </v-switch>
                         </v-col>
                     </v-row>
-                    <v-row align="center" justify="center">  
+                    <v-row align="center" justify="center" v-if="main.deskew">  
                         <v-col cols="5" sm="2" md="3">
                             <v-text-field 
                                 v-model="main.deskewAngle"
@@ -257,6 +269,7 @@
                         :items="main.deskewMetadata"
                         class="elevation-1"
                         hide-default-footer
+                        v-if="main.deskew"
                         >
                             <template v-slot:top>
                                 <v-dialog
@@ -439,18 +452,31 @@
 
                     </v-data-table>
                     <p />
-                    <v-row>
-                        <v-select
-                            :items="backgroundTypes"
-                            v-model="main.backgroundType"
-                            item-text="label"
-                            item-value="value"
-                            label="Background Correction"
-                            @change="backgroundTypeChanged"
-                            outlined
-                            return-object
+                    <v-row align="center" justify="center">
+                        <v-col cols="20" sm="4" md="5">
+                            <v-select
+                                :items="backgroundTypes"
+                                v-model="main.backgroundType"
+                                item-text="label"
+                                item-value="value"
+                                label="Background Correction"
+                                @change="backgroundTypeChanged"
+                                outlined
+                                return-object
+                                >
+                            </v-select>
+                        </v-col>
+
+                        <v-col cols="20" sm="4" md="5">
+                            <v-text-field 
+                                outlined
+                                type=number 
+                                label="Save every iterations" 
+                                v-model="main.saveEveryIterations"
                             >
-                        </v-select>
+                            </v-text-field>
+                        </v-col>
+                        
                     </v-row>
 
                 </v-expansion-panel-content>
@@ -466,21 +492,26 @@
 </template>
 
 <script>
+    import FileBrowserDialog from '../FileBrowserDialog.vue'
+
     export default {
         name: 'DeconvolutionMain',
+        components: {
+            FileBrowserDialog,
+        },
         props: {
             // path of the series - can be file, folder
             path: String,
         },
         data() {
             return {
-                panel: [0, 1, 2 ,3],
+                panel: [0],
                 valid: true,
                 main:{
-                    generatePsf: true,
-                    readSpacing: false,
-                    lateralSpacing: 0,
-                    axialSpacing:0, 
+                    generatePsf: false,
+                    readSpacing: true,
+                    lateralSpacing: 100,
+                    axialSpacing: 312, 
                     swapZT: false, 
                     selectedItem: {x: 100, y:100, z:1, c:1, t:1},
                     psfModel: {label: 'Scalar', value: 0},
@@ -488,6 +519,10 @@
                     objectiveRIOption: 1.33,
                     ns: 1.33, // sample medium RI
                     mediumRIOption: 1.33,
+                    NA: 1.4,
+                    lightSheetIlluminationNA: 0.5,
+
+                    psfFile: '',
 
                     deskew: true,
                     keepDeskew: false,
@@ -500,7 +535,15 @@
                     backgroundType: {'label': 'None', 'value': null},
                     channels: [
                         {name: 1, iterations: 10, background: 0}
-                    ]
+                    ],
+                    backgrounds: null,
+                    pinholes: null,
+                    wavelengths: null,
+                    iterations: null,
+
+                    swapPsfZT: false,
+                    saveEveryIterations: 0
+
                 },
                 rules:{
                     positiveIteration: value => value > 0 || 'Iterations is a positive number',
@@ -684,7 +727,16 @@
                 }
                 this.closeIterationsDialog()
             }, 
-
+            async choosePsfFile(){
+                let options = await this.$refs.filedialog.open('selectfile', 'Deconvolution.Main', '/');
+                console.log(options)
+                if (!options.cancelled && options.path) {
+                    console.log("...........")
+                    console.log(options.selectedItems)
+                    if(options.selectedItems.length >0)
+                        this.main.psfFile = options.selectedItems[0].path
+                }
+            },
 
         },
         watch: {
