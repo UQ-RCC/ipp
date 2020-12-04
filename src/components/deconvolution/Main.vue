@@ -728,11 +728,10 @@
                 this.closeIterationsDialog()
             }, 
             async choosePsfFile(){
-                let options = await this.$refs.filedialog.open('selectfile', 'Deconvolution.Main', '/');
-                console.log(options)
+                let options = await this.$refs.filedialog.open('selectfile', 'Deconvolution', '/');
                 if (!options.cancelled && options.path) {
-                    console.log("...........")
-                    console.log(options.selectedItems)
+                    // console.log("...........")
+                    // console.log(options.selectedItems)
                     if(options.selectedItems.length >0)
                         this.main.psfFile = options.selectedItems[0].path
                 }

@@ -63,25 +63,27 @@ let keycloak = Keycloak({
   
   });
   
-  
+  // when token expired
   keycloak.onTokenExpired = function() {
-    keycloak.updateToken(Config.keycloak.minValidity).success(function(refreshed) {
-      if (refreshed) {
-        Vue.$log.info('Token refreshed' + refreshed)
-      } else {
-        Vue.$log.info('Token not refreshed, valid for '
+    // update
+    keycloak.updateToken(Config.keycloak.minValidity).then(function(refreshed) {
+        if (refreshed) {
+          Vue.$log.info('Token refreshed' + refreshed)
+        } else {
+          Vue.$log.info('Token not refreshed, valid for '
             + Math.round(keycloak.tokenParsed.exp + keycloak.timeSkew - new Date().getTime() / 1000) + ' seconds')
-      }
-    }).error(function() {
-      Vue.$log.error(">>> Cannot refresh token")
-      Vue.notify({
-        group: 'sysnotif',
-        type: 'error',
-        title: 'Expiration',
-        text: 'Cannot extend your session. Relogin'
-      })
-      window.location.reload()
-    });
+        }
+      }).catch(function() {
+          Vue.$log.error(">>> Cannot refresh token")
+          Vue.notify({
+            group: 'sysnotif',
+            type: 'error',
+            title: 'Expiration',
+            text: 'Cannot extend your session. Relogin'
+          })
+          window.location.reload()
+      });
+    
   }
   
 

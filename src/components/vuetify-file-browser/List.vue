@@ -22,17 +22,42 @@
                 hide-details
                 label="Regex filter"
                 v-model="filter"
-                @change="filterChanged"
-                prepend-inner-icon="mdi-filter-outline"
                 class="ml-n1"
+                @keydown="regexKeyDown"
             ></v-text-field>
             <v-btn icon v-if="false">
                 <v-icon>mdi-eye-settings-outline</v-icon>
             </v-btn>
+            
+            
+            <v-tooltip bottom class="ml-n1">
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                    icon 
+                    @click="filterChanged"
+                    v-bind="attrs"
+                    v-on="on"
+                    >
+                    <v-icon>mdi-filter-outline</v-icon>
+                    </v-btn>
+                </template>
+                <span>Update filter</span>
+            </v-tooltip>
+            
 
-            <v-btn icon @click="load">
-                <v-icon>mdi-refresh</v-icon>
-            </v-btn>
+            <v-tooltip bottom class="ml-n1">
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                    icon 
+                    @click="load"
+                    v-bind="attrs"
+                    v-on="on"
+                    >
+                    <v-icon>mdi-refresh</v-icon>
+                    </v-btn>
+                </template>
+                <span>Refresh current path</span>
+            </v-tooltip>
         </v-toolbar>
         <v-divider v-if="path && isDir"></v-divider>
         
@@ -59,6 +84,7 @@
                     </v-row>
                 </v-subheader>
                 
+                <!-- <v-lazy> -->
                 <v-list-item
                     v-for="item in dirs"
                     :key="item.basename"
@@ -80,6 +106,7 @@
                         </v-btn>
                     </v-list-item-action>
                 </v-list-item>
+                <!-- </v-lazy> -->
             </v-list>
             <v-divider v-if="dirs.length && files.length"></v-divider>
             <v-list subheader v-if="files.length">
@@ -140,7 +167,7 @@
 import { formatBytes } from "./util";
 import Confirm from "./Confirm.vue";
 import FilesAPI from "@/api/FilesAPI";
-
+import Vue from 'vue';
 export default {
     name: 'List',
     props: {
@@ -187,28 +214,49 @@ export default {
             this.$emit("path-changed", path);
         },
         filterChanged() {
+            try {
+                this.filterRegex = new RegExp(this.filter);
+            } catch(e) {
+                this.filterRegex = null;
+            }
             this.$emit("filter-changed", this.filter);
+        },
+        regexKeyDown(event){
+            console.log(event)
+            if (event.key === "Enter"){
+                this.filterChanged();
+            }
         },
         async load() {
             this.$emit("loading", true);
             if (this.isDir) {
-                let response = await FilesAPI.list(this.path);
-                this.items = response.commandResult.map(responseItem => {
-                    responseItem.type = "file";
-                    responseItem.basename = responseItem.name;
-                    responseItem.extension = "";
-                    let _extension = responseItem.name.split(".")[1];
-                    if ( _extension)
-                        responseItem.extension = _extension;
-                    responseItem.path = this.path + responseItem.name;    
-                    // folder or symlink
-                    if(['d', 'l'].includes(responseItem.permission.charAt(0))){
-                        responseItem.type = "dir";
-                        responseItem.children = [];
-                        responseItem.path = responseItem.path + "/";
-                    }
-                    return responseItem;
-                });
+                try{
+                    let response = await FilesAPI.list(this.path);
+                    this.items = response.commandResult.map(responseItem => {
+                        responseItem.type = "file";
+                        responseItem.basename = responseItem.name;
+                        responseItem.extension = "";
+                        let _extension = responseItem.name.split(".")[1];
+                        if ( _extension)
+                            responseItem.extension = _extension;
+                        responseItem.path = this.path + responseItem.name;    
+                        // folder or symlink
+                        if(['d', 'l'].includes(responseItem.permission.charAt(0))){
+                            responseItem.type = "dir";
+                            responseItem.children = [];
+                            responseItem.path = responseItem.path + "/";
+                        }
+                        return responseItem;
+                    });
+                }
+                catch(err){
+                    Vue.notify({
+                        group: 'sysnotif',
+                        type: 'error',
+                        title: 'Bookmark',
+                        text: 'Problem loading files, tryagain: error:' + String(err)
+                    });
+                }
             } else {
                 // TODO: load file
             }
@@ -224,8 +272,18 @@ export default {
 
             if (confirmed) {
                 this.$emit("loading", true);
-                await FilesAPI.delete(item.path);
-                this.$emit("file-deleted");
+                try{
+                    await FilesAPI.delete(item.path);
+                    this.$emit("file-deleted");
+                }
+                catch(err){
+                    Vue.notify({
+                        group: 'sysnotif',
+                        type: 'error',
+                        title: 'Bookmark',
+                        text: 'Problem deleting file:' + String(err)
+                    });
+                }
                 this.$emit("loading", false);
             }
         },
@@ -251,6 +309,7 @@ export default {
             this.items = [];
             await this.load();
             this.filter = "";
+            this.filterChanged();
         },
         async refreshPending() {
             if (this.refreshPending) {
@@ -258,13 +317,17 @@ export default {
                 this.$emit("refreshed");
             }
         }, 
-        filter(){
-            try {
-                this.filterRegex = new RegExp(this.filter);
-            } catch(e) {
-                this.filterRegex = null;
-            }
-        }
+        // async filter(){
+        //     try {
+        //         this.filterRegex = new RegExp(this.filter);
+        //     } catch(e) {
+        //         this.filterRegex = null;
+        //     }
+        // }
+    },
+    mounted() {
+        this.filter = "";
+        this.filterChanged();
     }
 };
 </script>

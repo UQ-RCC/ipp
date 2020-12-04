@@ -22,8 +22,9 @@ const service = axios.create({
     },
     error => {
       // do something with request error
-      Vue.$log.error(error)
-      return Promise.reject(error)
+      Vue.$log.error("here >>>>>>>>>>>>>>>>>>>>>>>>>>");
+      Vue.$log.error(error);
+      return Promise.reject(error);
     }
   )
 

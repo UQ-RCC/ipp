@@ -1,7 +1,7 @@
 <template>
     <v-toolbar flat dense color="blue-grey lighten-5">
         <file-browser-dialog ref="filedialog" />
-
+        
         <v-toolbar-items>
 
             <v-menu offset-y>
@@ -173,7 +173,7 @@ export default {
                 group: 'sysnotif',
                 type: 'info',
                 title: 'Copied',
-                text: 'Text successfully copied to clipboard!'
+                text: 'Text copied to clipboard!'
             });
         },
         changePath(path) {
@@ -217,8 +217,27 @@ export default {
                 name: this.path.replace(/\/$/, "").split("/").slice(-1)[0],
                 path: this.path
             }
-            await PreferenceAPI.add_filexplorer_bookmark(this.parentComponent, this.prefid, new_bookmark);
-            this.$emit("bookmark-changed");
+            try{
+                await PreferenceAPI.add_filexplorer_bookmark(this.parentComponent, this.prefid, new_bookmark);
+                Vue.notify({
+                    group: 'sysnotif',
+                    type: 'info',
+                    title: 'Bookmark',
+                    text: 'Bookmark added!'
+                });
+                this.$emit("bookmark-changed");
+            }
+            catch(err){
+                Vue.notify({
+                    group: 'sysnotif',
+                    type: 'error',
+                    title: 'Bookmark',
+                    text: 'Problem adding bookmark, try again!' + String(err)
+                });
+            }
+            
+            
+
         }
     },
     mounted() {

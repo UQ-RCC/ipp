@@ -50,10 +50,24 @@
         ),
         methods: {
             async deleteBookmark(item) {
-                Vue.$log.info('deleting');
-                Vue.$log.info(item);
-                await PreferenceAPI.remove_filexplorer_bookmark(this.parentComponent, this.prefid, item.id);
-                this.$emit("bookmark-changed");
+                try{
+                    await PreferenceAPI.remove_filexplorer_bookmark(this.parentComponent, this.prefid, item.id);
+                    this.$emit("bookmark-changed");
+                    Vue.notify({
+                        group: 'sysnotif',
+                        type: 'info',
+                        title: 'Bookmark',
+                        text: 'Bookmark deleted'
+                    });
+                }
+                catch(err){
+                    Vue.notify({
+                        group: 'sysnotif',
+                        type: 'error',
+                        title: 'Bookmark',
+                        text: 'Problem deleting bookmark, try again!' + String(err)
+                    });
+                }
             },
             async changePath(path){
                 Vue.$log.info("change path:" + path);

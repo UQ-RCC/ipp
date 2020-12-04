@@ -62,7 +62,7 @@ export default {
     },
     methods: {
         init() {
-            Vue.$log.info('@tree init, path=' + this.path);
+            // Vue.$log.info('@tree init, path=' + this.path);
             this.open = [];
             this.items = [];
             // set default files tree items (root item) in nextTick.
@@ -85,24 +85,7 @@ export default {
         },
         async readFolder(item) {
             this.$emit("loading", true);
-            let response = await FilesAPI.list(item.path);
-            // eslint-disable-next-line require-atomic-updates
-            item.children = response.commandResult.map(responseItem => {
-                responseItem.type = "file";
-                responseItem.basename = responseItem.name;
-                responseItem.extension = "";
-                let _extension = responseItem.name.split(".")[1];
-                if ( _extension)
-                    responseItem.extension = _extension;
-                responseItem.path = item.path + responseItem.name;    
-                // folder or symlink
-                if(['d', 'l'].includes(responseItem.permission.charAt(0))){
-                    responseItem.type = "dir";
-                    responseItem.children = [];
-                    responseItem.path = responseItem.path + "/";
-                }
-                return responseItem;
-            });
+            item.children = await this.queryPath(item.path);
             this.$emit("loading", false);
         },
         activeChanged(active) {
@@ -131,6 +114,7 @@ export default {
             return null;
         },
         async openPath(path) {
+            this.$emit("loading", true);
             let pathsegments = path.replace(/^\//, "").replace(/\/$/, "").split("/");
             // now we have pathSegments = ["a", "b", "c"] root folder is ignored
             let stack = [];
@@ -140,7 +124,10 @@ export default {
             }
             while (stack.length > 0 && pathsegments.length > 0) {
                 let node = stack.pop();
-
+                // if (!this.open.includes(node.path)) {
+                //     console.log("adding: " + node.path)
+                //     this.open.push(node.path);
+                // }
                 if (node.path == path) {
                     return node;
                 } else {
@@ -163,24 +150,8 @@ export default {
                     } 
                     if (!found){
                         // try again
-                        // query 
-                        let response = await FilesAPI.list(node.path);
-                        node.children = response.commandResult.map(responseItem => {
-                            responseItem.type = "file";
-                            responseItem.basename = responseItem.name;
-                            responseItem.extension = "";
-                            let _extension = responseItem.name.split(".")[1];
-                            if ( _extension)
-                                responseItem.extension = _extension;
-                            responseItem.path = node.path + responseItem.name;    
-                            // folder or symlink
-                            if(['d', 'l'].includes(responseItem.permission.charAt(0))){
-                                responseItem.type = "dir";
-                                responseItem.children = [];
-                                responseItem.path = responseItem.path + "/";
-                            }
-                            return responseItem;
-                        });
+                        // query
+                        node.children = await this.queryPath(node.path); 
                         for (let i = 0; i < node.children.length; i++) {
                             if (node.children[i].basename == currentsegment) {
                                 stack.push(node.children[i]);
@@ -191,12 +162,43 @@ export default {
                             }
                         }
                         if(!found){
-                            console.log("not found problem>>>>>>>>>>>" + currentsegment)
+                            Vue.$log.error("not found problem>>>>>>>>>>>" + currentsegment)
+                            this.$emit("loading", false);
                         }
                     }                    
                 } 
             }
-            return null;
+            this.$emit("loading", false);
+        },
+        // query path
+        async queryPath(path){
+            try{
+                let response = await FilesAPI.list(path);
+                return response.commandResult.map(responseItem => {
+                    responseItem.type = "file";
+                    responseItem.basename = responseItem.name;
+                    responseItem.extension = "";
+                    let _extension = responseItem.name.split(".")[1];
+                    if ( _extension)
+                        responseItem.extension = _extension;
+                    responseItem.path = path + responseItem.name;    
+                    // folder or symlink
+                    if(['d', 'l'].includes(responseItem.permission.charAt(0))){
+                        responseItem.type = "dir";
+                        responseItem.children = [];
+                        responseItem.path = responseItem.path + "/";
+                    }
+                    return responseItem;
+                });
+            }
+            catch(err){
+                Vue.notify({
+                    group: 'sysnotif',
+                    type: 'error',
+                    title: 'Bookmark',
+                    text: 'Problem loading files, tryagain: error:' + String(err)
+                });
+            }
         }
     },
     watch: {
@@ -210,15 +212,6 @@ export default {
             }
             
             this.active = [this.path];
-            // if (!this.open.includes(this.path)) {
-            //     this.open.push(this.path);
-            // }
-            
-            // await this.readFolder(item);
-            // Vue.$log.info("items >>> ");
-            // Vue.$log.info(this.items);
-            // Vue.$log.info("open >>> ");
-            // Vue.$log.info(this.open);
         },
         async refreshPending(){
             if (this.refreshPending) {
