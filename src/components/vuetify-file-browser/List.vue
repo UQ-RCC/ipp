@@ -20,11 +20,24 @@
                 solo
                 flat
                 hide-details
-                label="Regex filter"
-                v-model="filter"
+                label="glob filter"
+                v-model="filter_str"
                 class="ml-n1"
                 @keydown="regexKeyDown"
-            ></v-text-field>
+            >
+                <template v-slot:prepend>
+                    <v-tooltip
+                        bottom
+                    >
+                        <template v-slot:activator="{ on }">
+                        <v-icon v-on="on" @click="helpGlob">
+                            mdi-help-circle-outline
+                        </v-icon>
+                        </template>
+                        Click here to read more about glob!
+                    </v-tooltip>
+                </template>
+            </v-text-field>
             <v-btn icon v-if="false">
                 <v-icon>mdi-eye-settings-outline</v-icon>
             </v-btn>
@@ -168,6 +181,8 @@ import { formatBytes } from "./util";
 import Confirm from "./Confirm.vue";
 import FilesAPI from "@/api/FilesAPI";
 import Vue from 'vue';
+import * as minimatch from 'minimatch';
+
 export default {
     name: 'List',
     props: {
@@ -184,21 +199,23 @@ export default {
         return {
             items: [],
             selectedItems: [],
+            // value in text field
+            filter_str: "",
+            // value used to filter
             filter: "",
-            filterRegex: RegExp("")
         };
     },
     computed: {
         dirs() {
             return this.items.filter(
                 item =>
-                    item.type === "dir" && item.basename.match(this.filterRegex)
+                    item.type === "dir" && ( !this.filter ||  minimatch(item.basename, this.filter, { matchBase: true }) )
             );
         },
         files() {
             return this.items.filter(
                 item =>
-                    item.type === "file" && item.basename.match(this.filterRegex)
+                    item.type === "file" && ( !this.filter ||  minimatch(item.basename, this.filter, { matchBase: true }) )
             );
         },
         isDir() {
@@ -214,11 +231,7 @@ export default {
             this.$emit("path-changed", path);
         },
         filterChanged() {
-            try {
-                this.filterRegex = new RegExp(this.filter);
-            } catch(e) {
-                this.filterRegex = null;
-            }
+            this.filter = this.filter_str;
             this.$emit("filter-changed", this.filter);
         },
         regexKeyDown(event){
@@ -301,6 +314,9 @@ export default {
         },
         regexFilter(){
             return this.filter;
+        },
+        helpGlob(){
+            window.open('https://facelessuser.github.io/wcmatch/glob/', '_blank');
         }
 
     },
@@ -317,13 +333,6 @@ export default {
                 this.$emit("refreshed");
             }
         }, 
-        // async filter(){
-        //     try {
-        //         this.filterRegex = new RegExp(this.filter);
-        //     } catch(e) {
-        //         this.filterRegex = null;
-        //     }
-        // }
     },
     mounted() {
         this.filter = "";
