@@ -193,12 +193,29 @@ export default {
             this.$refs.inputUpload.value = "";
         },
         async mkdir() {
+            Vue.$log.info("making path:" + this.path + this.newFolderName);
             if (this.path) {
                 this.$emit("loading", true);
-                await FilesAPI.mkdir(this.path);
-                this.$emit("folder-created", this.newFolderName);
-                this.newFolderPopper = false;
-                this.newFolderName = "";
+                try{
+                    await FilesAPI.mkdir(this.path+ this.newFolderName);
+                    Vue.notify({
+                        group: 'sysnotif',
+                        type: 'info',
+                        title: 'New folder',
+                        text: this.newFolderName + ' created!'
+                    });
+                    this.$emit("folder-created", this.newFolderName);
+                    this.newFolderPopper = false;
+                    this.newFolderName = "";
+                }
+                catch(err){
+                    Vue.notify({
+                        group: 'sysnotif',
+                        type: 'error',
+                        title: 'New folder',
+                        text: 'Fail to create ' + this.newFolderName + ' .Error:' + String(err)
+                    });
+                }   
                 this.$emit("loading", false);
             }
             else{
@@ -236,8 +253,6 @@ export default {
                 });
             }
             
-            
-
         }
     },
     mounted() {

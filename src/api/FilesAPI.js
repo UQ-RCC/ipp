@@ -11,32 +11,34 @@ export default {
       return data
     },
     async mkdir(path) {
-        // const { data } = await request.get(`${Config.endpoints.wiener}/api/collections/`, {
-        //     params: {
-        //         path: path
-        //     }
-        // })
-        // return data
-        return {path: path}
+        const { data } = await request.get(`${Config.endpoints.wiener}/api/execute/makedirbase64`, {
+            params: {
+                folderpath: btoa(path)
+            }
+        })
+        return data
+        // return {path: path}
     },
     async delete(path) {
-        // const { data } = await request.get(`${Config.endpoints.wiener}/api/collections/`, {
-        //     params: {
-        //         path: path
-        //     }
-        // })
-        // return data
-        return {path: path}
+        const { data } = await request.get(`${Config.endpoints.wiener}/api/execute/deletebase64`, {
+            params: {
+                fileslist: btoa(path)
+            }
+        })
+        return data
+        // return {path: path}
     },
-    async copy(src, dest) {
-        // const { data } = await request.get(`${Config.endpoints.wiener}/api/collections/`, {
-        //     params: {
-        //         src: src,
-        //         desc: dest
-        //     }
-        // })
-        // return data
-        return {source: src, dest: dest}
+    async copy(usermail, sources, dest, parallel) {
+        const { data } = await request.get(`${Config.endpoints.wiener}/api/execute/copybase64`, {
+            params: {
+                usermail: usermail,
+                sources: btoa(sources),
+                dest: btoa(dest),
+                parallel: parallel
+            }
+        })
+        return data
+        // return {source: src, dest: dest}
     }
 }
   
