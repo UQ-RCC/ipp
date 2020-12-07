@@ -7,8 +7,8 @@ export default {
         minValidity: 10
     },
     endpoints: {
-      // pref: 'https://pref.dev.rcc.uq.edu.au',
-      pref: 'http://localhost:8000',
+      pref: 'https://dev.pref.ipp.rcc.uq.edu.au',
+      // pref: 'http://localhost:8000',
       wiener: 'https://wwi-test.qbi.uq.edu.au/devwienerbackend'
     },
     signoutUrl: 'https://ipp.rcc.uq.edu.au'
