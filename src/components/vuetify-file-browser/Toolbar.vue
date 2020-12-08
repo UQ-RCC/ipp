@@ -60,7 +60,7 @@
                 <span v-else>Up to "{{pathSegments[pathSegments.length - 2].name}}"</span>
             </v-tooltip>            
 
-            <v-btn icon title="Copy Folder" v-if="parentComponent.toLowerCase() == 'filesmanager'" @click="copyFolder('selectfolders')">
+            <v-btn icon title="Copy Folder" v-if="parentComponent.toLowerCase() == 'filesmanager'" @click="copyFolder()">
                 <v-icon>mdi-folder-move</v-icon>
             </v-btn>
 
@@ -222,11 +222,29 @@ export default {
                 return;
             }
         },
-        async copyFolder(mode){
-            let options = await this.$refs.filedialog.open(mode, 'FilesManager', this.path);
+        async copyFolder(){
+            let options = await this.$refs.filedialog.open('selectfolder', 'FilesManager', '/');
             if (!options.cancelled) {
-                Vue.$log.info("...........");
-                Vue.$log.info(options.path);
+                Vue.$log.info("Copying" + this.path + " to "+ options.path);
+                try{
+                    let usermail = Vue.prototype.$keycloak && Vue.prototype.$keycloak.idTokenParsed ? Vue.prototype.$keycloak.idTokenParsed.email  : '';
+                    await FilesAPI.copy(usermail, this.path, options.path, 3);
+                    Vue.notify({
+                        group: 'sysnotif',
+                        type: 'info',
+                        title: 'Copying',
+                        text: 'Copying jobs started!'
+                    });
+                    this.$emit("bookmark-changed");
+                }
+                catch(err){
+                    Vue.notify({
+                        group: 'sysnotif',
+                        type: 'error',
+                        title: 'Copying',
+                        text: 'Problem creating copying jobs:' + String(err)
+                    });
+                }
             }
         },
         async addBookmark() {
