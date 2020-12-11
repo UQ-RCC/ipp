@@ -167,7 +167,9 @@ export default {
             this.path = this.pref.currentpath;
             this.filter = this.pref.filters;
             this.prefid = this.pref.id;
-            Vue.$log.info(this.pref.lastpaths);
+            // Vue.$log.info(this.pref.lastpaths);
+            // emit path changed
+            this.$emit("change", this.path);
         },
         async bookmarkChanged(){
             this.getPref();
@@ -175,11 +177,12 @@ export default {
     },
     mounted() {
         // init
-        if(this.initialPath && this.initialPath !== '/')
-                this.pathChanged(this.initialPath);
+        if(this.initialPath && this.initialPath !== '/') {
+            this.pathChanged(this.initialPath);
+        }
         else if (!this.path && !(this.tree && this.$vuetify.breakpoint.smAndUp)) {
-                console.log("in here");
-                this.pathChanged("/");
+            console.log("in here");
+            this.pathChanged("/");
         }
         this.getPref();
     }

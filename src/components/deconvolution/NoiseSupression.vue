@@ -1,36 +1,37 @@
 <template>
     <v-form
         ref="noiseform"
-        v-model="noise.valid"
         lazy-validation
         >
         <v-row >
-             <v-select
-                :items="regularizationTypes"
-                v-model="noise.regularizationType"
-                item-text="label"
-                item-value="value"
-                label="Regularization Type"
-                outlined
-                return-object
-                >
-            </v-select>
+            <v-col cols="60" sm="12" md="15">
+                <v-select
+                    :items="regularizationTypes"
+                    v-model="serie.regularizationType"
+                    item-text="label"
+                    item-value="value"
+                    label="Regularization Type"
+                    outlined
+                    return-object
+                    >
+                </v-select>
+            </v-col>
         </v-row>
         
-        <v-row  v-if="noise.regularizationType.value !== 0">
+        <v-row  v-if="serie.regularizationType.value !== 0">
             <v-col cols="20" sm="4" md="5">
                 <v-switch
-                    v-model="noise.automaticRegularizationScale"
+                    v-model="serie.automaticRegularizationScale"
                     label=" Automatic regularization scale factor"
                     >
                 </v-switch>
             </v-col>
             <v-col cols="20" sm="4" md="5">
                 <v-text-field 
-                    v-model="noise.regularization"
+                    v-model="serie.regularization"
                     regular
                     type=number
-                    :disabled="noise.automaticRegularizationScale"
+                    :disabled="serie.automaticRegularizationScale"
                     label="Regularization scale factor (µ)">
                 </v-text-field>
             </v-col>
@@ -42,29 +43,33 @@
         </v-row>
 
         <v-row >
-             <v-select
-                :items="preFilterTypes"
-                v-model="noise.prefilter"
-                item-text="label"
-                item-value="value"
-                label="Pre-filter"
-                outlined
-                return-object
-                >
-            </v-select>
+            <v-col cols="60" sm="12" md="15">
+                <v-select
+                    :items="preFilterTypes"
+                    v-model="serie.prefilter"
+                    item-text="label"
+                    item-value="value"
+                    label="Pre-filter"
+                    outlined
+                    return-object
+                    >
+                </v-select>
+            </v-col>
         </v-row>
 
         <v-row >
-             <v-select
-                :items="postFilterTypes"
-                v-model="noise.postfilter"
-                item-text="label"
-                item-value="value"
-                label="Post-filter"
-                outlined
-                return-object
-                >
-            </v-select>
+            <v-col cols="60" sm="12" md="15">
+                <v-select
+                    :items="postFilterTypes"
+                    v-model="serie.postfilter"
+                    item-text="label"
+                    item-value="value"
+                    label="Post-filter"
+                    outlined
+                    return-object
+                    >
+                </v-select>
+            </v-col>
         </v-row>
 
     </v-form>
@@ -72,22 +77,16 @@
 </template>
 
 <script>
+    import Vue from 'vue';
     export default {
         name: 'DeconvolutionNoise',
         props: {
-            // path of the series - can be file, folder
-            path: String,
+            selectedNoise: Object,
+            disabled: Boolean,
         },
         data() {
             return {
-                noise:{
-                    valid: true,
-                    regularizationType: {'label': 'None', 'value': 0}, 
-                    prefilter:0 ,
-                    postfilter: 0,
-                    automaticRegularizationScale: true,
-                    regularization: -1
-                },
+                serie: this.selectedNoise,
                 regularizationTypes: [
                     {'label': 'None', 'value': 0},
                     {'label': 'TV', 'value': 1},
@@ -108,17 +107,16 @@
             }
         },
         methods: {
-            // load the settings from database - or else set to default
-            async load(){
-                this.$emit("loading", true);
+            // return the data
+            get_series_modified(){
+                return this.serie
+            },
+            load_new_series(serie_noise){
+                Vue.$log.info('Loading ...');
+                Vue.$log.info(serie_noise);
+                this.serie = serie_noise
             }
         },
-        watch: {
-            async path() {
-                // path changed
-                await this.load();
-            },
-        }
   }
 </script>
 

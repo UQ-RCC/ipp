@@ -16,14 +16,14 @@
                 <v-expansion-panel-content>
                         <v-row align="center" justify="center">    
                             <v-col cols="20" sm="4" md="5">
-                                <v-text-field regular label="Lateral spacing(nm/pixel)" v-model="main.lateralSpacing">
+                                <v-text-field regular label="Lateral spacing(nm/pixel)" v-model="serie.dr">
                                 </v-text-field>
-                                <v-text-field regular label="Axial spacing(nm/slice)" v-model="main.axialSpacing">
+                                <v-text-field regular label="Axial spacing(nm/slice)" v-model="serie.dz">
                                 </v-text-field>
                             </v-col>
                             <v-row align="center" justify="center">
                                 <v-switch
-                                    v-model="main.readSpacingFromMetadata"
+                                    v-model="serie.readSpacing"
                                     label="Read spacing from metadata"
                                     >
                                 </v-switch>
@@ -31,22 +31,22 @@
                         </v-row>
                         <v-row>
                             <v-col cols="5" sm="2" md="2">
-                                X: {{ main.selectedItem.x }}
+                                X: {{ serie.x }}
                             </v-col>
                             <v-col cols="5" sm="2" md="2">
-                                Y: {{ main.selectedItem.y }}
+                                Y: {{ serie.y }}
                             </v-col>
                             <v-col cols="5" sm="2" md="2">
-                                Z: {{ main.swapZT ? main.selectedItem.t: main.selectedItem.z }}
+                                Z: {{ serie.swapZT ? serie.t: serie.z }}
                             </v-col>
                             <v-col cols="5" sm="2" md="2">
-                                C: {{ main.selectedItem.c }} 
+                                C: {{ serie.c }} 
                             </v-col>
                             <v-col cols="5" sm="2" md="2">
-                                T: {{ main.swapZT ? main.selectedItem.t: main.selectedItem.z }}
+                                T: {{ serie.swapZT ? serie.z: serie.t }}
                             </v-col>
                             <v-switch
-                                v-model="main.swapZT"
+                                v-model="serie.swapZT"
                                 label="Swap Z and T dimensions"
                                 >
                             </v-switch>
@@ -59,18 +59,18 @@
                 <v-expansion-panel-content>
                     <v-row align="center" justify="center">
                         <v-switch
-                            v-model="main.generatePsf"
+                            v-model="serie.generatePsf"
                             label="Generate PSF"
                             >
                         </v-switch>
                     </v-row>
                     
-                    <v-col v-if="main.generatePsf">
+                    <v-col v-if="serie.generatePsf">
                         <v-row>
                             <v-col cols="15" sm="3" md="4">
                                 <v-select
                                     :items="psfModels"
-                                    v-model="main.psfModel"
+                                    v-model="serie.psfModel"
                                     item-text="label"
                                     item-value="value"
                                     label="PSF Model"
@@ -79,10 +79,10 @@
                                     >
                                 </v-select>
                             </v-col>
-                            <v-row v-if="main.psfModel.value!==0">
+                            <v-row v-if="serie.psfModel.value!==0">
                                 <v-col cols="20" sm="4" md="5">
                                     <v-text-field 
-                                        v-model="main.ns"
+                                        v-model="serie.ns"
                                         @change="nsChanged"
                                         regular 
                                         label="Sample medium refractive index" 
@@ -94,7 +94,7 @@
                                 <v-col cols="15" sm="3" md="4">
                                     <v-select
                                         :items="mediumRIOptions"
-                                        v-model="main.mediumRIOption"
+                                        v-model="serie.mediumRIOption"
                                         item-text="label"
                                         item-value="value"
                                         label="Sample medium RI options"
@@ -111,11 +111,11 @@
                         </v-row>
                         <v-row>
                             <v-col cols="15" sm="3" md="4">
-                                <v-text-field regular label="Objective NA" type="number" v-model="main.NA">
+                                <v-text-field regular label="Objective NA" type="number" v-model="serie.NA">
                                 </v-text-field>
                             </v-col>
                             <v-col cols="15" sm="3" md="4">
-                                <v-text-field regular label="Light sheet illumination NA" type="number" v-model="main.RI">
+                                <v-text-field regular label="Light sheet illumination NA" type="number" v-model="serie.lightSheetIlluminationNA">
                                 </v-text-field>
                             </v-col>
                         </v-row>
@@ -123,7 +123,7 @@
                         <v-row>
                             <v-col cols="15" sm="3" md="4">
                                 <v-text-field 
-                                    v-model="main.RI"
+                                    v-model="serie.RI"
                                     @change="RIChanged"
                                     regular 
                                     label="Objective immersion refractive index" 
@@ -133,7 +133,7 @@
                             <v-col cols="15" sm="3" md="4">
                                 <v-select
                                     :items="objectiveRIOptions"
-                                    v-model="main.objectiveRIOption"
+                                    v-model="serie.objectiveRIOption"
                                     item-text="label"
                                     item-value="value"
                                     label="Presets"
@@ -149,10 +149,10 @@
                     </v-col>
 
 
-                    <v-col v-if="!main.generatePsf">
+                    <v-col v-if="!serie.generatePsf">
                         <v-row align="center" justify="center">
                             <v-col cols="30" sm="6" md="7">
-                                <v-text-field regular label="PSF file" v-model="main.psfFile">
+                                <v-text-field regular label="PSF file" v-model="serie.psfFile">
                                 </v-text-field>
                             </v-col>
                             <v-tooltip bottom>
@@ -172,22 +172,22 @@
                         </v-row>
                         <v-row>
                             <v-col cols="5" sm="2" md="2">
-                                X: 100
+                                X: {{ serie.psfInfo.x }}
                             </v-col>
                             <v-col cols="5" sm="2" md="2">
-                                Y: 100
+                                Y: {{ serie.psfInfo.y }}
                             </v-col>
                             <v-col cols="5" sm="2" md="2">
-                                Z: 1000
+                                Z: {{ serie.swapPsfZT ? serie.psfInfo.t: serie.psfInfo.z }}
                             </v-col>
                             <v-col cols="5" sm="2" md="2">
-                                C:1 
+                                C: {{ serie.psfInfo.c }}
                             </v-col>
                             <v-col cols="5" sm="2" md="2">
-                                T: 10
+                                T: {{ serie.swapPsfZT ? serie.psfInfo.z: serie.psfInfo.t }}
                             </v-col>
                                 <v-switch
-                                v-model="main.swapPsfZT"
+                                v-model="serie.swapPsfZT"
                                 label="Swap PSF Z and T dimensions"
                                 >
                             </v-switch>
@@ -196,20 +196,20 @@
                         <v-row>
                             <v-col cols="15" sm="3" md="4">
                                 <v-text-field 
-                                    v-model="main.lateralSpacing"
+                                    v-model="serie.dr"
                                     regular 
                                     label="PSF Lateral spacing(nm/pixel)">
                                 </v-text-field>
                             </v-col>
                             <v-col cols="15" sm="3" md="4">
                                 <v-text-field 
-                                    v-model="main.axialSpacing"
+                                    v-model="serie.dz"
                                     regular 
                                     label="PSF Axial spacing(nm/slice)">
                                 </v-text-field>
                             </v-col>
                                 <v-switch
-                                    v-model="main.readSpacingFromMetadata"
+                                    v-model="serie.readSpacing"
                                     label="Read spacing from metadata"
                                     >
                                 </v-switch>
@@ -224,23 +224,23 @@
                     <v-row>
                         <v-col cols="20" sm="4" md="5">
                             <v-switch
-                                v-model="main.deskew"
+                                v-model="serie.deskew"
                                 label="Deskew"
                                 >
                             </v-switch>
                         </v-col>
-                        <v-col cols="20" sm="4" md="5" v-if="main.deskew">
+                        <v-col cols="20" sm="4" md="5" v-if="serie.deskew">
                             <v-switch
-                                v-model="main.keepDeskew"
+                                v-model="serie.keepDeskew"
                                 label="Keep Deskewed Files"
                                 >
                             </v-switch>
                         </v-col>
                     </v-row>
-                    <v-row align="center" justify="center" v-if="main.deskew">  
+                    <v-row align="center" justify="center" v-if="serie.deskew">  
                         <v-col cols="5" sm="2" md="3">
                             <v-text-field 
-                                v-model="main.deskewAngle"
+                                v-model="serie.angle"
                                 regular 
                                 type=number
                                 label="Angle">
@@ -248,7 +248,7 @@
                         </v-col>
                         <v-col cols="5" sm="3" md="3">
                             <v-text-field 
-                                v-model="main.deskewThreshold"
+                                v-model="serie.threshold"
                                 regular
                                 type=number 
                                 label="Backgrond">
@@ -256,20 +256,20 @@
                         </v-col>
                         <v-col cols="15" sm="5" md="6" dense>
                             <v-col cols="15" sm="5" md="6">
-                                Background: 100
+                                Median Background: {{serie.median_threshold}}
                             </v-col>
                             <v-col cols="15" sm="5" md="6">
-                                Standard deviation: 100
+                                Standard deviation: {{serie.stddev}}
                             </v-col>
                         </v-col>
                     </v-row>
                     
                     <v-data-table
                         :headers="deskewMetadataTableHeaders"
-                        :items="main.deskewMetadata"
+                        :items="serie.deskewMetadata"
                         class="elevation-1"
                         hide-default-footer
-                        v-if="main.deskew"
+                        v-if="serie.deskew"
                         >
                             <template v-slot:top>
                                 <v-dialog
@@ -367,14 +367,14 @@
                 <v-expansion-panel-content>
                     <v-data-table
                         :headers="channelTableHeaders"
-                        :items="main.channels"
+                        :items="serie.channels"
                         class="elevation-1"
                         hide-default-footer
                         >
                             <template v-slot:top>
                                 <v-dialog
                                     v-model="iterationsEditDialog"
-                                    max-width="500px"
+                                    max-width="600px"
                                 >
                                     <v-card>
                                         <v-card-title>
@@ -408,11 +408,35 @@
                                                         cols="12"
                                                         sm="6"
                                                         md="4"
-                                                        v-if="main.backgroundType.value === -1"
+                                                        v-if="serie.backgroundType.value === -1"
                                                     >
                                                         <v-text-field
                                                             v-model="iterationsEditedItem.background"
                                                             label="Background" type=number
+                                                        ></v-text-field>
+                                                    </v-col>
+
+                                                    <v-col
+                                                        cols="12"
+                                                        sm="6"
+                                                        md="4"
+                                                        v-if="serie.psfType !== 3"
+                                                    >
+                                                        <v-text-field
+                                                            v-model="iterationsEditedItem.wavelength"
+                                                            label="Emission Wavelength(mm)" type=number
+                                                        ></v-text-field>
+                                                    </v-col>
+
+                                                    <v-col
+                                                        cols="12"
+                                                        sm="6"
+                                                        md="4"
+                                                        v-if="serie.psfType === 1"
+                                                    >
+                                                        <v-text-field
+                                                            v-model="iterationsEditedItem.pinhole"
+                                                            label="Backprojected pinhole radius(nm)" type=number
                                                         ></v-text-field>
                                                     </v-col>
                                                 </v-row>
@@ -456,7 +480,7 @@
                         <v-col cols="20" sm="4" md="5">
                             <v-select
                                 :items="backgroundTypes"
-                                v-model="main.backgroundType"
+                                v-model="serie.backgroundType"
                                 item-text="label"
                                 item-value="value"
                                 label="Background Correction"
@@ -472,7 +496,7 @@
                                 outlined
                                 type=number 
                                 label="Save every iterations" 
-                                v-model="main.saveEveryIterations"
+                                v-model="serie.saveEveryIterations"
                             >
                             </v-text-field>
                         </v-col>
@@ -483,15 +507,12 @@
             </v-expansion-panel>
         </v-expansion-panels>
             
-        
-        
-
-
     </v-form>
 
 </template>
 
 <script>
+    import Vue from 'vue';
     import FileBrowserDialog from '../FileBrowserDialog.vue'
 
     export default {
@@ -500,51 +521,14 @@
             FileBrowserDialog,
         },
         props: {
-            // path of the series - can be file, folder
-            path: String,
+            disabled: Boolean,
+            selectedSerie: Object
         },
         data() {
             return {
                 panel: [0],
                 valid: true,
-                main:{
-                    generatePsf: false,
-                    readSpacing: true,
-                    lateralSpacing: 100,
-                    axialSpacing: 312, 
-                    swapZT: false, 
-                    selectedItem: {x: 100, y:100, z:1, c:1, t:1},
-                    psfModel: {label: 'Scalar', value: 0},
-                    RI: 1.33, // Objective immersion RI
-                    objectiveRIOption: 1.33,
-                    ns: 1.33, // sample medium RI
-                    mediumRIOption: 1.33,
-                    NA: 1.4,
-                    lightSheetIlluminationNA: 0.5,
-
-                    psfFile: '',
-
-                    deskew: true,
-                    keepDeskew: false,
-                    deskewAngle: 0, 
-                    deskewThreshold: 0,
-                    deskewMetadata: [
-                        { unit: 'µm', pixelWidth: 0.104, pixelHeight: 0.104, voxelDepth: 0.268146 }
-                    ],
-
-                    backgroundType: {'label': 'None', 'value': null},
-                    channels: [
-                        {name: 1, iterations: 10, background: 0}
-                    ],
-                    backgrounds: null,
-                    pinholes: null,
-                    wavelengths: null,
-                    iterations: null,
-
-                    swapPsfZT: false,
-                    saveEveryIterations: 0
-
-                },
+                serie: this.selectedSerie,
                 rules:{
                     positiveIteration: value => value > 0 || 'Iterations is a positive number',
                     positiveBackground: value => value > 0 || 'Background is a positive number',
@@ -599,6 +583,18 @@
                         sortable: false,
                         value: 'background',
                     },
+                    {
+                        text: 'Emission Wavelength(mm)',
+                        align: ' d-none',
+                        sortable: false,
+                        value: 'wavelength',
+                    },
+                    {
+                        text: 'Backprojected pinhole radius(nm)',
+                        align: ' d-none',
+                        sortable: false,
+                        value: 'pinhole',
+                    },
                     {   text: 'Edit', 
                         value: 'actions', 
                         sortable: false 
@@ -650,7 +646,9 @@
                 iterationsEditedItem: {
                     name: 0, 
                     iterations: 0, 
-                    background: 0
+                    background: 0,
+                    wavelength: 525,
+                    pinhole: 0
                 },
             }
         },
@@ -661,37 +659,57 @@
             },
             // change ns from select
             mediumRISelect(){
-                if(this.main.mediumRIOption.value > 0)
-                    this.main.ns = this.main.mediumRIOption.value;
+                if(this.serie.mediumRIOption.value > 0)
+                    this.serie.ns = this.serie.mediumRIOption.value;
                 else
-                    this.main.mediumRIOption = this.main.ns
+                    this.serie.mediumRIOption = this.serie.ns
             },
             nsChanged(){
-                if( this.main.ns in Object.values(this.objectiveRIOptions) === false )
-                    this.main.mediumRIOption = -1
+                if( this.serie.ns in Object.values(this.objectiveRIOptions) === false )
+                    this.serie.mediumRIOption = -1
             },
             // change RI from select
             objectiveRISelect(){
-                if(this.main.objectiveRIOption.value > 0)
-                    this.main.RI = this.main.objectiveRIOption.value;
+                if(this.serie.objectiveRIOption.value > 0)
+                    this.serie.RI = this.serie.objectiveRIOption.value;
                 else
-                    this.main.objectiveRIOption = this.main.RI
+                    this.serie.objectiveRIOption = this.serie.RI
             },
             // RI input
             RIChanged(){
-                if( this.main.RI in Object.values(this.mediumRIOptions) === false )
-                    this.main.objectiveRIOption = -1
+                if( this.serie.RI in Object.values(this.mediumRIOptions) === false )
+                    this.serie.objectiveRIOption = -1
+            },
+            // psf type changed --> called from Deconvolution
+            psfTypeChanged(){
+                console.log("psf changed")
+                console.log(this.serie['psfType'])
+                // ligh sheet - wavelength, pinhole hidden - 3-4
+                if(this.serie['psfType'] === 3 ){
+                    this.channelTableHeaders[3].align = ' d-none';
+                    this.channelTableHeaders[4].align = ' d-none';    
+                } 
+                // confocal wavelength, pinhole shown 
+                else if (this.serie['psfType'] === 1 ) {
+                    this.channelTableHeaders[3].align = 'center';
+                    this.channelTableHeaders[4].align = 'center';    
+                }
+                // else: pinhole hidden, wavelength shown
+                else {
+                    this.channelTableHeaders[4].align = ' d-none';
+                    this.channelTableHeaders[3].align = 'center';    
+                }
             },
             // background correction type changed
             backgroundTypeChanged(){
-                if (this.main.backgroundType.value === -1)
+                if (this.serie.backgroundType.value === -1)
                     this.channelTableHeaders[2].align = 'center';
                 else
                     this.channelTableHeaders[2].align = ' d-none'; 
             },
             // edit dekew
             editDeskewItem (item) {
-                this.deskewEditedIndex = this.main.deskewMetadata.indexOf(item)
+                this.deskewEditedIndex = this.serie.deskewMetadata.indexOf(item)
                 this.deskewEditedItem = Object.assign({}, item)
                 this.deskewEditDialog = true
             },
@@ -704,13 +722,13 @@
             },
             saveDeskewDialog(){
                 if (this.deskewEditedIndex > -1) {
-                    Object.assign(this.main.deskewMetadata[this.deskewEditedIndex], this.deskewEditedItem)
+                    Object.assign(this.serie.deskewMetadata[this.deskewEditedIndex], this.deskewEditedItem)
                 }
                 this.closeDeskewDialog()
             }, 
             // edit dekew
             editIterationsItem (item) {
-                this.iterationsEditedIndex = this.main.channels.indexOf(item)
+                this.iterationsEditedIndex = this.serie.channels.indexOf(item)
                 this.iterationsEditedItem = Object.assign({}, item)
                 this.iterationsEditDialog = true
             },
@@ -723,27 +741,41 @@
             },
             saveIterationsDialog(){
                 if (this.iterationsEditedIndex > -1) {
-                    Object.assign(this.main.channels[this.iterationsEditedIndex], this.iterationsEditedItem)
+                    Object.assign(this.serie.channels[this.iterationsEditedIndex], this.iterationsEditedItem)
                 }
                 this.closeIterationsDialog()
             }, 
             async choosePsfFile(){
                 let options = await this.$refs.filedialog.open('selectfile', 'Deconvolution', '/');
                 if (!options.cancelled && options.path) {
-                    // console.log("...........")
-                    // console.log(options.selectedItems)
-                    if(options.selectedItems.length >0)
-                        this.main.psfFile = options.selectedItems[0].path
+                    if(options.selectedItems.length >0){
+                        this.serie.psfFile = options.selectedItems[0].path
+                        // TODO: load psffile
+                    }
                 }
             },
+            // return the data
+            get_series_modified(){
+                return this.serie
+            },
+            load_new_series(serie){
+                Vue.$log.info('Loading ...');
+                Vue.$log.info(serie);
+                this.serie = serie
+                this.psfTypeChanged()
+            }
 
         },
         watch: {
-            async path() {
-                // path changed
-                await this.load();
-            },
-        }
+            // async path() {
+            //     // path changed
+            //     await this.load();
+            // },
+        },
+        mounted() {
+            console.log("mounted")
+            console.log(this.serie)
+        },
   }
 </script>
 

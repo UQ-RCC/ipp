@@ -235,7 +235,6 @@ export default {
             this.$emit("filter-changed", this.filter);
         },
         regexKeyDown(event){
-            console.log(event)
             if (event.key === "Enter"){
                 this.filterChanged();
             }

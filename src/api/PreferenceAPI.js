@@ -2,6 +2,7 @@ import request from '@/utils/request'
 import Config from '@/config'
 
 export default {
+  // --------------------- filesexplorer --------------------------//
   // get config of the whole component
   async get_filesxplorer_pref(component) {
     const { data } = await request.get(`${Config.endpoints.pref}/preferences/fileexplorer/components/${component}`)
@@ -22,6 +23,18 @@ export default {
     await request.delete(`${Config.endpoints.pref}/preferences/fileexplorer/components/${component}/${prefid}/bookmarks/${bookmarkid}`)
   },
 
+  // --------------------- deconvolution --------------------------//
+  // series
+  // async get_series(username) {
+
+  // },
+  // async add_series(username) {
+
+  // },
+  // //deconvolution
+  // async get_deconvolution_pref(username){
+
+  // }
 
 }
   

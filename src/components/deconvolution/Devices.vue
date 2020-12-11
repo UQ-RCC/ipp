@@ -1,12 +1,11 @@
 <template>
     <v-form
         ref="devicesform"
-        v-model="devices.valid"
         lazy-validation
         >
         <v-row align="center" justify="center">
             <v-switch
-                v-model="devices.autoDetect"
+                v-model="serie.autoDetect"
                 label="Autodetect"
                 >
             </v-switch>
@@ -22,7 +21,7 @@
                             v-on="on"
                             type=number 
                             label="Number of instances [nodes]" 
-                            v-model="devices.numberOfParallelJobs"
+                            v-model="serie.numberOfParallelJobs"
                         >
                         </v-text-field>
                     </template>
@@ -39,7 +38,7 @@
                             v-on="on"
                             type=number 
                             label="Memory per job (GBs)" 
-                            v-model="devices.mem"
+                            v-model="serie.mem"
                         >
                         </v-text-field>
                     </template>
@@ -56,7 +55,7 @@
                             v-on="on"
                             type=number 
                             label="Number of GPUs per job" 
-                            v-model="devices.gpus"
+                            v-model="serie.gpus"
                         >
                         </v-text-field>
                     </template>
@@ -70,35 +69,30 @@
 </template>
 
 <script>
+    import Vue from 'vue';
     export default {
         name: 'DeconvolutionDevices',
         props: {
-            // path of the series - can be file, folder
-            path: String,
+            selectedDevices: Object,
+            disabled: Boolean,
         },
         data() {
             return {
-                devices:{
-                    valid: true,
-                    autoDetect: false,
-                    numberOfParallelJobs: 1,
-                    mem: 100,
-                    gpus: 1, 
-                }
+                serie: this.selectedDevices
             }
         },
         methods: {
-            // load the settings from database - or else set to default
-            async load(){
-                this.$emit("loading", true);
+            // return the data
+            get_series_modified(){
+                return this.serie
+            },
+            load_new_series(serie_devices){
+                Vue.$log.info('Loading ...');
+                Vue.$log.info(serie_devices);
+                this.serie = serie_devices
             }
         },
-        watch: {
-            async path() {
-                // path changed
-                await this.load();
-            },
-        }
+        
   }
 </script>
 
