@@ -70,6 +70,7 @@
 
 <script>
     import Vue from 'vue';
+    import series from '@/utils/series.js'
     export default {
         name: 'DeconvolutionDevices',
         props: {
@@ -78,7 +79,7 @@
         },
         data() {
             return {
-                serie: this.selectedDevices
+                serie: series.formatSeries(null),
             }
         },
         methods: {

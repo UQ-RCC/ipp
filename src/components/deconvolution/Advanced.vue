@@ -28,8 +28,18 @@
                         dense 
                         outlined
                         type=number 
-                        label="Tiling.X" 
-                        v-model="serie.tiling.x"
+                        label="Padding.Y" 
+                        v-model="serie.padding.y"
+                    >
+                    </v-text-field>
+                </v-col>
+                <v-col cols="15" sm="3" md="4">
+                    <v-text-field 
+                        dense 
+                        outlined
+                        type=number 
+                        label="Padding.Z" 
+                        v-model="serie.padding.z"
                     >
                     </v-text-field>
                 </v-col>
@@ -41,8 +51,8 @@
                         dense 
                         outlined
                         type=number 
-                        label="Padding.Y" 
-                        v-model="serie.padding.y"
+                        label="Tiling.X" 
+                        v-model="serie.tiling.x"
                     >
                     </v-text-field>
                 </v-col>
@@ -53,19 +63,6 @@
                         type=number
                         label="Tiling.Y" 
                         v-model="serie.tiling.y"
-                    >
-                    </v-text-field>
-                </v-col>
-            </v-row>
-            
-            <v-row align="center" justify="center">
-                <v-col cols="15" sm="3" md="4">
-                    <v-text-field 
-                        dense 
-                        outlined
-                        type=number 
-                        label="Padding.Z" 
-                        v-model="serie.padding.z"
                     >
                     </v-text-field>
                 </v-col>
@@ -82,7 +79,6 @@
             </v-row>
         </v-col>
 
-        <v-divider horizontal></v-divider>
 
         <v-row align="center" justify="center">
             <v-col cols="15" sm="3" md="4">
@@ -92,7 +88,7 @@
                     item-text="label"
                     item-value="value"
                     label="Output image type"
-                    outlined
+                    outlined dense
                     return-object
                     >
                 </v-select>
@@ -104,7 +100,7 @@
                     item-text="label"
                     item-value="value"
                     label="File format"
-                    outlined
+                    outlined dense
                     return-object
                     >
                 </v-select>
@@ -119,7 +115,7 @@
                     item-text="label"
                     item-value="value"
                     label="Stack split"
-                    outlined
+                    outlined dense
                     return-object
                     >
                 </v-select>
@@ -131,7 +127,7 @@
                     item-text="label"
                     item-value="value"
                     label="Split starting index"
-                    outlined
+                    outlined dense
                     return-object
                     >
                 </v-select>
@@ -144,6 +140,7 @@
 
 <script>
     import Vue from 'vue';
+    import series from '@/utils/series.js'
     
     export default {
         name: 'DeconvolutionAdvanced',
@@ -153,7 +150,7 @@
         },
         data() {
             return {
-                serie:this.selectedAdvanced,
+                serie:series.formatSeries(null),
                 scalingTypes: [
                     {'label': '32-bit (default)', 'value': 0},
                     {'label': 'Same as input', 'value': 1}

@@ -1,5 +1,10 @@
 <template>
     <v-card  :loading="loading > 0">
+    <v-form
+    ref="form"
+    v-model="form.valid"
+    lazy-validation
+    >
     <file-browser-dialog ref="filedialog" />
         <!-- psfType -->
         <v-row align="center">
@@ -141,204 +146,144 @@
                 </div>
             </v-col>
             <v-divider vertical></v-divider>
-            <v-col class="d-flex">
-                <v-col>
-                    <v-row class="d-flex" v-bind:style="{height: '93%'}">
-                        <v-stepper alt-labels non-linear v-model="step" v-bind:style="{width: '100%'}" @change="stepChanged">
-                            <v-stepper-header>
-                                <v-stepper-step editable step="1" 
-                                    :complete="step!==1 && visitedSteps.indexOf(1) >= 0" 
-                                    @click="stepClicked">
-                                    <small>Metadata</small>
-                                </v-stepper-step>
-                                <v-divider></v-divider>
+            <v-col
+                class="d-flex"
+            >
+                <v-tabs centered top @change="tabChanged">
+                    <v-tab>
+                        <v-icon left>mdi-check-all</v-icon>
+                        Main
+                    </v-tab>
+                    <v-tab>
+                        <v-icon left>mdi-arrow-down-circle-outline</v-icon>
+                        Noise Suppression
+                    </v-tab>
+                    <v-tab>
+                        <v-icon left>mdi-settings</v-icon>
+                        Advanced
+                    </v-tab>
+                    <v-tab>
+                        <v-icon left>mdi-server</v-icon>
+                        Devices
+                    </v-tab>
 
-                                <v-stepper-step editable step="2"
-                                    :complete="step!==2 && visitedSteps.indexOf(2) >= 0"
-                                    @click="stepClicked">
-                                    <small>PSF</small>
-                                </v-stepper-step>
-                                <v-divider></v-divider>
+                    <v-tab-item>
+                        <v-card flat>
+                            <p />
+                            <deconvolution-main ref="deconmain"
+                                                :selectedSerie = selected[0]?selected[0]:this.init_selected_serie_or_file(null)
+                            />
+                        </v-card>
+                    </v-tab-item>
+                    <v-tab-item>
+                        <v-card flat>
+                            <p />
+                            <deconvolution-noise ref="deconnoise"
+                                                 :selectedNoise = selected[0]?selected[0]:this.init_selected_serie_or_file(null)
+                            />
+                        </v-card>
+                    </v-tab-item>
+                    <v-tab-item>
+                        <v-card flat>
+                            <p />
+                            <deconvolution-advanced ref="deconadvanced"
+                                                    :selectedAdvanced = selected[0]?selected[0]:this.init_selected_serie_or_file(null)
+                            />
+                        </v-card>
+                    </v-tab-item>
+                    <v-tab-item>
+                        <v-card flat>
+                            <p />
+                            <deconvolution-devices ref="decondevices"
+                                                    :selectedDevices = selected[0]?selected[0]:this.init_selected_serie_or_file(null)
+                            />
 
-                                <v-stepper-step editable step="3" 
-                                                :complete="step!==3 && visitedSteps.indexOf(3) >= 0" 
-                                                v-show="form.psfType===3" 
-                                    @click="stepClicked">
-                                    <small>Deskew</small>
-                                </v-stepper-step>
-                                <v-divider></v-divider>
-
-                                <v-stepper-step editable 
-                                                :complete="step!==4 && visitedSteps.indexOf(4) >= 0" 
-                                                step="4" 
-                                    @click="stepClicked">
-                                    <small>Iterations</small>
-                                </v-stepper-step>
-                                <v-divider></v-divider>
-
-                                <v-stepper-step editable 
-                                                :complete="step!==5 && visitedSteps.indexOf(5) >= 0" 
-                                                step="5"
-                                    @click="stepClicked">
-                                    <small>Noise Suppression</small>
-                                </v-stepper-step>
-                                <v-divider></v-divider>
-
-                                <v-stepper-step editable 
-                                                :complete="step!==6 && visitedSteps.indexOf(6) >= 0" 
-                                                step="6"
-                                    @click="stepClicked">
-                                    <small>Advanced</small>
-                                </v-stepper-step>
-                                <v-divider></v-divider>
-
-                                <v-stepper-step editable 
-                                                :complete="step!==7 && visitedSteps.indexOf(7) >= 0" 
-                                                step="7"
-                                    @click="stepClicked">
-                                    <small>Devices</small>
-                                </v-stepper-step>
-                                <v-divider></v-divider>
-
-                                <v-stepper-step editable 
-                                                :complete="step!==8 && visitedSteps.indexOf(8) >= 0" 
-                                                step="8"
-                                    @click="stepClicked">
-                                    <small>Review</small>
-                                </v-stepper-step>
-
-                            </v-stepper-header>
-
-                            <v-stepper-items>
-                                <v-stepper-content step=1>
-                                    <deconvolution-metadata ref="deconmetadata"/>
-                                </v-stepper-content>
-
-                                <v-stepper-content step=2>
-                                    <deconvolution-psf ref="deconpsf"/>
-                                </v-stepper-content>
-
-                                <v-stepper-content step=3>
-                                    <deconvolution-deskew ref="decondeskew"/>
-                                </v-stepper-content>
-
-                                <v-stepper-content step=4>
-                                    <deconvolution-iterations ref="deconiterations"/>
-                                </v-stepper-content>
-
-                                <v-stepper-content step=5>
-                                    <deconvolution-noise ref="deconnoise"/>
-                                </v-stepper-content>
-
-                                <v-stepper-content step=6>
-                                    <deconvolution-advanced ref="deconadvanced"/>
-                                </v-stepper-content>
-
-                                <v-stepper-content step=7>
-                                    <deconvolution-devices ref="decondevices"/>
-                                </v-stepper-content>
-
-                                <v-stepper-content step=8>
-                                    <deconvolution-review ref="deconreview"/>
-                                </v-stepper-content>
-
-                            </v-stepper-items>
-                        </v-stepper>
-                    </v-row>
-                    <p />
-                    <v-row class="d-flex">
-                        <v-tooltip top>
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-btn fab dark small color="primary" 
-                                        @click.stop="previousStep" v-bind="attrs" v-on="on">
-                                    <v-icon dark>
-                                        mdi-chevron-left
-                                    </v-icon>
-                                </v-btn>
-                            </template>
-                            <span>Previous step</span>
-                        </v-tooltip>
-                        
-                        <div class="flex-grow-1"></div>
-            
-                        <v-tooltip top>
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-btn 
-                                    color="primary" round dark large 
-                                    v-bind="attrs" 
-                                    v-on="on"
-                                    :disabled="step != 8"
-                                    @click.stop="submit()">
-                                        Submit
-                                </v-btn>
-                            </template>
-                            <span>Submit the job</span>
-                        </v-tooltip>
+                        </v-card>
+                    </v-tab-item>
+                </v-tabs>
                 
-                        <div class="flex-grow-1"></div>
-                        <v-tooltip top>
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-btn fab dark small color="primary" 
-                                        @click.stop="nextStep" v-bind="attrs" v-on="on">
-                                    <v-icon dark>
-                                        mdi-chevron-right
-                                    </v-icon>
-                                </v-btn>
-                            </template>
-                            <span>Next step</span>
-                        </v-tooltip>
-                    </v-row>
-                </v-col>
-
-
             </v-col>
         </v-row>
-        
+        <v-divider horizontal></v-divider>
+        <v-row align="center" justify="center">
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn 
+                        class="my-3" 
+                        color="primary" 
+                        @click.stop="submit"
+                        rounded dark large 
+                        v-bind="attrs" v-on="on">
+                        Submit
+                    </v-btn>
+                </template>
+                <span>Submit for processing</span>
+            </v-tooltip>
+
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn 
+                        class="my-3" 
+                        color="primary" 
+                        @click.stop="saveTemplate"
+                        rounded dark large 
+                        v-bind="attrs" v-on="on">
+                        Save Template
+                    </v-btn>
+                </template>
+                <span>Save the template of the currently selected series</span>
+            </v-tooltip>
+
+            <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn 
+                        class="my-3" 
+                        color="primary" 
+                        @click.stop="loadTemplate"
+                        rounded dark large 
+                        v-bind="attrs" v-on="on">
+                        Load Template
+                    </v-btn>
+                </template>
+                <span>Load a template and apply to the currently selected series</span>
+            </v-tooltip>
+        </v-row>
+    </v-form>
     </v-card>    
 </template>
 
 <script>
-    import Vue from 'vue'
+    import Vue from 'vue';
     // import * as api from '@/api'
-    import FileBrowserDialog from '@/components/FileBrowserDialog.vue'
-    import DeconvolutionMetadata from '@/components/deconvolution/Metadata.vue'
-    import DeconvolutionDeskew from '@/components/deconvolution/Deskew.vue'
-    import DeconvolutionPsf from '@/components/deconvolution/PSF.vue'
-    import DeconvolutionIterations from '@/components/deconvolution/Iterations.vue'
-    import DeconvolutionNoise from '@/components/deconvolution/NoiseSupression.vue'
-    import DeconvolutionAdvanced from '@/components/deconvolution/Advanced.vue'
-    import DeconvolutionDevices from '@/components/deconvolution/Devices.vue'
-    import DeconvolutionReview from '@/components/deconvolution/Review.vue'
+    import FileBrowserDialog from '../components/FileBrowserDialog.vue'
+    import DeconvolutionMain from '../components/deconvolution/Main.vue'
+    import DeconvolutionNoise from '../components/deconvolution/NoiseSupression.vue'
+    import DeconvolutionAdvanced from '../components/deconvolution/Advanced.vue'
+    import DeconvolutionDevices from '../components/deconvolution/Devices.vue'
     // api
-    import DeconvolutionAPI from "@/api/DeconvolutionAPI.js"
+    import DeconvolutionAPI from "@/api/DeconvolutionAPI.js";
     // import PreferenceAPI from "@/api/PreferenceAPI";
-    import series from '@/utils/series.js'
-    // let series = require('@/utils/series')
+    import { roundToTwo } from "@/utils/miscs.js";
 
     export default {
         name: 'Deconvolution',
         components: {
             FileBrowserDialog,
-            DeconvolutionMetadata,
-            DeconvolutionDeskew,
-            DeconvolutionPsf,
-            DeconvolutionIterations,
+            DeconvolutionMain,
             DeconvolutionNoise,
             DeconvolutionAdvanced,
-            DeconvolutionDevices,
-            DeconvolutionReview
+            DeconvolutionDevices
         },
         data() {
             return {
                 // ---- form specific
-                step: 1,
-                visitedSteps: [],
                 loading: false,
                 form: {
+                    valid: true,
                     outputBasePath: '',
                     outputFolderName: '',
                     seperateOutputsBasedonInput: false,
-                    psfType: 3,
+                    psfType: {label: 'Light Sheet', value: 3},
                     currentTab: 0
                 },
                 fileBrowserDialog: false,
@@ -414,7 +359,7 @@
                         Vue.$log.info("Response :")
                         Vue.$log.info(JSON.parse(JSON.stringify(response)))
                         let items = response.commandResult.map(responseItem => {
-                            return series.formatSeries(responseItem)
+                            return this.init_selected_serie_or_file(responseItem)
                         });
                         // let maxFileSizeMbs = this.items[0].maxSizeM;
                         // suggest mem
@@ -457,7 +402,7 @@
             removeAll(){
                 this.selectedFiles = []
                 this.selected = []
-                this.load_series(series.formatSeries(null))
+                this.load_series(this.init_selected_serie_or_file(null))
             },
             submit(){
                 console.log("submit...");
@@ -560,60 +505,101 @@
                 }
             },    
 
-            stepClicked() {
-                this.step = parseInt(this.step)
-                // save contents from this.step
-                if(this.visitedSteps.indexOf(this.step) < 0)
-                    this.visitedSteps.push(this.step)
-
-            },
-
-            stepChanged(number){
-                var stepNumber = parseInt(number)
-                this.visitedSteps = this.visitedSteps.filter(item => item !== stepNumber)
-            },
-
-            nextStep(){
-                this.step = parseInt(this.step)
-                // add to visited
-                if(this.visitedSteps.indexOf(this.step) < 0)
-                    this.visitedSteps.push(this.step)
-
-                if (this.step !== 8){
-                    // only access to 3 if psfType = 3
-                    if(this.form.psfType === 3 || this.step !== 2)
-                        this.step = this.step + 1
-                    else
-                        this.step = 4
+            // init default values for selected series
+            init_selected_serie_or_file(item){
+                if (!item) {
+                    item = {}
                 }
-                console.log("@nextstep: visited:")
-                console.log(this.visitedSteps)
-            }, 
-
-            previousStep(){
-                this.step = parseInt(this.step)
-                // add to visited
-                if(this.visitedSteps.indexOf(this.step) < 0)
-                    this.visitedSteps.push(this.step)
-
-                if (this.step !== 1){
-                    // only access to 3 if psfType = 3
-                    if(this.form.psfType === 3 || this.step !== 4)
-                        this.step = this.step - 1
-                    else
-                        this.step = 2
-
+                //////// main tab
+                // init channels if none
+                if (!item['channels']) {
+                    try{
+                        let numOfChannels = parseInt(item['c']);
+                        let channels = []
+                        for(var i=1; i <=numOfChannels; i++){
+                            var channelName = 'Channel ' + i;
+                            channels.push({'name': channelName, 'iterations': 10,
+                                            'wavelength': 525, 'pinhole': 0, 'background': 0})
+                        }
+                        item['channels'] = channels;
+                    }catch(err){
+                        // ignore
+                    }
+                } 
+                // name
+                item['name'] = item['path']
+                
+                // swapZT
+                if(item['z']==1 && item['t']>10){
+                    item['swapZT'] = true;
+                } else {
+                    item['swapZT'] = false;
                 }
-                console.log("@previousstep: visited:")
-                console.log(this.visitedSteps)
+                // output
+                if(item['defaultoutput']){
+                    var _pathParts = item['defaultoutput'].split("/")
+                    item['outputBasePath'] = _pathParts.slice(0,-1).join("/")
+                    item['outputFolderName'] = _pathParts.slice(-1)[0]
+                } else {
+                    item['outputBasePath'] = ""
+                    item['outputFolderName'] = ""
+                }
+                item['seperateOutputsBasedonInput'] = false
+                
+                item['generatePsf'] = false
+                item['readSpacing'] = true
+                item['psfModel'] = {label: 'Scalar', value: 0}
+                item['RI'] = 1.33
+                item['objectiveRIOption'] = 1.33
+                item['ns'] = 1.33
+                item['mediumRIOption'] = 1.33
+                item['NA'] = 1.4
+                item['lightSheetIlluminationNA'] = 0.5
+                item['psfFile'] = ''
+                item['psfInfo'] = {}
+                item['deskew'] = true
+                item['keepDeskew'] = false
+                item['angle'] = 32.8
+                item['median_threshold'] = roundToTwo(item['threshold'])
+                item['deskewMetadata'] = [
+                    {   
+                        unit: item['unit'], 
+                        pixelWidth: item['pixelW'],
+                        pixelHeight: item['pixelH'], 
+                        voxelDepth: item['pixelD'] 
+                    }
+                ]
+                item['backgroundType'] = {'label': 'None', 'value': null}
+                item['swapPsfZT'] = false
+                item['saveEveryIterations'] = 0
+                // format
+                item['dr'] = roundToTwo(item['dr'])
+                item['dz'] = roundToTwo(item['dz'])
+                //
+                item['psfType'] = 3
+                
+                /////////// NOISE
+                item['regularizationType'] = {'label': 'None', 'value': 0}
+                item['prefilter'] = 0
+                item['postfilter'] = 0
+                item['automaticRegularizationScale'] =  true
+                item['regularization'] = -1
+                //////////////ADVANCED
+                item['blindDeconvolution']= false
+                item['padding'] = {x: 0, y: 0, z: 0}
+                item['tiling'] =  {x: 0, y: 0, z: 0}
+                item['scaling'] =  {'label': 'Same as input', 'value': 1}
+                item['fileformat'] = {'label': 'TIFF', 'value': 0}
+                item['split'] =  {'label': 'No Split', 'value': 0}
+                item['splitIdx'] = {'label': '0', 'value': 0}
+                /////// DEVICES
+                item['autoDetect']= false
+                item['numberOfParallelJobs']= 1
+                item['mem']= 100
+                item['gpus'] = 1
 
+                return item;
             },
         },
     }
 </script>
-
-<style lang="scss" scoped>
-    .fullWidth{
-        width: 100%;
-    }
-</style>

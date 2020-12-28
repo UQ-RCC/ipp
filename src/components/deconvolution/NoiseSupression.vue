@@ -78,6 +78,8 @@
 
 <script>
     import Vue from 'vue';
+    import series from '@/utils/series.js';
+
     export default {
         name: 'DeconvolutionNoise',
         props: {
@@ -86,7 +88,7 @@
         },
         data() {
             return {
-                serie: this.selectedNoise,
+                serie: series.formatSeries(null),
                 regularizationTypes: [
                     {'label': 'None', 'value': 0},
                     {'label': 'TV', 'value': 1},

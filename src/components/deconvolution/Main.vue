@@ -514,6 +514,7 @@
 <script>
     import Vue from 'vue';
     import FileBrowserDialog from '../FileBrowserDialog.vue'
+    import series from '@/utils/series.js'
 
     export default {
         name: 'DeconvolutionMain',
@@ -528,7 +529,7 @@
             return {
                 panel: [0],
                 valid: true,
-                serie: this.selectedSerie,
+                serie: series.formatSeries(null),
                 rules:{
                     positiveIteration: value => value > 0 || 'Iterations is a positive number',
                     positiveBackground: value => value > 0 || 'Background is a positive number',
