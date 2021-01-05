@@ -76,6 +76,8 @@
                 return this.serie
             },
             load_serie(serie){
+                console.log("@Metadata: loading series")
+                console.log(serie)
                 this.serie = serie
             },
             is_valid(){

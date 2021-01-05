@@ -128,7 +128,7 @@
             },
             getPanel(panelId) {
                 let _panel = null
-                switch(panelId) {
+                switch(parseInt(panelId)) {
                     case 1:
                         _panel = this.$refs.revdeconpsf
                         break
@@ -150,12 +150,17 @@
                     case 7:
                         _panel = this.$refs.revdecondevices
                         break
-                    default: 
-                        _panel = this.$refs.revdeconmetadata
-                        break
                 }
                 return _panel
+            },
+
+            loadtemplate(){
+                this.$emit("template-load");
+            }, 
+            savetemplate(){
+                this.$emit("template-save");
             }
+
         }
     }
 </script>

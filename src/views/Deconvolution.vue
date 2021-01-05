@@ -245,7 +245,10 @@
                                 </v-stepper-content>
 
                                 <v-stepper-content step=8>
-                                    <deconvolution-review ref="deconreview"/>
+                                    <deconvolution-review ref="deconreview"
+                                        v-on:template-load = loadTemplate
+                                        v-on:template-save = saveTemplate
+                                    />
                                 </v-stepper-content>
 
                             </v-stepper-items>
@@ -501,7 +504,9 @@
             load_series(series){
                 // update tab
                 let currentComponent = this.getStepComponent(this.step)
-                currentComponent.load_new_series(series)
+                if(currentComponent){
+                    currentComponent.load_serie(series)
+                }    
                 // update form
                 this.form.outputBasePath = series['outputBasePath']
                 this.form.outputFolderName = series['outputFolderName']
@@ -520,7 +525,7 @@
                 }
                 // if selected, load it
                 if (anItem.value){
-                    console.log(anItem)
+                    // console.log(anItem)
                     this.load_series(anItem.item)
                 }
             }, 
@@ -541,7 +546,8 @@
                 // if(this.selected && this.selected[0] && this.step !== 8){
                 if(this.selected && this.step !== 8){
                     let _component = this.getStepComponent(this.step)
-                    this.selected[0] = _component.get_serie()
+                    if (_component)
+                        this.selected[0] = _component.get_serie()
                 }
             },
 
@@ -551,7 +557,8 @@
                 // load series to new step
                 if(this.selected && this.selected[0]){
                     let _component = this.getStepComponent(stepNumber)
-                    _component.load_serie(this.selected[0])
+                    if (_component)
+                        _component.load_serie(this.selected[0])
                 }
             },
 
@@ -600,12 +607,14 @@
                 // save 
                 if(this.selected && previousSt !== 8){
                     let _component = this.getStepComponent(previousSt)
-                    this.selected[0] = _component.get_serie()
+                    if (_component)
+                        this.selected[0] = _component.get_serie()
                 }
                 // and load
                 if(this.selected && this.selected[0]){
                     let _component = this.getStepComponent(nextSt)
-                    _component.load_serie(this.selected[0])
+                    if (_component)
+                        _component.load_serie(this.selected[0])
                 }
             },
 
@@ -624,8 +633,8 @@
              * get step component 
              */
             getStepComponent(stepId) {
-                let _component = this.$refs.deconmetadata
-                switch(stepId) {
+                let _component = null
+                switch(parseInt(stepId)) {
                     case 1:
                         _component = this.$refs.deconmetadata
                         break
@@ -649,9 +658,6 @@
                         break
                     case 8:
                         _component = this.$refs.deconreview
-                        break
-                    default: 
-                        _component = this.$refs.deconmetadata
                         break
                 }
                 return _component

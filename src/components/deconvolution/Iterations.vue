@@ -1,5 +1,21 @@
 <template>
     <v-card :disabled="readonly">
+        <pinhole-calculator-dialog ref="calculatordialog" />
+        <!-- <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+                <v-btn 
+                    class="my-3" 
+                    color="primary" 
+                    @click.stop="calculator"
+                    rounded dark large 
+                    v-bind="attrs" v-on="on"
+                    >
+                    Pinhole calculator
+                </v-btn>
+            </template>
+            <span>Backprojectec pinhole calculator</span>
+        </v-tooltip> -->
+
         <v-data-table
             :headers="channelTableHeaders"
             :items="serie.channels"
@@ -142,11 +158,15 @@
 </template>
 
 <script>
-    import Vue from 'vue';
+    // import Vue from 'vue';
     import series from "@/utils/series.js";
+    import PinholeCalculatorDialog from '@/components/PinholeCalculatorDialog.vue'
     
     export default {
         name: 'DeconvolutionIterations',
+        components: {
+            PinholeCalculatorDialog,
+        },
         props: {
             readonly: { type: Boolean, default: false }, 
         },
@@ -207,6 +227,12 @@
                         sortable: false,
                         value: 'pinhole',
                     },
+                    {
+                        text: 'Calculator',
+                        align: ' d-none',
+                        value: 'actions',
+                        sortable: false,
+                    },
                     {   text: 'Edit', 
                         value: 'actions', 
                         sortable: false 
@@ -225,24 +251,27 @@
             },
             load_serie(serie){
                 this.serie = serie
+                this.psfTypeChanged()
             },
-            // psf type changed --> called from Deconvolution
+
+            // psf type changed --> called from load serie
             psfTypeChanged(){
-                Vue.$log.info("psf changed")
-                Vue.$log.info(this.serie['psfType'])
-                // ligh sheet - wavelength, pinhole hidden - 3-4
+                // ligh sheet - wavelength, pinhole hidden, calculator - 3-4
                 if(this.serie['psfType'] === 3 ){
                     this.channelTableHeaders[3].align = ' d-none';
-                    this.channelTableHeaders[4].align = ' d-none';    
+                    this.channelTableHeaders[4].align = ' d-none';
+                    this.channelTableHeaders[5].align = ' d-none';    
                 } 
-                // confocal wavelength, pinhole shown 
+                // confocal wavelength, pinhole, claculator shown 
                 else if (this.serie['psfType'] === 1 ) {
                     this.channelTableHeaders[3].align = 'center';
-                    this.channelTableHeaders[4].align = 'center';    
+                    this.channelTableHeaders[4].align = 'center';
+                    this.channelTableHeaders[5].align = 'center';    
                 }
-                // else: pinhole hidden, wavelength shown
+                // else: pinhole, calculator hidden, wavelength shown
                 else {
                     this.channelTableHeaders[4].align = ' d-none';
+                    this.channelTableHeaders[5].align = ' d-none';
                     this.channelTableHeaders[3].align = 'center';    
                 }
             },
@@ -272,17 +301,17 @@
                 }
                 this.closeIterationsDialog()
             }, 
-            async choosePsfFile(){
-                let options = await this.$refs.filedialog.open('selectfile', 'Deconvolution', '/');
-                if (!options.cancelled && options.path) {
-                    if(options.selectedItems.length >0){
-                        this.serie.psfFile = options.selectedItems[0].path
-                        // TODO: load psffile
-                    }
-                }
-            },
             is_valid(){
                 return true
+            }, 
+            async calculator(){
+                let options = await this.$refs.calculatordialog.open()
+                if (!options.cancelled) {
+                    console.log("agree")
+                }
+                else {
+                    console.log("cancelled")
+                }
             }
         }
     }
