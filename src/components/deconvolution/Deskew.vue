@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <v-card :disabled="readonly">
         <v-row>
             <v-col cols="20" sm="4" md="5">
                 <v-switch
@@ -22,6 +22,7 @@
                     v-model="serie.angle"
                     regular 
                     type=number
+                    :rules="numberRules" 
                     label="Angle">
                 </v-text-field>
             </v-col>
@@ -29,8 +30,9 @@
                 <v-text-field 
                     v-model="serie.threshold"
                     regular
-                    type=number 
-                    label="Backgrond">
+                    type=number
+                    :rules="numberRules" 
+                    label="Background">
                 </v-text-field>
             </v-col>
             <v-col cols="15" sm="5" md="6" dense>
@@ -68,10 +70,14 @@
                                         sm="6"
                                         md="4"
                                     >
-                                        <v-text-field
+                                        <v-select
+                                            :items="units"
                                             v-model="deskewEditedItem.unit"
                                             label="Unit"
-                                        ></v-text-field>
+                                            outlined
+                                            return-object
+                                            >
+                                        </v-select>
                                     </v-col>
                                     <v-col
                                         cols="12"
@@ -81,6 +87,7 @@
                                         <v-text-field
                                             v-model="deskewEditedItem.pixelWidth"
                                             label="Pixel Width" type="number"
+                                            :rules="numberRules" 
                                         ></v-text-field>
                                     </v-col>
                                     <v-col
@@ -91,6 +98,7 @@
                                             <v-text-field
                                             v-model="deskewEditedItem.pixelHeight"
                                             label="Pixel Height" type="number"
+                                            :rules="numberRules" 
                                         ></v-text-field>
                                     </v-col>
                                     <v-col
@@ -101,6 +109,7 @@
                                         <v-text-field
                                             v-model="deskewEditedItem.voxelDepth"
                                             label="Voxel Depth" type="number"
+                                            :rules="numberRules" 
                                         ></v-text-field>
                                     </v-col>
                                     </v-row>
@@ -119,6 +128,7 @@
                                 <v-btn
                                     color="blue darken-1"
                                     text
+                                    :disabled="!valid_dialog_values"
                                     @click="saveDeskewDialog"
                                 >
                                     Save
@@ -148,6 +158,9 @@
 
     export default {
         name: 'DeconvolutionDeskew',
+        props: {
+            readonly: { type: Boolean, default: false }, 
+        },
         data() {
             return {
                 valid: true,
@@ -156,7 +169,7 @@
                 deskewEditDialog: false,
                 deskewEditedIndex: -1,
                 deskewEditedItem: {
-                    unit: '', 
+                    unit: 'µm', 
                     pixelWidth: 0, 
                     pixelHeight: 0, 
                     voxelDepth: 0
@@ -193,7 +206,10 @@
                         sortable: false 
                     },
                 ],
-
+                units: [ 'nm', 'µm', 'mm', 'inch' ],
+                numberRules: [
+                    value => ( value || value ===0 ) && String(value).match(/^\d+(\.\d+)?$/).length > 0 || 'Must be number'
+                ],
             }
         },
         methods: {
@@ -222,7 +238,30 @@
                     Object.assign(this.serie.deskewMetadata[this.deskewEditedIndex], this.deskewEditedItem)
                 }
                 this.closeDeskewDialog()
-            }, 
+                
+            },
+            is_valid(){                
+                if(this.serie.angle && this.serie.threshold &&
+                    (!this.serie.deskew || (this.serie.deskewMetadata[0] && 
+                                         this.serie.deskewMetadata[0].unit && 
+                                         this.serie.deskewMetadata[0].pixelWidth && 
+                                         this.serie.deskewMetadata[0].pixelHeight && 
+                                         this.serie.deskewMetadata[0].voxelDepth))
+                )
+                    return true
+                else
+                    return false
+            } 
+        },
+        computed: {
+            valid_dialog_values(){
+                if(this.deskewEditedItem.pixelWidth && 
+                    this.deskewEditedItem.pixelHeight &&
+                    this.deskewEditedItem.voxelDepth)
+                    return true
+                else
+                    return false
+            }
         }
     }
 </script>

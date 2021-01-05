@@ -1,18 +1,20 @@
 <template>
-    <v-card>
+    <v-card :disabled="readonly">
         <v-row align="center" justify="center">    
             <v-col cols="20" sm="4" md="5">
                 <v-text-field regular 
-                    type="number" 
+                    type="number"
+                    :rules="metadataValuesRules" 
                     label="Lateral spacing(nm/pixel)" 
-                    v-model="serie.dr" 
-                    :readonly="serie.readSpacing">
+                    v-model="serie.dr"
+                    :disabled="serie.readSpacing">
                 </v-text-field>
                 <v-text-field regular 
                     type="number" 
+                    :rules="metadataValuesRules" 
                     label="Axial spacing(nm/slice)" 
-                    v-model="serie.dz" 
-                    :readonly="serie.readSpacing">
+                    v-model="serie.dz"
+                    :disabled="serie.readSpacing">
                 </v-text-field>
             </v-col>
             <v-row align="center" justify="center">
@@ -51,15 +53,21 @@
 </template>
 
 <script>
-    import Vue from 'vue';
+    // import Vue from 'vue';
     import series from "@/utils/series.js";
 
     export default {
         name: 'DeconvolutionMetadata',
+        props: {
+            readonly: { type: Boolean, default: false }, 
+        },
         data() {
             return {
-                valid: true,
-                serie: series.formatSeries(null)
+                serie: series.formatSeries(null),
+                metadataValuesRules: [
+                    value => !!value || 'Must not empty',
+                    value => value && value.match(/^\d+(\.\d+)?$/).length > 0 || 'Must be number'
+                ], 
             }
         },
         methods: {
@@ -68,17 +76,17 @@
                 return this.serie
             },
             load_serie(serie){
-                Vue.$log.info('Loading ...');
-                Vue.$log.info(serie);
                 this.serie = serie
+            },
+            is_valid(){
+                if( this.serie.dr && this.serie.dz)
+                    return true
+                else
+                    return false
             }
         },
         watch: {
-            // async path() {
-            //     // path changed
-            //     await this.load();
-            // },
-        }
+        },
   }
 </script>
 

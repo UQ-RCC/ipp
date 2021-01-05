@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <v-card :disabled="readonly">
         <file-browser-dialog ref="filedialog" />
 
         <v-row align="center" justify="center">
@@ -141,20 +141,26 @@
             <v-row>
                 <v-col cols="15" sm="3" md="4">
                     <v-text-field 
-                        v-model="serie.dr"
-                        regular 
+                        v-model="serie.psfInfo.dr"
+                        regular
+                        type="number"
+                        :rules="psfValuesRules"
+                        :disabled="serie.psfInfo.readSpacing" 
                         label="PSF Lateral spacing(nm/pixel)">
                     </v-text-field>
                 </v-col>
                 <v-col cols="15" sm="3" md="4">
                     <v-text-field 
-                        v-model="serie.dz"
-                        regular 
+                        v-model="serie.psfInfo.dz"
+                        regular
+                        type="number"
+                        :rules="psfValuesRules"
+                        :disabled="serie.psfInfo.readSpacing" 
                         label="PSF Axial spacing(nm/slice)">
                     </v-text-field>
                 </v-col>
                     <v-switch
-                        v-model="serie.readSpacing"
+                        v-model="serie.psfInfo.readSpacing"
                         label="Read spacing from metadata"
                         >
                     </v-switch>
@@ -173,9 +179,11 @@
         components: {
             FileBrowserDialog,
         },
+        props: {
+            readonly: { type: Boolean, default: false }, 
+        },
         data() {
             return {
-                valid: true,
                 serie: series.formatSeries(null),
 
                 psfModels: [
@@ -202,6 +210,11 @@
                     {'label': '80% Glycerol', 'value': 1.45}
                 ],
 
+                psfValuesRules: [
+                    value => !!value || 'Must not empty',
+                    value => value && value.match(/^\d+(\.\d+)?$/).length > 0 || 'Must be number'
+
+                ],
             }
         },
         methods: {
@@ -246,6 +259,12 @@
                     }
                 }
             },
+            is_valid(){
+                if( this.serie.psfInfo.dr && this.serie.psfInfo.dz)
+                    return true
+                else
+                    return false
+            }
         }
         
     };

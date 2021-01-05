@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <v-card :disabled="readonly">
         <v-data-table
             :headers="channelTableHeaders"
             :items="serie.channels"
@@ -129,7 +129,8 @@
             <v-col cols="20" sm="4" md="5">
                 <v-text-field 
                     outlined
-                    type=number 
+                    type=number
+                    :rules="numberRules"   
                     label="Save every iterations" 
                     v-model="serie.saveEveryIterations"
                 >
@@ -146,6 +147,9 @@
     
     export default {
         name: 'DeconvolutionIterations',
+        props: {
+            readonly: { type: Boolean, default: false }, 
+        },
         data() {
             return {
                 valid: true,
@@ -207,6 +211,10 @@
                         value: 'actions', 
                         sortable: false 
                     },
+                ],
+
+                numberRules: [
+                    value => ( value || value ===0 ) && String(value).match(/^\d+(\.\d+)?$/).length > 0 || 'Must be a positive number'
                 ],
             }
         },
@@ -273,6 +281,9 @@
                     }
                 }
             },
+            is_valid(){
+                return true
+            }
         }
     }
 </script>

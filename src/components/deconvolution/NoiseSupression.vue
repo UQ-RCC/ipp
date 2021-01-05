@@ -1,8 +1,5 @@
 <template>
-    <v-form
-        ref="noiseform"
-        lazy-validation
-        >
+    <v-card :disabled="readonly">
         <v-row >
             <v-col cols="60" sm="12" md="15">
                 <v-select
@@ -31,6 +28,7 @@
                     v-model="serie.regularization"
                     regular
                     type=number
+                    :rules="numberRules" 
                     :disabled="serie.automaticRegularizationScale"
                     label="Regularization scale factor (µ)">
                 </v-text-field>
@@ -71,20 +69,18 @@
                 </v-select>
             </v-col>
         </v-row>
-
-    </v-form>
+    </v-card>
 
 </template>
 
 <script>
-    import Vue from 'vue';
+    // import Vue from 'vue';
     import series from '@/utils/series.js';
 
     export default {
         name: 'DeconvolutionNoise',
         props: {
-            selectedNoise: Object,
-            disabled: Boolean,
+            readonly: { type: Boolean, default: false },
         },
         data() {
             return {
@@ -106,16 +102,17 @@
                     {'label': 'Median', 'value': 2},
                     {'label': 'SharpenFilter', 'value': 3}
                 ],
+                numberRules: [
+                    value => ( value || value ===0 ) && String(value).match(/^-?\d+(\.\d+)?$/).length > 0 || 'Must be number'
+                ],
             }
         },
         methods: {
             // return the data
-            get_series_modified(){
+            get_serie(){
                 return this.serie
             },
-            load_new_series(serie_noise){
-                Vue.$log.info('Loading ...');
-                Vue.$log.info(serie_noise);
+            load_serie(serie_noise){
                 this.serie = serie_noise
             }
         },

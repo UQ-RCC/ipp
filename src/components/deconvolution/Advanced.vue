@@ -1,8 +1,5 @@
 <template>
-    <v-form
-        ref="advancedform"
-        lazy-validation
-        >
+    <v-card :disabled="readonly">
          <v-row align="center" justify="center">
             <v-switch
                 v-model="serie.blindDeconvolution"
@@ -17,7 +14,8 @@
                     <v-text-field 
                         dense 
                         outlined
-                        type=number 
+                        type=number
+                        :rules="numberRules"  
                         label="Padding.X" 
                         v-model="serie.padding.x"
                     >
@@ -27,7 +25,8 @@
                     <v-text-field 
                         dense 
                         outlined
-                        type=number 
+                        type=number
+                        :rules="numberRules"  
                         label="Padding.Y" 
                         v-model="serie.padding.y"
                     >
@@ -37,7 +36,8 @@
                     <v-text-field 
                         dense 
                         outlined
-                        type=number 
+                        type=number
+                        :rules="numberRules"  
                         label="Padding.Z" 
                         v-model="serie.padding.z"
                     >
@@ -50,7 +50,8 @@
                     <v-text-field 
                         dense 
                         outlined
-                        type=number 
+                        type=number
+                        :rules="numberRules" 
                         label="Tiling.X" 
                         v-model="serie.tiling.x"
                     >
@@ -61,6 +62,7 @@
                         dense 
                         outlined 
                         type=number
+                        :rules="numberRules" 
                         label="Tiling.Y" 
                         v-model="serie.tiling.y"
                     >
@@ -70,7 +72,8 @@
                     <v-text-field
                         dense 
                         outlined
-                        type=number 
+                        type=number
+                        :rules="numberRules"  
                         label="Tiling.Z" 
                         v-model="serie.tiling.z"
                     >
@@ -134,19 +137,18 @@
             </v-col>
         </v-row>
 
-    </v-form>
+    </v-card>
 
 </template>
 
 <script>
-    import Vue from 'vue';
+    // import Vue from 'vue';
     import series from '@/utils/series.js'
     
     export default {
         name: 'DeconvolutionAdvanced',
         props: {
-            selectedAdvanced: Object,
-            disabled: Boolean,
+            readonly: { type: Boolean, default: false },
         },
         data() {
             return {
@@ -173,18 +175,39 @@
                 splitStartingIndexTypes: [
                     {'label': '0', 'value': 0},
                     {'label': '1', 'value': 1}  
-                ]
+                ],
+                numberRules: [
+                    value => ( value || value ===0 ) && String(value).match(/^\d+(\.\d+)?$/).length > 0 || 'Must be a number'
+                ],
             }
         },
         methods: {
             // return the data
-            get_series_modified(){
+            get_serie(){
                 return this.serie
             },
-            load_new_series(serie_advanced){
-                Vue.$log.info('Loading ...');
-                Vue.$log.info(serie_advanced);
+            load_serie(serie_advanced){
                 this.serie = serie_advanced
+            },
+            is_valid_value(val){
+                if(val || val === 0)
+                    return true
+                else
+                    return false
+            }
+            ,
+            is_valid(){
+                if(this.serie.padding && 
+                    this.is_valid_value(this.serie.padding.x) &&
+                    this.is_valid_value(this.serie.padding.y) &&
+                    this.is_valid_value(this.serie.padding.z) &&
+                    this.serie.tiling && 
+                    this.is_valid_value(this.serie.padding.x) &&
+                    this.is_valid_value(this.serie.padding.y) &&
+                    this.is_valid_value(this.serie.padding.z))
+                    return true
+                else
+                    return false
             }
         },
   }

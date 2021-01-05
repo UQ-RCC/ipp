@@ -147,7 +147,8 @@
                         <v-stepper alt-labels non-linear v-model="step" v-bind:style="{width: '100%'}" @change="stepChanged">
                             <v-stepper-header>
                                 <v-stepper-step editable step="1" 
-                                    :complete="step!==1 && visitedSteps.indexOf(1) >= 0" 
+                                    :complete="step!==1 && visitedSteps.indexOf(1) >= 0"
+                                    :rules="[rules.metadatastepvalid]" 
                                     @click="stepClicked">
                                     <small>Metadata</small>
                                 </v-stepper-step>
@@ -155,13 +156,15 @@
 
                                 <v-stepper-step editable step="2"
                                     :complete="step!==2 && visitedSteps.indexOf(2) >= 0"
+                                    :rules="[rules.psfstepvalid]" 
                                     @click="stepClicked">
                                     <small>PSF</small>
                                 </v-stepper-step>
                                 <v-divider></v-divider>
 
                                 <v-stepper-step editable step="3" 
-                                                :complete="step!==3 && visitedSteps.indexOf(3) >= 0" 
+                                                :complete="step!==3 && visitedSteps.indexOf(3) >= 0"
+                                                :rules="[rules.deskewstepvalid]"  
                                                 v-show="form.psfType===3" 
                                     @click="stepClicked">
                                     <small>Deskew</small>
@@ -169,7 +172,8 @@
                                 <v-divider></v-divider>
 
                                 <v-stepper-step editable 
-                                                :complete="step!==4 && visitedSteps.indexOf(4) >= 0" 
+                                                :complete="step!==4 && visitedSteps.indexOf(4) >= 0"
+                                                :rules="[rules.iterationstepvalid]"  
                                                 step="4" 
                                     @click="stepClicked">
                                     <small>Iterations</small>
@@ -177,7 +181,7 @@
                                 <v-divider></v-divider>
 
                                 <v-stepper-step editable 
-                                                :complete="step!==5 && visitedSteps.indexOf(5) >= 0" 
+                                                :complete="step!==5 && visitedSteps.indexOf(5) >= 0"
                                                 step="5"
                                     @click="stepClicked">
                                     <small>Noise Suppression</small>
@@ -185,7 +189,8 @@
                                 <v-divider></v-divider>
 
                                 <v-stepper-step editable 
-                                                :complete="step!==6 && visitedSteps.indexOf(6) >= 0" 
+                                                :complete="step!==6 && visitedSteps.indexOf(6) >= 0"
+                                                :rules="[rules.advancedstepvalid]"  
                                                 step="6"
                                     @click="stepClicked">
                                     <small>Advanced</small>
@@ -193,7 +198,8 @@
                                 <v-divider></v-divider>
 
                                 <v-stepper-step editable 
-                                                :complete="step!==7 && visitedSteps.indexOf(7) >= 0" 
+                                                :complete="step!==7 && visitedSteps.indexOf(7) >= 0"
+                                                :rules="[rules.devicesstepvalid]"  
                                                 step="7"
                                     @click="stepClicked">
                                     <small>Devices</small>
@@ -264,7 +270,7 @@
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn 
-                                    color="primary" round dark large 
+                                    color="primary" rounded dark large 
                                     v-bind="attrs" 
                                     v-on="on"
                                     :disabled="step != 8"
@@ -339,7 +345,6 @@
                     outputFolderName: '',
                     seperateOutputsBasedonInput: false,
                     psfType: 3,
-                    currentTab: 0
                 },
                 fileBrowserDialog: false,
                 fileBrowserDialogMode: '',
@@ -368,10 +373,32 @@
                     {'label': '80% Glycerol', 'value': 1.45}
                 ],
 
+                rules: {
+                    // TODO: some how simplify this
+                    metadatastepvalid: () => {
+                        return this.checkStepValidity(1, this.$refs.deconmetadata)
+                    },
+                    psfstepvalid: () => {
+                        return this.checkStepValidity(2, this.$refs.deconpsf)
+                    },
+                    deskewstepvalid: () => {
+                        return this.checkStepValidity(3, this.$refs.decondeskew)
+                    },
+                    iterationstepvalid: () => {
+                        return this.checkStepValidity(4, this.$refs.deconiterations)
+                    },
+                    advancedstepvalid: () => {
+                        return this.checkStepValidity(6, this.$refs.deconadvanced)
+                    },
+                    devicesstepvalid: () => {
+                        return this.checkStepValidity(7, this.$refs.decondevices)
+                    }
+
+                },
+
                 // things to be saved - really
                 selected: [],
                 selectedFiles: [],
-
             }
         },
         mounted: function() {
@@ -461,6 +488,7 @@
             },
             submit(){
                 console.log("submit...");
+                // if any component is invalid, show a dialog to fix those
             },
             saveTemplate(){
                 console.log("save...");
@@ -472,20 +500,8 @@
             // load series
             load_series(series){
                 // update tab
-                switch(this.form.currentTab) {
-                    case 1:
-                        this.$refs.deconnoise.load_new_series(series)
-                        break
-                    case 2:
-                        this.$refs.deconadvanced.load_new_series(series)
-                        break
-                    case 3:
-                        this.$refs.decondevices.load_new_series(series)
-                        break
-                    default: 
-                        this.$refs.deconmain.load_new_series(series)
-                        break
-                }
+                let currentComponent = this.getStepComponent(this.step)
+                currentComponent.load_new_series(series)
                 // update form
                 this.form.outputBasePath = series['outputBasePath']
                 this.form.outputFolderName = series['outputFolderName']
@@ -517,64 +533,31 @@
                 }
             },
 
-            // tab changed
-            tabChanged(number){
-                // save value before switch
-                let currentDeconTab = null
-                switch(this.form.currentTab) {
-                        case 1:
-                            currentDeconTab = this.$refs.deconnoise
-                            break
-                        case 2:
-                            currentDeconTab = this.$refs.deconadvanced
-                            break
-                        case 3:
-                            currentDeconTab = this.$refs.decondevices
-                            break
-                        default: 
-                            currentDeconTab = this.$refs.deconmain
-                            break
-                }
-                // switch
-                let newDeconTab = null
-                switch(number) {
-                        case 1:
-                            newDeconTab = this.$refs.deconnoise
-                            break
-                        case 2:
-                            newDeconTab = this.$refs.deconadvanced
-                            break
-                        case 3:
-                            newDeconTab = this.$refs.decondevices
-                            break
-                        default: 
-                            newDeconTab = this.$refs.deconmain
-                            break
-                }
-                Vue.$log.info(newDeconTab)
-                this.form.currentTab = number
-                if(this.selected && this.selected[0]){
-                    this.selected[0] = currentDeconTab.get_series_modified()
-                    if(newDeconTab)
-                        newDeconTab.load_new_series(this.selected[0])
-                }
-            },    
-
             stepClicked() {
                 this.step = parseInt(this.step)
-                // save contents from this.step
                 if(this.visitedSteps.indexOf(this.step) < 0)
                     this.visitedSteps.push(this.step)
-
+                // save from current step - review step is ignored
+                // if(this.selected && this.selected[0] && this.step !== 8){
+                if(this.selected && this.step !== 8){
+                    let _component = this.getStepComponent(this.step)
+                    this.selected[0] = _component.get_serie()
+                }
             },
 
             stepChanged(number){
                 var stepNumber = parseInt(number)
                 this.visitedSteps = this.visitedSteps.filter(item => item !== stepNumber)
+                // load series to new step
+                if(this.selected && this.selected[0]){
+                    let _component = this.getStepComponent(stepNumber)
+                    _component.load_serie(this.selected[0])
+                }
             },
 
             nextStep(){
                 this.step = parseInt(this.step)
+                let previousStep = this.step
                 // add to visited
                 if(this.visitedSteps.indexOf(this.step) < 0)
                     this.visitedSteps.push(this.step)
@@ -585,13 +568,15 @@
                         this.step = this.step + 1
                     else
                         this.step = 4
+                    let nextStep = this.step
+                    this.savePreviousAndLoadNextStep(previousStep, nextStep)
+ 
                 }
-                console.log("@nextstep: visited:")
-                console.log(this.visitedSteps)
             }, 
 
             previousStep(){
                 this.step = parseInt(this.step)
+                let previousStep = this.step
                 // add to visited
                 if(this.visitedSteps.indexOf(this.step) < 0)
                     this.visitedSteps.push(this.step)
@@ -602,12 +587,76 @@
                         this.step = this.step - 1
                     else
                         this.step = 2
-
+                    let nextStep = this.step
+                    this.savePreviousAndLoadNextStep(previousStep, nextStep)
                 }
-                console.log("@previousstep: visited:")
-                console.log(this.visitedSteps)
-
             },
+            /**
+             * save data from current step
+             * load next step
+             * to be used in next and previous buttons
+             */
+            savePreviousAndLoadNextStep(previousSt, nextSt){
+                // save 
+                if(this.selected && previousSt !== 8){
+                    let _component = this.getStepComponent(previousSt)
+                    this.selected[0] = _component.get_serie()
+                }
+                // and load
+                if(this.selected && this.selected[0]){
+                    let _component = this.getStepComponent(nextSt)
+                    _component.load_serie(this.selected[0])
+                }
+            },
+
+            /**
+             * check certain step valid
+             */
+            checkStepValidity(stepId, stepComponent){
+                if (this.step === stepId || this.visitedSteps.indexOf(stepId) < 0 ||
+                    (stepComponent && stepComponent.is_valid()) )
+                    return true
+                else
+                    return false
+            },
+
+            /**
+             * get step component 
+             */
+            getStepComponent(stepId) {
+                let _component = this.$refs.deconmetadata
+                switch(stepId) {
+                    case 1:
+                        _component = this.$refs.deconmetadata
+                        break
+                    case 2:
+                        _component = this.$refs.deconpsf
+                        break
+                    case 3:
+                        _component = this.$refs.decondeskew
+                        break
+                    case 4:
+                        _component = this.$refs.deconiterations
+                        break
+                    case 5:
+                        _component = this.$refs.deconnoise
+                        break
+                    case 6:
+                        _component = this.$refs.deconadvanced
+                        break
+                    case 7:
+                        _component = this.$refs.decondevices
+                        break
+                    case 8:
+                        _component = this.$refs.deconreview
+                        break
+                    default: 
+                        _component = this.$refs.deconmetadata
+                        break
+                }
+                return _component
+            }
+
         },
     }
 </script>

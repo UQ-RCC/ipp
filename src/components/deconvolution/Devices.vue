@@ -1,8 +1,5 @@
 <template>
-    <v-form
-        ref="devicesform"
-        lazy-validation
-        >
+    <v-card :disabled="readonly">
         <v-row align="center" justify="center">
             <v-switch
                 v-model="serie.autoDetect"
@@ -19,7 +16,8 @@
                             outlined
                             v-bind="attrs"
                             v-on="on"
-                            type=number 
+                            type=number
+                            :rules="numberRules"  
                             label="Number of instances [nodes]" 
                             v-model="serie.numberOfParallelJobs"
                         >
@@ -36,7 +34,8 @@
                             outlined
                             v-bind="attrs"
                             v-on="on"
-                            type=number 
+                            type=number
+                            :rules="numberRules"  
                             label="Memory per job (GBs)" 
                             v-model="serie.mem"
                         >
@@ -53,7 +52,8 @@
                             outlined
                             v-bind="attrs"
                             v-on="on"
-                            type=number 
+                            type=number
+                            :rules="numberRules"  
                             label="Number of GPUs per job" 
                             v-model="serie.gpus"
                         >
@@ -64,33 +64,39 @@
             </v-col>
         </v-col>
         
-    </v-form>
+    </v-card>
 
 </template>
 
 <script>
-    import Vue from 'vue';
+    // import Vue from 'vue';
     import series from '@/utils/series.js'
     export default {
         name: 'DeconvolutionDevices',
         props: {
-            selectedDevices: Object,
-            disabled: Boolean,
+            readonly: { type: Boolean, default: false }, 
         },
         data() {
             return {
                 serie: series.formatSeries(null),
+                numberRules: [
+                    value => ( value || value ===0 ) && String(value).match(/^\d+(\.\d+)?$/).length > 0 || 'Must be a positive number'
+                ],
             }
         },
         methods: {
             // return the data
-            get_series_modified(){
+            get_serie(){
                 return this.serie
             },
-            load_new_series(serie_devices){
-                Vue.$log.info('Loading ...');
-                Vue.$log.info(serie_devices);
+            load_serie(serie_devices){
                 this.serie = serie_devices
+            },
+            is_valid(){
+                if(this.serie.numberOfParallelJobs && this.serie.mem && this.serie.gpus)
+                    return true
+                else
+                    return false
             }
         },
         
