@@ -50,9 +50,9 @@ var series = {
         }
         series['seperateOutputsBasedonInput'] = false
         
-        series['generatePsf'] = false
+        series['generatePsf'] = true
         series['readSpacing'] = true
-        series['psfModel'] = {label: 'Scalar', value: 0}
+        series['psfModel'] = 0
         series['RI'] = 1.33
         series['objectiveRIOption'] = 1.33
         series['ns'] = 1.33

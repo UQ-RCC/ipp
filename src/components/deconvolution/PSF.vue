@@ -20,11 +20,10 @@
                         item-value="value"
                         label="PSF Model"
                         outlined
-                        return-object
                         >
                     </v-select>
                 </v-col>
-                <v-row v-if="serie.psfModel.value!==0">
+                <v-row v-if="serie.psfModel!==0">
                     <v-col cols="20" sm="4" md="5">
                         <v-text-field 
                             v-model="serie.ns"
@@ -43,10 +42,9 @@
                             item-text="label"
                             item-value="value"
                             label="Sample medium RI options"
-                            @change="mediumRISelect"
+                            @change="mediumRIChanged"
                             outlined
                             single-line
-                            return-object
                             >
                         </v-select>
                     </v-col>
@@ -82,10 +80,9 @@
                         item-text="label"
                         item-value="value"
                         label="Presets"
-                        @change="objectiveRISelect"
+                        @change="objectiveRIChanged"
                         outlined
                         single-line
-                        return-object
                         >
                     </v-select>
                 </v-col>
@@ -225,29 +222,37 @@
             load_serie(serie){
                 this.serie = serie
             },
-            // ns changed
-            nsChanged(){
-                if( this.serie.ns in Object.values(this.objectiveRIOptions) === false )
-                    this.serie.mediumRIOption = -1
+            // psfModelChanged
+            psfModelChanged() {
+                console.log(this.serie.psfModel)
             },
-            // change ns from select
-            mediumRISelect(){
-                if(this.serie.mediumRIOption.value > 0)
-                    this.serie.ns = this.serie.mediumRIOption.value;
+            // ns === sample medium : mediumRIOptions
+            // ns changed --
+            nsChanged(){
+                this.serie.ns = parseFloat(this.serie.ns)
+                if(this.mediumRIOptions.map(a => a.value).indexOf(this.serie.ns) === -1)
+                    this.serie.mediumRIOption = -1
                 else
                     this.serie.mediumRIOption = this.serie.ns
             },
+            // change ns from select
+            mediumRIChanged(){
+                if(this.serie.mediumRIOption > 0)
+                    this.serie.ns = this.serie.mediumRIOption
+            },
+            // RI == Objective immersion refractive index : objectiveRIOptions
             // RI input
             RIChanged(){
-                if( this.serie.RI in Object.values(this.mediumRIOptions) === false )
+                this.serie.RI = parseFloat(this.serie.RI)
+                if(this.objectiveRIOptions.map(a => a.value).indexOf(this.serie.RI) === -1)
                     this.serie.objectiveRIOption = -1
-            },
-            // change RI from select
-            objectiveRISelect(){
-                if(this.serie.objectiveRIOption.value > 0)
-                    this.serie.RI = this.serie.objectiveRIOption.value;
                 else
                     this.serie.objectiveRIOption = this.serie.RI
+            },
+            // change RI from select
+            objectiveRIChanged(){
+                if(this.serie.objectiveRIOption > 0)
+                    this.serie.RI = this.serie.objectiveRIOption
             },
             // choose psf file
             async choosePsfFile(){

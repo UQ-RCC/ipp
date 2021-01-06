@@ -532,6 +532,8 @@
 
             // psf type changed
             psfChanged(){
+                console.log("psf type changed")
+                console.log(this.form.psfType)
                 if(this.selected && this.selected[0]){
                     this.selected[0]['psfType'] = this.form.psfType
                     this.load_series(this.selected[0])
