@@ -37,7 +37,7 @@
             </v-col>
             <v-col cols="15" sm="5" md="6" dense>
                 <v-col cols="15" sm="5" md="6">
-                    Median Background: {{serie.median_threshold}}
+                    Median Background: {{serie.background}}
                 </v-col>
                 <v-col cols="15" sm="5" md="6">
                     Standard deviation: {{serie.stddev}}
@@ -47,14 +47,15 @@
         
         <v-data-table
             :headers="deskewMetadataTableHeaders"
-            :items="serie.deskewMetadata"
+            :items="[{unit: serie.unit, pixelWidth: serie.pixelWidth, pixelHeight: serie.pixelHeight, pixelDepth: serie.pixelDepth }]"
             class="elevation-1"
             hide-default-footer
             v-if="serie.deskew"
             >
                 <template v-slot:top>
-                    <v-dialog
+                    <v-dialog 
                         v-model="deskewEditDialog"
+                        persistent
                         max-width="500px"
                     >
                         <v-card>
@@ -72,7 +73,7 @@
                                     >
                                         <v-select
                                             :items="units"
-                                            v-model="deskewEditedItem.unit"
+                                            v-model="serie.unit"
                                             label="Unit"
                                             outlined
                                             return-object
@@ -85,7 +86,7 @@
                                         md="4"
                                     >
                                         <v-text-field
-                                            v-model="deskewEditedItem.pixelWidth"
+                                            v-model="serie.pixelWidth"
                                             label="Pixel Width" type="number"
                                             :rules="numberRules" 
                                         ></v-text-field>
@@ -96,7 +97,7 @@
                                         md="4"
                                     >
                                             <v-text-field
-                                            v-model="deskewEditedItem.pixelHeight"
+                                            v-model="serie.pixelHeight"
                                             label="Pixel Height" type="number"
                                             :rules="numberRules" 
                                         ></v-text-field>
@@ -107,7 +108,7 @@
                                         md="4"
                                     >
                                         <v-text-field
-                                            v-model="deskewEditedItem.voxelDepth"
+                                            v-model="serie.pixelDepth"
                                             label="Voxel Depth" type="number"
                                             :rules="numberRules" 
                                         ></v-text-field>
@@ -121,13 +122,6 @@
                                 <v-btn
                                     color="blue darken-1"
                                     text
-                                    @click="closeDeskewDialog"
-                                >
-                                    Cancel
-                                </v-btn>
-                                <v-btn
-                                    color="blue darken-1"
-                                    text
                                     :disabled="!valid_dialog_values"
                                     @click="saveDeskewDialog"
                                 >
@@ -135,7 +129,7 @@
                                 </v-btn>
                             </v-card-actions>
                         </v-card>
-                        </v-dialog>
+                    </v-dialog>
                 </template>
 
                 <template v-slot:item.actions="{ item }">
@@ -167,13 +161,6 @@
                 serie: series.formatSeries(null),
                 //deskew edit
                 deskewEditDialog: false,
-                deskewEditedIndex: -1,
-                deskewEditedItem: {
-                    unit: 'µm', 
-                    pixelWidth: 0, 
-                    pixelHeight: 0, 
-                    voxelDepth: 0
-                },
                 //deskew metadata
                 deskewMetadataTableHeaders: [
                     {
@@ -198,7 +185,7 @@
                         text: 'Voxel Depth',
                         align: 'center',
                         sortable: false,
-                        value: 'voxelDepth',
+                        value: 'pixelDepth',
                     },
                     {   
                         text: 'Edit', 
@@ -208,7 +195,7 @@
                 ],
                 units: [ 'nm', 'µm', 'mm', 'inch' ],
                 numberRules: [
-                    value => ( value || value ===0 ) && String(value).match(/^\d+(\.\d+)?$/).length > 0 || 'Must be number'
+                    value => value && value >= 0 || 'Must be 0 or a positive number'
                 ],
             }
         },
@@ -221,33 +208,22 @@
                 this.serie = serie
             },
             // edit dekew
-            editDeskewItem (item) {
-                this.deskewEditedIndex = this.serie.deskewMetadata.indexOf(item)
-                this.deskewEditedItem = Object.assign({}, item)
+            editDeskewItem () {
                 this.deskewEditDialog = true
             },
-            closeDeskewDialog(){
-                this.deskewEditDialog = false
-                this.$nextTick(() => {
-                    this.deskewEditedItem = {}
-                    this.deskewEditedIndex = -1
-                })
-            },
             saveDeskewDialog(){
-                if (this.deskewEditedIndex > -1) {
-                    Object.assign(this.serie.deskewMetadata[this.deskewEditedIndex], this.deskewEditedItem)
-                }
-                this.closeDeskewDialog()
-                
+                this.deskewEditDialog = false
             },
-            is_valid(){                
-                if(this.serie.angle && this.serie.threshold &&
-                    (!this.serie.deskew || (this.serie.deskewMetadata[0] && 
-                                         this.serie.deskewMetadata[0].unit && 
-                                         this.serie.deskewMetadata[0].pixelWidth && 
-                                         this.serie.deskewMetadata[0].pixelHeight && 
-                                         this.serie.deskewMetadata[0].voxelDepth))
-                )
+            is_valid(){
+                if(!this.serie.deskew || 
+                    (
+                        (this.serie.angle && this.serie.angle > 0)&&
+                        (this.serie.threshold &&this.serie.threshold >=0) &&
+                        this.serie.unit &&
+                        (this.serie.pixelWidth && this.serie.pixelWidth > 0) &&
+                        (this.serie.pixelHeight && this.serie.pixelHeight > 0) &&
+                        (this.serie.pixelDepth && this.serie.pixelDepth > 0) 
+                    ) )
                     return true
                 else
                     return false
@@ -255,9 +231,9 @@
         },
         computed: {
             valid_dialog_values(){
-                if(this.deskewEditedItem.pixelWidth && 
-                    this.deskewEditedItem.pixelHeight &&
-                    this.deskewEditedItem.voxelDepth)
+                if(this.serie.pixelWidth && 
+                    this.serie.pixelHeight &&
+                    this.serie.pixelDepth)
                     return true
                 else
                     return false

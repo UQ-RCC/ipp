@@ -25,16 +25,64 @@ export default {
 
   // --------------------- deconvolution --------------------------//
   // series
-  // async get_series(username) {
+  // get series
+  async get_serie(path){
+    if(path) {
+      const { data } = await request.get(`${Config.endpoints.pref}/preferences/series`,{
+        params: {
+          path: btoa(path)
+        }
+      })
+      return data
+    } else {
+      const { data } = await request.get(`${Config.endpoints.pref}/preferences/series`)
+      return data
+    }
+  },
 
-  // },
-  // async add_series(username) {
+  // create series
+  async create_serie(series){
+    const { data } = await request.post(`${Config.endpoints.pref}/preferences/series`, series)
+    return data
+  },
 
-  // },
-  // //deconvolution
-  // async get_deconvolution_pref(username){
 
-  // }
+  //deconvolution
+  async get_deconpage(){
+    const { data } = await request.get(`${Config.endpoints.pref}/preferences/deconpage`)
+    return data
+  },
+
+  // get decons in deconpage
+  async get_decons(){
+    const { data } = await request.get(`${Config.endpoints.pref}/preferences/deconpage/decons`)
+    return data
+  },
+
+  // get a decon
+  async get_decon(deconid){
+    const { data } = await request.get(`${Config.endpoints.pref}/preferences/deconpage/decons/${deconid}`)
+    return data
+  },
+
+  async delete_decon(deconid){
+    const { data } = await request.delete(`${Config.endpoints.pref}/preferences/deconpage/decons/${deconid}`)
+    return data
+  },
+
+  // create a decon
+  async create_decon(seriesid, setting){
+    const { data } = await request.post(`${Config.endpoints.pref}/preferences/deconpage/decons`, setting, {
+      params: {
+        series_id: seriesid
+      }
+    })
+    return data
+  },
+
+
+
+
 
 }
   

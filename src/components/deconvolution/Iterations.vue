@@ -52,18 +52,20 @@
                                         >
                                             <v-text-field
                                                 v-model="iterationsEditedItem.iterations"
-                                                label="Iterations" type=number
+                                                label="Iterations"
+                                                type="number" :rules="positiveInteger" 
                                             ></v-text-field>
                                         </v-col>
                                         <v-col
                                             cols="12"
                                             sm="6"
                                             md="4"
-                                            v-if="serie.backgroundType.value === -1"
+                                            v-if="serie.backgroundType === 0"
                                         >
                                             <v-text-field
                                                 v-model="iterationsEditedItem.background"
-                                                label="Background" type=number
+                                                label="Background" 
+                                                type="number" :rules="positiveNumber"
                                             ></v-text-field>
                                         </v-col>
 
@@ -75,7 +77,8 @@
                                         >
                                             <v-text-field
                                                 v-model="iterationsEditedItem.wavelength"
-                                                label="Emission Wavelength(mm)" type=number
+                                                label="Emission Wavelength(mm)" 
+                                                type="number" :rules="positiveNumber"
                                             ></v-text-field>
                                         </v-col>
 
@@ -87,7 +90,8 @@
                                         >
                                             <v-text-field
                                                 v-model="iterationsEditedItem.pinhole"
-                                                label="Backprojected pinhole radius(nm)" type=number
+                                                label="Backprojected pinhole radius(nm)" 
+                                                type="number" :rules="positiveNumber"
                                             ></v-text-field>
                                         </v-col>
                                     </v-row>
@@ -137,7 +141,6 @@
                     label="Background Correction"
                     @change="backgroundTypeChanged"
                     outlined
-                    return-object
                     >
                 </v-select>
             </v-col>
@@ -145,8 +148,8 @@
             <v-col cols="20" sm="4" md="5">
                 <v-text-field 
                     outlined
-                    type=number
-                    :rules="numberRules"   
+                    type="number"
+                    :rules="positiveInteger"   
                     label="Save every iterations" 
                     v-model="serie.saveEveryIterations"
                 >
@@ -187,12 +190,12 @@
 
                 // background types
                 backgroundTypes: [
-                    {'label': 'None', 'value': null},
+                    {'label': 'None', 'value': -1},
                     {'label': '1%', 'value': 0.01},
                     {'label': '5%', 'value': 0.05},
                     {'label': '10%', 'value': 0.1},
                     {'label': '25%', 'value': 0.25},
-                    {'label': 'Manual', 'value': -1}
+                    {'label': 'Manual', 'value': 0}
                 ],
 
                 // channel table
@@ -238,10 +241,13 @@
                         sortable: false 
                     },
                 ],
-
-                numberRules: [
-                    value => ( value || value ===0 ) && String(value).match(/^\d+(\.\d+)?$/).length > 0 || 'Must be a positive number'
+                positiveNumber: [
+                    value => value > 0 || 'Must be a positive number',
                 ],
+                positiveInteger: [
+                    value => value && value >= 0 && Number.isInteger(parseFloat(value)) || 'Must be a positive integer'
+                ], 
+
             }
         },
         methods: {
@@ -277,7 +283,7 @@
             },
             // background correction type changed
             backgroundTypeChanged(){
-                if (this.serie.backgroundType.value === -1)
+                if (this.serie.backgroundType === 0)
                     this.channelTableHeaders[2].align = 'center';
                 else
                     this.channelTableHeaders[2].align = ' d-none'; 

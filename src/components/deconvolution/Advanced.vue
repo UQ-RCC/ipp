@@ -50,7 +50,7 @@
                     <v-text-field 
                         dense 
                         outlined
-                        type=number
+                        type="number"
                         :rules="numberRules" 
                         label="Tiling.X" 
                         v-model="serie.tiling.x"
@@ -92,19 +92,18 @@
                     item-value="value"
                     label="Output image type"
                     outlined dense
-                    return-object
                     >
                 </v-select>
             </v-col>
             <v-col cols="15" sm="3" md="4">
                 <v-select
+                    disabled
                     :items="fileFormatTypes"
                     v-model="serie.fileformat"
                     item-text="label"
                     item-value="value"
                     label="File format"
                     outlined dense
-                    return-object
                     >
                 </v-select>
             </v-col>
@@ -113,27 +112,26 @@
         <v-row align="center" justify="center">
             <v-col cols="15" sm="3" md="4">
                 <v-select
+                    disabled
                     :items="splitChannelTypes"
                     v-model="serie.split"
                     item-text="label"
                     item-value="value"
                     label="Stack split"
                     outlined dense
-                    return-object
                     >
                 </v-select>
             </v-col>
             <v-col cols="15" sm="3" md="4">
-                <v-select
-                    :items="splitStartingIndexTypes"
+                <v-text-field
+                    v-if="serie.split !== 0"
+                    dense 
+                    outlined
+                    type=number
+                    :rules="positiveIntegerRules"  
+                    label="Split Index" 
                     v-model="serie.splitIdx"
-                    item-text="label"
-                    item-value="value"
-                    label="Split starting index"
-                    outlined dense
-                    return-object
-                    >
-                </v-select>
+                />
             </v-col>
         </v-row>
 
@@ -177,7 +175,10 @@
                     {'label': '1', 'value': 1}  
                 ],
                 numberRules: [
-                    value => ( value || value ===0 ) && String(value).match(/^\d+(\.\d+)?$/).length > 0 || 'Must be a number'
+                    value => value && parseInt(value) >= 0 || "Must be 0 or a positive number"
+                ],
+                positiveIntegerRules: [
+                    value => value && Number.isInteger(parseFloat(value)) && parseInt(value) >= 0 || 'Must be a positive integer'
                 ],
             }
         },
@@ -190,7 +191,7 @@
                 this.serie = serie_advanced
             },
             is_valid_value(val){
-                if(val || val === 0)
+                if(val || val == 0)
                     return true
                 else
                     return false

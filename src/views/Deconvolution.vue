@@ -1,6 +1,7 @@
 <template>
     <v-card  :loading="loading > 0">
-    <file-browser-dialog ref="filedialog" />
+        <file-browser-dialog ref="filedialog" />
+        <template-dialog ref="templatedialog" />
         <!-- psfType -->
         <v-row align="center">
             <v-col
@@ -246,7 +247,6 @@
 
                                 <v-stepper-content step=8>
                                     <deconvolution-review ref="deconreview"
-                                        v-on:template-load = loadTemplate
                                         v-on:template-save = saveTemplate
                                     />
                                 </v-stepper-content>
@@ -270,6 +270,19 @@
                         
                         <div class="flex-grow-1"></div>
             
+                        <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn 
+                                    color="primary" 
+                                    rounded dark large 
+                                    @click.stop="loadTemplate()"
+                                    v-bind="attrs" 
+                                    v-on="on">Load Template
+                                </v-btn>
+                            </template>
+                            <span>Load an existing template</span>
+                        </v-tooltip>
+
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn 
@@ -318,9 +331,10 @@
     import DeconvolutionAdvanced from '@/components/deconvolution/Advanced.vue'
     import DeconvolutionDevices from '@/components/deconvolution/Devices.vue'
     import DeconvolutionReview from '@/components/deconvolution/Review.vue'
+    import TemplateDialog from '@/components/TemplateDialog.vue'
     // api
     import DeconvolutionAPI from "@/api/DeconvolutionAPI.js"
-    // import PreferenceAPI from "@/api/PreferenceAPI";
+    import PreferenceAPI from "@/api/PreferenceAPI";
     import series from '@/utils/series.js'
     // let series = require('@/utils/series')
 
@@ -335,7 +349,8 @@
             DeconvolutionNoise,
             DeconvolutionAdvanced,
             DeconvolutionDevices,
-            DeconvolutionReview
+            DeconvolutionReview,
+            TemplateDialog
         },
         data() {
             return {
@@ -398,13 +413,13 @@
                     }
 
                 },
-
                 // things to be saved - really
                 selected: [],
                 selectedFiles: [],
             }
         },
-        mounted: function() {
+        mounted: async function() {
+            // let decons = await PreferenceAPI.get_decons()
         },
         methods: {
             async chooseOutputFolder(){
@@ -425,27 +440,55 @@
             async selectFiles(){
                 let options = await this.$refs.filedialog.open('selectfiles', 'Deconvolution', '/');
                 if (!options.cancelled) {
-                    Vue.$log.info("...........");
+                    Vue.$log.info("...........")
                     Vue.$log.info(options.path);
                     // selectedItem.path points to file
-                    Vue.$log.info(options.selectedItems);
+                    Vue.$log.info(options.selectedItems)
                 }
-
             },
             async selectFilesInFolder(){
                 let options = await this.$refs.filedialog.open('selectfilesinfolder', 'Deconvolution', '/');
                 if (!options.cancelled) {
-                    Vue.$log.info("selecting files:" + options.path + options.filter);
+                    let _pathToBeLoaded = options.path + options.filter
+                    Vue.$log.info("selecting files:" + _pathToBeLoaded)
+                    let _exist = false
+                    this.selectedFiles.map(file => {
+                        if (file.path === _pathToBeLoaded)
+                            _exist = true
+                    })
+                    if (_exist)
+                        return
                     this.loading = true;
                     try{
-                        //TODO:  set loading
                         this.loading = true;
-                        let response = await DeconvolutionAPI.get_folder_info(options.path + options.filter);
-                        Vue.$log.info("Response :")
-                        Vue.$log.info(JSON.parse(JSON.stringify(response)))
-                        let items = response.commandResult.map(responseItem => {
-                            return series.formatSeries(responseItem)
-                        });
+                        // first, check the database
+                        let storedSeries = await PreferenceAPI.get_serie(_pathToBeLoaded)
+                        let items = []
+                        // found
+                        Vue.$log.info(storedSeries)
+                        if ( storedSeries && storedSeries.length > 0 ) {
+                            Vue.$log.info("Found in database")
+                            items = storedSeries.map(serie => {
+                                let _serieid = serie.id
+                                let _seriesetting = series.formatSeries(serie)
+                                PreferenceAPI.create_decon(_serieid, _seriesetting)
+                                return _seriesetting
+                            })
+                        } else {
+                            Vue.$log.info("Not found. Need to load from source")
+                            let response = await DeconvolutionAPI.get_folder_info(_pathToBeLoaded)
+                            Vue.$log.info("Response :")
+                            Vue.$log.info(JSON.parse(JSON.stringify(response)))
+                            // add to database
+                            items = response.commandResult.map(responseItem => {
+                                let _seriesetting = series.formatSeries(responseItem)
+                                PreferenceAPI.create_serie(responseItem).then(function(db_serie){
+                                    PreferenceAPI.create_decon(db_serie.id, _seriesetting)
+                                })
+                                return _seriesetting
+                            })
+                        }
+
                         // let maxFileSizeMbs = this.items[0].maxSizeM;
                         // suggest mem
                         this.selectedFiles = this.selectedFiles.concat(items)
@@ -490,14 +533,37 @@
                 this.load_series(series.formatSeries(null))
             },
             submit(){
-                console.log("submit...");
+                console.log("submit...")
                 // if any component is invalid, show a dialog to fix those
             },
-            saveTemplate(){
-                console.log("save...");
+            async saveTemplate(){
+                if(this.selected && this.selected[0]){
+                    let options = await this.$refs.templatedialog.open(true, this.selected[0])
+                    if (!options.cancelled) {
+                        if(options.success)
+                            Vue.notify({
+                                group: 'sysnotif',
+                                type: 'info',
+                                title: 'Save Template',
+                                text: 'Successfully save template'
+                            })
+                        else 
+                            Vue.notify({
+                                group: 'sysnotif',
+                                type: 'error',
+                                title: 'Save Template',
+                                text: 'Problem saving template. Please try again!'
+                            })
+                    }   
+                }
             },
-            loadTemplate(){
-                console.log("load...");
+            async loadTemplate(){
+                let options = await this.$refs.templatedialog.open(false, '')
+                if (!options.cancelled) {
+                    // TODO: load this
+                    Vue.$log.info("...........")
+                    Vue.$log.info(options.settings)
+                }
             },
             
             // load series

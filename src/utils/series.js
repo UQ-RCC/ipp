@@ -40,8 +40,8 @@ var series = {
             series['swapZT'] = false;
         }
         // output
-        if(series['defaultoutput']){
-            var _pathParts = series['defaultoutput'].split("/")
+        if(series['outputPath']){
+            var _pathParts = series['outputPath'].split("/")
             series['outputBasePath'] = _pathParts.slice(0,-1).join("/")
             series['outputFolderName'] = _pathParts.slice(-1)[0]
         } else {
@@ -50,7 +50,7 @@ var series = {
         }
         series['seperateOutputsBasedonInput'] = false
         
-        series['generatePsf'] = true
+        series['generatePsf'] = false
         series['readSpacing'] = true
         series['psfModel'] = 0
         series['RI'] = 1.33
@@ -60,22 +60,17 @@ var series = {
         series['NA'] = 1.4
         series['lightSheetIlluminationNA'] = 0.5
         series['psfFile'] = ''
-        series['psfInfo'] = {readSpacing: true}
+        series['psfReadSpacing'] = true
         series['deskew'] = true
         series['keepDeskew'] = false
         series['angle'] = 32.8
-        // series['median_threshold'] = series.roundToTwo(series['threshold'])
-        series['deskewMetadata'] = [
-            {   
-                unit: series['unit'], 
-                pixelWidth: series['pixelW'],
-                pixelHeight: series['pixelH'], 
-                voxelDepth: series['pixelD'] 
-            }
-        ]
-        series['backgroundType'] = {'label': 'None', 'value': null}
+        series['threshold'] = series['background']
+        series['backgroundType'] = -1 // None
         series['swapPsfZT'] = false
         series['saveEveryIterations'] = 0
+        // fix unit
+        if (series['unit'] === 'micron')
+            series['unit'] = 'µm'
         // format
         // series['dr'] = series.roundToTwo(series['dr'])
         // series['dz'] = series.roundToTwo(series['dz'])
@@ -83,7 +78,7 @@ var series = {
         series['psfType'] = 3
         
         /////////// NOISE
-        series['regularizationType'] = {'label': 'None', 'value': 0}
+        series['regularizationType'] = 0
         series['prefilter'] = 0
         series['postfilter'] = 0
         series['automaticRegularizationScale'] =  true
@@ -92,10 +87,10 @@ var series = {
         series['blindDeconvolution']= false
         series['padding'] = {x: 0, y: 0, z: 0}
         series['tiling'] =  {x: 0, y: 0, z: 0}
-        series['scaling'] =  {'label': 'Same as input', 'value': 1}
-        series['fileformat'] = {'label': 'TIFF', 'value': 0}
-        series['split'] =  {'label': 'No Split', 'value': 0}
-        series['splitIdx'] = {'label': '0', 'value': 0}
+        series['scaling'] =  1
+        series['fileformat'] = 0
+        series['split'] =  0
+        series['splitIdx'] = 0
         /////// DEVICES
         series['autoDetect']= false
         series['numberOfParallelJobs']= 1
@@ -103,6 +98,10 @@ var series = {
         series['gpus'] = 1
 
         return series;
+    },
+
+    formSeriesFromDb(dbseries, dbsetting){
+        console.log(dbseries, dbsetting)
     }
 }
 

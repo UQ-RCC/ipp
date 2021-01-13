@@ -9,13 +9,12 @@
                     item-value="value"
                     label="Regularization Type"
                     outlined
-                    return-object
                     >
                 </v-select>
             </v-col>
         </v-row>
         
-        <v-row  v-if="serie.regularizationType.value !== 0">
+        <v-row  v-if="serie.regularizationType !== 0">
             <v-col cols="20" sm="4" md="5">
                 <v-switch
                     v-model="serie.automaticRegularizationScale"
@@ -27,7 +26,7 @@
                 <v-text-field 
                     v-model="serie.regularization"
                     regular
-                    type=number
+                    type="number"
                     :rules="numberRules" 
                     :disabled="serie.automaticRegularizationScale"
                     label="Regularization scale factor (µ)">
@@ -49,7 +48,6 @@
                     item-value="value"
                     label="Pre-filter"
                     outlined
-                    return-object
                     >
                 </v-select>
             </v-col>
@@ -64,7 +62,6 @@
                     item-value="value"
                     label="Post-filter"
                     outlined
-                    return-object
                     >
                 </v-select>
             </v-col>
@@ -103,7 +100,7 @@
                     {'label': 'SharpenFilter', 'value': 3}
                 ],
                 numberRules: [
-                    value => ( value || value ===0 ) && String(value).match(/^-?\d+(\.\d+)?$/).length > 0 || 'Must be number'
+                    value => value && value > 0 || "Must be a positive number"
                 ],
             }
         },

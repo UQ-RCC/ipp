@@ -17,7 +17,7 @@
                             v-bind="attrs"
                             v-on="on"
                             type=number
-                            :rules="numberRules"  
+                            :rules="positiveInteger"  
                             label="Number of instances [nodes]" 
                             v-model="serie.numberOfParallelJobs"
                         >
@@ -35,7 +35,7 @@
                             v-bind="attrs"
                             v-on="on"
                             type=number
-                            :rules="numberRules"  
+                            :rules="positiveNumber"  
                             label="Memory per job (GBs)" 
                             v-model="serie.mem"
                         >
@@ -53,7 +53,7 @@
                             v-bind="attrs"
                             v-on="on"
                             type=number
-                            :rules="numberRules"  
+                            :rules="positiveInteger"  
                             label="Number of GPUs per job" 
                             v-model="serie.gpus"
                         >
@@ -79,9 +79,12 @@
         data() {
             return {
                 serie: series.formatSeries(null),
-                numberRules: [
-                    value => ( value || value ===0 ) && String(value).match(/^\d+(\.\d+)?$/).length > 0 || 'Must be a positive number'
-                ],
+                positiveInteger: [
+                    value => value && value > 0 && Number.isInteger(parseFloat(value)) || 'Must be a positive integer'
+                ], 
+                positiveNumber: [
+                    value => value && value > 0 || 'Must be a positive number'
+                ], 
             }
         },
         methods: {
@@ -93,7 +96,9 @@
                 this.serie = serie_devices
             },
             is_valid(){
-                if(this.serie.numberOfParallelJobs && this.serie.mem && this.serie.gpus)
+                if(this.serie.numberOfParallelJobs && this.serie.numberOfParallelJobs >0
+                    && this.serie.mem && this.serie.mem > 0 
+                    && this.serie.gpus && this.serie.gpus > 0)
                     return true
                 else
                     return false

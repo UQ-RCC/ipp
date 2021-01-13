@@ -65,8 +65,7 @@
             return {
                 serie: series.formatSeries(null),
                 metadataValuesRules: [
-                    value => !!value || 'Must not empty',
-                    value => value && value.match(/^\d+(\.\d+)?$/).length > 0 || 'Must be number'
+                    value => value && value > 0 || 'Must be a positive number'
                 ], 
             }
         },
@@ -76,12 +75,10 @@
                 return this.serie
             },
             load_serie(serie){
-                console.log("@Metadata: loading series")
-                console.log(serie)
                 this.serie = serie
             },
             is_valid(){
-                if( this.serie.dr && this.serie.dz)
+                if( this.serie.dr && this.serie.dr > 0 && this.serie.dz && this.serie.dz > 0)
                     return true
                 else
                     return false

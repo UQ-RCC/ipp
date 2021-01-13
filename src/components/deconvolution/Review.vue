@@ -54,23 +54,9 @@
         <v-row align="center" justify="center">
             <v-tooltip bottom>
                 <template v-slot:activator="{ on, attrs }">
-                    <v-btn 
-                        class="my-3" 
-                        color="primary" 
-                        rounded dark large 
-                        @click.stop="savetemplate()"
-                        v-bind="attrs" 
-                        v-on="on">Load Template
-                    </v-btn>
-                </template>
-                <span>Load an existing template</span>
-            </v-tooltip>
-
-            <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
                     <v-btn  class="my-3" 
                             color="primary"
-                            @click.stop="loadtemplate()" 
+                            @click.stop="savetemplate()" 
                             rounded dark large 
                             v-bind="attrs" 
                             v-on="on">Save Template
@@ -154,9 +140,6 @@
                 return _panel
             },
 
-            loadtemplate(){
-                this.$emit("template-load");
-            }, 
             savetemplate(){
                 this.$emit("template-save");
             }

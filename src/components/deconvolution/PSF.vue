@@ -30,7 +30,8 @@
                             @change="nsChanged"
                             regular 
                             label="Sample medium refractive index" 
-                            type="number">
+                            type="number"
+                            :rules="psfValuesRules">
                         </v-text-field>
                     </v-col>
 
@@ -54,11 +55,13 @@
             </v-row>
             <v-row>
                 <v-col cols="15" sm="3" md="4">
-                    <v-text-field regular label="Objective NA" type="number" v-model="serie.NA">
+                    <v-text-field regular label="Objective NA" type="number" 
+                        :rules="psfValuesRules" v-model="serie.NA">
                     </v-text-field>
                 </v-col>
-                <v-col cols="15" sm="3" md="4">
-                    <v-text-field regular label="Light sheet illumination NA" type="number" v-model="serie.lightSheetIlluminationNA">
+                <v-col cols="15" sm="3" md="4" v-if="serie.psfType === 3">
+                    <v-text-field regular label="Light sheet illumination NA" type="number" 
+                        :rules="psfValuesRules" v-model="serie.lightSheetIlluminationNA">
                     </v-text-field>
                 </v-col>
             </v-row>
@@ -69,7 +72,8 @@
                         v-model="serie.RI"
                         @change="RIChanged"
                         regular 
-                        label="Objective immersion refractive index" 
+                        label="Objective immersion refractive index"
+                        :rules="psfValuesRules" 
                         type="number">
                     </v-text-field>
                 </v-col>
@@ -114,19 +118,19 @@
             </v-row>
             <v-row>
                 <v-col cols="5" sm="2" md="2">
-                    X: {{ serie.psfInfo.x }}
+                    X: {{ serie.psfX }}
                 </v-col>
                 <v-col cols="5" sm="2" md="2">
-                    Y: {{ serie.psfInfo.y }}
+                    Y: {{ serie.psfY }}
                 </v-col>
                 <v-col cols="5" sm="2" md="2">
-                    Z: {{ serie.swapPsfZT ? serie.psfInfo.t: serie.psfInfo.z }}
+                    Z: {{ serie.swapPsfZT ? serie.psfT: serie.psfZ }}
                 </v-col>
                 <v-col cols="5" sm="2" md="2">
-                    C: {{ serie.psfInfo.c }}
+                    C: {{ serie.psfC }}
                 </v-col>
                 <v-col cols="5" sm="2" md="2">
-                    T: {{ serie.swapPsfZT ? serie.psfInfo.z: serie.psfInfo.t }}
+                    T: {{ serie.swapPsfZT ? serie.psfZ: serie.psfT }}
                 </v-col>
                     <v-switch
                     v-model="serie.swapPsfZT"
@@ -138,26 +142,26 @@
             <v-row>
                 <v-col cols="15" sm="3" md="4">
                     <v-text-field 
-                        v-model="serie.psfInfo.dr"
+                        v-model="serie.psfDr"
                         regular
                         type="number"
                         :rules="psfValuesRules"
-                        :disabled="serie.psfInfo.readSpacing" 
+                        :disabled="serie.psfReadSpacing" 
                         label="PSF Lateral spacing(nm/pixel)">
                     </v-text-field>
                 </v-col>
                 <v-col cols="15" sm="3" md="4">
                     <v-text-field 
-                        v-model="serie.psfInfo.dz"
+                        v-model="serie.psfDz"
                         regular
                         type="number"
                         :rules="psfValuesRules"
-                        :disabled="serie.psfInfo.readSpacing" 
+                        :disabled="serie.psfReadSpacing" 
                         label="PSF Axial spacing(nm/slice)">
                     </v-text-field>
                 </v-col>
                     <v-switch
-                        v-model="serie.psfInfo.readSpacing"
+                        v-model="serie.psfReadSpacing"
                         label="Read spacing from metadata"
                         >
                     </v-switch>
@@ -208,9 +212,7 @@
                 ],
 
                 psfValuesRules: [
-                    value => !!value || 'Must not empty',
-                    value => value && value.match(/^\d+(\.\d+)?$/).length > 0 || 'Must be number'
-
+                    value => value && value > 0 || 'Must be a positive number'
                 ],
             }
         },
@@ -265,10 +267,21 @@
                 }
             },
             is_valid(){
-                if( this.serie.psfInfo.dr && this.serie.psfInfo.dz)
-                    return true
-                else
-                    return false
+                if(this.serie.generatePsf){
+                    if ((this.serie.psfModel !== 1 || (this.serie.ns && this.serie.ns > 0)) &&
+                        (this.serie.psfType !==3 || (this.serie.lightSheetIlluminationNA && this.serie.lightSheetIlluminationNA > 0) ) &&
+                        (this.serie.NA && this.serie.NA > 0) && 
+                        (this.serie.RI && this.serie.RI > 0))
+                        return true
+                    else
+                        return false
+                }
+                else {
+                    if( this.serie.psfDr && this.serie.psfDr >0 && this.serie.psfDz && this.serie.psfDz > 0)
+                        return true
+                    else
+                        return false
+                }
             }
         }
         
