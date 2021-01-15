@@ -21,6 +21,7 @@
                 <v-switch
                     v-model="serie.readSpacing"
                     label="Read spacing from metadata"
+                    @change="readSpacingChange"
                     >
                 </v-switch>
             </v-row>
@@ -54,8 +55,9 @@
 
 <script>
     // import Vue from 'vue';
-    import series from "@/utils/series.js";
-
+    import series from "@/utils/series.js"
+    import PreferenceAPI from "@/api/PreferenceAPI"
+    
     export default {
         name: 'DeconvolutionMetadata',
         props: {
@@ -64,6 +66,7 @@
         data() {
             return {
                 serie: series.formatSeries(null),
+                origionalSerie: {}, 
                 metadataValuesRules: [
                     value => value && value > 0 || 'Must be a positive number'
                 ], 
@@ -74,14 +77,29 @@
             get_serie(){
                 return this.serie
             },
-            load_serie(serie){
+            async load_serie(serie){
                 this.serie = serie
+                // load origional serie
+                if(this.serie.path){
+                    let _storedSeries = await PreferenceAPI.get_serie(this.serie.path)
+                    if ( _storedSeries && _storedSeries.length > 0 ) {
+                        this.origionalSerie = _storedSeries[0]
+                    } else 
+                        this.origionalSerie = {}
+                } else
+                    this.origionalSerie = {}
             },
             is_valid(){
                 if( this.serie.dr && this.serie.dr > 0 && this.serie.dz && this.serie.dz > 0)
                     return true
                 else
                     return false
+            },
+            readSpacingChange(){
+                if(this.serie.readSpacing){
+                    this.serie.dr = this.origionalSerie.dr
+                    this.serie.dz = this.origionalSerie.dz
+                }
             }
         },
         watch: {

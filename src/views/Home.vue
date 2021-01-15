@@ -1,12 +1,7 @@
 <template>
-    <div class="container">
-        <ul>
-            <li>home</li>
-        </ul>
-        <h1>
-            Home
-        </h1>
-    </div>
+    <h1>
+        Welcome to the Image Processing Portal!
+    </h1>
 </template>
 
 <script>

@@ -134,10 +134,10 @@
                         </v-tooltip>
                     </div>
 
-                    <v-checkbox
+                    <!-- <v-checkbox
                         v-model="form.seperateOutputsBasedonInput"
                         label="Separate outputs based on input paths"
-                    ></v-checkbox>
+                    ></v-checkbox> -->
 
                 </div>
             </v-col>
@@ -334,7 +334,7 @@
     import TemplateDialog from '@/components/TemplateDialog.vue'
     // api
     import DeconvolutionAPI from "@/api/DeconvolutionAPI.js"
-    import PreferenceAPI from "@/api/PreferenceAPI";
+    import PreferenceAPI from "@/api/PreferenceAPI"
     import series from '@/utils/series.js'
     // let series = require('@/utils/series')
 
@@ -361,7 +361,7 @@
                 form: {
                     outputBasePath: '',
                     outputFolderName: '',
-                    seperateOutputsBasedonInput: false,
+                    // seperateOutputsBasedonInput: false,
                     psfType: 3,
                 },
                 fileBrowserDialog: false,
@@ -419,7 +419,22 @@
             }
         },
         mounted: async function() {
-            // let decons = await PreferenceAPI.get_decons()
+            let _decons = await PreferenceAPI.get_decons(null)
+            let initialItems = _decons.map(async _decon => {
+                let _serie = await PreferenceAPI.get_serie_by_id(_decon.series_id)
+                let _setting = await PreferenceAPI.get_setting_by_id(_decon.setting_id)
+                let _item = Object.assign({}, _setting, _serie)
+                // make sure the id of item belongs to settings
+                _item['id'] = _setting['id']
+                return series.formatSeries(_item)
+            })
+            this.selectedFiles = this.selectedFiles.concat(await Promise.all(initialItems))
+            console.log("selected files --->")
+            console.log(this.selectedFiles)
+            if ((!this.selected || this.selected.length ==0) && this.selectedFiles.length > 0){
+                this.selected = [ this.selectedFiles[0] ]
+                this.load_series(this.selectedFiles[0])
+            }
         },
         methods: {
             async chooseOutputFolder(){
@@ -432,8 +447,7 @@
                     this.form.outputBasePath = _pathParts.slice(0,-1).join("/")
                     this.form.outputFolderName = _pathParts.slice(-1)[0]
                     if(this.selection && this.selected[0]){
-                        this.selected[0].outputBasePath = this.form.outputBasePath
-                        this.selected[0].outputFolderName = this.form.outputFolderName
+                        this.selected[0].outputPath = (this.form.outputBasePath==='')?'': this.form.outputBasePath + "/" + this.form.outputFolderName
                     }
                 }
             },
@@ -461,32 +475,46 @@
                     this.loading = true;
                     try{
                         this.loading = true;
-                        // first, check the database
-                        let storedSeries = await PreferenceAPI.get_serie(_pathToBeLoaded)
+                        // first, check the database the decons with given path
+                        let _decons = await PreferenceAPI.get_decons(_pathToBeLoaded)
                         let items = []
                         // found
-                        Vue.$log.info(storedSeries)
-                        if ( storedSeries && storedSeries.length > 0 ) {
-                            Vue.$log.info("Found in database")
-                            items = storedSeries.map(serie => {
-                                let _serieid = serie.id
-                                let _seriesetting = series.formatSeries(serie)
-                                PreferenceAPI.create_decon(_serieid, _seriesetting)
-                                return _seriesetting
+                        Vue.$log.info(_decons)
+                        if ( _decons && _decons.length > 0 ) {
+                            Vue.$log.info("Found decon in database")
+                            let _storedSeries = _decons.map(async _decon => {
+                                let _serie = await PreferenceAPI.get_serie_by_id(_decon.series_id)
+                                let _setting = await PreferenceAPI.get_setting_by_id(_decon.setting_id)
+                                let _item = Object.assign({}, _setting, _serie)
+                                // make sure the id of item belongs to settings
+                                _item['id'] = _setting['id']
+                                return series.formatSeries(_item)
                             })
+                            items = await Promise.all(_storedSeries)
                         } else {
-                            Vue.$log.info("Not found. Need to load from source")
-                            let response = await DeconvolutionAPI.get_folder_info(_pathToBeLoaded)
-                            Vue.$log.info("Response :")
-                            Vue.$log.info(JSON.parse(JSON.stringify(response)))
-                            // add to database
-                            items = response.commandResult.map(responseItem => {
-                                let _seriesetting = series.formatSeries(responseItem)
-                                PreferenceAPI.create_serie(responseItem).then(function(db_serie){
-                                    PreferenceAPI.create_decon(db_serie.id, _seriesetting)
+                            Vue.$log.info("Not found. Do one more search from series")
+                            let _storedSeries = await PreferenceAPI.get_serie(_pathToBeLoaded)
+                            if ( _storedSeries && _storedSeries.length > 0 ) {
+                                Vue.$log.info("Found serie in database")
+                                items = _storedSeries.map(storedSerie => {
+                                    let _serie = series.formatSeries(storedSerie)
+                                    PreferenceAPI.create_decon(storedSerie.id, _serie)
+                                    return _serie
                                 })
-                                return _seriesetting
-                            })
+                            } else {
+                                Vue.$log.info("Not found in database")
+                                let response = await DeconvolutionAPI.get_folder_info(_pathToBeLoaded)
+                                Vue.$log.info("Response :")
+                                Vue.$log.info(JSON.parse(JSON.stringify(response)))
+                                // add to database
+                                items = response.commandResult.map(responseItem => {
+                                    let _seriesetting = series.formatSeries(responseItem)
+                                    PreferenceAPI.create_serie(series.fixSeriesUnit(responseItem)).then(function(db_serie){
+                                        PreferenceAPI.create_decon(db_serie.id, _seriesetting)
+                                    })
+                                    return _seriesetting
+                                })
+                            }
                         }
 
                         // let maxFileSizeMbs = this.items[0].maxSizeM;
@@ -512,15 +540,17 @@
             // remove currently selected serie
             removeCurrentSerie(){
                 if(this.selected && this.selected[0]){
-                    for(var i=1; i <=this.selectedFiles.length; i++){
-                        console.log(this.selected[0]['path'])
-                        console.log(this.selectedFiles[i]['path'])
+                    for(var i=0; i <=this.selectedFiles.length; i++){
                         if (this.selectedFiles[i]['path'] === this.selected[0]['path']){
                             this.selectedFiles.splice(i, 1)
+                            // remove this series in the database
+                            PreferenceAPI.delete_decon_using_path(this.selected[0]['path'])
                             // load new one
                             if (this.selectedFiles.length > 0){
                                 this.selected = [ this.selectedFiles[0] ]
                                 this.load_series(this.selectedFiles[0])
+                            } else {
+                                this.selected = []
                             }
                         }// end if
                     }// end for
@@ -574,9 +604,15 @@
                     currentComponent.load_serie(series)
                 }    
                 // update form
-                this.form.outputBasePath = series['outputBasePath']
-                this.form.outputFolderName = series['outputFolderName']
-                this.form.seperateOutputsBasedonInput = series['seperateOutputsBasedonInput']
+                if(series['outputPath']) {
+                    var _pathParts = series['outputPath'].split("/")
+                    this.form.outputBasePath = _pathParts.slice(0,-1).join("/")
+                    this.form.outputFolderName = _pathParts.slice(-1)[0]
+                } else {
+                    this.form.outputBasePath = ""
+                    this.form.outputFolderName = ""
+                }
+                // this.form.seperateOutputsBasedonInput = series['seperateOutputsBasedonInput']
                 this.form.psfType = series['psfType']
             },
 
@@ -585,9 +621,9 @@
                 // selected
                 //TODO: save pref on this.selected
                 if(this.selected && this.selected[0]){
-                    this.selected[0]['outputBasePath'] = this.form.outputBasePath
-                    this.selected[0]['outputFolderName'] = this.form.outputFolderName
-                    this.selected[0]['seperateOutputsBasedonInput'] = this.form.seperateOutputsBasedonInput
+                    this.selected[0].outputPath = (this.form.outputBasePath==='')?'': this.form.outputBasePath + "/" + this.form.outputFolderName
+                    // this.selected[0]['seperateOutputsBasedonInput'] = this.form.seperateOutputsBasedonInput
+                    // TODO: save here ?
                 }
                 // if selected, load it
                 if (anItem.value){
@@ -602,6 +638,9 @@
                 console.log(this.form.psfType)
                 if(this.selected && this.selected[0]){
                     this.selected[0]['psfType'] = this.form.psfType
+                    // save
+                    PreferenceAPI.update_setting(this.selected[0].id, this.selected[0])
+                    //reload
                     this.load_series(this.selected[0])
                 }
             },
@@ -614,8 +653,12 @@
                 // if(this.selected && this.selected[0] && this.step !== 8){
                 if(this.selected && this.step !== 8){
                     let _component = this.getStepComponent(this.step)
-                    if (_component)
+                    if (_component) {
                         this.selected[0] = _component.get_serie()
+                        // console.log("saving this ........")
+                        // console.log(this.selected[0])
+                        PreferenceAPI.update_setting(this.selected[0].id, this.selected[0])
+                    }
                 }
             },
 

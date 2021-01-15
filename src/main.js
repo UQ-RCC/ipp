@@ -4,15 +4,20 @@ import router from './router'
 import vuetify from './plugins/vuetify'
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@mdi/font/css/materialdesignicons.css'
-
-import Config from './config'
 import * as Keycloak from 'keycloak-js'
 import VueLogger from 'vuejs-logger'
 import Notifications from 'vue-notification'
-
+import config from '../public/config'
 Vue.use(VueLogger)
 Vue.use(Notifications)
 
+let Config = {}
+if (process.env.NODE_ENV ==='development')
+  Config = config.development
+else if(process.env.NODE_ENV ==='production')
+  Config = config.production
+  
+Vue.prototype.$Config = Config
 
 /*keycloak init*/
 //keycloak

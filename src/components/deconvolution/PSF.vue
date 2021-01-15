@@ -98,7 +98,7 @@
         <v-col v-if="!serie.generatePsf">
             <v-row align="center" justify="center">
                 <v-col cols="30" sm="6" md="7">
-                    <v-text-field regular label="PSF file" v-model="serie.psfFile">
+                    <v-text-field regular label="PSF file" v-model="serie.psfFile" :loading="loading > 0">
                     </v-text-field>
                 </v-col>
                 <v-tooltip bottom>
@@ -163,6 +163,7 @@
                     <v-switch
                         v-model="serie.psfReadSpacing"
                         label="Read spacing from metadata"
+                        @change="readSpacingChanged"
                         >
                     </v-switch>
             </v-row>
@@ -171,8 +172,10 @@
 </template>
 
 <script>
-    // import Vue from 'vue';
+    import Vue from 'vue';
     import FileBrowserDialog from '@/components/FileBrowserDialog.vue'
+    import PreferenceAPI from "@/api/PreferenceAPI"
+    import DeconvolutionAPI from "@/api/DeconvolutionAPI"
     import series from "@/utils/series.js";
     
     export default {
@@ -186,7 +189,8 @@
         data() {
             return {
                 serie: series.formatSeries(null),
-
+                psfSerie: {},
+                loading: false,
                 psfModels: [
                     {label: 'Scalar', value: 0},
                     {label: 'Vectorial', value: 1},
@@ -221,8 +225,16 @@
             get_serie(){
                 return this.serie
             },
-            load_serie(serie){
+            async load_serie(serie){
                 this.serie = serie
+                if(this.serie.psfFile){
+                    let _storedSeries = await PreferenceAPI.get_serie(this.serie.psfFile)
+                    if ( _storedSeries && _storedSeries.length > 0 ) {
+                        this.psfSerie = _storedSeries[0]
+                    } else 
+                        this.psfSerie = {}
+                } else
+                    this.psfSerie = {}
             },
             // psfModelChanged
             psfModelChanged() {
@@ -261,8 +273,28 @@
                 let options = await this.$refs.filedialog.open('selectfile', 'Deconvolution', '/');
                 if (!options.cancelled && options.path) {
                     if(options.selectedItems.length >0){
-                        this.serie.psfFile = options.selectedItems[0].path
-                        // TODO: load psffile
+                        let _filePath = options.selectedItems[0].path
+                        let storedSeries = await PreferenceAPI.get_serie(_filePath)
+                        let _psfSerie = null
+                        if ( storedSeries && storedSeries.length > 0 ) {
+                            _psfSerie = storedSeries[0]
+                        }
+                        else {
+                            this.loading = true
+                            try{
+                                let response = await DeconvolutionAPI.get_file_info(_filePath)
+                                _psfSerie = response.commandResult[0]
+                                await PreferenceAPI.create_serie(series.fixSeriesUnit(_psfSerie))
+                            }
+                            catch(err){
+                                Vue.$log.info(err)
+                            }
+                            this.loading = false
+                        }
+                        this.psfSerie = Object.assign({}, _psfSerie)
+                        this.serie = series.applyPsfToSeries(this.serie, _psfSerie)
+                        // save, in case they quite before moving to new step
+                        PreferenceAPI.update_setting(this.serie.id, this.serie)
                     }
                 }
             },
@@ -281,6 +313,13 @@
                         return true
                     else
                         return false
+                }
+            },
+            // when read spacing change
+            readSpacingChanged(){
+                if(this.serie.psfReadSpacing){
+                    this.serie.psfDr = this.psfSerie.dr
+                    this.serie.psfDz = this.psfSerie.dz
                 }
             }
         }

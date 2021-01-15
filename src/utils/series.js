@@ -39,70 +39,130 @@ var series = {
         } else {
             series['swapZT'] = false;
         }
-        // output
-        if(series['outputPath']){
-            var _pathParts = series['outputPath'].split("/")
-            series['outputBasePath'] = _pathParts.slice(0,-1).join("/")
-            series['outputFolderName'] = _pathParts.slice(-1)[0]
-        } else {
-            series['outputBasePath'] = ""
-            series['outputFolderName'] = ""
-        }
-        series['seperateOutputsBasedonInput'] = false
         
-        series['generatePsf'] = false
-        series['readSpacing'] = true
-        series['psfModel'] = 0
-        series['RI'] = 1.33
-        series['objectiveRIOption'] = 1.33
-        series['ns'] = 1.33
-        series['mediumRIOption'] = 1.33
-        series['NA'] = 1.4
-        series['lightSheetIlluminationNA'] = 0.5
-        series['psfFile'] = ''
-        series['psfReadSpacing'] = true
-        series['deskew'] = true
-        series['keepDeskew'] = false
-        series['angle'] = 32.8
-        series['threshold'] = series['background']
-        series['backgroundType'] = -1 // None
-        series['swapPsfZT'] = false
-        series['saveEveryIterations'] = 0
         // fix unit
         if (series['unit'] === 'micron')
             series['unit'] = 'µm'
-        // format
-        // series['dr'] = series.roundToTwo(series['dr'])
-        // series['dz'] = series.roundToTwo(series['dz'])
-        //
-        series['psfType'] = 3
         
-        /////////// NOISE
-        series['regularizationType'] = 0
-        series['prefilter'] = 0
-        series['postfilter'] = 0
-        series['automaticRegularizationScale'] =  true
-        series['regularization'] = -1
-        //////////////ADVANCED
-        series['blindDeconvolution']= false
-        series['padding'] = {x: 0, y: 0, z: 0}
-        series['tiling'] =  {x: 0, y: 0, z: 0}
-        series['scaling'] =  1
-        series['fileformat'] = 0
-        series['split'] =  0
-        series['splitIdx'] = 0
-        /////// DEVICES
-        series['autoDetect']= false
-        series['numberOfParallelJobs']= 1
-        series['mem']= 100
-        series['gpus'] = 1
+            // default value if null
+        if (!series['generatePsf'])
+            series['generatePsf'] = false
+        if (!series['readSpacing'])
+            series['readSpacing'] = true
+        if (!series['psfModel'])
+            series['psfModel'] = 0
+        if (!series['RI'])    
+            series['RI'] = 1.33
+        if (!series['objectiveRIOption']) 
+            series['objectiveRIOption'] = 1.33
+        if (!series['ns'])
+            series['ns'] = 1.33
+        if (!series['mediumRIOption'])
+            series['mediumRIOption'] = 1.33
+        if (!series['NA'])
+            series['NA'] = 1.4
+        if (!series['lightSheetIlluminationNA'])
+            series['lightSheetIlluminationNA'] = 0.5
+        if (!series['psfFile'])
+            series['psfFile'] = ''
+        if (!series['psfReadSpacing'])
+            series['psfReadSpacing'] = true
+        if (!series['deskew'])
+            series['deskew'] = true
+        if (!series['keepDeskew'])
+            series['keepDeskew'] = false
+        if (!series['angle'])
+            series['angle'] = 32.8
+        if (!series['threshold'])
+            series['threshold'] = series['background']
+        if (!series['backgroundType'])
+            series['backgroundType'] = -1 // None
+        if (!series['swapPsfZT'])
+            series['swapPsfZT'] = false
+        if (!series['saveEveryIterations'])
+            series['saveEveryIterations'] = 0
+            // format
+            // series['dr'] = series.roundToTwo(series['dr'])
+            // series['dz'] = series.roundToTwo(series['dz'])
+            //
+        if (!series['psfType'])
+            series['psfType'] = 3
+            
+            /////////// NOISE
+        if (!series['regularizationType'])
+            series['regularizationType'] = 0
+        if (!series['prefilter'])
+            series['prefilter'] = 0
+        if (!series['postfilter'])
+            series['postfilter'] = 0
+        if (!series['automaticRegularizationScale'])
+            series['automaticRegularizationScale'] =  true
+        if (!series['regularization'])
+            series['regularization'] = -1
+            //////////////ADVANCED
+        if (!series['blindDeconvolution'])
+            series['blindDeconvolution']= false
+        if (!series['padding'])
+            series['padding'] = {x: 0, y: 0, z: 0}
+        if (!series['tiling'])
+            series['tiling'] =  {x: 0, y: 0, z: 0}
+        if (!series['scaling'])
+            series['scaling'] =  1
+        if (!series['fileformat'])
+            series['fileformat'] = 0
+        if (!series['split'])
+            series['split'] =  0
+        if (!series['splitIdx'])
+            series['splitIdx'] = 0
+            /////// DEVICES
+        if (!series['autoDetect'])
+            series['autoDetect']= false
+        if (!series['numberOfParallelJobs'])
+            series['numberOfParallelJobs']= 1
+        if (!series['mem'])
+            series['mem']= 100
+        if (!series['gpus'])
+            series['gpus'] = 1
+        
 
         return series;
     },
 
-    formSeriesFromDb(dbseries, dbsetting){
-        console.log(dbseries, dbsetting)
+    /**
+     * 
+     * @param {*} series 
+     * @param {*} psfFileSerie 
+     */
+    fixSeriesUnit(series){
+        if (series['unit'] === 'micron')
+            series['unit'] = 'µm'
+        return series
+    },
+    /**
+     * apply values given in psfFileSerie to series
+     * @param {*} series 
+     * @param {*} psfFileSerie
+     * return new series 
+     */
+    applyPsfToSeries(series, psfFileSerie){
+        series['psfFile'] = psfFileSerie['path']
+        series['psfDr'] = psfFileSerie['dr']
+        series['psfDz'] = psfFileSerie['dz']
+        series['psfReadSpacing'] = true
+        series['psfX'] = psfFileSerie['x']
+        series['psfY'] = psfFileSerie['y']
+        series['psfZ'] = psfFileSerie['z']
+        if(psfFileSerie['z']==1 && psfFileSerie['t']>10){
+            psfFileSerie['swapZT'] = true
+        } else {
+            psfFileSerie['swapZT'] = false
+        }
+        series['swapPsfZT'] = psfFileSerie['swapZT']
+        series['psfC'] = psfFileSerie['c']
+        series['psfT'] = psfFileSerie['t']
+        return series
     }
+
 }
 
 

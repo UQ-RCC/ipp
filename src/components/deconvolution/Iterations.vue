@@ -123,6 +123,13 @@
                     <v-icon
                         small
                         class="mr-2"
+                        @click="calculator(item)"
+                        >
+                        mdi-calculator
+                    </v-icon>
+                    <v-icon
+                        small
+                        class="mr-2"
                         @click="editIterationsItem(item)"
                         >
                         mdi-pencil
@@ -230,13 +237,7 @@
                         sortable: false,
                         value: 'pinhole',
                     },
-                    {
-                        text: 'Calculator',
-                        align: ' d-none',
-                        value: 'actions',
-                        sortable: false,
-                    },
-                    {   text: 'Edit', 
+                    {   text: 'Actions', 
                         value: 'actions', 
                         sortable: false 
                     },
@@ -310,10 +311,13 @@
             is_valid(){
                 return true
             }, 
-            async calculator(){
+            async calculator(item){
+                this.iterationsEditedIndex = this.serie.channels.indexOf(item)
+                // this.iterationsEditedItem = Object.assign({}, item)
                 let options = await this.$refs.calculatordialog.open()
-                if (!options.cancelled) {
+                if (!options.cancelled && options.pinholeRadius) {
                     console.log("agree")
+                    this.serie.channels[this.iterationsEditedIndex].pinhole = options.pinholeRadius
                 }
                 else {
                     console.log("cancelled")

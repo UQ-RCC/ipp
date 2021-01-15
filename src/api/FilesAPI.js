@@ -1,10 +1,10 @@
 import request from '@/utils/request'
-import Config from '@/config'
+import Vue from 'vue'
 
 export default {
     // list path
     async list(path) {
-      const { data } = await request.get(`${Config.endpoints.wiener}/api/execute/listfolderbase64`, {
+      const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/listfolderbase64`, {
         params: {
             folderpath: btoa(path)
         }
@@ -14,7 +14,7 @@ export default {
 
     // make dir
     async mkdir(path) {
-        const { data } = await request.get(`${Config.endpoints.wiener}/api/execute/makedirbase64`, {
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/makedirbase64`, {
             params: {
                 folderpath: btoa(path)
             }
@@ -24,7 +24,7 @@ export default {
 
     //delete a path
     async delete(path) {
-        const { data } = await request.get(`${Config.endpoints.wiener}/api/execute/deletebase64`, {
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/deletebase64`, {
             params: {
                 fileslist: btoa(path)
             }
@@ -34,7 +34,7 @@ export default {
 
     // copy folder
     async copy(usermail, sources, dest, parallel) {
-        const { data } = await request.get(`${Config.endpoints.wiener}/api/execute/copybase64`, {
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/copybase64`, {
             params: {
                 usermail: usermail,
                 sources: btoa(sources),

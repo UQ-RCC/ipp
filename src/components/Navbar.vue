@@ -117,7 +117,7 @@
 </template>
 
 <script>
-    import Config from '../config'
+    import Vue from 'vue'
     export default {
         data: () => ({
             drawer: null
@@ -133,7 +133,7 @@
         methods: {
             signout: function(){
                 // signout
-                this.$keycloak.logout({'redirectUri': Config.signoutUrl})
+                this.$keycloak.logout({'redirectUri': Vue.prototype.$Config.signoutUrl})
             }
         }
     }

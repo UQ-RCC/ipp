@@ -1,11 +1,10 @@
 import axios from 'axios'
 import Vue from 'vue'
-import Config from '../config'
 
 const service = axios.create({
     // baseURL: '', // url = base url + request url
     // withCredentials: true, // send cookies when cross-domain requests
-    timeout: 10000 // request timeout
+    timeout: 50000 // request timeout
   })
   
   // request interceptor
@@ -13,7 +12,7 @@ const service = axios.create({
     config => {
       // do something before request is sent
       if (Vue.prototype.$keycloak && Vue.prototype.$keycloak.token 
-            && !Vue.prototype.$keycloak.isTokenExpired(Config.keycloak.minValidity)) {
+            && !Vue.prototype.$keycloak.isTokenExpired(Vue.prototype.$Config.keycloak.minValidity)) {
         // config.headers['token'] = Vue.prototype.$keycloak.token
         config.headers['Authorization'] = 'Bearer ' + Vue.prototype.$keycloak.token;
         // config.headers['Access-Control-Allow-Origin'] = '*';
