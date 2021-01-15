@@ -105,7 +105,7 @@
                 </v-list-item>
 
                 
-                <v-list-item to="/" disabled>
+                <v-list-item href="https://uq-rcc.github.io/ipp">
                     <v-list-item-icon>
                         <v-icon>mdi-help-circle-outline</v-icon>
                     </v-list-item-icon>
