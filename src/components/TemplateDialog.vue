@@ -1,12 +1,18 @@
 <template>
     <v-dialog v-model="dialog" persistent scrollable max-height="60%" max-width="50%">
         <v-card>
-            <v-card-title class="headline grey lighten-2" v-if="!isnew">
-                Load an existing template
-            </v-card-title>
-            <v-card-title class="headline grey lighten-2" v-if="isnew">
-                Save current template
-            </v-card-title>
+            <v-toolbar dark color="#49075e">
+                <v-btn icon dark @click="cancel">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+                <v-card-title class="headline" v-if="!isnew">
+                    Load an existing template
+                </v-card-title>
+                <v-card-title class="headline" v-if="isnew">
+                    Save current template
+                </v-card-title>    
+            </v-toolbar>
+
             <v-row >
                 <v-col>
                     <v-data-table

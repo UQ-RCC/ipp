@@ -1,9 +1,8 @@
 <template>
 
-    <v-dialog v-model="dialog" persistent scrollable fullscreen>
+    <v-dialog v-model="dialog" persistent fullscreen hide-overlay>
         <v-card>
-
-            <v-toolbar flat dense color="primary">
+            <v-toolbar dark color="#49075e">
                 <v-btn icon dark @click="cancel">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>

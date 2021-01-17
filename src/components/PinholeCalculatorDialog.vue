@@ -1,9 +1,14 @@
 <template>
     <v-dialog v-model="dialog" persistent scrollable max-height="60%" max-width="50%">
         <v-card>
-            <v-card-title class="headline grey lighten-2">
-                Backprojected Pinhole Calculator
-            </v-card-title>
+            <v-toolbar dark color="#49075e">
+                <v-btn icon dark @click="cancel">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+                <v-card-title class="headline">
+                    Backprojected Pinhole Calculator
+                </v-card-title>
+            </v-toolbar>
 
             <v-tabs @change="tabChanged" fixed-tabs>
                 <v-tab>Spinning disk</v-tab>

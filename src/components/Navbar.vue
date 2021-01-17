@@ -1,9 +1,6 @@
 <template>
     <div>
         <v-app-bar
-            dense
-            flat
-            fixed
             :clipped-left="$vuetify.breakpoint.lgAndUp"
             app
             dark
@@ -12,7 +9,7 @@
             <v-app-bar-nav-icon @click.stop="drawer = !drawer" class="mr-0"></v-app-bar-nav-icon>
             <v-toolbar-title>
                 <v-btn text to="/">
-                    <span class="title">Image Processing Portal</span>
+                    <span class="headline">Image Processing Portal</span>
                 </v-btn>
             </v-toolbar-title>
             <div class="flex-grow-1"></div>
