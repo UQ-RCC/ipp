@@ -1,6 +1,6 @@
 <template>
 
-    <v-dialog v-model="dialog" persistent scrollable max-height="80%" max-width="80%">
+    <v-dialog v-model="dialog" persistent scrollable max-height="95%" max-width="80%">
         <v-card>
             <v-card-title class="headline grey lighten-2">
                 {{ dialogTitle }}

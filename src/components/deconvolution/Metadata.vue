@@ -9,7 +9,7 @@
                     v-model="serie.dr"
                     :disabled="serie.readSpacing">
                 </v-text-field>
-                <v-text-field regular 
+                <v-text-field 
                     type="number" 
                     :rules="metadataValuesRules" 
                     label="Axial spacing(nm/slice)" 

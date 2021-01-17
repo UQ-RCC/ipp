@@ -82,88 +82,111 @@
             v-else-if="isFile"
             class="grow d-flex justify-center align-center"
         >File: {{ path }}</v-card-text>
-        <v-card-text v-else-if="dirs.length || files.length" class="grow">
-            <v-list subheader v-if="dirs.length">
-                <v-subheader>
-                    <v-row>
-                        <v-col>
-                            Folders
-                        </v-col>
-                        <v-col>
-                            <h4 align="right">
-                            {{ dirs.length }} folders
-                            </h4>
-                        </v-col>
-                    </v-row>
-                </v-subheader>
-                
-                <!-- <v-lazy> -->
-                <v-list-item
-                    v-for="item in dirs"
-                    :key="item.basename"
-                    @click="changePath(item.path)"
-                    class="pl-0"
-                >
-                    <v-list-item-avatar class="ma-0">
-                        <v-icon>mdi-folder-outline</v-icon>
-                    </v-list-item-avatar>
-                    <v-list-item-content class="py-2">
-                        <v-list-item-title v-text="item.basename"></v-list-item-title>
-                    </v-list-item-content>
-                    <v-list-item-action>
-                        <v-btn icon @click.stop="deleteItem(item)">
-                            <v-icon color="grey lighten-1">mdi-delete-outline</v-icon>
-                        </v-btn>
-                        <v-btn icon v-if="false">
-                            <v-icon color="grey lighten-1">mdi-information</v-icon>
-                        </v-btn>
-                    </v-list-item-action>
-                </v-list-item>
-                <!-- </v-lazy> -->
-            </v-list>
-            <v-divider v-if="dirs.length && files.length"></v-divider>
-            <v-list subheader v-if="files.length">
-                <v-subheader>
-                    <v-row>
-                        <v-col>
-                            Files
-                        </v-col>
-                        <v-col>
-                            <h4 align="right">
-                            {{ files.length }} files
-                            </h4>
-                        </v-col>
-                    </v-row>
-                </v-subheader>
-                <v-list-item
-                    v-for="item in files"
-                    :key="item.basename"
+        <v-card-text v-else-if="total_folders || total_files" class="grow">
+            <v-card class="list-card" flat>
+                <v-list subheader v-if="dirs.length > 0">
+                    <v-subheader>
+                        <v-row>
+                            <v-col>
+                                Folders
+                            </v-col>
+                            <v-col>
+                                <h4 align="right">
+                                {{ total_folders }} folders
+                                </h4>
+                            </v-col>
+                        </v-row>
+                    </v-subheader>
                     
-                    class="pl-0"
-                >
-                    <v-list-item-action v-if="['selectfiles', 'selectfile'].includes(mode)">
-                        <v-checkbox @click.stop="selectItem(item)" v-model="item.selected"></v-checkbox>
-                    </v-list-item-action>
-                    
-                    <v-list-item-avatar class="ma-0">
-                        <v-icon>{{ icons[item.extension.toLowerCase()] || icons['other'] }}</v-icon>
-                    </v-list-item-avatar>
+                    <!-- <v-lazy> -->
+                    <v-list-item
+                        v-for="item in dirs"
+                        :key="item.basename"
+                        @click="changePath(item.path)"
+                        class="pl-0"
+                    >
+                        <v-list-item-avatar class="ma-0">
+                            <v-icon>mdi-folder-outline</v-icon>
+                        </v-list-item-avatar>
+                        <v-list-item-content class="py-2">
+                            <v-list-item-title v-text="item.basename"></v-list-item-title>
+                        </v-list-item-content>
+                        <v-list-item-action>
+                            <v-btn icon @click.stop="deleteItem(item)">
+                                <v-icon color="grey lighten-1">mdi-delete-outline</v-icon>
+                            </v-btn>
+                            <v-btn icon v-if="false">
+                                <v-icon color="grey lighten-1">mdi-information</v-icon>
+                            </v-btn>
+                        </v-list-item-action>
+                    </v-list-item>
+                    <!-- </v-lazy> -->
+                </v-list>
+                <v-divider v-if="dirs.length > 0 && total_files"></v-divider>
+                <v-list subheader v-if="files.length > 0">
+                    <v-subheader>
+                        <v-row>
+                            <v-col>
+                                Files
+                            </v-col>
+                            <v-col>
+                                <h4 align="right">
+                                {{ total_files }} files
+                                </h4>
+                            </v-col>
+                        </v-row>
+                    </v-subheader>
+                    <v-list-item
+                        v-for="item in files"
+                        :key="item.basename"
+                        
+                        class="pl-0"
+                    >
+                        <v-list-item-action v-if="['selectfiles', 'selectfile'].includes(mode)">
+                            <v-checkbox @click.stop="selectItem(item)" v-model="item.selected"></v-checkbox>
+                        </v-list-item-action>
+                        
+                        <v-list-item-avatar class="ma-0">
+                            <v-icon>{{ icons[item.extension.toLowerCase()] || icons['other'] }}</v-icon>
+                        </v-list-item-avatar>
 
-                    <v-list-item-content class="py-2">
-                        <v-list-item-title v-text="item.basename"></v-list-item-title>
-                        <v-list-item-subtitle>{{ item.size }}</v-list-item-subtitle>
-                    </v-list-item-content>
+                        <v-list-item-content class="py-2">
+                            <v-list-item-title v-text="item.basename"></v-list-item-title>
+                            <v-list-item-subtitle>{{ item.size }}</v-list-item-subtitle>
+                        </v-list-item-content>
 
-                    <v-list-item-action>
-                        <v-btn icon @click.stop="deleteItem(item)">
-                            <v-icon color="grey lighten-1">mdi-delete-outline</v-icon>
-                        </v-btn>
-                        <v-btn icon v-if="false">
-                            <v-icon color="grey lighten-1">mdi-information</v-icon>
-                        </v-btn>
-                    </v-list-item-action>
-                </v-list-item>
-            </v-list>
+                        <v-list-item-action>
+                            <v-btn icon @click.stop="deleteItem(item)">
+                                <v-icon color="grey lighten-1">mdi-delete-outline</v-icon>
+                            </v-btn>
+                            <v-btn icon v-if="false">
+                                <v-icon color="grey lighten-1">mdi-information</v-icon>
+                            </v-btn>
+                        </v-list-item-action>
+                    </v-list-item>
+                </v-list>
+            </v-card>
+            <div v-if="items.length >= itemsperpage">
+                <v-row>
+                    <v-col cols="2" sm="2" md="2">
+                        <v-text-field 
+                            type="number"  
+                            label="Items per page" 
+                            v-model="itemsperpage"
+                            @change="itemsPerpageChanged">
+                        </v-text-field>
+                    </v-col>
+                    <v-col cols="20" sm="4" md="5">
+                        <v-pagination
+                            v-model="pageindex"
+                            :length="pagelength"
+                            :total-visible="pagevisible"
+                            @input="pageIndexChanged"
+                        ></v-pagination>
+
+                    </v-col>
+                </v-row>
+            </div>
         </v-card-text>
         <v-card-text
             v-else-if="filter"
@@ -177,11 +200,10 @@
 </template>
 
 <script>
-import { formatBytes } from "./util";
-import Confirm from "./Confirm.vue";
-import FilesAPI from "@/api/FilesAPI";
-import Vue from 'vue';
-import * as minimatch from 'minimatch';
+import Confirm from "./Confirm.vue"
+import FilesAPI from "@/api/FilesAPI"
+import Vue from 'vue'
+import * as minimatch from 'minimatch'
 
 export default {
     name: 'List',
@@ -198,7 +220,15 @@ export default {
     data() {
         return {
             items: [],
+            filteredItems: [],
+            displayItems: [], // items to be displaued
+            pageindex: 1,
+            pagelength: 6,
+            pagevisible: 7,
+            itemsperpage: 10,
             selectedItems: [],
+            total_files: 0, 
+            total_folders: 0, 
             // value in text field
             filter_str: "",
             // value used to filter
@@ -207,59 +237,67 @@ export default {
     },
     computed: {
         dirs() {
-            return this.items.filter(
-                item =>
-                    item.type === "dir" && ( !this.filter ||  minimatch(item.basename, this.filter, { matchBase: true }) )
-            );
+            return this.displayItems.filter(
+                item => item.type === "dir"
+            )
         },
         files() {
-            return this.items.filter(
-                item =>
-                    item.type === "file" && ( !this.filter ||  minimatch(item.basename, this.filter, { matchBase: true }) )
-            );
+            return this.displayItems.filter(
+                item => item.type === "file"
+            )
         },
         isDir() {
-            return this.path[this.path.length - 1] === "/";
+            return this.path[this.path.length - 1] === "/"
         },
         isFile() {
-            return !this.isDir;
+            return !this.isDir
         }
     },
     methods: {
-        formatBytes,
         changePath(path) {
-            this.$emit("path-changed", path);
+            this.$emit("path-changed", path)
         },
         filterChanged() {
-            this.filter = this.filter_str;
-            this.$emit("filter-changed", this.filter);
+            this.filter = this.filter_str
+            this.updateDisplayItems()
+            this.$emit("filter-changed", this.filter)
         },
         regexKeyDown(event){
             if (event.key === "Enter"){
-                this.filterChanged();
+                this.filterChanged()
             }
         },
         async load() {
-            this.$emit("loading", true);
+            this.$emit("loading", true)
+            this.filter_str = ""
+            this.filter = ""
             if (this.isDir) {
                 try{
-                    let response = await FilesAPI.list(this.path);
+                    let response = await FilesAPI.list(this.path)
+                    this.total_files = 0
+                    this.total_folders = 0
                     this.items = response.commandResult.map(responseItem => {
-                        responseItem.type = "file";
-                        responseItem.basename = responseItem.name;
-                        responseItem.extension = "";
-                        let _extension = responseItem.name.split(".")[1];
+                        responseItem.type = "file"
+                        responseItem.basename = responseItem.name
+                        responseItem.extension = ""
+                        let _extension = responseItem.name.split(".")[1]
                         if ( _extension)
-                            responseItem.extension = _extension;
-                        responseItem.path = this.path + responseItem.name;    
+                            responseItem.extension = _extension
+                        responseItem.path = this.path + responseItem.name    
                         // folder or symlink
                         if(['d', 'l'].includes(responseItem.permission.charAt(0))){
-                            responseItem.type = "dir";
-                            responseItem.children = [];
-                            responseItem.path = responseItem.path + "/";
+                            responseItem.type = "dir"
+                            responseItem.children = []
+                            responseItem.path = responseItem.path + "/"
+                            this.total_folders++
                         }
-                        return responseItem;
-                    });
+                        else {
+                            this.total_files++
+                        }
+                        return responseItem
+                    })
+
+                    this.updateDisplayItems()
                 }
                 catch(err){
                     Vue.notify({
@@ -316,6 +354,41 @@ export default {
         },
         helpGlob(){
             window.open('https://facelessuser.github.io/wcmatch/glob/', '_blank');
+        },
+        // call this one to update displayItems
+        updateDisplayItems(){
+            if(this.filter) {
+                this.filteredItems = this.items.filter(
+                   item =>  !this.filter || minimatch(item.basename, this.filter, { matchBase: true })
+                )
+                this.total_files = 0
+                this.total_folders = 0
+                this.filteredItems.map(_item => {
+                    if(['d', 'l'].includes(_item.permission.charAt(0))){
+                        this.total_folders++
+                    } else {
+                        this.total_files++
+                    }
+
+                })
+            } else {
+                this.filteredItems = this.items
+            }
+            //calculate total pages
+            this.pagelength = Math.ceil(this.filteredItems.length / this.itemsperpage)        
+            this.displayItems = this.filteredItems.slice((this.pageindex - 1) * this.itemsperpage, 
+                                                this.pageindex * this.itemsperpage)
+        },
+
+        pageIndexChanged(num){
+            this.pageindex = num
+            this.displayItems = this.filteredItems.slice((this.pageindex - 1) * this.itemsperpage, 
+                                                this.pageindex * this.itemsperpage)
+        },
+        itemsPerpageChanged(){
+            this.pagelength = Math.ceil(this.filteredItems.length / this.itemsperpage)        
+            this.displayItems = this.filteredItems.slice((this.pageindex - 1) * this.itemsperpage, 
+                                                this.pageindex * this.itemsperpage)
         }
 
     },
@@ -345,6 +418,18 @@ export default {
     height: 600px;
     overflow-x: auto;
     overflow-y: auto;
+}
+
+.list-card {
+    height: 450px;
+    width: 100%;
+    
+    .scroll-x {
+        overflow-x: auto;
+    }
+    .scroll-y {
+        overflow-y: auto;
+    }
 }
 
 

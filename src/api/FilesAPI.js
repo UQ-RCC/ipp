@@ -12,6 +12,19 @@ export default {
       return data
     },
 
+    async list_with_pagination(path, pageindex, pageitems, buffer) {
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/lsbase64`, {
+          params: {
+              folderpath: btoa(path),
+              pageindex: pageindex,
+              pageitems: pageitems,
+              buffer: buffer
+          }
+        })
+        return data
+    },
+
+      
     // make dir
     async mkdir(path) {
         const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/makedirbase64`, {
