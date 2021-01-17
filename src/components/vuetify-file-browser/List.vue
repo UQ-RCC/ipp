@@ -415,13 +415,13 @@ export default {
 
 <style lang="scss" scoped>
 .v-card {
-    height: 600px;
+    height: 650px;
     overflow-x: auto;
     overflow-y: auto;
 }
 
 .list-card {
-    height: 450px;
+    height: 470px;
     width: 100%;
     
     .scroll-x {

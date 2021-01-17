@@ -1,11 +1,17 @@
 <template>
 
-    <v-dialog v-model="dialog" persistent scrollable max-height="95%" max-width="80%">
+    <v-dialog v-model="dialog" persistent scrollable fullscreen>
         <v-card>
-            <v-card-title class="headline grey lighten-2">
-                {{ dialogTitle }}
-            </v-card-title>
-            
+
+            <v-toolbar flat dense color="primary">
+                <v-btn icon dark @click="cancel">
+                    <v-icon>mdi-close</v-icon>
+                </v-btn>
+                <v-card-title class="headline">
+                    {{ dialogTitle }}
+                </v-card-title>
+            </v-toolbar>
+
             <file-browser
                 :parentComponent=options.parentComponent
                 :initialPath=options.initialPath
@@ -107,3 +113,6 @@
     }
 
 </script>
+
+<style lang="scss" scoped>
+</style>
