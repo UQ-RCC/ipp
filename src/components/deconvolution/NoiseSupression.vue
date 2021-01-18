@@ -111,6 +111,9 @@
             },
             load_serie(serie_noise){
                 this.serie = serie_noise
+            },
+            is_valid(){
+                return true
             }
         },
   }

@@ -145,9 +145,10 @@
             <v-col class="d-flex">
                 <v-col>
                     <v-row class="d-flex" v-bind:style="{height: '93%'}">
-                        <v-stepper alt-labels non-linear v-model="step" v-bind:style="{width: '100%'}" @change="stepChanged">
+                        <v-stepper alt-labels v-model="step" v-bind:style="{width: '100%'}" @change="stepChanged">
                             <v-stepper-header>
-                                <v-stepper-step editable step="1" 
+                                <v-stepper-step :editable="visitedSteps.indexOf(1) >= 0"
+                                    step="1" 
                                     :complete="step!==1 && visitedSteps.indexOf(1) >= 0"
                                     :rules="[rules.metadatastepvalid]" 
                                     @click="stepClicked">
@@ -155,7 +156,8 @@
                                 </v-stepper-step>
                                 <v-divider></v-divider>
 
-                                <v-stepper-step editable step="2"
+                                <v-stepper-step :editable="visitedSteps.indexOf(2) >= 0" 
+                                    step="2"
                                     :complete="step!==2 && visitedSteps.indexOf(2) >= 0"
                                     :rules="[rules.psfstepvalid]" 
                                     @click="stepClicked">
@@ -163,7 +165,8 @@
                                 </v-stepper-step>
                                 <v-divider></v-divider>
 
-                                <v-stepper-step editable step="3" 
+                                <v-stepper-step :editable="this.step >= 3 || visitedSteps.indexOf(3) >= 0"
+                                                step="3" 
                                                 :complete="step!==3 && visitedSteps.indexOf(3) >= 0"
                                                 :rules="[rules.deskewstepvalid]"  
                                                 v-show="form.psfType===3" 
@@ -172,7 +175,7 @@
                                 </v-stepper-step>
                                 <v-divider></v-divider>
 
-                                <v-stepper-step editable 
+                                <v-stepper-step :editable="visitedSteps.indexOf(4) >= 0"
                                                 :complete="step!==4 && visitedSteps.indexOf(4) >= 0"
                                                 :rules="[rules.iterationstepvalid]"  
                                                 step="4" 
@@ -181,7 +184,7 @@
                                 </v-stepper-step>
                                 <v-divider></v-divider>
 
-                                <v-stepper-step editable 
+                                <v-stepper-step :editable="visitedSteps.indexOf(5) >= 0"
                                                 :complete="step!==5 && visitedSteps.indexOf(5) >= 0"
                                                 step="5"
                                     @click="stepClicked">
@@ -189,7 +192,7 @@
                                 </v-stepper-step>
                                 <v-divider></v-divider>
 
-                                <v-stepper-step editable 
+                                <v-stepper-step :editable="visitedSteps.indexOf(6) >= 0"
                                                 :complete="step!==6 && visitedSteps.indexOf(6) >= 0"
                                                 :rules="[rules.advancedstepvalid]"  
                                                 step="6"
@@ -198,7 +201,7 @@
                                 </v-stepper-step>
                                 <v-divider></v-divider>
 
-                                <v-stepper-step editable 
+                                <v-stepper-step :editable="visitedSteps.indexOf(7) >= 0"
                                                 :complete="step!==7 && visitedSteps.indexOf(7) >= 0"
                                                 :rules="[rules.devicesstepvalid]"  
                                                 step="7"
@@ -207,7 +210,7 @@
                                 </v-stepper-step>
                                 <v-divider></v-divider>
 
-                                <v-stepper-step editable 
+                                <v-stepper-step :editable="visitedSteps.indexOf(8) >= 0" 
                                                 :complete="step!==8 && visitedSteps.indexOf(8) >= 0" 
                                                 step="8"
                                     @click="stepClicked">
@@ -302,7 +305,7 @@
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn fab dark small color="primary" 
                                         @click.stop="nextStep" v-bind="attrs" v-on="on">
-                                    <v-icon dark>
+                                    <v-icon darkd>
                                         mdi-chevron-right
                                     </v-icon>
                                 </v-btn>
@@ -564,6 +567,28 @@
             },
             submit(){
                 console.log("submit...")
+                //first validate all series
+                this.selectedFiles.forEach(function (file) {
+                    if(!file.valid) {
+                        console.log(file.path + " is not valid")
+                        return
+                    }    
+                })
+                // this.selectedFiles.map( series => {
+
+                // })
+                // then create job
+
+                // then create
+                // var executioninfo = {   
+                //     "executioninfo": btoa(angular.toJson(formData)),
+                //     "instances": formData.instances,
+                //     "arrayMax":formData.arrayMax,
+                //     "mem": formData.mem,
+                //     "devices": formData.devices,
+                //     "output": formData.output,
+                //     "usermail": $scope.session.email
+                // } 
                 // if any component is invalid, show a dialog to fix those
             },
             async saveTemplate(){
@@ -675,6 +700,8 @@
 
             nextStep(){
                 this.step = parseInt(this.step)
+                if(!this.getStepComponent(this.step).is_valid())
+                    return
                 let previousStep = this.step
                 // add to visited
                 if(this.visitedSteps.indexOf(this.step) < 0)
@@ -688,7 +715,6 @@
                         this.step = 4
                     let nextStep = this.step
                     this.savePreviousAndLoadNextStep(previousStep, nextStep)
- 
                 }
             }, 
 
@@ -718,8 +744,10 @@
                 // save 
                 if(this.selected && previousSt !== 8){
                     let _component = this.getStepComponent(previousSt)
-                    if (_component)
+                    if (_component) {
                         this.selected[0] = _component.get_serie()
+                        this.selected[0].valid = _component.is_valid()
+                    }
                 }
                 // and load
                 if(this.selected && this.selected[0]){
@@ -775,6 +803,15 @@
             }
 
         },
+        computed: {
+            current_component_valid() {
+                let _component = this.getStepComponent(this.step)
+                if (_component)
+                    return _component.is_valid()
+                else
+                    return false
+            }
+        }
     }
 </script>
 

@@ -14,6 +14,7 @@ var series = {
         if (!series) {
             series = {}
         }
+        series['valid'] = false
         //////// main tab
         // init channels if none
         if (!series['channels']) {
@@ -161,6 +162,13 @@ var series = {
         series['psfC'] = psfFileSerie['c']
         series['psfT'] = psfFileSerie['t']
         return series
+    },
+    /**
+     * check whether the given series is valid
+     * @param {*} series 
+     */
+    is_valid(series){
+        console.log(series)
     }
 
 }

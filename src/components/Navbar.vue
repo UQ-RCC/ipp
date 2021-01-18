@@ -58,13 +58,13 @@
                     </v-list-item-icon>
                     <v-list-item-title class="ml-n5">FilesManager</v-list-item-title>
                 </v-list-item>
-                <v-list-item to="/converter">
+                <v-list-item to="/converter" disabled>
                     <v-list-item-icon>
                         <v-icon>mdi-arrow-left-right</v-icon>
                     </v-list-item-icon>
                     <v-list-item-title class="ml-n5">Converter</v-list-item-title>
                 </v-list-item>
-                <v-list-item to="/preprocessing">
+                <v-list-item to="/preprocessing" disabled>
                     <v-list-item-icon>
                         <v-icon>mdi-scissors-cutting</v-icon>
                     </v-list-item-icon>

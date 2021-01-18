@@ -31,7 +31,7 @@
                             regular 
                             label="Sample medium refractive index" 
                             type="number"
-                            :rules="psfValuesRules">
+                            :rules="[rules.positive]">
                         </v-text-field>
                     </v-col>
 
@@ -56,12 +56,12 @@
             <v-row>
                 <v-col cols="15" sm="3" md="4">
                     <v-text-field regular label="Objective NA" type="number" 
-                        :rules="psfValuesRules" v-model="serie.NA">
+                        :rules="[rules.positive, rules.na_NARI]" v-model="serie.NA">
                     </v-text-field>
                 </v-col>
                 <v-col cols="15" sm="3" md="4" v-if="serie.psfType === 3">
                     <v-text-field regular label="Light sheet illumination NA" type="number" 
-                        :rules="psfValuesRules" v-model="serie.lightSheetIlluminationNA">
+                        :rules="[rules.positive]" v-model="serie.lightSheetIlluminationNA">
                     </v-text-field>
                 </v-col>
             </v-row>
@@ -73,7 +73,7 @@
                         @change="RIChanged"
                         regular 
                         label="Objective immersion refractive index"
-                        :rules="psfValuesRules" 
+                        :rules="[rules.positive, rules.ri_NARI]" 
                         type="number">
                     </v-text-field>
                 </v-col>
@@ -98,7 +98,12 @@
         <v-col v-if="!serie.generatePsf">
             <v-row align="center" justify="center">
                 <v-col cols="30" sm="6" md="7">
-                    <v-text-field regular label="PSF file" v-model="serie.psfFile" :loading="loading > 0">
+                    <v-text-field regular label="PSF file" readonly
+                            v-model="serie.psfFile" 
+                            :loading="loading > 0"
+                            :rules="[rules.present]"
+                            autofocus
+                    >
                     </v-text-field>
                 </v-col>
                 <v-tooltip bottom>
@@ -145,7 +150,7 @@
                         v-model="serie.psfDr"
                         regular
                         type="number"
-                        :rules="psfValuesRules"
+                        :rules="[rules.positive]"
                         :disabled="serie.psfReadSpacing" 
                         label="PSF Lateral spacing(nm/pixel)">
                     </v-text-field>
@@ -155,7 +160,7 @@
                         v-model="serie.psfDz"
                         regular
                         type="number"
-                        :rules="psfValuesRules"
+                        :rules="[rules.positive]"
                         :disabled="serie.psfReadSpacing" 
                         label="PSF Axial spacing(nm/slice)">
                     </v-text-field>
@@ -214,10 +219,12 @@
                     {'label': 'Mowiol(low RI)', 'value': 1.49},
                     {'label': '80% Glycerol', 'value': 1.45}
                 ],
-
-                psfValuesRules: [
-                    value => value && value > 0 || 'Must be a positive number'
-                ],
+                rules: {
+                    present: value => !!value || 'Required! You need to load a file.',
+                    positive: value => value && value > 0 || 'Must be a positive number',
+                    na_NARI: value => value && value <= this.serie.RI || 'Object NA must be smaller than RI', 
+                    ri_NARI: value => value && value >= this.serie.NA || 'Object NA must be smaller than RI',
+                }
             }
         },
         methods: {
@@ -309,7 +316,7 @@
                         return false
                 }
                 else {
-                    if( this.serie.psfDr && this.serie.psfDr >0 && this.serie.psfDz && this.serie.psfDz > 0)
+                    if( this.serie.psfFile && this.serie.psfDr && this.serie.psfDr >0 && this.serie.psfDz && this.serie.psfDz > 0)
                         return true
                     else
                         return false
