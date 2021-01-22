@@ -4,7 +4,7 @@ import Vue from 'vue'
 const service = axios.create({
     // baseURL: '', // url = base url + request url
     // withCredentials: true, // send cookies when cross-domain requests
-    timeout: 50000 // request timeout
+    timeout: 180000 // request timeout
   })
   
   // request interceptor

@@ -2,7 +2,8 @@
     <v-app id="app">
         <navbar />
         <v-main>
-            <notifications group="sysnotif" position="top left"/> 
+            <notifications group="sysnotif" position="top left"/>
+            <notifications group="datanotif" position="bottom right"/>
             <v-container>
                 <router-view />
             </v-container>

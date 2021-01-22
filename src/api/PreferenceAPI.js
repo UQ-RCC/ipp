@@ -65,6 +65,22 @@ export default {
     const { data } = await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/settings/${settingid}`, setting)
     return data
   },
+
+  // update decon
+  async update_decon(deconid, decon){
+    let newDecon = Object.assign({}, decon)
+    let setting = Object.assign({}, newDecon.setting)
+    // these are not needed
+    delete newDecon.setting
+    delete newDecon.series
+    const payload = {
+      decon: newDecon,
+      setting: setting
+    }
+    const { data } = await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/deconpage/decons/${deconid}`, payload)
+    return data
+  },
+
   
   //deconvolution
   async get_deconpage(){
@@ -118,8 +134,36 @@ export default {
     return data
   },
 
-
-
+  // creat a number of jobs from a decon
+  async create_decon_jobs(decon_id, numberofjobs){
+    // const { data } = await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs`, {
+    //   params: {
+    //     decon_id: decon_id,
+    //     numberofjobs: numberofjobs
+    //   }
+    // })
+    const { data } = await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs?decon_id=${decon_id}&numberofjobs=${numberofjobs}`)
+    return data
+  },
+  // list a job
+  async list_decon_job(jobid){
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs/{jobid}`, {
+      params: {
+        jobid: jobid
+      }
+    })
+    return data
+  },
+  async delete_decon_job(jobid){
+    await request.delete(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs/{jobid}`, {
+      params: {
+        jobid: jobid
+      }
+    })
+  },
+  async delete_decon_jobs(jobs){
+    await request.delete(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs/`, jobs)
+  },
 
 
 }

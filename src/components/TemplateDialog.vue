@@ -106,7 +106,7 @@
                 if (this.isnew) {
                     if(! this.name) {
                         Vue.notify({
-                                group: 'sysnotif',
+                                group: 'datanotif',
                                 type: 'error',
                                 title: 'Save Template',
                                 text: 'Name cannot be empty'

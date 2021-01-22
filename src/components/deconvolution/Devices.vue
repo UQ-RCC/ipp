@@ -19,7 +19,7 @@
                             type=number
                             :rules="positiveInteger"  
                             label="Number of instances [nodes]" 
-                            v-model="serie.numberOfParallelJobs"
+                            v-model="serie.instances"
                         >
                         </v-text-field>
                     </template>
@@ -96,7 +96,7 @@
                 this.serie = serie_devices
             },
             is_valid(){
-                if(this.serie.numberOfParallelJobs && this.serie.numberOfParallelJobs >0
+                if(this.serie.instances && this.serie.instances >0
                     && this.serie.mem && this.serie.mem > 0 
                     && this.serie.gpus && this.serie.gpus > 0)
                     return true

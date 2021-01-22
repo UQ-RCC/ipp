@@ -115,25 +115,25 @@
             getPanel(panelId) {
                 let _panel = null
                 switch(parseInt(panelId)) {
+                    case 0:
+                        _panel = this.$refs.revdeconmetadata
+                        break
                     case 1:
                         _panel = this.$refs.revdeconpsf
                         break
                     case 2:
-                        _panel = this.$refs.revdeconpsf
-                        break
-                    case 3:
                         _panel = this.$refs.revdecondeskew
                         break
-                    case 4:
+                    case 3:
                         _panel = this.$refs.revdeconiterations
                         break
-                    case 5:
+                    case 4:
                         _panel = this.$refs.revdeconnoise
                         break
-                    case 6:
+                    case 5:
                         _panel = this.$refs.revdeconadvanced
                         break
-                    case 7:
+                    case 6:
                         _panel = this.$refs.revdecondevices
                         break
                 }
@@ -141,7 +141,11 @@
             },
 
             savetemplate(){
-                this.$emit("template-save");
+                this.$emit("template-save")
+            },
+            // doing nothing anyway
+            is_valid(){
+                return true
             }
 
         }

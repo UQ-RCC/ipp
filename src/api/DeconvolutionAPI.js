@@ -36,15 +36,29 @@ export default {
   },
 
   // execute
-  async execute_microvolution(usermail, output, arrayMax, mem, devices, executioninfo) {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/executemicrovolutionbase64`, {
+  async execute_microvolution(output, instances, mem, devices, executioninfo, is_test) {
+    let _requestUrl = ""
+    if (is_test) {
+      _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/testexecutebase64`      
+    } else {
+      _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/executebase64`
+    }
+    let arrayMax = parseInt(instances) - 1
+    // modify executioninfo 
+    let execinfo = Object.assign({}, executioninfo)
+    // remove unneeded fields
+    delete execinfo.id //refers to settingid
+    delete execinfo.decon_id
+    delete execinfo.decon
+    delete execinfo.isfolder
+    delete execinfo.name
+    const { data } = await request.get(_requestUrl, {
         params: {
-          usermail: usermail,
           output: output, 
           arrayMax: arrayMax,
           mem: mem, 
           devices: devices,
-          executioninfo: btoa(executioninfo)  
+          executioninfo: btoa(JSON.stringify(execinfo))  
         }
     })
     return data

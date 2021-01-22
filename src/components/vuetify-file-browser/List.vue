@@ -255,6 +255,7 @@ export default {
     },
     methods: {
         changePath(path) {
+            this.pageindex = 1
             this.$emit("path-changed", path)
         },
         filterChanged() {
@@ -375,6 +376,7 @@ export default {
                 this.filteredItems = this.items
             }
             //calculate total pages
+            this.pageindex = 1
             this.pagelength = Math.ceil(this.filteredItems.length / this.itemsperpage)        
             this.displayItems = this.filteredItems.slice((this.pageindex - 1) * this.itemsperpage, 
                                                 this.pageindex * this.itemsperpage)

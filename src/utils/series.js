@@ -14,7 +14,8 @@ var series = {
         if (!series) {
             series = {}
         }
-        series['valid'] = false
+        if(!series['valid'])
+            series['valid'] = false
         //////// main tab
         // init channels if none
         if (!series['channels']) {
@@ -53,7 +54,7 @@ var series = {
         if (!series['psfModel'])
             series['psfModel'] = 0
         if (!series['RI'])    
-            series['RI'] = 1.33
+            series['RI'] = 1.515
         if (!series['objectiveRIOption']) 
             series['objectiveRIOption'] = 1.33
         if (!series['ns'])
@@ -118,8 +119,8 @@ var series = {
             /////// DEVICES
         if (!series['autoDetect'])
             series['autoDetect']= false
-        if (!series['numberOfParallelJobs'])
-            series['numberOfParallelJobs']= 1
+        if (!series['instances'])
+            series['instances']= 1
         if (!series['mem'])
             series['mem']= 100
         if (!series['gpus'])
@@ -129,14 +130,45 @@ var series = {
         return series;
     },
 
+    defaultDecon(){
+        return {
+                step: 1,
+                visitedSteps: [],
+                series: {},
+                setting: series.formatSeries(null)
+            }
+    },
+
     /**
      * 
      * @param {*} series 
      * @param {*} psfFileSerie 
      */
     fixSeriesUnit(series){
-        if (series['unit'] === 'micron')
-            series['unit'] = 'µm'
+        series.unit = series.unit.trim()
+        series.dr = parseFloat(series.dr)
+        if(!series.dr)
+            delete series.dr
+        series.dz = parseFloat(series.dr)
+        if(!series.dz)
+            delete series.dz
+        series.pixelDepth = parseFloat(series.pixelDepth)
+        if(!series.pixelDepth)
+            delete series.pixelDepth
+        series.pixelHeight = parseFloat(series.pixelHeight)
+        if(!series.pixelHeight)
+            delete series.pixelHeight
+        series.pixelWidth = parseFloat(series.pixelWidth)
+        if(!series.pixelWidth)
+            delete series.pixelWidth
+        series.background = parseFloat(series.background)
+        if(!series.background)
+            delete series.background
+        
+        if (series.unit === 'micron')
+            series.unit = 'µm'
+        if (series.unit === '')
+            delete series.unit
         return series
     },
     /**
