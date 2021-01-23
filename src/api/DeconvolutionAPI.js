@@ -36,7 +36,7 @@ export default {
   },
 
   // execute
-  async execute_microvolution(output, instances, mem, devices, executioninfo, is_test) {
+  async execute_microvolution(output, instances, mem, devices, executioninfo, jobs, is_test=false) {
     let _requestUrl = ""
     if (is_test) {
       _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/testexecutebase64`      
@@ -45,13 +45,16 @@ export default {
     }
     let arrayMax = parseInt(instances) - 1
     // modify executioninfo 
-    let execinfo = Object.assign({}, executioninfo)
+    let execinfo = Object.assign({}, executioninfo.setting)
+    execinfo.files = executioninfo.series.path
+    execinfo.jobs = jobs
     // remove unneeded fields
-    delete execinfo.id //refers to settingid
-    delete execinfo.decon_id
+    // delete execinfo.id //refers to settingid
+    // delete execinfo.decon_id
+    // delete execinfo.decon
+    // delete execinfo.isfolder
+    // delete execinfo.name
     delete execinfo.decon
-    delete execinfo.isfolder
-    delete execinfo.name
     const { data } = await request.get(_requestUrl, {
         params: {
           output: output, 

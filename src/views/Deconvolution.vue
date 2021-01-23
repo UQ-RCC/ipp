@@ -259,11 +259,9 @@
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn 
-                                    color="primary" 
-                                    rounded dark large 
+                                    color="primary" rounded dark large 
                                     @click.stop="loadTemplate()"
-                                    v-bind="attrs" 
-                                    v-on="on">Load Template
+                                    v-bind="attrs" v-on="on">Load Template
                                 </v-btn>
                             </template>
                             <span>Load an existing template</span>
@@ -273,8 +271,7 @@
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn 
                                     color="primary" rounded dark large 
-                                    v-bind="attrs" 
-                                    v-on="on"
+                                    v-bind="attrs" v-on="on"
                                     :disabled="selected.length === 0"
                                     @click.stop="submitSelected()">
                                         Submit Selected
@@ -288,8 +285,7 @@
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn 
                                     color="primary" rounded dark large 
-                                    v-bind="attrs" 
-                                    v-on="on"
+                                    v-bind="attrs" v-on="on"
                                     :disabled="selected.length === 0"
                                     @click.stop="submitAll()">
                                         Submit All
@@ -428,7 +424,7 @@
             this.loaded.forEach(item => {
                 if(item.selected) {
                     this.selected.push(item)            
-                    this.load_decon(item)    
+                    this.display_decon(item)    
                 }
             })
             
@@ -450,7 +446,7 @@
 
             /****************************************************************************** */
             /** this part loads files/folders  **/
-            // this is different from load_decon
+            // this is different from display_decon
             async load_path(pathToBeLoaded, isfolder) {
                 let items = []
                 try{
@@ -577,7 +573,7 @@
                     }
                     if ((!this.selected || this.selected.length ==0) && this.loaded.length > 0){
                         this.selected = [ this.loaded[0] ]
-                        this.load_decon(this.loaded[0])
+                        this.display_decon(this.loaded[0])
                     }
                     this.loading = false                    
                 }
@@ -614,7 +610,7 @@
                 this.selected = []
                 // load an empty one
                 this.workingItem = series.defaultDecon()
-                this.load_decon(this.workingItem, false)
+                this.display_decon(this.workingItem, false)
             },
             /**
              * delete all series
@@ -628,23 +624,24 @@
                 this.loaded = []
                 this.selected = []
                 this.workingItem = series.defaultDecon()
-                this.load_decon(this.workingItem, false)
+                this.display_decon(this.workingItem, false)
             },
             /* end part dealing with load */
             /****************************************************************************** */
 
+
+
+            /****************************************************************************** */
+            /** submit job */
             async submitSingleJob(item){
                 let _numberOfJobs = parseInt(item.setting.instances)
                 let _jobs = await PreferenceAPI.create_decon_jobs(item.id, _numberOfJobs)
                 let _jobIds = _jobs.map(_job => {
                     return _job.id
                 })
-                Vue.$log.info("jobs:::")
-                Vue.$log.info(_jobIds)
-                item.jobs = _jobIds
                 try{
                     await DeconvolutionAPI.execute_microvolution(item.setting.outputPath, _numberOfJobs, 
-                                    item.setting.mem, item.setting.devices, item, true)
+                                    item.setting.mem, item.setting.gpus, item, _jobIds, true)
                     Vue.notify({
                         group: 'datanotif',
                         type: 'success',
@@ -701,6 +698,11 @@
                 }
             },
 
+            /****************************************************************************** */
+
+
+
+            /****************************************************************************** */
             /**
              * save template to databsae: save the working one
              */
@@ -735,11 +737,13 @@
                     this.saveSettings()
                 }
             },
-            
+            /****************************************************************************** */
+
+
             /**
              * load decon
              */
-            load_decon(decon, duplicate=true){
+            display_decon(decon, duplicate=true){
                 // console.log("loading new decon, psfType=" + decon.setting.psfType + " path=" + decon.series.path)
                 // update tab
                 if(duplicate)
@@ -774,7 +778,7 @@
                     // console.log("selecting ...." + anItem.item.series.path)
                     if ( this.singleSelect ) {
                         this.selected = [ anItem.item ]
-                        this.load_decon(anItem.item)
+                        this.display_decon(anItem.item)
                         //save
                     }
                     else {
@@ -784,7 +788,7 @@
                         console.log("TODO here")
                     }
                 } else {
-                    this.load_decon(series.defaultDecon(), false)
+                    this.display_decon(series.defaultDecon(), false)
                     //save
                     // remove this from selected
                     for(let i = 0; i < this.selected.length; i++){
@@ -802,7 +806,7 @@
             psfChanged(){
                 this.saveSettings()
                 // is this needed
-                this.load_decon(this.workingItem, false)
+                this.display_decon(this.workingItem, false)
             },
 
             stepClicked() {
@@ -950,16 +954,6 @@
             }
 
         },
-        computed: {
-            one_invalid_series(){
-                for (let i = 0; i < this.loaded.length; i++) {
-                    if(!this.loaded[i].setting.valid){
-                        return true
-                    }
-                }
-                return false
-            }
-        }
     }
 </script>
 
