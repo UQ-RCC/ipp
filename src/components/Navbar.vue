@@ -94,7 +94,7 @@
                 </v-list-item>
 
 
-                <v-list-item to="/admin" v-if="this.is_admin">
+                <v-list-item to="/admin" v-if="this.is_admin" disabled>
                     <v-list-item-icon>
                         <v-icon>mdi-account-supervisor</v-icon>
                     </v-list-item-icon>

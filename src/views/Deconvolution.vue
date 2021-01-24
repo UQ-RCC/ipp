@@ -641,7 +641,7 @@
                 })
                 try{
                     await DeconvolutionAPI.execute_microvolution(item.setting.outputPath, _numberOfJobs, 
-                                    item.setting.mem, item.setting.gpus, item, _jobIds, true)
+                                    item.setting.mem, item.setting.gpus, item, _jobIds, false)
                     Vue.notify({
                         group: 'datanotif',
                         type: 'success',

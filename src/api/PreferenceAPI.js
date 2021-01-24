@@ -145,6 +145,15 @@ export default {
     const { data } = await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs?decon_id=${decon_id}&numberofjobs=${numberofjobs}`)
     return data
   },
+  // list jobs
+  async list_decon_jobs(alljobs){
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs`, {
+      params: {
+        all: alljobs
+      }
+    })
+    return data
+  },
   // list a job
   async list_decon_job(jobid){
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs/{jobid}`, {
