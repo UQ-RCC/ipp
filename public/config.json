@@ -1,7 +1,7 @@
 {
   "development": {
       "keycloak": {
-        "url": "https://auth0.rcc.uq.edu.au/auth/",
+        "url": "https://auth0.portals.nimrod-portal.cloud.edu.au/auth/",
         "realm": "ipp",
         "clientId": "jsclient",
         "onLoad": "login-required",
@@ -15,7 +15,7 @@
   },
   "production": {
       "keycloak": {
-        "url": "https://auth0.rcc.uq.edu.au/auth/",
+        "url": "https://auth0.portals.nimrod-portal.cloud.edu.au/auth/",
         "realm": "ipp",
         "clientId": "jsclient",
         "onLoad": "login-required",
