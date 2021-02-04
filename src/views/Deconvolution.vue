@@ -455,7 +455,7 @@
                     // found
                     // Vue.$log.info(_decons)
                     if ( _decons && _decons.length > 0 ) {
-                        Vue.$log.info("Found decon in database")
+                        Vue.$log.debug("Found decon in database")
                         for(let _index =0; _index < _decons.length; _index++){
                             let _decon = _decons[_index]
                             let _serie = await PreferenceAPI.get_serie_by_id(_decon.series_id)
@@ -465,10 +465,10 @@
                             items.push(_decon)
                         }
                     } else {
-                        Vue.$log.info("Not found. Do one more search from series")
+                        Vue.$log.debug("Not found. Do one more search from series")
                         let _storedSeries = await PreferenceAPI.get_serie(pathToBeLoaded)
                         if ( _storedSeries && _storedSeries.length > 0 ) {
-                            Vue.$log.info("Found serie in database")
+                            Vue.$log.debug("Found serie in database")
                             for(let _index = 0; _index < _storedSeries.length; _index++){
                                 let _storedSerie = _storedSeries[_index]
                                 let _setting = series.formatSeries(_storedSerie)
@@ -481,15 +481,16 @@
                                 items.push(_decon)
                             }
                         } else {
-                            Vue.$log.info("Not found in database")
+                            Vue.$log.debug("Not found in database")
                             let response = null
                             if (isfolder)
                                 response = await DeconvolutionAPI.get_folder_info(pathToBeLoaded)
                             else 
                                 response = await DeconvolutionAPI.get_file_info(pathToBeLoaded)
                             
-                            Vue.$log.info("Response :")
-                            Vue.$log.info(JSON.parse(JSON.stringify(response)))
+                            Vue.$log.debug("Response :")
+                            Vue.$log.debug(response)
+                            Vue.$log.debug(JSON.parse(JSON.stringify(response)))
                             // add to database
                             for(let _index = 0; _index < response.commandResult.length; _index++){
                                 let _responseItem  = response.commandResult[_index]
@@ -513,11 +514,11 @@
                             } // end for
                         } // end not found in db
                     }
-                    Vue.$log.info("items :")
-                    Vue.$log.info(items)
+                    Vue.$log.debug("items :")
+                    Vue.$log.debug(items)
                 }
                 catch(err){
-                    Vue.$log.info(err)
+                    Vue.$log.error(err)
                     Vue.notify({
                         group: 'sysnotif',
                         type: 'error',
@@ -540,7 +541,7 @@
                     let paths = []
                     if(isfolder){
                         let _pathToBeLoaded = options.path + options.filter
-                        Vue.$log.info("selecting series:" + _pathToBeLoaded)
+                        Vue.$log.debug("selecting series:" + _pathToBeLoaded)
                         let _exist = false
                         this.loaded.map(file => {
                             if (file.series.path === _pathToBeLoaded)
@@ -548,10 +549,10 @@
                         })
                         if (_exist)
                             return
-                        paths = paths.push(_pathToBeLoaded)
+                        paths.push(_pathToBeLoaded)
                     } else {
-                        Vue.$log.info("selecting files:")
-                        Vue.$log.info(options.selectedItems)
+                        Vue.$log.debug("selecting files:")
+                        Vue.$log.debug(options.selectedItems)
                         for(let i = 0; i< options.selectedItems.length; i++){
                             let _exists = false
                             this.loaded.map(file => {
@@ -561,14 +562,24 @@
                             if (!_exists)
                                 paths.push(options.selectedItems[i].path)
                         }
-                        // if paths empty return
-                        if(paths.length === 0)
-                            return
                     }
+                    // if paths empty return
+                    if(paths.length === 0) {
+                        Vue.$log.debug("Paths is empty. Return.")
+                        return
+                    }
+                    else {
+                        Vue.$log.debug("Paths is not empty. Start loading.")
+                        Vue.$log.debug(paths)
+                    }
+                        
                     this.loading = true
                     // now load the paths
                     for(let i =0; i < paths.length; i++){
+                        Vue.$log.debug(">>>loading:" + paths[i])
                         let items = await this.load_path(paths[i], isfolder)
+                        Vue.$log.debug("Results:")
+                        Vue.$log.debug(items)
                         this.loaded = this.loaded.concat(items)
                     }
                     if ((!this.selected || this.selected.length ==0) && this.loaded.length > 0){
@@ -652,8 +663,8 @@
                     })
                 }
                 catch(err) {
-                    console.log("-----error submittin-----------")
-                    console.log(err)
+                    Vue.$log.error("-----error submittin-----------")
+                    Vue.$log.error(err)
                     await PreferenceAPI.delete_decon_jobs(_jobs)
                     Vue.notify({
                         group: 'datanotif',
