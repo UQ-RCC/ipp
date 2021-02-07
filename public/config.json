@@ -11,7 +11,7 @@
         "pref": "http://localhost:8000",
         "wiener": "https://wwi-test.qbi.uq.edu.au/devwienerbackend"
       },
-      "signoutUrl": "https://ipp.rcc.uq.edu.au"
+      "signoutUrl": "https://ipp.portals.nimrod-portal.cloud.edu.au/"
   },
   "production": {
       "keycloak": {
@@ -25,6 +25,6 @@
         "pref": "https://dev.pref.ipp.rcc.uq.edu.au",
         "wiener": "https://wwi-test.qbi.uq.edu.au/devwienerbackend"
       },
-      "signoutUrl": "https://ipp.rcc.uq.edu.au"
+      "signoutUrl": "https://ipp.portals.nimrod-portal.cloud.edu.au/"
   }
 }

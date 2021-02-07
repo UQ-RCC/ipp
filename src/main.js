@@ -37,6 +37,7 @@ const loadConfigAndStart = async () => {
       //init
       keycloak.init({ 
         onLoad: Config.keycloak.onLoad,
+        pkceMethod: 'S256',
         "checkLoginIframe" : false 
       }).then((auth) => {
         if (!auth) {
