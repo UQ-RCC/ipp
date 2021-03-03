@@ -62,7 +62,6 @@
                     class="my-2"
                     v-model="outputBasePath"
                     @change="outputPathChanged"
-                    readonly
                 ></v-text-field>
             </v-col>
             <v-col cols="10" sm="3" md="4">
@@ -72,7 +71,6 @@
                     class="my-2"
                     v-model="outputFolderName"
                     @change="outputPathChanged"
-                    readonly
                 ></v-text-field>
             </v-col>
         </v-row>

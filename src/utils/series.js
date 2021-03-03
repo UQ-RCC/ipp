@@ -149,7 +149,7 @@ var series = {
         series.dr = parseFloat(series.dr)
         if(!series.dr)
             delete series.dr
-        series.dz = parseFloat(series.dr)
+        series.dz = parseFloat(series.dz)
         if(!series.dz)
             delete series.dz
         series.pixelDepth = parseFloat(series.pixelDepth)

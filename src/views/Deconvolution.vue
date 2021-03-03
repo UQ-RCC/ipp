@@ -39,7 +39,7 @@
             </v-col>
         </v-row>
         <!-- main GUI: tables, tabs -->
-        <v-row >
+        <v-row>
             <!-- table and buttons-->
             <v-col class="d-flex" cols="12" sm="4">
                 <div class="text-center">
@@ -127,7 +127,7 @@
             <v-divider vertical></v-divider>
             <v-col class="d-flex">
                 <v-col>
-                    <v-row class="d-flex" v-bind:style="{height: '93%'}">
+                    <v-row class="d-flex" v-bind:style="{height: '85%'}">
                         <v-stepper alt-labels v-model="workingItem.step" v-bind:style="{width: '100%'}" @change="stepChanged">
                             <v-stepper-header>
                                 <v-stepper-step :editable="checkStepVisibility(1)"
@@ -755,14 +755,16 @@
              * load decon
              */
             display_decon(decon, duplicate=true){
-                // console.log("loading new decon, psfType=" + decon.setting.psfType + " path=" + decon.series.path)
                 // update tab
                 if(duplicate)
                     this.workingItem = Object.assign({}, decon)
                 else
                     this.workingItem = decon
                 let _anyInvalidStep = false
+                if (this.workingItem.visitedSteps.length === 0 )
+                    this.workingItem.visitedSteps = [ 1 ]
                 this.workingItem.visitedSteps.forEach(it => {
+                    console.log("loading ..." + decon.setting)
                     let _acomponent = this.getStepComponent(it)
                     if(_acomponent){
                         _acomponent.load_serie(decon.setting)
@@ -786,7 +788,7 @@
                 // if selected, load it
                 anItem.item.selected = anItem.value
                 if (anItem.value){
-                    // console.log("selecting ...." + anItem.item.series.path)
+                    console.log("selecting ...." + anItem.item.series.path)
                     if ( this.singleSelect ) {
                         this.selected = [ anItem.item ]
                         this.display_decon(anItem.item)

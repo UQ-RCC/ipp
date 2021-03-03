@@ -41,7 +41,7 @@ export default {
     if (is_test) {
       _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/testexecutebase64`      
     } else {
-      _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/executebase64`
+      _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/executemicrovolutionbase64`
     }
     let arrayMax = parseInt(instances) - 1
     // modify executioninfo 
