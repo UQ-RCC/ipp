@@ -52,7 +52,7 @@
         created: function() {
             this.timer = setInterval(() => {
                 this.updateJobs()
-            }, 5000)
+            }, 120000)
         },
         mounted: async function() {
             await this.updateJobs()

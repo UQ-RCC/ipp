@@ -240,7 +240,8 @@
                             </v-stepper-items>
                         </v-stepper>
                     </v-row>
-                    <p /><br />
+                    <p/>
+                    <br/><br/>
                     <v-row class="d-flex">
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
