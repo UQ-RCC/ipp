@@ -160,9 +160,9 @@
             },
             outputPathChanged(){
                 if(this.outputBasePath==='')
-                    this.series.outputPath = ''
+                    this.serie.outputPath = ''
                 else
-                    this.series.outputPath = this.outputBasePath + "/" + this.outputFolderName
+                    this.serie.outputPath = this.outputBasePath + "/" + this.outputFolderName
             },
             /**
              * choose output folder: saved to all selected series
