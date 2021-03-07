@@ -16,12 +16,28 @@ const service = axios.create({
         // config.headers['token'] = Vue.prototype.$keycloak.token
         config.headers['Authorization'] = 'Bearer ' + Vue.prototype.$keycloak.token;
         // config.headers['Access-Control-Allow-Origin'] = '*';
+        return config
       }
-      return config
+      else if (Vue.prototype.$keycloak.isTokenExpired(Vue.prototype.$Config.keycloak.minValidity)) {
+        // token expired
+        Vue.prototype.$keycloak.updateToken(Vue.prototype.$Config.keycloak.minValidity).then(function(refreshed) {
+          if (refreshed) {
+            Vue.$log.info('Token refreshed' + refreshed)
+            config.headers['Authorization'] = 'Bearer ' + Vue.prototype.$keycloak.token
+            return config
+          } else {
+            Vue.$log.info('Token not refreshed, valid for '
+              + Math.round(Vue.prototype.$keycloak.tokenParsed.exp + Vue.prototype.$keycloak.timeSkew - new Date().getTime() / 1000) + ' seconds')
+          }
+        }).catch(function() {
+            Vue.$log.error(">>> Cannot refresh token")
+            window.location.reload()
+        })
+      }
     },
     error => {
       // do something with request error
-      Vue.$log.error("here >>>>>>>>>>>>>>>>>>>>>>>>>>");
+      Vue.$log.error("request error here >>>>>>>>>>>>>>>>>>>>>>>>>>");
       Vue.$log.error(error);
       return Promise.reject(error);
     }
@@ -44,14 +60,26 @@ service.interceptors.response.use(
       return response
     },
     error => {
-        Vue.$log.error(error)
+      Vue.$log.error("response error here >>>>>>>>>>>>>>>>>>>>>>>>>>");
+      Vue.$log.error(error)
+      // if token expired, refresh the whole page
+      if(error.response.status === 401) {
         Vue.notify({
-            group: 'sysnotif',
-            type: 'error',
-            title: 'Error',
-            text: error.message
+          group: 'sysnotif',
+          type: 'warning',
+          title: 'Token expired',
+          text: 'Token expired! reload the window!'
         })
-        return Promise.reject(error)
+        window.location.reload()
+      } else {
+        Vue.notify({
+          group: 'sysnotif',
+          type: 'error',
+          title: 'Error',
+          text: 'There has been a problem:' + String(error)
+        })
+      }
+      return Promise.reject(error)
     }
   )
   
