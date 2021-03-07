@@ -124,6 +124,7 @@
                         small
                         class="mr-2"
                         @click="calculator(item)"
+                        v-if="serie['psfType'] === 1"
                         >
                         mdi-calculator
                     </v-icon>
@@ -237,7 +238,8 @@
                         sortable: false,
                         value: 'pinhole',
                     },
-                    {   text: 'Actions', 
+                    {   text: 'Actions',
+                        align: 'center', 
                         value: 'actions', 
                         sortable: false 
                     },
@@ -265,21 +267,22 @@
             psfTypeChanged(){
                 // ligh sheet - wavelength, pinhole hidden, calculator - 3-4
                 if(this.serie['psfType'] === 3 ){
+                    this.backgroundTypeChanged()
                     this.channelTableHeaders[3].align = ' d-none';
-                    this.channelTableHeaders[4].align = ' d-none';
-                    this.channelTableHeaders[5].align = ' d-none';    
+                    this.channelTableHeaders[4].align = ' d-none';    
                 } 
                 // confocal wavelength, pinhole, claculator shown 
                 else if (this.serie['psfType'] === 1 ) {
+                    this.channelTableHeaders[2].align = ' d-none';
                     this.channelTableHeaders[3].align = 'center';
-                    this.channelTableHeaders[4].align = 'center';
-                    this.channelTableHeaders[5].align = 'center';    
+                    this.channelTableHeaders[4].align = 'center';    
                 }
                 // else: pinhole, calculator hidden, wavelength shown
                 else {
+                    this.channelTableHeaders[2].align = ' d-none';  
+                    this.channelTableHeaders[3].align = 'center';
                     this.channelTableHeaders[4].align = ' d-none';
-                    this.channelTableHeaders[5].align = ' d-none';
-                    this.channelTableHeaders[3].align = 'center';    
+                      
                 }
             },
             // background correction type changed

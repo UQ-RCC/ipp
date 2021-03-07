@@ -18,7 +18,7 @@ var series = {
             series['valid'] = false
         //////// main tab
         // init channels if none
-        if (!series['channels']) {
+        if (!series['channels'] || series['channels'].length === 0 ) {
             try{
                 let numOfChannels = parseInt(series['c']);
                 let channels = []
