@@ -156,7 +156,7 @@ export default {
   },
   // list a job
   async list_decon_job(jobid){
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs/{jobid}`, {
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs/${jobid}`, {
       params: {
         jobid: jobid
       }
@@ -164,7 +164,7 @@ export default {
     return data
   },
   async delete_decon_job(jobid){
-    await request.delete(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs/{jobid}`, {
+    await request.delete(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs/${jobid}`, {
       params: {
         jobid: jobid
       }
