@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <div>
         <v-progress-linear
             color="primary accent-4"
             indeterminate
@@ -243,7 +243,7 @@
                         </v-stepper>
                     </v-row>
                     <p/>
-                    <br/>
+                    <br/><br/>
                     <v-row class="d-flex">
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
@@ -311,11 +311,12 @@
                             <span>Next step</span>
                         </v-tooltip>
                     </v-row>
+                    <p />
                 </v-col>
 
             </v-col>
         </v-row>   
-    </v-card>    
+    </div>    
 </template>
 
 <script>
@@ -419,6 +420,7 @@
                 let _decon = _decons[_index]
                 _decon.series = await PreferenceAPI.get_serie_by_id(_decon.series_id)
                 _decon.setting = await PreferenceAPI.get_setting_by_id(_decon.setting_id)
+                _decon.setting = series.formatSeries(_decon.setting)
                 initialItems.push(_decon)
             }
             this.loaded = this.loaded.concat(initialItems)
@@ -611,6 +613,7 @@
              * remove currently selected serie
              */
             removeCurrentlySelected(){
+                Vue.$log.info("Removing currently seleced item")
                 this.selected.forEach(item => {
                     for(let i = 0; i < this.loaded.length; i++){
                         if(this.loaded[i].series.path === item.series.path){
@@ -766,7 +769,8 @@
                 if (this.workingItem.visitedSteps.length === 0 )
                     this.workingItem.visitedSteps = [ 1 ]
                 this.workingItem.visitedSteps.forEach(it => {
-                    console.log("loading ..." + decon.setting)
+                    Vue.$log.info("Loading ....")
+                    Vue.$log.info(decon.setting)
                     let _acomponent = this.getStepComponent(it)
                     if(_acomponent){
                         _acomponent.load_serie(decon.setting)
@@ -800,16 +804,19 @@
                         // not sure what to do here:
                         // load anItem to workingItem is nothing loaded
                         // otherwise do nothing --> meaning any change will write back to anItem
-                        console.log("TODO here")
+                        Vue.$log.info("TODO here")
                     }
                 } else {
-                    this.display_decon(series.defaultDecon(), false)
+                    Vue.$log.info("Unselect item")
                     //save
                     // remove this from selected
                     for(let i = 0; i < this.selected.length; i++){
                         if(this.selected[i].series.path === anItem.item.series.path){
                             this.selected.splice(i, 1)
                         }
+                    }
+                    if(this.selected.length == 0) {
+                        this.display_decon(series.defaultDecon(), false)
                     }
                 }
                 PreferenceAPI.update_decon(anItem.item.id, anItem.item)    

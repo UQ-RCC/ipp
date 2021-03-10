@@ -4,9 +4,9 @@
         <v-main>
             <notifications group="sysnotif" position="top left"/>
             <notifications group="datanotif" position="bottom right"/>
-            <v-container>
+            <div>
                 <router-view />
-            </v-container>
+            </div>
         </v-main>
     </v-app>
 </template>
