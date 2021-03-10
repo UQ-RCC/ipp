@@ -1,0 +1,60 @@
+name: build
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      # Work around https://github.com/actions/checkout/issues/290
+      - run: git fetch --force --tags
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+
+      - uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - run: npm install
+      - run: mkdir artifacts
+      - name: create tarball
+        run: |
+          GIT_DESCRIBE=$(git describe)
+          sed -i -e "s/%GIT_DESCRIBE%/$(git describe)/g" index.html
+          tar -czf artifacts/imbportal-${GIT_DESCRIBE}.tar.gz \
+            --transform "s/^\./imbportal-${GIT_DESCRIBE}/" \
+            --exclude=./artifacts \
+            --exclude=./.git \
+            .
+      - uses: actions/upload-artifact@v2
+        with:
+          name: release-artifacts
+          path: artifacts/imbportal-*.tar.gz
+
+  deploy:
+    needs: build
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: release-artifacts
+          path: dist
+      - uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: dist/*
