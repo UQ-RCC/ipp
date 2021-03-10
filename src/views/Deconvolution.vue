@@ -235,9 +235,7 @@
                                 </v-stepper-content>
 
                                 <v-stepper-content step=8>
-                                    <deconvolution-review ref="deconreview"
-                                        v-on:template-save = saveTemplate
-                                    />
+                                    <deconvolution-review ref="deconreview"/>
                                 </v-stepper-content>
 
                             </v-stepper-items>
@@ -259,7 +257,19 @@
                         </v-tooltip>
                         
                         <div class="flex-grow-1"></div>
-            
+
+
+                        <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn  color="primary" rounded dark large 
+                                        @click.stop="saveTemplate()" 
+                                        v-bind="attrs" 
+                                        :disabled="workingItem.step !== 8"
+                                        v-on="on">Save Template
+                                </v-btn>
+                            </template>
+                            <span>Save template</span>
+                        </v-tooltip>
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn 

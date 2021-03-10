@@ -50,21 +50,6 @@
                 <deconvolution-devices ref="revdecondevices" :readonly="true"/>
             </v-expansion-panel-content>
         </v-expansion-panel>
-
-        <v-row align="center" justify="center">
-            <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn  class="my-3" 
-                            color="primary"
-                            @click.stop="savetemplate()" 
-                            rounded dark large 
-                            v-bind="attrs" 
-                            v-on="on">Save Template
-                    </v-btn>
-                </template>
-                <span>Save template</span>
-            </v-tooltip>
-        </v-row>
     </v-expansion-panels>
 
 
@@ -140,9 +125,6 @@
                 return _panel
             },
 
-            savetemplate(){
-                this.$emit("template-save")
-            },
             // doing nothing anyway
             is_valid(){
                 return true
@@ -154,7 +136,7 @@
 
 <style lang="scss" scoped>
 .review-card {
-    height: 600px;
+    max-height: 800px;
     
     .scroll-y {
         overflow-y: auto;

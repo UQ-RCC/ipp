@@ -1,6 +1,15 @@
 <template>
     <div>
-        <v-card :loading="loading">
+        <br />
+        <v-progress-linear
+            color="primary accent-4"
+            indeterminate
+            rounded
+            height="4"
+            :active="loading"
+        ></v-progress-linear>
+        <br />
+        <v-card>
             <v-data-table
                 v-model="selected"
                 :headers="jobTableHeaders"

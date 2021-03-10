@@ -1,5 +1,13 @@
 <template>
-    <v-card  :loading="loading > 0">
+    <v-card>
+        <v-progress-linear
+            color="primary accent-4"
+            indeterminate
+            rounded
+            height="4"
+            :active="loading"
+        ></v-progress-linear>
+        <br />
         <toolbar
             :prefid = prefid
             :path = path
