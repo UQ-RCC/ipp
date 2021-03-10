@@ -1,6 +1,6 @@
 <template>
-    <v-dialog v-model="dialog" persistent scrollable max-height="60%" max-width="50%">
-        <v-card>
+    <v-dialog v-model="dialog" scrollable persistent max-height="90%" max-width="50%">
+        <v-card max-width="98.5%">
             <v-toolbar dark color="#49075e">
                 <v-btn icon dark @click="cancel">
                     <v-icon>mdi-close</v-icon>
@@ -10,7 +10,7 @@
                 </v-card-title>
             </v-toolbar>
 
-            <v-tabs @change="tabChanged" fixed-tabs>
+            <v-tabs @change="tabChanged" fixed-tabs >
                 <v-tab>Spinning disk</v-tab>
                 <v-tab>Airy units</v-tab>
                 <v-tab>Point scanning</v-tab>
@@ -152,7 +152,7 @@
                 <v-col cols="20" sm="4" md="5">        
                     <v-text-field regular 
                         type="number" 
-                        label="Pinehole radius (nm)" 
+                        label="Back Projected Pinhole radius (nm)" 
                         v-model="options.pinholeRadius"
                         disabled>
                     </v-text-field>

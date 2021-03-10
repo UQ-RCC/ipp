@@ -19,7 +19,7 @@
                         item-text="label"
                         item-value="value"
                         label="PSF Model"
-                        outlined
+                        outlined dense
                         >
                     </v-select>
                 </v-col>
@@ -44,8 +44,7 @@
                             item-value="value"
                             label="Sample medium RI options"
                             @change="mediumRIChanged"
-                            outlined
-                            single-line
+                            outlined dense
                             >
                         </v-select>
                     </v-col>
@@ -85,8 +84,7 @@
                         item-value="value"
                         label="Presets"
                         @change="objectiveRIChanged"
-                        outlined
-                        single-line
+                        outlined dense
                         >
                     </v-select>
                 </v-col>
@@ -97,10 +95,10 @@
 
         <v-col v-if="!serie.generatePsf">
             <v-row align="center" justify="center">
+                <v-progress-circular indeterminate color="primary" v-if="loading"></v-progress-circular>
                 <v-col cols="30" sm="6" md="7">
                     <v-text-field regular label="PSF file" readonly
                             v-model="serie.psfFile" 
-                            :loading="loading > 0"
                             :rules="[rules.present]"
                             autofocus
                     >

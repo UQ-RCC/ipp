@@ -1,5 +1,12 @@
 <template>
-    <v-card  :loading="loading > 0">
+    <v-card>
+        <v-progress-linear
+            color="primary accent-4"
+            indeterminate
+            rounded
+            height="4"
+            :active="loading"
+        ></v-progress-linear>
         <file-browser-dialog ref="filedialog" />
         <template-dialog ref="templatedialog" />
         <v-dialog v-model="validityDialog" max-width="290">
@@ -34,7 +41,7 @@
                     item-value="value"
                     label="Illumination Type"
                     @change="psfChanged"
-                    outlined
+                    outlined dense
                 ></v-select>
             </v-col>
         </v-row>
@@ -97,7 +104,7 @@
                                         fab dark large 
                                         v-bind="attrs" 
                                         v-on="on">
-                                    <v-icon>mdi-minus-circle-outline</v-icon>
+                                    <v-icon>mdi-close</v-icon>
                                 </v-btn>
                             </template>
                             <span>Remove selected</span>
@@ -111,17 +118,12 @@
                                         fab dark large 
                                         v-bind="attrs" 
                                         v-on="on">
-                                    <v-icon>mdi-restart</v-icon>
+                                    <v-icon>mdi-close-octagon</v-icon>
                                 </v-btn>
                             </template>
-                            <span>Clear all</span>
+                            <span>Remove all</span>
                         </v-tooltip>
                     </div>
-
-                   
-
-                    
-
                 </div>
             </v-col>
             <v-divider vertical></v-divider>
@@ -241,7 +243,7 @@
                         </v-stepper>
                     </v-row>
                     <p/>
-                    <br/><br/>
+                    <br/>
                     <v-row class="d-flex">
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
@@ -312,8 +314,7 @@
                 </v-col>
 
             </v-col>
-        </v-row>
-        
+        </v-row>   
     </v-card>    
 </template>
 

@@ -1,142 +1,71 @@
 <template>
     <v-card :disabled="readonly">
         <pinhole-calculator-dialog ref="calculatordialog" />
-        <!-- <v-tooltip bottom>
-            <template v-slot:activator="{ on, attrs }">
-                <v-btn 
-                    class="my-3" 
-                    color="primary" 
-                    @click.stop="calculator"
-                    rounded dark large 
-                    v-bind="attrs" v-on="on"
-                    >
-                    Pinhole calculator
-                </v-btn>
-            </template>
-            <span>Backprojectec pinhole calculator</span>
-        </v-tooltip> -->
-
+        
         <v-data-table
             :headers="channelTableHeaders"
             :items="serie.channels"
             class="elevation-1"
             hide-default-footer
             >
-                <template v-slot:top>
-                    <v-dialog
-                        v-model="iterationsEditDialog"
-                        max-width="600px"
+
+            <template v-slot:item.iterations="props">
+                <v-edit-dialog
+                :return-value.sync="props.item.iterations"
+                >
+                {{ props.item.iterations }}
+                <template v-slot:input>
+                    <v-text-field
+                    v-model="props.item.iterations"
+                    label="Edit"
+                    single-line
+                    ></v-text-field>
+                </template>
+                </v-edit-dialog>
+            </template>
+
+            <template v-slot:item.background="props">
+                <v-edit-dialog
+                :return-value.sync="props.item.background"
+                >
+                {{ props.item.background }}
+                <template v-slot:input>
+                    <v-text-field
+                    v-model="props.item.background"
+                    label="Edit"
+                    single-line
+                    ></v-text-field>
+                </template>
+                </v-edit-dialog>
+            </template>
+
+            <template v-slot:item.wavelength="props">
+                <v-edit-dialog
+                :return-value.sync="props.item.wavelength"
+                >
+                {{ props.item.wavelength }}                    
+                <template v-slot:input>
+                    <v-text-field
+                    v-model="props.item.wavelength"
+                    label="Edit"
+                    single-line
+                    ></v-text-field>
+                </template>
+                </v-edit-dialog>
+            </template>
+
+            <template v-slot:item.pinhole="props">
+                {{ props.item.pinhole }}
+                <v-icon
+                    small
+                    class="mr-2"
+                    @click="calculator(props.item)"
                     >
-                        <v-card>
-                            <v-card-title>
-                            <span class="headline">Edit channels</span>
-                            </v-card-title>
+                    mdi-calculator
+                </v-icon>
+            </template>
 
-                            <v-card-text>
-                                <v-container>
-                                    <v-row>
-                                        <v-col
-                                            cols="12"
-                                            sm="6"
-                                            md="4"
-                                        >
-                                            <v-text-field
-                                                v-model="iterationsEditedItem.name"
-                                                label="Channel" disabled
-                                            ></v-text-field>
-                                        </v-col>
-                                        <v-col
-                                            cols="12"
-                                            sm="6"
-                                            md="4"
-                                        >
-                                            <v-text-field
-                                                v-model="iterationsEditedItem.iterations"
-                                                label="Iterations"
-                                                type="number" :rules="positiveInteger" 
-                                            ></v-text-field>
-                                        </v-col>
-                                        <v-col
-                                            cols="12"
-                                            sm="6"
-                                            md="4"
-                                            v-if="serie.backgroundType === 0"
-                                        >
-                                            <v-text-field
-                                                v-model="iterationsEditedItem.background"
-                                                label="Background" 
-                                                type="number" :rules="positiveNumber"
-                                            ></v-text-field>
-                                        </v-col>
-
-                                        <v-col
-                                            cols="12"
-                                            sm="6"
-                                            md="4"
-                                            v-if="serie.psfType !== 3"
-                                        >
-                                            <v-text-field
-                                                v-model="iterationsEditedItem.wavelength"
-                                                label="Emission Wavelength(mm)" 
-                                                type="number" :rules="positiveNumber"
-                                            ></v-text-field>
-                                        </v-col>
-
-                                        <v-col
-                                            cols="12"
-                                            sm="6"
-                                            md="4"
-                                            v-if="serie.psfType === 1"
-                                        >
-                                            <v-text-field
-                                                v-model="iterationsEditedItem.pinhole"
-                                                label="Backprojected pinhole radius(nm)" 
-                                                type="number" :rules="positiveNumber"
-                                            ></v-text-field>
-                                        </v-col>
-                                    </v-row>
-                                </v-container>
-                            </v-card-text>
-
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn
-                                    color="blue darken-1"
-                                    text
-                                    @click="closeIterationsDialog"
-                                >
-                                    Cancel
-                                </v-btn>
-                                <v-btn
-                                    color="blue darken-1"
-                                    text
-                                    @click="saveIterationsDialog"
-                                >
-                                    Save
-                                </v-btn>
-                            </v-card-actions>
-                        </v-card>
-                        </v-dialog>
-                </template>
-
-                <template v-slot:item.actions="{ item }">
-                    <v-icon
-                        small
-                        class="mr-2"
-                        @click="calculator(item)"
-                        v-if="serie['psfType'] === 1"
-                        >
-                        mdi-calculator
-                    </v-icon>
-                    <v-icon
-                        small
-                        class="mr-2"
-                        @click="editIterationsItem(item)"
-                        >
-                        mdi-pencil
-                    </v-icon>
-                </template>
-
+        
         </v-data-table>
         <p />
         <v-row align="center" justify="center">
@@ -148,14 +77,14 @@
                     item-value="value"
                     label="Background Correction"
                     @change="backgroundTypeChanged"
-                    outlined
+                    outlined dense
                     >
                 </v-select>
             </v-col>
 
             <v-col cols="20" sm="4" md="5">
                 <v-text-field 
-                    outlined
+                    outlined dense
                     type="number"
                     :rules="positiveInteger"   
                     label="Save every iterations" 
@@ -238,11 +167,11 @@
                         sortable: false,
                         value: 'pinhole',
                     },
-                    {   text: 'Actions',
-                        align: 'center', 
-                        value: 'actions', 
-                        sortable: false 
-                    },
+                    // {   text: 'Actions',
+                    //     align: 'center', 
+                    //     value: 'actions', 
+                    //     sortable: false 
+                    // },
                 ],
                 positiveNumber: [
                     value => value > 0 || 'Must be a positive number',
@@ -316,10 +245,10 @@
             }, 
             async calculator(item){
                 this.iterationsEditedIndex = this.serie.channels.indexOf(item)
-                // this.iterationsEditedItem = Object.assign({}, item)
+                this.iterationsEditedItem = Object.assign({}, item)
                 let options = await this.$refs.calculatordialog.open()
                 if (!options.cancelled && options.pinholeRadius) {
-                    console.log("agree")
+                    item = options.pinholeRadius
                     this.serie.channels[this.iterationsEditedIndex].pinhole = options.pinholeRadius
                 }
                 else {

@@ -166,27 +166,25 @@
                     </v-list-item>
                 </v-list>
             </v-card>
-            <div v-if="items.length >= itemsperpage">
-                <v-row>
-                    <v-col cols="2" sm="2" md="2">
-                        <v-text-field 
-                            type="number"  
-                            label="Items per page" 
-                            v-model="itemsperpage"
-                            @change="itemsPerpageChanged">
-                        </v-text-field>
-                    </v-col>
-                    <v-col cols="20" sm="4" md="5">
-                        <v-pagination
-                            v-model="pageindex"
-                            :length="pagelength"
-                            :total-visible="pagevisible"
-                            @input="pageIndexChanged"
-                        ></v-pagination>
+            <v-row>
+                <v-col cols="2" sm="2" md="2">
+                    <v-text-field 
+                        type="number"  
+                        label="Items per page" 
+                        v-model="itemsperpage"
+                        @change="itemsPerpageChanged">
+                    </v-text-field>
+                </v-col>
+                <v-col cols="20" sm="4" md="5">
+                    <v-pagination
+                        v-model="pageindex"
+                        :length="pagelength"
+                        :total-visible="pagevisible"
+                        @input="pageIndexChanged"
+                    ></v-pagination>
 
-                    </v-col>
-                </v-row>
-            </div>
+                </v-col>
+            </v-row>
         </v-card-text>
         <v-card-text
             v-else-if="filter"
@@ -388,9 +386,11 @@ export default {
                                                 this.pageindex * this.itemsperpage)
         },
         itemsPerpageChanged(){
-            this.pagelength = Math.ceil(this.filteredItems.length / this.itemsperpage)        
+            this.pagelength = Math.ceil(this.filteredItems.length / this.itemsperpage)
+            console.log(this.pagelength)        
             this.displayItems = this.filteredItems.slice((this.pageindex - 1) * this.itemsperpage, 
                                                 this.pageindex * this.itemsperpage)
+            console.log(this.displayItems)
         }
 
     },

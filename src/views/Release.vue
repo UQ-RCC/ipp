@@ -1,7 +1,7 @@
 <template>
     <div>
         <div style="text-align: center">Git version <b><i>{{ git_hash }}</i></b></div>
-        <div style="text-align: center">Git tag <b><i>{{ git_tag }}</i></b></div>
+        <!-- <div style="text-align: center">Git tag <b><i>{{ git_tag }}</i></b></div> -->
     </div>
 </template>
 

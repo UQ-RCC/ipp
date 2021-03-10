@@ -96,6 +96,8 @@
              * also get slurm jobs
              */
             async updateJobs(){
+                if(this.$route.path !== '/jobs')
+                    return
                 this.loading = true
                 // only list running and submitted jobs
                 this.jobs = await PreferenceAPI.list_decon_jobs(false)

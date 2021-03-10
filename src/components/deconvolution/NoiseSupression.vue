@@ -8,7 +8,7 @@
                     item-text="label"
                     item-value="value"
                     label="Regularization Type"
-                    outlined
+                    outlined dense
                     >
                 </v-select>
             </v-col>
@@ -47,7 +47,7 @@
                     item-text="label"
                     item-value="value"
                     label="Pre-filter"
-                    outlined
+                    outlined dense
                     >
                 </v-select>
             </v-col>
@@ -61,7 +61,7 @@
                     item-text="label"
                     item-value="value"
                     label="Post-filter"
-                    outlined
+                    outlined dense
                     >
                 </v-select>
             </v-col>
