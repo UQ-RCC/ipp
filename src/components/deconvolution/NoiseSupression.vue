@@ -1,5 +1,6 @@
 <template>
     <v-card :disabled="readonly">
+        <br />
         <v-row >
             <v-col cols="60" sm="12" md="15">
                 <v-select

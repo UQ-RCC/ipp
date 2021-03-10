@@ -7,6 +7,7 @@
             height="4"
             :active="loading"
         ></v-progress-linear>
+        <br />
         <file-browser-dialog ref="filedialog" />
         <template-dialog ref="templatedialog" />
         <v-dialog v-model="validityDialog" max-width="290">
