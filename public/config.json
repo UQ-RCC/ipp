@@ -1,8 +1,8 @@
 {
   "development": {
       "keycloak": {
-        "url": "https://auth0.portals.nimrod-portal.cloud.edu.au/auth/",
-        "realm": "ipp",
+        "url": "https://auth.rcc.uq.edu.au/auth/",
+        "realm": "wiener",
         "clientId": "jsclient",
         "onLoad": "login-required",
         "minValidity": 10
@@ -11,12 +11,12 @@
         "pref": "http://localhost:8000",
         "wiener": "https://wwi-test.qbi.uq.edu.au/devwienerbackend"
       },
-      "signoutUrl": "https://ipp.portals.nimrod-portal.cloud.edu.au/"
+      "signoutUrl": "https://uq-rcc.github.io/ipp/"
   },
   "production": {
       "keycloak": {
-        "url": "https://auth0.portals.nimrod-portal.cloud.edu.au/auth/",
-        "realm": "ipp",
+        "url": "https://auth.rcc.uq.edu.au/auth/",
+        "realm": "wiener",
         "clientId": "jsclient",
         "onLoad": "login-required",
         "minValidity": 10
@@ -25,6 +25,6 @@
         "pref": "https://dev.pref.ipp.rcc.uq.edu.au",
         "wiener": "https://wwi-test.qbi.uq.edu.au/devwienerbackend"
       },
-      "signoutUrl": "https://ipp.portals.nimrod-portal.cloud.edu.au/"
+      "signoutUrl": "https://uq-rcc.github.io/ipp/"
   }
 }
