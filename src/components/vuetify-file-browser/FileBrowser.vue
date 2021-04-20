@@ -123,7 +123,7 @@ export default {
     },
     data() {
         return {
-            loading: 0,
+            loading: false,
             path: "",
             filter: "",
             prefid: -1,
@@ -135,11 +135,7 @@ export default {
     },
     methods: {
         loadingChanged(loading) {
-            if (loading) {
-                this.loading++;
-            } else if (this.loading > 0) {
-                this.loading--;
-            }
+            this.loading = loading
         },
         pathChanged(path) {
             if(path){
