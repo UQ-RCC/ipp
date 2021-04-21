@@ -19,7 +19,7 @@
                         :headers="selectedFilesTable.headers"
                         :single-select="true"
                         :disable-pagination="true"
-                        item-key="series.path"
+                        item-key="path"
                         show-select
                         class="elevation-1"
                         height="200px" width="100%"
@@ -159,7 +159,7 @@
                 loading: false,
                 selectedFilesTable: {
                     headers: [
-                        { text: 'Name', value: 'series.path' }
+                        { text: 'Name', value: 'path'}
                     ],
                 },
                 selected: [],
@@ -187,7 +187,95 @@
 
             async submit(){
 
-            }
+            },
+
+
+            removeCurrentlySelected(){
+                Vue.$log.info("Removing currently seleced item")
+                this.selected.forEach(item => {
+                    for(let i = 0; i < this.loaded.length; i++){
+                        if(this.loaded[i].path === item.path){
+                            this.loaded.splice(i, 1)
+                        }
+                    }
+                })
+                this.selected = []
+                if(this.loaded.length == 0){
+                    this.outputFolderName = ""
+                    this.outputBasePath = ""
+                }
+            },
+
+            removeAll(){
+                this.loaded = []
+                this.selected = []
+                this.outputFolderName = ""
+                this.outputBasePath = ""
+            },
+
+            async selectFilesOrFolders(isfolder){
+                let options = null
+                if (isfolder)
+                    options = await this.$refs.filedialog.open('selectfilesinfolder', 'Deconvolution', '/')
+                else 
+                    options = await this.$refs.filedialog.open('selectfiles', 'Deconvolution', '/')
+                if (!options.cancelled) {
+                    let paths = []
+                    if(isfolder){
+                        let _pathToBeLoaded = options.path + options.filter
+                        Vue.$log.debug("selecting series:" + _pathToBeLoaded)
+                        let _exist = false
+                        this.loaded.map(file => {
+                            if (file.path === _pathToBeLoaded)
+                                _exist = true
+                        })
+                        if (_exist)
+                            return
+                        paths.push({'path': _pathToBeLoaded})
+                    } else {
+                        Vue.$log.debug("selecting files:")
+                        Vue.$log.debug(options.selectedItems)
+                        for(let i = 0; i< options.selectedItems.length; i++){
+                            let _exists = false
+                            this.loaded.map(file => {
+                                if (file.path === options.selectedItems[i].path)
+                                    _exists = true
+                            })
+                            if (!_exists)
+                                paths.push({'path': options.selectedItems[i].path})
+                        }
+                    }
+                    // if paths empty return
+                    if(paths.length === 0) {
+                        Vue.$log.debug("Paths is empty. Return.")
+                        return
+                    }
+                    else {
+                        Vue.$log.debug("Paths is not empty. Start loading.")
+                        Vue.$log.debug(paths)
+                    }
+                    
+                    if(this.loaded.length === 0){
+                        this.outputFolderName = "tif"
+                        this.outputBasePath = paths[0].path.split("/").slice(0,-1).join("/")
+                    }
+                    this.loaded = this.loaded.concat(paths)
+                    if ((!this.selected || this.selected.length ==0) && this.loaded.length > 0){
+                        this.selected = [ this.loaded[0] ]
+                    }
+                }
+            },
+
+            // select files
+            async selectFilesInFolder(){
+                await this.selectFilesOrFolders(true)
+            },
+
+            async selectFiles(){
+                await this.selectFilesOrFolders(false)
+            },
+
+
         }
     }
 </script>

@@ -73,7 +73,7 @@ const loadConfigAndStart = async () => {
           title: 'Authentication',
           text: 'Problem with authentication! move back to home!'
         })
-        window.location.href = Config.signoutUrl
+        // window.location.href = Config.signoutUrl
       
       });
       
