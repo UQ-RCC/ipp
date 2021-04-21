@@ -148,6 +148,9 @@
     import Vue from 'vue'
     // import * as api from '@/api'
     import FileBrowserDialog from '@/components/FileBrowserDialog.vue'
+    //api
+    import PreferenceAPI from "@/api/PreferenceAPI"
+    import ConvertAPI from "@/api/ConvertAPI.js"
 
     export default {
         name: 'Converter',
@@ -166,31 +169,70 @@
                 loaded: [],
                 outputBasePath: "",
                 outputFolderName: "",
+                dbinfo: {}
             }
             return data
         },
-        mounted: function() {
+        mounted: async function() {
+            // load from db 
+            this.dbinfo = await PreferenceAPI.get_convertpage()
+            // convert to data
+            this.dbinfo.inputPaths.map(path => {
+                this.loaded.push({'path': path})
+            })
+            this.selected = [ this.loaded[0] ]
+            // output path
+            var _pathParts = this.dbinfo.outputPath.split("/")
+            this.outputBasePath = _pathParts.slice(0,-1).join("/")
+            this.outputFolderName = _pathParts.slice(-1)[0]
         },
+
         methods: {
             async chooseOutputFolder(){
-                let options = await this.$refs.filedialog.open('selectfolder', 'Deconvolution', '/');
+                let options = await this.$refs.filedialog.open('selectfolder', 'Deconvolution', '/')
                 if (!options.cancelled && options.path) {
                     var selectedFolder = options.path
                     Vue.$log.debug("selected folder:" + selectedFolder)
                     if(selectedFolder.endsWith('/'))
-                        selectedFolder = selectedFolder.slice(0, -1);
-                    var _pathParts = selectedFolder.split("/");
+                        selectedFolder = selectedFolder.slice(0, -1)
+                    var _pathParts = selectedFolder.split("/")
                     this.outputBasePath = _pathParts.slice(0,-1).join("/")
                     this.outputFolderName = _pathParts.slice(-1)[0]
                 }
             },
 
             async submit(){
-
+                //save first
+                this.saveToDb()
+                // then submit
+                try{
+                    await ConvertAPI.convert(this.dbinfo.inputPaths, this.dbinfo.outputPath, this.dbinfo.method, this.dbinfo.prefix)
+                    Vue.notify({
+                        group: 'datanotif',
+                        type: 'success',
+                        title: 'Submission',
+                        text: 'Successfully submit converting job',
+                        closeOnClick: true,
+                        duration: 5000,
+                    })
+                }
+                catch(err) {
+                    Vue.$log.error("-----error submittin-----------")
+                    Vue.$log.error(err)
+                    Vue.notify({
+                        group: 'datanotif',
+                        type: 'error',
+                        title: 'Submission',
+                        text: 'Fail to submit converting job, please try again',
+                        closeOnClick: true,
+                        duration: 10000,
+                    })
+                    
+                }
             },
 
-
-            removeCurrentlySelected(){
+            // remove item
+            async removeCurrentlySelected(){
                 Vue.$log.info("Removing currently seleced item")
                 this.selected.forEach(item => {
                     for(let i = 0; i < this.loaded.length; i++){
@@ -204,15 +246,17 @@
                     this.outputFolderName = ""
                     this.outputBasePath = ""
                 }
+                this.saveToDb()
             },
-
-            removeAll(){
+            // remove all
+            async removeAll(){
                 this.loaded = []
                 this.selected = []
                 this.outputFolderName = ""
                 this.outputBasePath = ""
+                this.saveToDb()
             },
-
+            //
             async selectFilesOrFolders(isfolder){
                 let options = null
                 if (isfolder)
@@ -264,6 +308,7 @@
                         this.selected = [ this.loaded[0] ]
                     }
                 }
+                this.saveToDb()
             },
 
             // select files
@@ -274,7 +319,17 @@
             async selectFiles(){
                 await this.selectFilesOrFolders(false)
             },
-
+            // save to db
+            async saveToDb(){
+                this.dbinfo.inputPaths = []
+                this.loaded.map( item => {
+                    this.dbinfo.inputPaths.push(item.path)
+                })
+                if (!this.outputBasePath.endsWith("/"))
+                    this.outputBasePath = this.outputBasePath + "/"
+                this.dbinfo.outputPath = this.outputBasePath + this.outputFolderName
+                await PreferenceAPI.update_convertpage(this.dbinfo)
+            }
 
         }
     }

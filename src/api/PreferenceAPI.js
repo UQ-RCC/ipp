@@ -174,6 +174,14 @@ export default {
     await request.delete(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs/`, jobs)
   },
 
-
+  //convert
+  async get_convertpage(){
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/convertpage`)
+    return data
+  },
+  async update_convertpage(payload){
+    const { data } = await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/convertpage`, payload)
+    return data
+  },
 }
   
