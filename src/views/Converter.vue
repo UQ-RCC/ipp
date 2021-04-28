@@ -198,6 +198,7 @@
                     var _pathParts = selectedFolder.split("/")
                     this.outputBasePath = _pathParts.slice(0,-1).join("/")
                     this.outputFolderName = _pathParts.slice(-1)[0]
+                    this.saveToDb()
                 }
             },
 

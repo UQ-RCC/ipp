@@ -183,5 +183,41 @@ export default {
     const { data } = await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/convertpage`, payload)
     return data
   },
+
+
+  // preprocessing
+  async get_preprocessingpage(){
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/preprocessingpage`)
+    return data
+  },
+
+  async save_preprocessing(preprocessing){
+    const { data } = await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/preprocessing/${preprocessing.id}`, {
+      params: {
+        combine: preprocessing.combine, 
+        outputPath: preprocessing.outputPath
+      }
+    })
+    return data
+  },
+
+  async create_psetting(preprocessingid, series_id){
+    const { data } = await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/preprocessing/${preprocessingid}/psettings?series_id=${series_id}`)
+    return data
+  },
+
+  async get_psetting(psettingid){
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/psettings/${psettingid}`)
+    return data
+  },
+
+  async save_psetting(workingItem){
+    let _psetting = Object.assign({}, workingItem)
+    delete _psetting.series
+    await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/psettings/${_psetting.id}`, _psetting)
+  }
+
+
+    
 }
   

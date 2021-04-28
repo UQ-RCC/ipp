@@ -159,8 +159,9 @@ export default {
                 currentpath: this.path,
                 filters: this.filter
             }
-            console.log(new_pref);
-            this.pref = await PreferenceAPI.update_filesxplorer_pref(this.parentComponent, this.prefid, new_pref);
+            console.log(new_pref)
+            if(this.prefid > 0)
+                this.pref = await PreferenceAPI.update_filesxplorer_pref(this.parentComponent, this.prefid, new_pref)
         },
         async getPref(){
             //get pref

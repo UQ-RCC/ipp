@@ -19,16 +19,13 @@
                         :items="loaded"
                         :single-select="true"
                         :disable-pagination="true"
-                        item-key="path"
+                        item-key="series.path"
                         show-select
                         class="elevation-1"
-                        height="200px" width="100%"
+                        height="300px" width="100%"
                         @item-selected="selectedChanged"
                     >
                     </v-data-table>
-
-                    
-
 
                     <div>
                         <v-tooltip bottom>
@@ -129,23 +126,23 @@
                     <v-col cols="30" sm="7" md="9">
                         <v-row>
                             <v-switch
-                                v-model="serie.deskew"
+                                v-model="workingItem.deskew"
                                 label="Deskew"
                                 >
                             </v-switch>
                             <v-switch
-                                v-model="serie.keepDeskew"
+                                v-model="workingItem.keepDeskew"
                                 label="Keep Deskewed Files"
-                                v-if="serie.deskew"
+                                v-if="workingItem.deskew"
                                 >
                             </v-switch>
                         </v-row>
                     </v-col>
-                    <v-col v-if="serie.deskew" cols="40" sm="9" md="11"> 
+                    <v-col v-if="workingItem.deskew" cols="40" sm="9" md="11"> 
                         <v-row> 
                         <v-col cols="5" sm="2" md="3">
                             <v-text-field 
-                                v-model="serie.angle"
+                                v-model="workingItem.angle"
                                 regular 
                                 type=number
                                 :rules="numberRules" 
@@ -154,7 +151,7 @@
                         </v-col>
                         <v-col cols="5" sm="3" md="3">
                             <v-text-field 
-                                v-model="serie.threshold"
+                                v-model="workingItem.threshold"
                                 regular
                                 type=number
                                 :rules="numberRules" 
@@ -162,19 +159,19 @@
                             </v-text-field>
                         </v-col>
                         <v-col cols="15" sm="5" md="6" dense>
-                                Median Background: {{serie.background}}
+                                Median Background: {{workingItem.background}}
                                 <p />
-                                Standard deviation: {{serie.stddev}}
+                                Standard deviation: {{workingItem.stddev}}
                         </v-col>
                         </v-row>
                     </v-col>
                     <v-col cols="40" sm="9" md="11">
                         <v-data-table
                             :headers="deskewMetadataTableHeaders"
-                            :items="[{unit: serie.unit, pixelWidth: serie.pixelWidth, pixelHeight: serie.pixelHeight, pixelDepth: serie.pixelDepth }]"
+                            :items="[{unit: workingItem.unit, pixelWidth: workingItem.pixelWidth, pixelHeight: workingItem.pixelHeight, pixelDepth: workingItem.pixelDepth }]"
                             class="elevation-1"
                             hide-default-footer
-                            v-if="serie.deskew"
+                            v-if="workingItem.deskew"
                             >
                                 <template v-slot:top>
                                     <v-dialog 
@@ -197,7 +194,7 @@
                                                     >
                                                         <v-select
                                                             :items="units"
-                                                            v-model="serie.unit"
+                                                            v-model="workingItem.unit"
                                                             label="Unit"
                                                             outlined
                                                             return-object
@@ -210,7 +207,7 @@
                                                         md="4"
                                                     >
                                                         <v-text-field
-                                                            v-model="serie.pixelWidth"
+                                                            v-model="workingItem.pixelWidth"
                                                             label="Pixel Width" type="number"
                                                             :rules="numberRules" 
                                                         ></v-text-field>
@@ -221,7 +218,7 @@
                                                         md="4"
                                                     >
                                                             <v-text-field
-                                                            v-model="serie.pixelHeight"
+                                                            v-model="workingItem.pixelHeight"
                                                             label="Pixel Height" type="number"
                                                             :rules="numberRules" 
                                                         ></v-text-field>
@@ -232,7 +229,7 @@
                                                         md="4"
                                                     >
                                                         <v-text-field
-                                                            v-model="serie.pixelDepth"
+                                                            v-model="workingItem.pixelDepth"
                                                             label="Voxel Depth" type="number"
                                                             :rules="numberRules" 
                                                         ></v-text-field>
@@ -267,13 +264,13 @@
                                 </template>
                         </v-data-table>
                     </v-col>
-                    <v-col cols="40" sm="9" md="11">
+                    <!-- <v-col cols="40" sm="9" md="11">
                         <v-switch
                             v-model="serie.centerAndAverage"
                             label="Centre & Average"
                             >
                         </v-switch>
-                    </v-col>
+                    </v-col> -->
                 </v-row>
             </v-col>
         </v-row>
@@ -281,7 +278,7 @@
         <v-col>
             <v-row align="center" justify="center">   
                  <v-switch
-                    v-model="serie.combine"
+                    v-model="preprocessing.combine"
                     label="Combine"
                     hint="Change the series order in the table to change the order in combined stack"
                     :persistent-hint="true"
@@ -339,6 +336,9 @@
 <script>
     import Vue from 'vue'
     import FileBrowserDialog from '@/components/FileBrowserDialog.vue'
+    import PreferenceAPI from "@/api/PreferenceAPI"
+    import series from '@/utils/series.js'
+    import DeconvolutionAPI from "@/api/DeconvolutionAPI.js"
 
     export default {
         name: 'Preprocessing',
@@ -350,20 +350,18 @@
                 loading: false,
                 selectedFilesTable: {
                     headers: [
-                        { text: 'Name', value: 'path' }
+                        { text: 'Name', value: 'series.path' }
                     ],
                 },
                 selected: [],
-                loaded: [ {'path': '/afm01/Q0/Q0703/Nick_output/LifeAct488Rab13JF546timelapse05_-_1_XY1503384030_Z000_T02_C1_decon_t03_ch00.tif'}, 
-                          {'path': '/afm01/Q0/Q0703/Nick_output/LifeAct488Rab13JF546timelapse05_-_1_XY1503384030_Z000_T02_C1_decon_t03_ch01.tif'}, 
-                          {'path': '/afm01/Q0/Q0703/Nick_output/LifeAct488Rab13JF546timelapse05_-_1_XY1503384030_Z000_T02_C1_decon_t03_ch03.tif'}],
-                serie: {
-                    deskew: true,
-                    keepDeskew: true,
-                    angle: 32.8,
-                    threshold: 100, 
-                    background: 100, 
-                    stddev: 2
+                loaded: [],
+                workingItem: {
+                    deskew: true, 
+
+                },
+                preprocessing: {
+                    combine: true,
+                    outputPath: ""
                 },
                 outputBasePath: "",
                 outputFolderName: "",
@@ -410,13 +408,6 @@
         },
         methods: {
 
-            //anItem looks like this { item: any, value: boolean }
-            /**
-             * 
-             */
-            selectedChanged(anItem){
-                Vue.$log.debug(anItem)
-            },
             // edit dekew
             editDeskewItem () {
                 this.deskewEditDialog = true
@@ -424,16 +415,274 @@
             saveDeskewDialog(){
                 this.deskewEditDialog = false
             },
+            
+            // move selected item up
+            moveUp(){
+                this.selected.forEach(item => {
+                    for(let i = 0; i < this.loaded.length; i++){
+                        if(this.loaded[i].path === item.path){
+                            if (i == 0)
+                                return
+                            var currentItem = Object.assign({}, this.loaded[i])
+                            var previousItem = Object.assign({}, this.loaded[i-1])
+                            this.loaded.splice(i, 1)
+                            this.loaded.splice(i-1, 1)
+                            this.loaded.splice(i-1, 0, previousItem)
+                            this.loaded.splice(i-1, 0, currentItem)
+                            this.selected = [this.loaded[i-1]]
+                            break
+                        }
+                    }
+                })
+                this.saveToDb()
+            }, 
+            // move selceted item down
+            moveDown(){
+                this.selected.forEach(item => {
+                    for(let i = 0; i < this.loaded.length; i++){
+                        if(this.loaded[i].path === item.path){
+                            if (i == this.loaded.length-1)
+                                return
+                            var currentItem = Object.assign({}, this.loaded[i])
+                            var nextItem = Object.assign({}, this.loaded[i+1])
+                            this.loaded.splice(i+1, 1)
+                            this.loaded.splice(i, 1)
+                            this.loaded.splice(i, 0, currentItem)
+                            this.loaded.splice(i, 0, nextItem)
+                            this.selected = [this.loaded[i+1]]
+                            break
+                        }
+                    }
+                })
+                this.saveToDb()
+            },
+
+            // remove item
+            async removeCurrentlySelected(){
+                Vue.$log.info("Removing currently seleced item")
+                this.selected.forEach(item => {
+                    for(let i = 0; i < this.loaded.length; i++){
+                        if(this.loaded[i].path === item.path){
+                            this.loaded.splice(i, 1)
+                        }
+                    }
+                })
+                this.selected = []
+                if(this.loaded.length == 0){
+                    this.outputFolderName = ""
+                    this.outputBasePath = ""
+                }
+                this.saveToDb()
+            },
+            // remove all
+            async removeAll(){
+                this.loaded = []
+                this.selected = []
+                this.outputFolderName = ""
+                this.outputBasePath = ""
+                this.saveToDb()
+            },
+
+            // save to db
+            async saveToDb() {
+                if (!this.outputBasePath.endsWith("/"))
+                    this.outputBasePath = this.outputBasePath + "/"
+                this.preprocessing.outputPath = this.outputBasePath + this.outputFolderName
+                await PreferenceAPI.save_preprocessing(this.preprocessing)
+            },
+
+            /****************************************************************************** */
+            /** this part loads files/folders  **/
+            // this is different from display_decon
+            async load_path(pathToBeLoaded, isfolder) {
+                let items = []
+                try{
+                    let _storedSeries = await PreferenceAPI.get_serie(pathToBeLoaded)
+                    if ( _storedSeries && _storedSeries.length > 0 ) {
+                        Vue.$log.debug("Found serie in database")
+                        for(let _index = 0; _index < _storedSeries.length; _index++){
+                            let _storedSerie = _storedSeries[_index]
+                            let _psetting = await PreferenceAPI.create_psetting(this.preprocessing.id, _storedSerie.id)
+                            items.push(_psetting)
+                        }
+                    } else {
+                        Vue.$log.debug("Not found in database")
+                        let response = null
+                        if (isfolder)
+                            response = await DeconvolutionAPI.get_folder_info(pathToBeLoaded)
+                        else 
+                            response = await DeconvolutionAPI.get_file_info(pathToBeLoaded)
+                        
+                        Vue.$log.debug("Response :")
+                        Vue.$log.debug(response)
+                        Vue.$log.debug(JSON.parse(JSON.stringify(response)))
+                        // add to database
+                        for(let _index = 0; _index < response.commandResult.length; _index++){
+                            let _responseItem  = response.commandResult[_index]
+                            _responseItem.isfolder = isfolder
+                            let _serie = series.fixSeriesUnit(_responseItem)
+                            // let _setting = series.formatSeries(_responseItem)
+                            try{
+                                _serie = await PreferenceAPI.create_serie(_serie)
+                                let _psetting = await PreferenceAPI.create_psetting(this.preprocessing.id, _serie.id)
+                                items.push(_psetting)
+                            }
+                            catch(err) {
+                                Vue.$log.error(err)
+                            }// end catch                                    
+                        } // end for
+                    } // end not found in db
+                    Vue.$log.debug("items :")
+                    Vue.$log.debug(items)
+                }
+                catch(err){
+                    Vue.$log.error(err)
+                    Vue.notify({
+                        group: 'sysnotif',
+                        type: 'error',
+                        title: 'SelectFiles',
+                        text: 'Problem selecting files, try again!' + String(err)
+                    })
+                }
+                return items
+            },
+
+            /**
+             * a common function; to be called by selectFiles, selectFilesInFolders
+             */
+            async selectFilesOrFolders(isfolder){
+                let options = null
+                if (isfolder)
+                    options = await this.$refs.filedialog.open('selectfilesinfolder', 'Preprocessing', '/')
+                else 
+                    options = await this.$refs.filedialog.open('selectfiles', 'Preprocessing', '/')
+                if (!options.cancelled) {
+                    let paths = []
+                    if(isfolder){
+                        let _pathToBeLoaded = options.path + options.filter
+                        Vue.$log.debug("selecting series:" + _pathToBeLoaded)
+                        let _exist = false
+                        this.loaded.map(file => {
+                            if (file.series.path === _pathToBeLoaded)
+                                _exist = true
+                        })
+                        if (_exist)
+                            return
+                        paths.push(_pathToBeLoaded)
+                    } else {
+                        Vue.$log.debug("selecting files:")
+                        Vue.$log.debug(options.selectedItems)
+                        for(let i = 0; i< options.selectedItems.length; i++){
+                            let _exists = false
+                            this.loaded.map(file => {
+                                if (file.series.path === options.selectedItems[i].path)
+                                    _exists = true
+                            })
+                            if (!_exists)
+                                paths.push(options.selectedItems[i].path)
+                        }
+                    }
+                    // if paths empty return
+                    if(paths.length === 0) {
+                        Vue.$log.debug("Paths is empty. Return.")
+                        return
+                    }
+                    else {
+                        Vue.$log.debug("Paths is not empty. Start loading.")
+                        Vue.$log.debug(paths)
+                    }
+                        
+                    this.loading = true
+                    // now load the paths
+                    for(let i =0; i < paths.length; i++){
+                        Vue.$log.debug(">>>loading:" + paths[i])
+                        let items = await this.load_path(paths[i], isfolder)
+                        Vue.$log.debug("Results:")
+                        Vue.$log.debug(items)
+                        this.loaded = this.loaded.concat(items)
+                    }
+                    if ((!this.selected || this.selected.length ==0) && this.loaded.length > 0){
+                        this.selected = [ this.loaded[0] ]
+                    }
+                    this.loading = false                    
+                }
+            },
+
+            /**
+             * called when select single files
+             */
+            async selectFiles(){
+                await this.selectFilesOrFolders(false)
+            },
+            /**
+             * select series
+             */
+            async selectFilesInFolder(){
+                await this.selectFilesOrFolders(true)
+            },
+
+            async chooseOutputFolder(){
+                let options = await this.$refs.filedialog.open('selectfolder', 'Preprocessing', '/')
+                if (!options.cancelled && options.path) {
+                    var selectedFolder = options.path
+                    Vue.$log.debug("selected folder:" + selectedFolder)
+                    if(selectedFolder.endsWith('/'))
+                        selectedFolder = selectedFolder.slice(0, -1)
+                    var _pathParts = selectedFolder.split("/")
+                    this.outputBasePath = _pathParts.slice(0,-1).join("/")
+                    this.outputFolderName = _pathParts.slice(-1)[0]
+                }
+            },
+
+            //anItem looks like this { item: any, value: boolean }
+            /**
+             * an item is selected
+             * copy this item settings to the working one ?
+             */
+            async selectedChanged(anItem){
+                // if selected, load it
+                anItem.item.selected = anItem.value
+                if (anItem.value){
+                    this.selected = [ anItem.item ]
+                    this.workingItem = this.selected[0]
+                    Vue.$log.info(this.workingItem)
+                } else {
+                    // save this working item
+                    await PreferenceAPI.save_psetting(this.workingItem)
+                }
+            }
+
+
         },
         computed: {
             valid_dialog_values(){
-                if(this.serie.pixelWidth && 
-                    this.serie.pixelHeight &&
-                    this.serie.pixelDepth)
+                if(this.workingItem.pixelWidth && 
+                    this.workingItem.pixelHeight &&
+                    this.workingItem.pixelDepth)
                     return true
                 else
                     return false
             }
+        },
+        mounted: async function() {
+            // load from db 
+            let _preprocessingpage = await PreferenceAPI.get_preprocessingpage()
+            this.preprocessing = _preprocessingpage.preprocessing
+            if(this.preprocessing.outputPath == null)
+                this.preprocessing.outputPath = ""
+            // get psettings
+            for(let i = 0; i< this.preprocessing.psettings.length; i++){
+                this.loaded.push(await PreferenceAPI.get_psetting(this.preprocessing.psettings[i].id))
+            }
+            var _pathParts = []
+            if(this.preprocessing.outputPath !== "")
+                _pathParts = this.preprocessing.outputPath.split("/")
+            else
+                _pathParts = this.loaded[0].series.path.split("/")
+            this.outputBasePath = _pathParts.slice(0,-1).join("/")
+            this.outputFolderName = "psf_output"
+            this.selected = [this.loaded[0]]
+            this.workingItem = this.selected[0]
         }
     }
 </script>
