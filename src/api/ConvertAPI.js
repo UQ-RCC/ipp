@@ -3,7 +3,7 @@ import Vue from 'vue'
 
 export default {
   // convert
-  async convert(files, output, method, prefix) {
+  async convert(files, output, method, prefix, jobid) {
     let fileslist = files.map( file => {
         return btoa(file);
     });          
@@ -12,6 +12,8 @@ export default {
             output: output,
             method: method,
             prefix: prefix,
+            jobid: jobid, 
+            endpoint: `${Vue.prototype.$Config.endpoints.pref}`,
             files: fileslist
         }
     })

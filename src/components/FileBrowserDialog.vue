@@ -78,10 +78,14 @@
         },
         methods: {
             open(mode, parentComponent, initPath) {
-                this.dialog = true;
-                this.options.mode = mode;
-                this.options.parentComponent = parentComponent;
-                this.options.initialPath = initPath;
+                this.dialog = true
+                this.options.mode = mode
+                this.options.parentComponent = parentComponent
+                this.options.initialPath = initPath
+                this.options.selectedItems = []
+                this.options.filter = ''
+                if(this.$refs.filebrowser1)
+                    this.$refs.filebrowser1.clearSelectedItem()
                 return new Promise((resolve, reject) => {
                     this.resolve = resolve;
                     this.reject = reject;

@@ -252,6 +252,11 @@ export default {
         }
     },
     methods: {
+        clearSelectedItem(){
+            console.log("clearing selected item at list")
+            this.items.forEach(item => item.selected=false)
+            this.selectedItems = []
+        },
         changePath(path) {
             this.pageindex = 1
             this.$emit("path-changed", path)

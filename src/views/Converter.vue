@@ -128,6 +128,11 @@
         </v-row>
         
         <v-row align="center" justify="center">
+            <v-checkbox
+                v-model="emailNeeded"
+                label="Email when the job is complete"
+            ></v-checkbox>
+            <v-divider class="mx-4" vertical></v-divider>
             <v-tooltip top>
                 <template v-slot:activator="{ on, attrs }">
                     <v-btn 
@@ -169,7 +174,8 @@
                 loaded: [],
                 outputBasePath: "",
                 outputFolderName: "",
-                dbinfo: {}
+                dbinfo: {},
+                emailNeeded: true
             }
             return data
         },
@@ -182,6 +188,8 @@
             })
             this.selected = [ this.loaded[0] ]
             // output path
+            if (!this.dbinfo.outputPath)
+                this.dbinfo.outputPath = ""
             var _pathParts = this.dbinfo.outputPath.split("/")
             this.outputBasePath = _pathParts.slice(0,-1).join("/")
             this.outputFolderName = _pathParts.slice(-1)[0]
@@ -205,9 +213,10 @@
             async submit(){
                 //save first
                 this.saveToDb()
+                let _job = await PreferenceAPI.create_convertpage_job()
                 // then submit
                 try{
-                    await ConvertAPI.convert(this.dbinfo.inputPaths, this.dbinfo.outputPath, this.dbinfo.method, this.dbinfo.prefix)
+                    await ConvertAPI.convert(this.dbinfo.inputPaths, this.dbinfo.outputPath, this.dbinfo.method, this.dbinfo.prefix, _job.id)
                     Vue.notify({
                         group: 'datanotif',
                         type: 'success',
@@ -220,6 +229,7 @@
                 catch(err) {
                     Vue.$log.error("-----error submittin-----------")
                     Vue.$log.error(err)
+                    await PreferenceAPI.delete_job(_job.id)
                     Vue.notify({
                         group: 'datanotif',
                         type: 'error',
@@ -326,7 +336,7 @@
                 this.loaded.map( item => {
                     this.dbinfo.inputPaths.push(item.path)
                 })
-                if (!this.outputBasePath.endsWith("/"))
+                if (this.outputBasePath && !this.outputBasePath.endsWith("/"))
                     this.outputBasePath = this.outputBasePath + "/"
                 this.dbinfo.outputPath = this.outputBasePath + this.outputFolderName
                 await PreferenceAPI.update_convertpage(this.dbinfo)

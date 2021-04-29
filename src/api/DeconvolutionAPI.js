@@ -48,6 +48,7 @@ export default {
     let execinfo = Object.assign({}, executioninfo.setting)
     execinfo.files = executioninfo.series.path
     execinfo.jobs = jobs
+    execinfo.endpoint = `${Vue.prototype.$Config.endpoints.pref}`
     // remove unneeded fields
     // delete execinfo.id //refers to settingid
     // delete execinfo.decon_id

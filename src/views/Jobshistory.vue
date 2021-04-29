@@ -152,7 +152,7 @@
                     if(job.id) {
                         // call preference api to delete it
                         try{
-                            await PreferenceAPI.delete_decon_job(job.id)
+                            await PreferenceAPI.delete_job(job.id)
                             // now cnacel the job correspdong to this decon job
                             if(job.jobid && typeof(job.jobid) == 'number') {
                                 await RemoteJobAPI.stop_job(job.jobid)

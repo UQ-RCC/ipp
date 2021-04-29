@@ -1,5 +1,6 @@
 <template>
     <div>
+        <br />
         <v-progress-linear
             color="primary accent-4"
             indeterminate
@@ -87,7 +88,7 @@
                             <span>Remove all</span>
                         </v-tooltip>
 
-                        <v-tooltip bottom v-if="selected && selected.length > 0">
+                        <!-- <v-tooltip bottom v-if="selected && selected.length > 0">
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn  class="my-3" 
                                         color="primary"
@@ -115,7 +116,7 @@
                                 </v-btn>
                             </template>
                             <span>Move selected item down</span>
-                        </v-tooltip>
+                        </v-tooltip> -->
                     </div>
                 </div>
             </v-col>
@@ -280,7 +281,7 @@
                  <v-switch
                     v-model="preprocessing.combine"
                     label="Combine"
-                    hint="Change the series order in the table to change the order in combined stack"
+                    hint="The order in the table will be the order in the combined stack"
                     :persistent-hint="true"
                     >
                 </v-switch>
@@ -317,6 +318,11 @@
             </v-row>
             <br />
             <v-row align="center" justify="center">
+                <v-checkbox
+                    v-model="emailNeeded"
+                    label="Email when the job is complete"
+                ></v-checkbox>
+                <v-divider class="mx-4" vertical></v-divider>    
                 <v-tooltip top>
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn 
@@ -403,6 +409,7 @@
                 numberRules: [
                     value => value && value >= 0 || 'Must be 0 or a positive number'
                 ],
+                emailNeeded: true
             }
             return data
         },
@@ -417,19 +424,31 @@
             },
             
             // move selected item up
-            moveUp(){
-                this.selected.forEach(item => {
+            async moveUp(){
+                this.selected.forEach(async(item) => {
                     for(let i = 0; i < this.loaded.length; i++){
                         if(this.loaded[i].path === item.path){
                             if (i == 0)
                                 return
                             var currentItem = Object.assign({}, this.loaded[i])
                             var previousItem = Object.assign({}, this.loaded[i-1])
-                            this.loaded.splice(i, 1)
-                            this.loaded.splice(i-1, 1)
-                            this.loaded.splice(i-1, 0, previousItem)
-                            this.loaded.splice(i-1, 0, currentItem)
-                            this.selected = [this.loaded[i-1]]
+                            // change order
+                            let currentItemOrder = currentItem.order
+                            currentItem.order = previousItem.order
+                            previousItem.order = currentItemOrder
+                            try {
+                                // update psetting
+                                await PreferenceAPI.save_psetting(currentItem)
+                                await PreferenceAPI.save_psetting(previousItem)
+                                this.loaded.splice(i, 1)
+                                this.loaded.splice(i-1, 1)
+                                this.loaded.splice(i-1, 0, previousItem)
+                                this.loaded.splice(i-1, 0, currentItem)
+                                this.selected = [this.loaded[i-1]]
+                            }
+                            catch(err) {
+                                Vue.$log.error(err)
+                            }// end catch
                             break
                         }
                     }
@@ -437,19 +456,31 @@
                 this.saveToDb()
             }, 
             // move selceted item down
-            moveDown(){
-                this.selected.forEach(item => {
+            async moveDown(){
+                this.selected.forEach(async(item) => {
                     for(let i = 0; i < this.loaded.length; i++){
                         if(this.loaded[i].path === item.path){
                             if (i == this.loaded.length-1)
                                 return
                             var currentItem = Object.assign({}, this.loaded[i])
                             var nextItem = Object.assign({}, this.loaded[i+1])
-                            this.loaded.splice(i+1, 1)
-                            this.loaded.splice(i, 1)
-                            this.loaded.splice(i, 0, currentItem)
-                            this.loaded.splice(i, 0, nextItem)
-                            this.selected = [this.loaded[i+1]]
+                            // change order
+                            let currentItemOrder = currentItem.order
+                            currentItem.order = nextItem.order
+                            nextItem.order = currentItemOrder
+                            try {
+                                // update psetting
+                                await PreferenceAPI.save_psetting(currentItem)
+                                await PreferenceAPI.save_psetting(nextItem)
+                                this.loaded.splice(i+1, 1)
+                                this.loaded.splice(i, 1)
+                                this.loaded.splice(i, 0, currentItem)
+                                this.loaded.splice(i, 0, nextItem)
+                                this.selected = [this.loaded[i+1]]
+                            }
+                            catch(err) {
+                                Vue.$log.error(err)
+                            }// end catch
                             break
                         }
                     }
@@ -460,23 +491,45 @@
             // remove item
             async removeCurrentlySelected(){
                 Vue.$log.info("Removing currently seleced item")
-                this.selected.forEach(item => {
+                let found = false
+                this.selected.forEach(async(item) => {
                     for(let i = 0; i < this.loaded.length; i++){
-                        if(this.loaded[i].path === item.path){
-                            this.loaded.splice(i, 1)
-                        }
+                        if(this.loaded[i].series.path === item.series.path){
+                            found = true
+                            // delete psetting
+                            try{
+                                await PreferenceAPI.delete_psetting(item.id)
+                                this.loaded.splice(i, 1)
+                            }
+                            catch(err) {
+                                Vue.$log.error("Problem deleting " + item.id)
+                                Vue.$log.error(err)
+                            }// end catch
+                            break
+                        } 
                     }
                 })
-                this.selected = []
-                if(this.loaded.length == 0){
-                    this.outputFolderName = ""
-                    this.outputBasePath = ""
+                if(found){
+                    this.selected = []
+                    if(this.loaded.length == 0){
+                        this.outputFolderName = ""
+                        this.outputBasePath = ""
+                    }
+                    this.saveToDb()
                 }
-                this.saveToDb()
             },
             // remove all
             async removeAll(){
-                this.loaded = []
+                while(this.loaded.length > 0) {
+                    let _item = this.loaded.pop()
+                    try{
+                        await PreferenceAPI.delete_psetting(_item.id)
+                    }
+                    catch(err) {
+                        Vue.$log.error("Problem deleting " + _item.id)
+                        Vue.$log.error(err)
+                    }// end catch
+                }
                 this.selected = []
                 this.outputFolderName = ""
                 this.outputBasePath = ""
@@ -485,7 +538,7 @@
 
             // save to db
             async saveToDb() {
-                if (!this.outputBasePath.endsWith("/"))
+                if (this.outputBasePath && !this.outputBasePath.endsWith("/"))
                     this.outputBasePath = this.outputBasePath + "/"
                 this.preprocessing.outputPath = this.outputBasePath + this.outputFolderName
                 await PreferenceAPI.save_preprocessing(this.preprocessing)
@@ -674,15 +727,27 @@
             for(let i = 0; i< this.preprocessing.psettings.length; i++){
                 this.loaded.push(await PreferenceAPI.get_psetting(this.preprocessing.psettings[i].id))
             }
-            var _pathParts = []
-            if(this.preprocessing.outputPath !== "")
-                _pathParts = this.preprocessing.outputPath.split("/")
-            else
-                _pathParts = this.loaded[0].series.path.split("/")
-            this.outputBasePath = _pathParts.slice(0,-1).join("/")
-            this.outputFolderName = "psf_output"
-            this.selected = [this.loaded[0]]
-            this.workingItem = this.selected[0]
+            // go through dbItems and load it based on order
+            console.log(this.loaded)
+            this.loaded = this.loaded.sort((a, b) => {
+                console.log (a.order - b.order) 
+                return a.order - b.oder
+            })
+            console.log(this.loaded)
+            if(this.loaded.length > 0){
+                var _pathParts = []
+                if(this.preprocessing.outputPath !== "")
+                    _pathParts = this.preprocessing.outputPath.split("/")
+                else
+                    _pathParts = this.loaded[0].series.path.split("/")
+                this.outputBasePath = _pathParts.slice(0,-1).join("/")
+                this.outputFolderName = "psf_output"
+                this.selected = [this.loaded[0]]
+                this.workingItem = this.selected[0]
+            } else {
+                this.selected = []
+                this.workingItem = {}
+            }
         }
     }
 </script>

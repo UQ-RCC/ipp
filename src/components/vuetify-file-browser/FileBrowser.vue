@@ -56,6 +56,7 @@
                     v-on:loading = loadingChanged
                     v-on:refreshed = "refreshPending = false"
                     v-on:file-deleted = "refreshPending = true"
+                    ref="filelist"
                 ></list>
             </v-col>
         </v-row>
@@ -178,9 +179,14 @@ export default {
         },
         async bookmarkChanged(){
             this.getPref();
+        },
+        // clear selected item from list
+        clearSelectedItem(){
+            this.$refs.filelist.clearSelectedItem()
         }
     },
     mounted() {
+        console.log("-------------filebrowser mounted-------------")
         // init
         if(this.initialPath && this.initialPath !== '/') {
             this.pathChanged(this.initialPath);

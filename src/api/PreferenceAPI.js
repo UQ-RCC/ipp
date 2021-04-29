@@ -163,7 +163,7 @@ export default {
     })
     return data
   },
-  async delete_decon_job(jobid){
+  async delete_job(jobid){
     await request.delete(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs/${jobid}`, {
       params: {
         jobid: jobid
@@ -184,6 +184,10 @@ export default {
     return data
   },
 
+  async create_convertpage_job(sendemail){
+    const { data } = await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/convertpage/job?sendemail=${sendemail}`)
+    return data
+  },
 
   // preprocessing
   async get_preprocessingpage(){
@@ -192,13 +196,7 @@ export default {
   },
 
   async save_preprocessing(preprocessing){
-    const { data } = await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/preprocessing/${preprocessing.id}`, {
-      params: {
-        combine: preprocessing.combine, 
-        outputPath: preprocessing.outputPath
-      }
-    })
-    return data
+    await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/preprocessing/${preprocessing.id}?combine=${preprocessing.combine}&outputPath=${preprocessing.outputPath}`)
   },
 
   async create_psetting(preprocessingid, series_id){
@@ -209,6 +207,10 @@ export default {
   async get_psetting(psettingid){
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/psettings/${psettingid}`)
     return data
+  },
+
+  async delete_psetting(psettingid){
+    await request.delete(`${Vue.prototype.$Config.endpoints.pref}/preferences/psettings/${psettingid}`)
   },
 
   async save_psetting(workingItem){
