@@ -1,5 +1,6 @@
 <template>
     <div>
+        <br />
         <v-progress-linear
             color="primary accent-4"
             indeterminate
@@ -511,6 +512,8 @@
                                 let _responseItem  = response.commandResult[_index]
                                 _responseItem.isfolder = isfolder
                                 let _serie = series.fixSeriesUnit(_responseItem)
+                                Vue.$log.debug("Series after fixing unit :")
+                                Vue.$log.debug(_serie)
                                 // let _setting = series.formatSeries(_responseItem)
                                 try{
                                     _serie = await PreferenceAPI.create_serie(_serie)

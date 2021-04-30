@@ -43,7 +43,7 @@ var series = {
         }
         
         // fix unit
-        if (series['unit'] === 'micron')
+        if (series['unit'] === 'micron' ||  series['unit'] === 'microns')
             series['unit'] = 'µm'
         
             // default value if null
@@ -165,7 +165,7 @@ var series = {
         if(!series.background)
             delete series.background
         
-        if (series.unit === 'micron')
+        if (series.unit === 'micron' ||  series['unit'] === 'microns')
             series.unit = 'µm'
         if (series.unit === '')
             delete series.unit
