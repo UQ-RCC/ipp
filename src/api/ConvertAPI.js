@@ -3,18 +3,19 @@ import Vue from 'vue'
 
 export default {
   // convert
-  async convert(files, output, method, prefix, jobid) {
-    let fileslist = files.map( file => {
-        return btoa(file);
-    });          
+  async convert(convertinfo, maxSize) {
+    let endpoint = `${Vue.prototype.$Config.endpoints.pref}`
+    // let apihost = /^(?:\w+\:\/\/)?([^\/]+)(.*)$/.exec(endpoint)[1]
+    let apihost = /^(?:\w+:\/\/)?([^/]+)(.*)$/.exec(endpoint)[1]
+    // only need to multiple by 2.2, but multiple by 4 to be sure
+    let mem = Math.ceil((maxSize * 4 )/(1024 * 1024 * 1024.0))
+    convertinfo.mem = mem
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/convertfilebase64`, {
         params: {
-            output: output,
-            method: method,
-            prefix: prefix,
-            jobid: jobid, 
-            endpoint: `${Vue.prototype.$Config.endpoints.pref}`,
-            files: fileslist
+            output: convertinfo.output,
+            convertinfo: btoa(JSON.stringify(convertinfo)),
+            apihost: apihost,
+            mem: mem
         }
     })
     return data

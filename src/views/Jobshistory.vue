@@ -109,7 +109,7 @@
                     return
                 this.loading = true
                 // only list running and submitted jobs
-                this.jobs = await PreferenceAPI.list_decon_jobs(false)
+                this.jobs = await PreferenceAPI.list_jobs(false)
                 // console.log(this.jobs)
                 let response = await RemoteJobAPI.list_jobs()
                 Vue.$log.debug("Remote jobs response :")
@@ -152,11 +152,11 @@
                     if(job.id) {
                         // call preference api to delete it
                         try{
-                            await PreferenceAPI.delete_job(job.id)
                             // now cnacel the job correspdong to this decon job
                             if(job.jobid && typeof(job.jobid) == 'number') {
                                 await RemoteJobAPI.stop_job(job.jobid)
                             }
+                            await PreferenceAPI.cancel_job(job.id)
                             update = true
                         }
                         catch(err) {

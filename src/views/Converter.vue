@@ -156,6 +156,7 @@
     //api
     import PreferenceAPI from "@/api/PreferenceAPI"
     import ConvertAPI from "@/api/ConvertAPI.js"
+    import miscs from '@/utils/miscs.js'
 
     export default {
         name: 'Converter',
@@ -180,8 +181,15 @@
             return data
         },
         mounted: async function() {
-            // load from db 
-            this.dbinfo = await PreferenceAPI.get_convertpage()
+            // load from db
+            try{
+                let convertpage = await PreferenceAPI.get_convertpage()
+                this.dbinfo = convertpage.convert
+            }
+            catch(err) {
+                Vue.$log.error(err)
+                this.dbinfo = {}
+            }// end catch 
             // convert to data
             this.dbinfo.inputPaths.map(path => {
                 this.loaded.push({'path': path})
@@ -213,10 +221,31 @@
             async submit(){
                 //save first
                 this.saveToDb()
-                let _job = await PreferenceAPI.create_convertpage_job()
+                // maxsize of files
+                let maxSize = 0
+                this.loaded.map( item => {
+                    if(item.size > maxSize)
+                        maxSize = item.size
+                })
+                // this is to make sure that if things are alrady loaded
+                // maxSize is not 0
+                if (maxSize < this.dbinfo.maxsize) {
+                    maxSize = this.dbinfo.maxsize
+                }
+                Vue.$log.info("maxsize is:" + maxSize)
+                //create job:
+                let _job = await PreferenceAPI.get_convert_job(this.dbinfo.id, this.emailNeeded)
                 // then submit
                 try{
-                    await ConvertAPI.convert(this.dbinfo.inputPaths, this.dbinfo.outputPath, this.dbinfo.method, this.dbinfo.prefix, _job.id)
+                    let convertinfo = {
+                        files: this.dbinfo.inputPaths,
+                        output: this.dbinfo.outputPath,
+                        method: this.dbinfo.method,
+                        prefix: this.dbinfo.prefix,
+                        jobid: _job.id
+                    }
+                    await ConvertAPI.convert(convertinfo, maxSize)
+                    // create a new convert
                     Vue.notify({
                         group: 'datanotif',
                         type: 'success',
@@ -225,6 +254,7 @@
                         closeOnClick: true,
                         duration: 5000,
                     })
+                    this.dbinfo = await PreferenceAPI.create_new_convert()
                 }
                 catch(err) {
                     Vue.$log.error("-----error submittin-----------")
@@ -278,7 +308,7 @@
                     let paths = []
                     if(isfolder){
                         let _pathToBeLoaded = options.path + options.filter
-                        Vue.$log.debug("selecting series:" + _pathToBeLoaded)
+                        Vue.$log.debug("selecting series:" + _pathToBeLoaded + " max size:" + options.maxsize)
                         let _exist = false
                         this.loaded.map(file => {
                             if (file.path === _pathToBeLoaded)
@@ -286,7 +316,9 @@
                         })
                         if (_exist)
                             return
-                        paths.push({'path': _pathToBeLoaded})
+                        paths.push({'path': _pathToBeLoaded, 'size': options.maxsize})
+                        if(options.maxsize > this.dbinfo.maxsize)
+                            this.dbinfo.maxsize = options.maxsize
                     } else {
                         Vue.$log.debug("selecting files:")
                         Vue.$log.debug(options.selectedItems)
@@ -296,8 +328,12 @@
                                 if (file.path === options.selectedItems[i].path)
                                     _exists = true
                             })
-                            if (!_exists)
-                                paths.push({'path': options.selectedItems[i].path})
+                            if (!_exists) {
+                                let itemSize = miscs.convertFormattedStrToBytes(options.selectedItems[i].size)
+                                if(itemSize > this.dbinfo.maxsize)
+                                    this.dbinfo.maxsize = itemSize
+                                paths.push({'path': options.selectedItems[i].path, 'size': itemSize})
+                            }
                         }
                     }
                     // if paths empty return
@@ -339,7 +375,8 @@
                 if (this.outputBasePath && !this.outputBasePath.endsWith("/"))
                     this.outputBasePath = this.outputBasePath + "/"
                 this.dbinfo.outputPath = this.outputBasePath + this.outputFolderName
-                await PreferenceAPI.update_convertpage(this.dbinfo)
+                //TODO here
+                await PreferenceAPI.update_convert(this.dbinfo.id, this.dbinfo)
             }
 
         }

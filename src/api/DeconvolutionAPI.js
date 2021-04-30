@@ -56,12 +56,16 @@ export default {
     // delete execinfo.isfolder
     // delete execinfo.name
     delete execinfo.decon
+    let endpoint = `${Vue.prototype.$Config.endpoints.pref}`
+    // let apihost = /^(?:\w+\:\/\/)?([^\/]+)(.*)$/.exec(endpoint)[1]
+    let apihost = /^(?:\w+:\/\/)?([^/]+)(.*)$/.exec(endpoint)[1]
     const { data } = await request.get(_requestUrl, {
         params: {
           output: output, 
           arrayMax: arrayMax,
           mem: mem, 
           devices: devices,
+          apihost: apihost,
           executioninfo: btoa(JSON.stringify(execinfo))  
         }
     })

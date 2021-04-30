@@ -52,6 +52,7 @@
                     :mode = mode
                     v-on:path-changed = pathChanged
                     v-on:filter-changed = filterChanged
+                    v-on:maxsize-changed = maxSizeChanged
                     v-on:selected-items-changed = selectedItemsChanged
                     v-on:loading = loadingChanged
                     v-on:refreshed = "refreshPending = false"
@@ -151,6 +152,9 @@ export default {
                 this.$emit("filter", filter);
                 this.savePref()                
             }
+        },
+        maxSizeChanged(maxsize){
+            this.$emit("maxsize", maxsize);
         },
         selectedItemsChanged(items){
             this.$emit("selected", items);

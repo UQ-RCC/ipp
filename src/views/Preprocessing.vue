@@ -267,8 +267,9 @@
                     </v-col>
                     <!-- <v-col cols="40" sm="9" md="11">
                         <v-switch
-                            v-model="serie.centerAndAverage"
+                            v-model="workingItem.centerAndAverage"
                             label="Centre & Average"
+                            disabled
                             >
                         </v-switch>
                     </v-col> -->
@@ -345,6 +346,7 @@
     import PreferenceAPI from "@/api/PreferenceAPI"
     import series from '@/utils/series.js'
     import DeconvolutionAPI from "@/api/DeconvolutionAPI.js"
+    import PreprocessAPI from "@/api/PreprocessAPI.js"
 
     export default {
         name: 'Preprocessing',
@@ -363,7 +365,6 @@
                 loaded: [],
                 workingItem: {
                     deskew: true, 
-
                 },
                 preprocessing: {
                     combine: true,
@@ -702,6 +703,50 @@
                 } else {
                     // save this working item
                     await PreferenceAPI.save_psetting(this.workingItem)
+                }
+            },
+
+
+            async submit(){
+                await PreferenceAPI.save_psetting(this.workingItem)
+                await this.saveToDb()
+                if(!this.preprocessing.id)
+                    return
+                let _job = await PreferenceAPI.get_preprocessing_job(this.preprocessing.id, this.emailNeeded)
+                let preprocessingjobinfo = Object.assign({}, this.preprocessing)
+                preprocessingjobinfo.jobid = _job.id
+                preprocessingjobinfo.files = []
+                this.loaded.map(item => {
+                    let _newItem = Object.assign({}, item)
+                    _newItem.path = _newItem.series.path
+                    delete _newItem.series
+                    preprocessingjobinfo.files.push(_newItem)
+                })
+                try{
+                    PreprocessAPI.preprocess(preprocessingjobinfo)
+                    Vue.notify({
+                        group: 'datanotif',
+                        type: 'success',
+                        title: 'Submission',
+                        text: 'Successfully submit preprocessing job',
+                        closeOnClick: true,
+                        duration: 5000,
+                    })
+                    this.preprocessing = await PreferenceAPI.create_new_processing()
+                }
+                catch(err) {
+                    Vue.$log.error("-----error submittin-----------")
+                    Vue.$log.error(err)
+                    await PreferenceAPI.delete_job(_job.id)
+                    Vue.notify({
+                        group: 'datanotif',
+                        type: 'error',
+                        title: 'Submission',
+                        text: 'Fail to submit preprocessing job, please try again',
+                        closeOnClick: true,
+                        duration: 10000,
+                    })
+                    
                 }
             }
 

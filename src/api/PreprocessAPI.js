@@ -3,14 +3,15 @@ import Vue from 'vue'
 
 export default {
   // list jobs
-  async preprocess(usermail, output, prepinfo, jobid) {
+  async preprocess(preprocessingjobinfo) {
+    let endpoint = `${Vue.prototype.$Config.endpoints.pref}`
+    // let apihost = /^(?:\w+\:\/\/)?([^\/]+)(.*)$/.exec(endpoint)[1]
+    let apihost = /^(?:\w+:\/\/)?([^/]+)(.*)$/.exec(endpoint)[1]
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/preprocessing`, {
       params: {
-        output: output,
-        prepinfo: btoa(prepinfo),
-        usermail: usermail,
-        jobid: jobid, 
-        endpoint: `${Vue.prototype.$Config.endpoints.pref}`
+        output: preprocessingjobinfo.outputPath,
+        prepinfo: btoa(JSON.stringify(preprocessingjobinfo)),
+        apihost: apihost
       }
     });
     return data

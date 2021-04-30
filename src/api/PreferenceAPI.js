@@ -146,7 +146,7 @@ export default {
     return data
   },
   // list jobs
-  async list_decon_jobs(alljobs){
+  async list_jobs(alljobs){
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs`, {
       params: {
         all: alljobs
@@ -164,12 +164,14 @@ export default {
     return data
   },
   async delete_job(jobid){
-    await request.delete(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs/${jobid}`, {
-      params: {
-        jobid: jobid
-      }
-    })
+    await request.delete(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs/${jobid}`)
   },
+
+  async cancel_job(jobid){
+    let payload = {"status": "CANCELLED"}
+    await request.put(`${Vue.prototype.$Config.endpoints.pref}/jobs/${jobid}`, payload)
+  },
+
   async delete_decon_jobs(jobs){
     await request.delete(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs/`, jobs)
   },
@@ -179,13 +181,18 @@ export default {
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/convertpage`)
     return data
   },
-  async update_convertpage(payload){
-    const { data } = await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/convertpage`, payload)
+  async update_convert(convertid, payload){
+    const { data } = await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/convert/${convertid}`, payload)
     return data
   },
 
-  async create_convertpage_job(sendemail){
-    const { data } = await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/convertpage/job?sendemail=${sendemail}`)
+  async get_convert_job(convertid, sendemail){
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/convert/${convertid}/job?sendemail=${sendemail}`)
+    return data
+  },
+
+  async create_new_convert(){
+    const { data } = await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/convertpage/convert`)
     return data
   },
 
@@ -217,6 +224,16 @@ export default {
     let _psetting = Object.assign({}, workingItem)
     delete _psetting.series
     await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/psettings/${_psetting.id}`, _psetting)
+  },
+
+  async get_preprocessing_job(preprocesingid, sendemail){
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/preprocessing/${preprocesingid}/job?sendemail=${sendemail}`)
+    return data
+  },
+
+  async create_new_processing(){
+    const { data } = await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/preprocessingpage/preprocessing`)
+    return data
   }
 
 

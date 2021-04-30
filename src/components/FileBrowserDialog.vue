@@ -17,6 +17,7 @@
                 :mode = options.mode
                 v-on:change="pathChanged"
                 v-on:filter="filterChanged"
+                v-on:maxsize="maxsizeChanged"
                 v-on:selected="selectedItemsChanged"
                 ref="filebrowser1"
             />
@@ -53,6 +54,7 @@
                 initialPath: '/',
                 path: '/bleh',
                 filter: '',
+                maxsize: 0,
                 cancelled: false,
                 selectedItems: []
             }
@@ -84,6 +86,7 @@
                 this.options.initialPath = initPath
                 this.options.selectedItems = []
                 this.options.filter = ''
+                this.options.maxsize = 0
                 if(this.$refs.filebrowser1)
                     this.$refs.filebrowser1.clearSelectedItem()
                 return new Promise((resolve, reject) => {
@@ -102,12 +105,15 @@
                 this.dialog = false;
             },
             pathChanged(path) {
-                this.options.path = path;
+                this.options.path = path
             },
             filterChanged(filter) {
                 if(filter){
-                    this.options.filter = filter;
+                    this.options.filter = filter
                 }
+            },
+            maxsizeChanged(maxsize) {
+                this.options.maxsize = maxsize
             },
             selectedItemsChanged(items){
                 this.options.selectedItems = items;

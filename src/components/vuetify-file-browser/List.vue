@@ -202,6 +202,7 @@ import Confirm from "./Confirm.vue"
 import FilesAPI from "@/api/FilesAPI"
 import Vue from 'vue'
 import * as minimatch from 'minimatch'
+import miscs from '@/utils/miscs.js'
 
 export default {
     name: 'List',
@@ -231,6 +232,7 @@ export default {
             filter_str: "",
             // value used to filter
             filter: "",
+            maxSize: 0 // in bytes
         };
     },
     computed: {
@@ -256,6 +258,7 @@ export default {
             console.log("clearing selected item at list")
             this.items.forEach(item => item.selected=false)
             this.selectedItems = []
+            this.maxSize = 0
         },
         changePath(path) {
             this.pageindex = 1
@@ -373,11 +376,23 @@ export default {
                     } else {
                         this.total_files++
                     }
-
                 })
             } else {
                 this.filteredItems = this.items
             }
+            this.maxSize = 0
+            // go through filteredItems to get the biggest file
+            this.filteredItems.map(_item => {
+                if(!['d', 'l'].includes(_item.permission.charAt(0))){
+                    let _itemSize = miscs.convertFormattedStrToBytes(_item.size)
+                    if ( _itemSize > this.maxSize) {
+                        this.maxSize = _itemSize
+                    }
+                } 
+            })
+            // emit maxsize changed
+            console.log("maxsize:" + this.maxSize + " filteredItem size:" + this.filteredItems.length)
+            this.$emit("maxsize-changed", this.maxSize)
             //calculate total pages
             this.pageindex = 1
             this.pagelength = Math.ceil(this.filteredItems.length / this.itemsperpage)        
