@@ -221,6 +221,8 @@ export default {
   },
 
   async save_psetting(workingItem){
+    if(!workingItem.id)
+      return
     let _psetting = Object.assign({}, workingItem)
     delete _psetting.series
     await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/psettings/${_psetting.id}`, _psetting)

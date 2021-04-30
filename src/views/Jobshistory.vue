@@ -170,8 +170,9 @@
                         }// end catch
                     } 
                     // not decon job
-                    else if(job.name != 'deconvolution' && job.jobid && typeof(job.jobid) == 'number') {
+                    else if(job.jobid) {
                         try{
+                            console.log("Deleting remote job : "+ job.jobid)
                             await RemoteJobAPI.stop_job(job.jobid)
                             update = true
                         }
@@ -184,6 +185,10 @@
                                 text: 'Problem deleting job, try again!'
                             })
                         }// end catch
+                    }
+                    else {
+                        console.log("Do nothing")
+                        console.log(job.jobid)
                     }
                 }
                 if(update){
