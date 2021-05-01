@@ -16,12 +16,15 @@
             return data
         },
         mounted: function() {
-            // this.$notify({
-            //     group: 'sysnotif',
-            //     type: 'success',
-            //     title: 'Important message',
-            //     text: 'Hello user! This is a notification!'
-            // });
+            console.log(this.$route.query.component)
+            if(this.$route.query.component && this.$route.query.component=='filesmanager'){
+                let forwardedPath = '/filesmanager'
+                if(this.$route.query.path)
+                    forwardedPath = forwardedPath + '?path=' + this.$route.query.path
+                this.$router.push({ 
+                    path: forwardedPath
+                })
+            }
         },
         methods: {
         }
