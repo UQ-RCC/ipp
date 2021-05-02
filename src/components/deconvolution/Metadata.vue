@@ -170,7 +170,8 @@
             async chooseOutputFolder(){
                 let options = await this.$refs.filedialog.open('selectfolder', 'Deconvolution', '/');
                 if (!options.cancelled && options.path) {
-                    var selectedFolder = options.path;
+                    var selectedFolder = options.path
+                    this.serie.outputPath = selectedFolder
                     if(selectedFolder.endsWith('/'))
                         selectedFolder = selectedFolder.slice(0, -1);
                     var _pathParts = selectedFolder.split("/");
