@@ -286,6 +286,7 @@
                 if(this.loaded.length == 0){
                     this.outputFolderName = ""
                     this.outputBasePath = ""
+                    this.dbinfo.maxsize = 0
                 }
                 this.saveToDb()
             },
@@ -295,6 +296,7 @@
                 this.selected = []
                 this.outputFolderName = ""
                 this.outputBasePath = ""
+                this.dbinfo.maxsize = 0
                 this.saveToDb()
             },
             //
@@ -316,6 +318,15 @@
                         })
                         if (_exist)
                             return
+                        if(options.maxsize * 2.2 > miscs.maxMemSize()){
+                            Vue.notify({
+                                group: 'sysnotif',
+                                type: 'warning',
+                                title: 'Unable to add file',
+                                text: 'This series require too much memory to run! This series cannot be added'
+                            })
+                            return
+                        }
                         paths.push({'path': _pathToBeLoaded, 'size': options.maxsize})
                         if(options.maxsize > this.dbinfo.maxsize)
                             this.dbinfo.maxsize = options.maxsize
@@ -330,6 +341,15 @@
                             })
                             if (!_exists) {
                                 let itemSize = miscs.convertFormattedStrToBytes(options.selectedItems[i].size)
+                                if(itemSize * 2.2 > miscs.maxMemSize()){
+                                    Vue.notify({
+                                        group: 'sysnotif',
+                                        type: 'warning',
+                                        title: 'Unable to add file',
+                                        text: 'This series require too much memory to run! This series cannot be added'
+                                    })
+                                    return
+                                }
                                 if(itemSize > this.dbinfo.maxsize)
                                     this.dbinfo.maxsize = itemSize
                                 paths.push({'path': options.selectedItems[i].path, 'size': itemSize})
