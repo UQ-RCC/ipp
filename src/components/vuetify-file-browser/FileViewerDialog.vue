@@ -12,7 +12,7 @@
                 name="input-7-1"
                 filled
                 auto-grow
-                readonly="true"
+                :readonly="true"
                 :value="message"
             ></v-textarea>
             <v-card-actions class="pt-0">

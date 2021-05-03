@@ -161,7 +161,7 @@ export default {
             this.$emit("selected", items);
         },
         async savePref(){
-            console.log("saving pref: prefid="+ this.prefid)
+            // console.log("saving pref: prefid="+ this.prefid)
             var new_pref = {
                 currentpath: this.path,
                 filters: this.filter

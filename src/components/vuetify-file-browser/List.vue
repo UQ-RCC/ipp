@@ -424,7 +424,6 @@ export default {
         },
         async viewItem(item){
             console.log("reading:" + item.path)
-            this.$emit("loading", true)
             try{
                 let _readFileResponse = await FilesAPI.readTextFile(item.path)
                 console.log("reading file:")
@@ -444,7 +443,6 @@ export default {
                     text: 'Problem reading file:' + String(err)
                 })
             }
-            this.$emit("loading", false)
         }
 
     },
