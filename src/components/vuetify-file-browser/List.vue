@@ -1,6 +1,7 @@
 <template>
     <v-card flat tile class="d-flex flex-column">
         <confirm ref="confirm"></confirm>
+        <file-viewer-dialog ref="fileviewer"></file-viewer-dialog>
         <v-toolbar v-if="path && isDir" dense flat class="shrink">
             <v-tooltip bottom class="ml-n1" v-if="mode === 'selectfiles'">
                 <template v-slot:activator="{ on, attrs }">
@@ -155,14 +156,17 @@
                             <v-list-item-subtitle>{{ item.size }}</v-list-item-subtitle>
                         </v-list-item-content>
 
-                        <v-list-item-action>
+                        <!-- <v-list-item-action> -->
+                            <v-btn icon v-if="canView(item)" @click.stop="viewItem(item)">
+                                <v-icon color="grey lighten-1">mdi-eye</v-icon>
+                            </v-btn>
                             <v-btn icon @click.stop="deleteItem(item)">
                                 <v-icon color="grey lighten-1">mdi-delete-outline</v-icon>
                             </v-btn>
                             <v-btn icon v-if="false">
                                 <v-icon color="grey lighten-1">mdi-information</v-icon>
                             </v-btn>
-                        </v-list-item-action>
+                        <!-- </v-list-item-action> -->
                     </v-list-item>
                 </v-list>
             </v-card>
@@ -199,6 +203,7 @@
 
 <script>
 import Confirm from "./Confirm.vue"
+import FileViewerDialog from "./FileViewerDialog"
 import FilesAPI from "@/api/FilesAPI"
 import Vue from 'vue'
 import * as minimatch from 'minimatch'
@@ -214,7 +219,8 @@ export default {
         mode: String
     },
     components: {
-        Confirm
+        Confirm, 
+        FileViewerDialog
     },
     data() {
         return {
@@ -411,6 +417,34 @@ export default {
             this.displayItems = this.filteredItems.slice((this.pageindex - 1) * this.itemsperpage, 
                                                 this.pageindex * this.itemsperpage)
             console.log(this.displayItems)
+        },
+        canView(item){
+            let extension = item.basename.split(".").pop()
+            return (item.type === "file" && ["txt", "out", "err", "json", "xml", "pref"].includes(extension) )
+        },
+        async viewItem(item){
+            console.log("reading:" + item.path)
+            this.$emit("loading", true)
+            try{
+                let _readFileResponse = await FilesAPI.readTextFile(item.path)
+                console.log("reading file:")
+                console.log(_readFileResponse)
+                if(_readFileResponse.commandResult.length > 0){
+                    await this.$refs.fileviewer.open(
+                        item.path,
+                        atob(_readFileResponse.commandResult[0].output)
+                    )
+                }
+            }
+            catch(err){
+                Vue.notify({
+                    group: 'sysnotif',
+                    type: 'error',
+                    title: 'Read file',
+                    text: 'Problem reading file:' + String(err)
+                })
+            }
+            this.$emit("loading", false)
         }
 
     },

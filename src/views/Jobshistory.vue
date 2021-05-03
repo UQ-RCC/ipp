@@ -115,9 +115,12 @@
                 Vue.$log.debug("Remote jobs response :")
                 Vue.$log.debug(response)
                 response.commandResult.forEach(remoteJob => {
-                    // if name is not deconvolution, add them in
-                    // if name is, ignore ?
-                    if (remoteJob.jobName != 'deconvolution') {
+                    let found = false
+                    this.jobs.forEach( aJob => {
+                        if(remoteJob.jobid == aJob.jobid)
+                            found = true
+                    })
+                    if (!found) {
                         this.jobs.push({'jobid': remoteJob.jobid,
                                         'jobname': remoteJob.jobName,
                                         'status': remoteJob.status, 
@@ -127,6 +130,18 @@
                                         'fail': 0
                                         })
                     }
+                    // if name is not deconvolution, add them in
+                    // if name is, ignore ?
+                    // if (remoteJob.jobName != 'deconvolution') {
+                    //     this.jobs.push({'jobid': remoteJob.jobid,
+                    //                     'jobname': remoteJob.jobName,
+                    //                     'status': remoteJob.status, 
+                    //                     'id': null, 
+                    //                     'total': 0,
+                    //                     'success': 0,
+                    //                     'fail': 0
+                    //                     })
+                    // }
                 });
                 this.loading = false
             },

@@ -44,5 +44,14 @@ export default {
         })
         return data
     },
+    //read text file
+    async readTextFile(filepath) {
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/readtextfile`, {
+            params: {
+                filepath: filepath
+            }
+        })
+        return data
+    },
 }
   

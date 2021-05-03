@@ -140,6 +140,7 @@ export default {
             this.loading = loading
         },
         pathChanged(path) {
+            console.log("[pathChanged@FileBrowser] path=" + path)
             if(path){
                 this.path = path;
                 this.$emit("change", path);
@@ -160,6 +161,7 @@ export default {
             this.$emit("selected", items);
         },
         async savePref(){
+            console.log("saving pref: prefid="+ this.prefid)
             var new_pref = {
                 currentpath: this.path,
                 filters: this.filter
@@ -169,17 +171,20 @@ export default {
                 this.pref = await PreferenceAPI.update_filesxplorer_pref(this.parentComponent, this.prefid, new_pref)
         },
         async getPref(){
+            console.log("Getting path from database")
             //get pref
             this.pref = await PreferenceAPI.get_filesxplorer_pref(this.parentComponent);
             Vue.$log.info('Pref response');
             Vue.$log.info(this.pref);
-            // update pref
-            this.path = this.pref.currentpath;
-            this.filter = this.pref.filters;
             this.prefid = this.pref.id;
-            // Vue.$log.info(this.pref.lastpaths);
-            // emit path changed
-            this.$emit("change", this.path);
+            // update pref
+            if(!this.path){
+                this.path = this.pref.currentpath;
+                this.filter = this.pref.filters;
+                // Vue.$log.info(this.pref.lastpaths);
+                // emit path changed
+                this.$emit("change", this.path);
+            }
         },
         async bookmarkChanged(){
             this.getPref();
@@ -189,17 +194,21 @@ export default {
             this.$refs.filelist.clearSelectedItem()
         }
     },
-    mounted() {
+    async mounted() {
         console.log("-------------filebrowser mounted-------------")
         // init
         if(this.initialPath && this.initialPath !== '/') {
-            this.pathChanged(this.initialPath);
+            console.log("change to initial path=" + this.initialPath)
+            this.path = this.initialPath
+            
         }
         else if (!this.path && !(this.tree && this.$vuetify.breakpoint.smAndUp)) {
-            console.log("in here");
-            this.pathChanged("/");
+            console.log("change to root")
+            this.path = "/"
         }
-        this.getPref();
+        await this.getPref()
+        // this.$emit("change", this.path)
+        this.pathChanged(this.path)
     }
 };
 </script>
