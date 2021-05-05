@@ -783,8 +783,8 @@
                 if (this.workingItem.visitedSteps.length === 0 )
                     this.workingItem.visitedSteps = [ 1 ]
                 this.workingItem.visitedSteps.forEach(it => {
-                    Vue.$log.info("Loading ....")
-                    Vue.$log.info(decon.setting)
+                    // Vue.$log.info("Loading ....")
+                    // Vue.$log.info(decon.setting)
                     let _acomponent = this.getStepComponent(it)
                     if(_acomponent){
                         _acomponent.load_serie(decon.setting)
@@ -808,7 +808,7 @@
                 // if selected, load it
                 anItem.item.selected = anItem.value
                 if (anItem.value){
-                    console.log("selecting ...." + anItem.item.series.path)
+                    // console.log("selecting ...." + anItem.item.series.path)
                     if ( this.singleSelect ) {
                         this.selected = [ anItem.item ]
                         this.display_decon(anItem.item)
@@ -840,6 +840,7 @@
              * when psfChanged
              */
             psfChanged(){
+                // console.log('psftype=' + this.workingItem.setting.psfType)
                 this.saveSettings()
                 // is this needed
                 this.display_decon(this.workingItem, false)
