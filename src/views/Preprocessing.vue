@@ -716,16 +716,27 @@
                 let preprocessingjobinfo = Object.assign({}, this.preprocessing)
                 preprocessingjobinfo.jobid = _job.id
                 preprocessingjobinfo.files = []
+                let memInMb = 0
                 this.loaded.map(item => {
                     let _newItem = Object.assign({}, item)
                     _newItem.path = _newItem.series.path
                     delete _newItem.series
+                    if (item.maxFileSizeInMb > memInMb)
+                        memInMb = item.maxFileSizeInMb
                     preprocessingjobinfo.files.push(_newItem)
                 })
+                // double the amount for read + write
+                // double due to decon
+                // 4 * 5 due to size of buffer
+                // 2 to make it safe
+                let totalMemSuggestedGbs = (memInMb * 2 * 2 * 4 * 5)/1024
+                // round up
+                totalMemSuggestedGbs = Math.ceil(totalMemSuggestedGbs/10) * 10 + 5
+                if(totalMemSuggestedGbs > 380)
+                    totalMemSuggestedGbs = 380
+                console.log("Suggested mem in Gbs:" + totalMemSuggestedGbs)
                 try{
-                    console.log(preprocessingjobinfo)
-                    console.log(PreprocessAPI)
-                    // PreprocessAPI.preprocess(preprocessingjobinfo)
+                    PreprocessAPI.preprocess(preprocessingjobinfo, totalMemSuggestedGbs)
                     Vue.notify({
                         group: 'datanotif',
                         type: 'success',

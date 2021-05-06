@@ -121,11 +121,31 @@ var series = {
             series['autoDetect']= false
         if (!series['instances'])
             series['instances']= 1
-        if (!series['mem'])
-            series['mem']= 100
+        if (!series['mem']) {
+            if(series['maxFileSizeInMb']) { 
+                let totalMemSuggestedGbs = (series['maxFileSizeInMb'] * 2 * 2 * 4 * 5)/1024
+                // round up
+                totalMemSuggestedGbs = Math.ceil(totalMemSuggestedGbs/10) * 10 + 5
+                if(totalMemSuggestedGbs > 380)
+                    totalMemSuggestedGbs = 380
+                series['mem']= totalMemSuggestedGbs
+            } else {
+                series['mem'] = 100
+            }
+        }
+        // gpus
         if (!series['gpus'])
             series['gpus'] = 1
-        
+        // outputPath
+        if(!series['outputPath']){
+            let seriesPath = series['path']
+            if(seriesPath){
+                series['outputPath'] = seriesPath.split("/").slice(0,-1).join("/") 
+                if(!series['outputPath'].endsWith("/"))
+                    series['outputPath'] = series['outputPath'] + "/"
+                series['outputPath'] = series['outputPath'] + "output"    
+            }
+        }
 
         return series;
     },
