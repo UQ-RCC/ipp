@@ -121,7 +121,10 @@
                             found = true
                     })
                     if (!found) {
-                        this.jobs.push({'jobid': remoteJob.jobid,
+                        if (remoteJob.jobName.includes('ipp_decon') || remoteJob.jobName.includes('ipp_convert') || remoteJob.jobName.includes('ipp_preprocess'))
+                            console.log("Not added, ipp job")
+                        else
+                            this.jobs.push({'jobid': remoteJob.jobid,
                                         'jobname': remoteJob.jobName,
                                         'status': remoteJob.status, 
                                         'id': null, 
@@ -130,18 +133,6 @@
                                         'fail': 0
                                         })
                     }
-                    // if name is not deconvolution, add them in
-                    // if name is, ignore ?
-                    // if (remoteJob.jobName != 'deconvolution') {
-                    //     this.jobs.push({'jobid': remoteJob.jobid,
-                    //                     'jobname': remoteJob.jobName,
-                    //                     'status': remoteJob.status, 
-                    //                     'id': null, 
-                    //                     'total': 0,
-                    //                     'success': 0,
-                    //                     'fail': 0
-                    //                     })
-                    // }
                 });
                 this.loading = false
             },
