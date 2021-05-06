@@ -88,7 +88,7 @@
                             <span>Remove all</span>
                         </v-tooltip>
 
-                        <!-- <v-tooltip bottom v-if="selected && selected.length > 0">
+                        <v-tooltip bottom v-if="selected && selected.length > 0">
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn  class="my-3" 
                                         color="primary"
@@ -116,7 +116,7 @@
                                 </v-btn>
                             </template>
                             <span>Move selected item down</span>
-                        </v-tooltip> -->
+                        </v-tooltip>
                     </div>
                 </div>
             </v-col>
@@ -429,7 +429,7 @@
             async moveUp(){
                 this.selected.forEach(async(item) => {
                     for(let i = 0; i < this.loaded.length; i++){
-                        if(this.loaded[i].path === item.path){
+                        if(this.loaded[i].series.path === item.series.path){
                             if (i == 0)
                                 return
                             var currentItem = Object.assign({}, this.loaded[i])
@@ -461,7 +461,7 @@
             async moveDown(){
                 this.selected.forEach(async(item) => {
                     for(let i = 0; i < this.loaded.length; i++){
-                        if(this.loaded[i].path === item.path){
+                        if(this.loaded[i].series.path === item.series.path){
                             if (i == this.loaded.length-1)
                                 return
                             var currentItem = Object.assign({}, this.loaded[i])
@@ -478,7 +478,6 @@
                                 this.loaded.splice(i, 1)
                                 this.loaded.splice(i, 0, currentItem)
                                 this.loaded.splice(i, 0, nextItem)
-                                this.selected = [this.loaded[i+1]]
                             }
                             catch(err) {
                                 Vue.$log.error(err)
@@ -724,7 +723,9 @@
                     preprocessingjobinfo.files.push(_newItem)
                 })
                 try{
-                    PreprocessAPI.preprocess(preprocessingjobinfo)
+                    console.log(preprocessingjobinfo)
+                    console.log(PreprocessAPI)
+                    // PreprocessAPI.preprocess(preprocessingjobinfo)
                     Vue.notify({
                         group: 'datanotif',
                         type: 'success',
@@ -733,7 +734,7 @@
                         closeOnClick: true,
                         duration: 5000,
                     })
-                    this.preprocessing = await PreferenceAPI.create_new_processing()
+                    // this.preprocessing = await PreferenceAPI.create_new_processing()
                 }
                 catch(err) {
                     Vue.$log.error("-----error submittin-----------")
@@ -791,17 +792,15 @@
             this.preprocessing = _preprocessingpage.preprocessing
             if(this.preprocessing.outputPath == null)
                 this.preprocessing.outputPath = ""
-            // get psettings
+
             for(let i = 0; i< this.preprocessing.psettings.length; i++){
-                this.loaded.push(await PreferenceAPI.get_psetting(this.preprocessing.psettings[i].id))
+                // query series as well
+                let _psetting = await PreferenceAPI.get_psetting(this.preprocessing.psettings[i].id)
+                let j =0
+                while(j < this.loaded.length && this.loaded[j].order < _psetting.order)
+                    j++
+                this.loaded.splice(j, 0, _psetting)
             }
-            // go through dbItems and load it based on order
-            // console.log(this.loaded)
-            this.loaded = this.loaded.sort((a, b) => {
-                console.log (a.order - b.order) 
-                return a.order - b.oder
-            })
-            console.log(this.loaded)
             if(this.loaded.length > 0){
                 var _pathParts = []
                 if(this.preprocessing.outputPath !== "")
