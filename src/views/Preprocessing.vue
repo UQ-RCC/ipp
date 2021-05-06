@@ -767,6 +767,7 @@
                     // make all center and averae true
                     this.loaded.map(file => {
                         file.centerAndAverage = true
+                        PreferenceAPI.save_psetting(file)
                     })
                     await this.saveToDb()
                 }
@@ -795,7 +796,7 @@
                 this.loaded.push(await PreferenceAPI.get_psetting(this.preprocessing.psettings[i].id))
             }
             // go through dbItems and load it based on order
-            console.log(this.loaded)
+            // console.log(this.loaded)
             this.loaded = this.loaded.sort((a, b) => {
                 console.log (a.order - b.order) 
                 return a.order - b.oder
