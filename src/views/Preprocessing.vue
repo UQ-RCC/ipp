@@ -265,14 +265,14 @@
                                 </template>
                         </v-data-table>
                     </v-col>
-                    <!-- <v-col cols="40" sm="9" md="11">
+                    <v-col cols="40" sm="9" md="11">
                         <v-switch
                             v-model="workingItem.centerAndAverage"
                             label="Centre & Average"
-                            disabled
+                            @change="centerChanged"
                             >
                         </v-switch>
-                    </v-col> -->
+                    </v-col>
                 </v-row>
             </v-col>
         </v-row>
@@ -281,6 +281,7 @@
             <v-row align="center" justify="center">   
                  <v-switch
                     v-model="preprocessing.combine"
+                    @change="combineChanged"
                     label="Combine"
                     hint="The order in the table will be the order in the combined stack"
                     :persistent-hint="true"
@@ -747,6 +748,27 @@
                         duration: 10000,
                     })
                     
+                }
+            },
+
+            // center changed
+            async centerChanged(){
+                console.log("center changed:" + this.workingItem.centerAndAverage)
+                if(this.workingItem.centerAndAverage === false){
+                    this.preprocessing.combine = false
+                    await this.saveToDb()
+                }
+                await PreferenceAPI.save_psetting(this.workingItem)
+            }, 
+
+            async combineChanged(){
+                console.log("combne changed:" + this.preprocessing.combine)
+                if(this.preprocessing.combine === true){
+                    // make all center and averae true
+                    this.loaded.map(file => {
+                        file.centerAndAverage = true
+                    })
+                    await this.saveToDb()
                 }
             }
 
