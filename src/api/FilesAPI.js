@@ -22,6 +22,17 @@ export default {
         return data
     },
 
+    // use this one for files/folder in the same place
+    async simplemove(source, dest) {
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/simplemovebase64`, {
+            params: {
+                source: btoa(source),
+                dest: btoa(dest)
+            }
+        })
+        return data
+    },
+
     //delete a path
     async delete(path) {
         const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/deletebase64`, {

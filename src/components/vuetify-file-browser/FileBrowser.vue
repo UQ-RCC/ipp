@@ -17,6 +17,7 @@
             v-on:bookmark-changed = bookmarkChanged
             v-on:path-changed = pathChanged
             v-on:folder-created = "refreshPending = true"
+            ref="toolbar"
         ></toolbar>
         <v-row>
             <v-col v-if="tree && $vuetify.breakpoint.smAndUp" sm="auto">
@@ -149,16 +150,17 @@ export default {
         },
         filterChanged(filter) {
             if(filter){
-                this.filter = filter;
-                this.$emit("filter", filter);
+                this.filter = filter
+                this.$emit("filter", filter)
                 this.savePref()                
             }
         },
         maxSizeChanged(maxsize){
-            this.$emit("maxsize", maxsize);
+            this.$emit("maxsize", maxsize)
         },
         selectedItemsChanged(items){
-            this.$emit("selected", items);
+            this.$refs.toolbar.selectedItemsChanged(items)
+            this.$emit("selected", items)
         },
         async savePref(){
             // console.log("saving pref: prefid="+ this.prefid)

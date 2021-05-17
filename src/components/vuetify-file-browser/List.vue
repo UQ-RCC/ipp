@@ -2,6 +2,7 @@
     <v-card flat tile class="d-flex flex-column">
         <confirm ref="confirm"></confirm>
         <file-viewer-dialog ref="fileviewer"></file-viewer-dialog>
+        <name-modify-dialog ref="namemodify"></name-modify-dialog>
         <v-toolbar v-if="path && isDir" dense flat class="shrink">
             <v-tooltip bottom class="ml-n1" v-if="mode === 'selectfiles'">
                 <template v-slot:activator="{ on, attrs }">
@@ -21,7 +22,7 @@
                 solo
                 flat
                 hide-details
-                label="glob filter"
+                label="filter"
                 v-model="filter_str"
                 class="ml-n1"
                 @keydown="regexKeyDown"
@@ -35,7 +36,7 @@
                             mdi-help-circle-outline
                         </v-icon>
                         </template>
-                        Click here to read more about glob!
+                        Click here to read more about filter!
                     </v-tooltip>
                 </template>
             </v-text-field>
@@ -43,7 +44,25 @@
                 <v-icon>mdi-eye-settings-outline</v-icon>
             </v-btn>
             
-            
+            <v-menu offset-y >
+                <template v-slot:activator="{ on, attrs }">
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on: tooltip }">
+                            <v-btn v-bind="attrs" v-on="{ ...tooltip, ...on }" icon>
+                            {{ filterType.label }}
+                            <v-icon>mdi-dots-vertical</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Change types of filter</span>
+                    </v-tooltip>    
+                    </template>
+                <v-list>
+                    <v-list-item v-for="(item, index) in filterTypes" :key="index" @click="changeFilterType(item)">
+                    <v-list-item-title>{{ item.label }}</v-list-item-title>
+                    </v-list-item>
+                </v-list>
+            </v-menu>
+                
             <v-tooltip bottom class="ml-n1">
                 <template v-slot:activator="{ on, attrs }">
                     <v-btn
@@ -106,20 +125,40 @@
                         @click="changePath(item.path)"
                         class="pl-0"
                     >
+                        <v-list-item-action>
+                            <v-checkbox @click.stop="selectItem(item)" v-model="item.selected"></v-checkbox>
+                        </v-list-item-action>
+
                         <v-list-item-avatar class="ma-0">
                             <v-icon>mdi-folder-outline</v-icon>
                         </v-list-item-avatar>
+                        
                         <v-list-item-content class="py-2">
                             <v-list-item-title v-text="item.basename"></v-list-item-title>
                         </v-list-item-content>
-                        <v-list-item-action>
-                            <v-btn icon @click.stop="deleteItem(item)">
-                                <v-icon color="grey lighten-1">mdi-delete-outline</v-icon>
-                            </v-btn>
-                            <v-btn icon v-if="false">
+                        <!-- <v-list-item-action> -->
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on }">
+                                    <v-btn icon @click.stop="renameItem(item)" v-on="on">
+                                        <v-icon color="lighten-1">mdi-rename-box</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>Rename</span>
+                            </v-tooltip>
+                            
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on }">
+                                    <v-btn icon @click.stop="deleteItem(item)" v-on="on">
+                                        <v-icon color="lighten-1">mdi-delete-outline</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>Remove folder</span>
+                            </v-tooltip>
+                            
+                            <!-- <v-btn icon v-if="false">
                                 <v-icon color="grey lighten-1">mdi-information</v-icon>
-                            </v-btn>
-                        </v-list-item-action>
+                            </v-btn> -->
+                        <!-- </v-list-item-action> -->
                     </v-list-item>
                     <!-- </v-lazy> -->
                 </v-list>
@@ -143,7 +182,9 @@
                         
                         class="pl-0"
                     >
-                        <v-list-item-action v-if="['selectfiles', 'selectfile'].includes(mode)">
+                        <!-- <v-list-item-action v-if="['selectfiles', 'selectfile'].includes(mode)"> -->
+                        <!-- enable this for all modes -->
+                        <v-list-item-action>
                             <v-checkbox @click.stop="selectItem(item)" v-model="item.selected"></v-checkbox>
                         </v-list-item-action>
                         
@@ -157,15 +198,36 @@
                         </v-list-item-content>
 
                         <!-- <v-list-item-action> -->
-                            <v-btn icon v-if="canView(item)" @click.stop="viewItem(item)">
-                                <v-icon color="grey lighten-1">mdi-eye</v-icon>
-                            </v-btn>
-                            <v-btn icon @click.stop="deleteItem(item)">
-                                <v-icon color="grey lighten-1">mdi-delete-outline</v-icon>
-                            </v-btn>
-                            <v-btn icon v-if="false">
+                            
+                            <v-tooltip bottom v-if="canView(item)">
+                                <template v-slot:activator="{ on }">
+                                    <v-btn icon @click.stop="viewItem(item)" v-on="on">
+                                        <v-icon color="lighten-1">mdi-eye</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>View file</span>
+                            </v-tooltip>
+
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on }">
+                                    <v-btn icon @click.stop="renameItem(item)" v-on="on">
+                                        <v-icon color="lighten-1">mdi-rename-box</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>Rename</span>
+                            </v-tooltip>
+                            
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on }">
+                                    <v-btn icon @click.stop="deleteItem(item)" v-on="on">
+                                        <v-icon color="lighten-1">mdi-delete-outline</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>Remove file</span>
+                            </v-tooltip>
+                            <!-- <v-btn icon v-if="false">
                                 <v-icon color="grey lighten-1">mdi-information</v-icon>
-                            </v-btn>
+                            </v-btn> -->
                         <!-- </v-list-item-action> -->
                     </v-list-item>
                 </v-list>
@@ -204,6 +266,7 @@
 <script>
 import Confirm from "./Confirm.vue"
 import FileViewerDialog from "./FileViewerDialog"
+import NameModifyDialog from "./NameModifyDialog"
 import FilesAPI from "@/api/FilesAPI"
 import Vue from 'vue'
 import * as minimatch from 'minimatch'
@@ -220,7 +283,8 @@ export default {
     },
     components: {
         Confirm, 
-        FileViewerDialog
+        FileViewerDialog,
+        NameModifyDialog
     },
     data() {
         return {
@@ -238,6 +302,10 @@ export default {
             filter_str: "",
             // value used to filter
             filter: "",
+            filterType: {'type':'prefix', 'label': 'Starts'},
+            filterTypes: [{'type':'prefix', 'label': 'Starts'},
+                          {'type':'postfix', 'label': 'Ends'},
+                          {'type':'custom', 'label': 'Custom'}],
             maxSize: 0 // in bytes
         };
     },
@@ -260,6 +328,10 @@ export default {
         }
     },
     methods: {
+        changeFilterType(fType) {
+            this.filterType = fType
+            this.filterChanged()
+        },
         clearSelectedItem(){
             console.log("clearing selected item at list")
             this.items.forEach(item => item.selected=false)
@@ -272,6 +344,10 @@ export default {
         },
         filterChanged() {
             this.filter = this.filter_str
+            if(this.filterType.type == 'prefix')
+                this.filter = this.filter + '*'
+            else if (this.filterType.type == 'postfix')
+                this.filter = '*' + this.filter
             this.updateDisplayItems()
             this.$emit("filter-changed", this.filter)
         },
@@ -325,6 +401,22 @@ export default {
             }
             this.$emit("loading", false);
         },
+        async renameItem(item) {
+            console.log(item);
+            let options = await this.$refs.namemodify.open(item.name)
+            if (!options.cancelled && options.name && options.name !== item.name) {
+                let _pathParts = item.path.split('/')
+                _pathParts.pop()
+                let _parentPath = _pathParts.join('/')
+                //TODO: here -->
+                console.log('moving from:' + item.path + " to: " + _parentPath + item.name) 
+            }
+            else {
+                console.log("Nthing changed")
+            }
+        }, 
+
+        // delete item
         async deleteItem(item) {
             let confirmed = await this.$refs.confirm.open(
                 "Delete",
@@ -426,8 +518,6 @@ export default {
             console.log("reading:" + item.path)
             try{
                 let _readFileResponse = await FilesAPI.readTextFile(item.path)
-                console.log("reading file:")
-                console.log(_readFileResponse)
                 if(_readFileResponse.commandResult.length > 0){
                     await this.$refs.fileviewer.open(
                         item.path,
@@ -468,6 +558,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.v-input__slot::before {
+  border-style: none !important;
+}
+
 .v-card {
     height: 650px;
     overflow-x: auto;

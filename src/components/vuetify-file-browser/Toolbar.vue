@@ -37,6 +37,7 @@
             <v-btn text :input-value="path === '/'" @click="changePath('/')">
                 /
             </v-btn>
+
             <template v-for="(segment, index) in pathSegments">
                 <v-icon :key="index + '-icon'">mdi-chevron-right</v-icon>
                 <v-btn
@@ -60,7 +61,21 @@
                 <span v-else>Up to "{{pathSegments[pathSegments.length - 2].name}}"</span>
             </v-tooltip>            
 
-            <v-btn icon title="Copy Folder" v-if="parentComponent.toLowerCase() == 'filesmanager'" @click="copyFolder()">
+
+            <template>
+                <v-btn icon title="Add to bookmark" @click="addBookmark">
+                    <v-icon>mdi-bookmark-plus</v-icon>
+                </v-btn>
+            </template>
+
+
+            <template>
+                <v-btn icon title="Copy path to clipboard" @click="copyUrl">
+                    <v-icon>mdi-content-copy</v-icon>
+                </v-btn>
+            </template>
+            
+            <v-btn icon title="Copy/move folders" v-if="parentComponent.toLowerCase() == 'filesmanager' && selectedItems.length > 0" @click="copyFolder()">
                 <v-icon>mdi-folder-move</v-icon>
             </v-btn>
 
@@ -95,17 +110,12 @@
             </v-menu> 
 
             <template>
-                <v-btn icon title="Add to bookmark" @click="addBookmark">
-                    <v-icon>mdi-bookmark-plus</v-icon>
+                <v-btn icon title="Delete" @click="deleteSelectedItems" v-if="selectedItems.length > 0">
+                    <v-icon>mdi-delete-outline</v-icon>
                 </v-btn>
             </template>
 
 
-            <template>
-                <v-btn icon title="Copy path to clipboard" @click="copyUrl">
-                    <v-icon>mdi-content-copy</v-icon>
-                </v-btn>
-            </template>
 
         </template>
     </v-toolbar>
@@ -132,7 +142,8 @@ export default {
         return {
             newFolderPopper: false,
             copyFolderPopper: false,
-            newFolderName: ""
+            newFolderName: "",
+            selectedItems: []
         };
     },
     computed: {
@@ -271,6 +282,14 @@ export default {
                 });
             }
             
+        },
+
+        async deleteSelectedItems(){
+
+        },
+        // to be called from parent
+        selectedItemsChanged(items) {
+            this.selectedItems = items
         }
     },
     mounted() {

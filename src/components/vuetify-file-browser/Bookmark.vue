@@ -2,6 +2,21 @@
     <v-card flat tile class="d-flex flex-column bookmark-card">
         <div class="scroll-y scroll-x">
             <v-list dense>
+                <v-subheader>Collections</v-subheader>
+                <v-list-item-group color="primary">
+                    <v-list-item
+                        v-for="collection in collections"
+                        :key="collection.name"
+                        @click="changePath(collection.path)"
+                    >
+                    <v-icon color="grey lighten-1">mdi-folder-outline</v-icon>
+                        
+                        <v-list-item-content>
+                            <v-list-item-title  v-text="collection.name"></v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list-item-group>
+
                 <v-subheader>Bookmarks</v-subheader>
                 <v-list-item-group color="primary">
                     <v-list-item
@@ -35,6 +50,7 @@
 
 <script>
     import PreferenceAPI from "@/api/PreferenceAPI";
+    import CollectionsAPI from "@/api/CollectionsAPI";
     import Vue from 'vue';
     
     export default {
@@ -46,6 +62,7 @@
         },
         data: () => (
             {
+                collections: []
             }
         ),
         methods: {
@@ -74,7 +91,21 @@
                 this.$emit("path-changed", path);
             }
         },
-        mounted() {
+        async mounted() {
+            this.collections = []
+            try{
+                let _collectionResponse = await CollectionsAPI.list()
+                _collectionResponse.commandResult.map(_collectionItem => {
+                    let _collectionPath = _collectionItem.output
+                    if(!_collectionPath.endsWith("/")) {
+                        _collectionPath = _collectionPath + '/'
+                    }
+                    this.collections.push({"name": _collectionPath, "path": _collectionPath})
+                })
+            }
+            catch(err){
+                Vue.$log.error(err);
+            }
         }
     }
 </script>
