@@ -1,7 +1,8 @@
 <template>
     <v-toolbar flat dense color="blue-grey lighten-5">
         <file-browser-dialog ref="filedialog" />
-        
+        <confirm ref="confirm"></confirm>
+
         <v-toolbar-items>
 
             <v-menu offset-y>
@@ -75,7 +76,7 @@
                 </v-btn>
             </template>
             
-            <v-btn icon title="Copy/move folders" v-if="parentComponent.toLowerCase() == 'filesmanager' && selectedItems.length > 0" @click="copyFolder()">
+            <v-btn icon title="Copy/move files or folders" v-if="parentComponent.toLowerCase() == 'filesmanager' && selectedItems.length > 0" @click="copyFolder()">
                 <v-icon>mdi-folder-move</v-icon>
             </v-btn>
 
@@ -122,14 +123,16 @@
 </template>
 
 <script>
-import FilesAPI from "@/api/FilesAPI";
-import PreferenceAPI from "@/api/PreferenceAPI";
-import Vue from 'vue';
-
+import FilesAPI from "@/api/FilesAPI"
+import PreferenceAPI from "@/api/PreferenceAPI"
+import Vue from 'vue'
+import Confirm from "./Confirm.vue"
+import FileBrowserDialog from '../FileBrowserDialog.vue'
 export default {
     name: 'Toolbar',
     components: {
-        FileBrowserDialog: () => import('../FileBrowserDialog.vue')
+        Confirm, 
+        FileBrowserDialog
     },
     props: {
         path: String,
@@ -285,10 +288,36 @@ export default {
         },
 
         async deleteSelectedItems(){
+            let _deletedItems = []
+            let _deletedMsg = 'The following items are going to be deleted: <ul>'
+            this.selectedItems.map( item => {
+                _deletedItems.push(item.path)
+                _deletedMsg = _deletedMsg + '<li>' + item.path + '</li>'
+            })
+            _deletedMsg = _deletedMsg + '</ul>'
 
+            let confirmed = await this.$refs.confirm.open("Delete",_deletedMsg)
+
+            if (confirmed) {
+                this.$emit("loading", true)
+                try{
+                    await FilesAPI.delete(_deletedItems.join(';'))
+                    this.$emit("file-deleted")
+                }
+                catch(err){
+                    Vue.notify({
+                        group: 'sysnotif',
+                        type: 'error',
+                        title: 'Files deletion',
+                        text: 'Problem deleting files/folders. Please try again!'
+                    });
+                }
+                this.$emit("loading", false)
+            }
         },
         // to be called from parent
         selectedItemsChanged(items) {
+            // console.log(items)
             this.selectedItems = items
         }
     },

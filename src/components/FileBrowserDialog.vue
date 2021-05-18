@@ -38,6 +38,7 @@
 
 <script>
     // import FileBrowser from "./vuetify-file-browser/";
+    import Vue from 'vue'
 
     export default {
         name: 'FileBrowserDialog',
@@ -95,6 +96,15 @@
                 });
             },
             agree() {
+                if(this.options.filter == ''){
+                    Vue.notify({
+                        group: 'datanotif',
+                        type: 'warning',
+                        title: 'Please use filter to filter out items',
+                        text: 'It seems that you have not filtered out anything. Make sure hit enter or press Update filter button.'
+                    })
+                    return
+                }
                 this.options.cancelled = false;
                 this.resolve(this.options);
                 this.dialog = false;

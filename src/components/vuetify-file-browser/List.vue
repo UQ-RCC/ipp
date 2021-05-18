@@ -343,11 +343,13 @@ export default {
             this.$emit("path-changed", path)
         },
         filterChanged() {
-            this.filter = this.filter_str
-            if(this.filterType.type == 'prefix')
-                this.filter = this.filter + '*'
-            else if (this.filterType.type == 'postfix')
-                this.filter = '*' + this.filter
+            this.filter = this.filter_str.trim()
+            if (this.filter != '*' && this.filter != ''){
+                if(this.filterType.type == 'prefix')
+                    this.filter = this.filter + '*'
+                else if (this.filterType.type == 'postfix')
+                    this.filter = '*' + this.filter
+            }
             this.updateDisplayItems()
             this.$emit("filter-changed", this.filter)
         },
@@ -392,7 +394,7 @@ export default {
                     Vue.notify({
                         group: 'sysnotif',
                         type: 'error',
-                        title: 'Bookmark',
+                        title: 'Loading',
                         text: 'Problem loading files, tryagain: error:' + String(err)
                     });
                 }
@@ -402,14 +404,27 @@ export default {
             this.$emit("loading", false);
         },
         async renameItem(item) {
-            console.log(item);
             let options = await this.$refs.namemodify.open(item.name)
             if (!options.cancelled && options.name && options.name !== item.name) {
                 let _pathParts = item.path.split('/')
                 _pathParts.pop()
+                if(item.type =='dir') {
+                    _pathParts.pop()
+                }
                 let _parentPath = _pathParts.join('/')
-                //TODO: here -->
-                console.log('moving from:' + item.path + " to: " + _parentPath + item.name) 
+                try{
+                    console.log("Rename: "+item.path + " to "  + _parentPath + '/' + options.name)
+                    await FilesAPI.simplemove(item.path, _parentPath + '/' + options.name)
+                    this.$emit("item-renamed")
+                }
+                catch(err){
+                    Vue.notify({
+                        group: 'sysnotif',
+                        type: 'error',
+                        title: 'Renaming file/folder',
+                        text: 'Problem renaming file:' + item.path + ". Please try again."
+                    });
+                }
             }
             else {
                 console.log("Nthing changed")
@@ -435,7 +450,7 @@ export default {
                     Vue.notify({
                         group: 'sysnotif',
                         type: 'error',
-                        title: 'Bookmark',
+                        title: 'File deletion',
                         text: 'Problem deleting file:' + String(err)
                     });
                 }
@@ -443,11 +458,25 @@ export default {
             }
         },
         selectItem(item){
+            // only single file is selected
             if (this.mode === 'selectfile'){
-                this.selectedItems.forEach(element => element.selected = false);
-                this.selectedItems = [];
+                this.selectedItems.forEach(element => element.selected = false)
+                this.selectedItems = []
+                if(item.selected)
+                    this.selectedItems.push(item)
+            } else {
+                let _found = false
+                for(let i =0; i < this.selectedItems.length; i++){
+                    if(this.selectedItems[i].path === item.path) {
+                        _found = true
+                        if(!item.selected) {
+                            this.selectedItems.splice(i, 1)
+                        } 
+                    }
+                } 
+                if(item.selected && !_found)
+                    this.selectedItems.push(item)
             }
-            this.selectedItems.push(item);
             this.$emit("selected-items-changed", this.selectedItems);
         },
         // select all items

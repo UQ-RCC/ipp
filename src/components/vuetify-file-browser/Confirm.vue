@@ -45,7 +45,7 @@ export default {
         title: null,
         options: {
             color: "error",
-            width: 300,
+            width: 600,
         }
     }),
     methods: {

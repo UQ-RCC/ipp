@@ -17,6 +17,7 @@
             v-on:bookmark-changed = bookmarkChanged
             v-on:path-changed = pathChanged
             v-on:folder-created = "refreshPending = true"
+            v-on:file-deleted = "refreshPending = true"
             ref="toolbar"
         ></toolbar>
         <v-row>
@@ -58,6 +59,7 @@
                     v-on:loading = loadingChanged
                     v-on:refreshed = "refreshPending = false"
                     v-on:file-deleted = "refreshPending = true"
+                    v-on:item-renamed = "refreshPending = true"
                     ref="filelist"
                 ></list>
             </v-col>
