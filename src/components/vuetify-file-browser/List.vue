@@ -126,7 +126,7 @@
                         class="pl-0"
                     >
                         <v-list-item-action>
-                            <v-checkbox @click.stop="selectItem(item)" v-model="item.selected"></v-checkbox>
+                            <v-checkbox v-if="['selectfolders', 'selectfolder', 'manage'].includes(mode)" @click.stop="selectItem(item)" v-model="item.selected"></v-checkbox>
                         </v-list-item-action>
 
                         <v-list-item-avatar class="ma-0">
@@ -184,7 +184,7 @@
                     >
                         <!-- <v-list-item-action v-if="['selectfiles', 'selectfile'].includes(mode)"> -->
                         <!-- enable this for all modes -->
-                        <v-list-item-action>
+                        <v-list-item-action v-if="['selectfiles', 'selectfile', 'manage'].includes(mode)">
                             <v-checkbox @click.stop="selectItem(item)" v-model="item.selected"></v-checkbox>
                         </v-list-item-action>
                         
@@ -459,7 +459,7 @@ export default {
         },
         selectItem(item){
             // only single file is selected
-            if (this.mode === 'selectfile'){
+            if (this.mode === 'selectfile' || this.mode === 'selectfolder'){
                 this.selectedItems.forEach(element => element.selected = false)
                 this.selectedItems = []
                 if(item.selected)

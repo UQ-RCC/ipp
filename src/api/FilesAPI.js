@@ -44,13 +44,14 @@ export default {
     },
 
     // copy folder
-    async copy(usermail, sources, dest, parallel) {
+    async copy(usermail, sources, dest, parallel, deleteSource) {
         const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/copybase64`, {
             params: {
                 usermail: usermail,
                 sources: btoa(sources),
                 dest: btoa(dest),
-                parallel: parallel
+                parallel: parallel,
+                deleteSource: deleteSource
             }
         })
         return data

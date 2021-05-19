@@ -2,7 +2,8 @@
     <v-toolbar flat dense color="blue-grey lighten-5">
         <file-browser-dialog ref="filedialog" />
         <confirm ref="confirm"></confirm>
-
+        <copy-confirm-dialog ref="copyconfirm"></copy-confirm-dialog>
+ 
         <v-toolbar-items>
 
             <v-menu offset-y>
@@ -128,11 +129,13 @@ import PreferenceAPI from "@/api/PreferenceAPI"
 import Vue from 'vue'
 import Confirm from "./Confirm.vue"
 import FileBrowserDialog from '../FileBrowserDialog.vue'
+import CopyConfirmDialog from './CopyConfirmDialog.vue'
 export default {
     name: 'Toolbar',
     components: {
         Confirm, 
-        FileBrowserDialog
+        FileBrowserDialog,
+        CopyConfirmDialog
     },
     props: {
         path: String,
@@ -237,28 +240,39 @@ export default {
             }
         },
         async copyFolder(){
-            let options = await this.$refs.filedialog.open('selectfolder', 'FilesManager', '/');
+            let options = await this.$refs.filedialog.open('selectfolder', 'FilesManager', '/')
             if (!options.cancelled) {
-                Vue.$log.info("Copying" + this.path + " to "+ options.path);
-                try{
-                    let usermail = Vue.prototype.$keycloak && Vue.prototype.$keycloak.idTokenParsed ? Vue.prototype.$keycloak.idTokenParsed.email  : '';
-                    await FilesAPI.copy(usermail, this.path, options.path, 3);
-                    Vue.notify({
-                        group: 'sysnotif',
-                        type: 'info',
-                        title: 'Copying',
-                        text: 'Copying jobs started!'
-                    });
-                    this.$emit("bookmark-changed");
+                let _copiedItems = []
+                this.selectedItems.map( item => {
+                    _copiedItems.push(item.path)
+                })
+                let destination = options.path
+                if ( options.selectedItems.length > 0 ) {
+                    destination = destination + options.selectedItems[0].name
                 }
-                catch(err){
-                    Vue.notify({
-                        group: 'sysnotif',
-                        type: 'error',
-                        title: 'Copying',
-                        text: 'Problem creating copying jobs:' + String(err)
-                    });
-                }
+                Vue.$log.info("Copying" + _copiedItems + " to "+ destination)
+                let confirmOptions = await this.$refs.copyconfirm.open(_copiedItems, destination)
+                if (!confirmOptions.cancelled) {
+                    try{
+                        let usermail = Vue.prototype.$keycloak && Vue.prototype.$keycloak.idTokenParsed ? Vue.prototype.$keycloak.idTokenParsed.email  : ''
+                        await FilesAPI.copy(usermail, this.path, destination, 3, confirmOptions.deleteSource)
+                        Vue.notify({
+                            group: 'sysnotif',
+                            type: 'info',
+                            title: 'Batch job copy',
+                            text: 'Copying job started!'
+                        })
+                    
+                    }
+                    catch(err){
+                        Vue.notify({
+                            group: 'sysnotif',
+                            type: 'error',
+                            title: 'Copying',
+                            text: 'Problem creating copying jobs:' + String(err)
+                        })
+                    }
+                }        
             }
         },
         async addBookmark() {

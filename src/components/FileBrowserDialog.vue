@@ -96,7 +96,7 @@
                 });
             },
             agree() {
-                if(this.options.filter == ''){
+                if(this.options.mode === 'selectfilesinfolder' && this.options.filter == ''){
                     Vue.notify({
                         group: 'datanotif',
                         type: 'warning',

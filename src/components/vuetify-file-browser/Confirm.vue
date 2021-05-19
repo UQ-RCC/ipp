@@ -5,7 +5,7 @@
         @keydown.esc="cancel"
     >
         <v-card>
-            <v-toolbar dark :color="options.color" dense flat>
+            <v-toolbar color="#49075e" dense flat>
                 <v-toolbar-title class="white--text">{{ title }}</v-toolbar-title>
             </v-toolbar>
             <v-card-text v-if="message" class="pa-4 text-center" v-html="message"></v-card-text>

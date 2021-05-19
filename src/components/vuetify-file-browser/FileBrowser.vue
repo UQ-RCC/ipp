@@ -199,15 +199,13 @@ export default {
         }
     },
     async mounted() {
-        console.log("-------------filebrowser mounted-------------")
         // init
         if(this.initialPath && this.initialPath !== '/') {
-            console.log("change to initial path=" + this.initialPath)
-            this.path = this.initialPath
-            
+            // console.log("change to initial path=" + this.initialPath)
+            this.path = this.initialPath    
         }
         else if (!this.path && !(this.tree && this.$vuetify.breakpoint.smAndUp)) {
-            console.log("change to root")
+            // console.log("change to root")
             this.path = "/"
         }
         await this.getPref()
