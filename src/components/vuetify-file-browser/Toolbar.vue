@@ -63,20 +63,19 @@
                 <span v-else>Up to "{{pathSegments[pathSegments.length - 2].name}}"</span>
             </v-tooltip>            
 
+            <v-btn icon title="Clear all selected items" @click="clearAllselected">
+                <v-icon>mdi-notification-clear-all</v-icon>
+            </v-btn>
 
-            <template>
-                <v-btn icon title="Add to bookmark" @click="addBookmark">
-                    <v-icon>mdi-bookmark-plus</v-icon>
-                </v-btn>
-            </template>
+            <v-btn icon title="Add to bookmark" @click="addBookmark">
+                <v-icon>mdi-bookmark-plus</v-icon>
+            </v-btn>
+        
 
-
-            <template>
-                <v-btn icon title="Copy path to clipboard" @click="copyUrl">
-                    <v-icon>mdi-content-copy</v-icon>
-                </v-btn>
-            </template>
-            
+            <v-btn icon title="Copy path to clipboard" @click="copyUrl">
+                <v-icon>mdi-content-copy</v-icon>
+            </v-btn>
+        
             <v-btn icon title="Copy/move files or folders" v-if="parentComponent.toLowerCase() == 'filesmanager' && selectedItems.length > 0" @click="copyFolder()">
                 <v-icon>mdi-folder-move</v-icon>
             </v-btn>
@@ -301,7 +300,14 @@ export default {
             
         },
 
+        clearAllselected() {
+            this.$emit('clear-all-selected')
+        },
+
         async deleteSelectedItems(){
+            console.log("@Toolbars selected items@delete")
+            console.log(this.selectedItems)
+
             let _deletedItems = []
             let _deletedMsg = 'The following items are going to be deleted: <ul>'
             this.selectedItems.map( item => {
@@ -331,7 +337,6 @@ export default {
         },
         // to be called from parent
         selectedItemsChanged(items) {
-            // console.log(items)
             this.selectedItems = items
         }
     },

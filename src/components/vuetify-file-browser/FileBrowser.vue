@@ -17,7 +17,8 @@
             v-on:bookmark-changed = bookmarkChanged
             v-on:path-changed = pathChanged
             v-on:folder-created = "refreshPending = true"
-            v-on:file-deleted = "refreshPending = true"
+            v-on:file-deleted = itemsDeleted
+            v-on:clear-all-selected = clearAllSelected
             ref="toolbar"
         ></toolbar>
         <v-row>
@@ -162,7 +163,18 @@ export default {
         },
         selectedItemsChanged(items){
             this.$refs.toolbar.selectedItemsChanged(items)
+            this.$refs.toolbar.selectedItemsChanged(items)
             this.$emit("selected", items)
+        },
+        // all selected items got deleted
+        itemsDeleted(){
+            this.$refs.filelist.clearSelectedItem()
+            this.selectedItemsChanged([])
+            this.refreshPending = true
+        },
+        clearAllSelected(){
+            this.$refs.filelist.clearSelectedItem()
+            this.selectedItemsChanged([])
         },
         async savePref(){
             // console.log("saving pref: prefid="+ this.prefid)
@@ -170,12 +182,10 @@ export default {
                 currentpath: this.path,
                 filters: this.filter
             }
-            console.log(new_pref)
             if(this.prefid > 0)
                 this.pref = await PreferenceAPI.update_filesxplorer_pref(this.parentComponent, this.prefid, new_pref)
         },
         async getPref(){
-            console.log("Getting path from database")
             //get pref
             this.pref = await PreferenceAPI.get_filesxplorer_pref(this.parentComponent);
             Vue.$log.info('Pref response');

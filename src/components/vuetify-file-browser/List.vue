@@ -333,7 +333,6 @@ export default {
             this.filterChanged()
         },
         clearSelectedItem(){
-            console.log("clearing selected item at list")
             this.items.forEach(item => item.selected=false)
             this.selectedItems = []
             this.maxSize = 0
@@ -413,7 +412,6 @@ export default {
                 }
                 let _parentPath = _pathParts.join('/')
                 try{
-                    console.log("Rename: "+item.path + " to "  + _parentPath + '/' + options.name)
                     await FilesAPI.simplemove(item.path, _parentPath + '/' + options.name)
                     this.$emit("item-renamed")
                 }
