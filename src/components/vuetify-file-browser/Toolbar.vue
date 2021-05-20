@@ -261,7 +261,8 @@ export default {
                             title: 'Batch job copy',
                             text: 'Copying job started!'
                         })
-                    
+                        // clear the selected
+                        this.clearAllselected()
                     }
                     catch(err){
                         Vue.notify({
