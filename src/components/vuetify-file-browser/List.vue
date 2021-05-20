@@ -234,12 +234,13 @@
             </v-card>
             <v-row>
                 <v-col cols="2" sm="2" md="2">
-                    <v-text-field 
-                        type="number"  
-                        label="Items per page" 
-                        v-model="itemsperpage"
-                        @change="itemsPerpageChanged">
-                    </v-text-field>
+                    <v-select
+                        v-model="itemsPerPageOption"
+                        :items="itemsPerPageOptions"
+                        @change="itemsPerpageChanged"
+                        label="Rows per page"
+                    >
+                    </v-select>
                 </v-col>
                 <v-col cols="20" sm="4" md="5">
                     <v-pagination
@@ -294,7 +295,9 @@ export default {
             pageindex: 1,
             pagelength: 6,
             pagevisible: 7,
-            itemsperpage: 10,
+            itemsperpage: 50,
+            itemsPerPageOption: 50,
+            itemsPerPageOptions: [20, 50, 100, 200, 500, 'All'],
             selectedItems: [],
             total_files: 0, 
             total_folders: 0, 
@@ -531,6 +534,12 @@ export default {
                                                 this.pageindex * this.itemsperpage)
         },
         itemsPerpageChanged(){
+            // calculate items per page from 
+            if (isNaN(this.itemsPerPageOption)) {
+                this.itemsperpage = 4294967295
+            } else {
+                this.itemsperpage = this.itemsPerPageOption
+            }
             this.pagelength = Math.ceil(this.filteredItems.length / this.itemsperpage)
             console.log(this.pagelength)        
             this.displayItems = this.filteredItems.slice((this.pageindex - 1) * this.itemsperpage, 
