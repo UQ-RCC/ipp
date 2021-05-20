@@ -254,7 +254,7 @@ export default {
                 if (!confirmOptions.cancelled) {
                     try{
                         let usermail = Vue.prototype.$keycloak && Vue.prototype.$keycloak.idTokenParsed ? Vue.prototype.$keycloak.idTokenParsed.email  : ''
-                        await FilesAPI.copy(usermail, this.path, destination, 3, confirmOptions.deleteSource)
+                        await FilesAPI.copy(usermail, _copiedItems.join(";"), destination, 6, confirmOptions.deleteSource)
                         Vue.notify({
                             group: 'sysnotif',
                             type: 'info',
