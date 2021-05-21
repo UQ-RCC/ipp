@@ -308,6 +308,7 @@ export default {
             filterType: {'type':'prefix', 'label': 'Starts'},
             filterTypes: [{'type':'prefix', 'label': 'Starts'},
                           {'type':'postfix', 'label': 'Ends'},
+                          {'type':'contains', 'label': 'Contains'},
                           {'type':'custom', 'label': 'Custom'}],
             maxSize: 0 // in bytes
         };
@@ -351,6 +352,8 @@ export default {
                     this.filter = this.filter + '*'
                 else if (this.filterType.type == 'postfix')
                     this.filter = '*' + this.filter
+                else if (this.filterType.type == 'contains')
+                    this.filter = '*' + this.filter + '*'
             }
             this.updateDisplayItems()
             this.$emit("filter-changed", this.filter)
