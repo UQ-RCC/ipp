@@ -95,7 +95,7 @@
 
                 <v-card>
                     <v-card-text>
-                        <v-text-field label="Name" v-model="newFolderName" hide-details></v-text-field>
+                        <v-text-field label="Name" v-model="newFolderName" hide-details autofocus="true" @keydown.enter="mkdir"></v-text-field>
                     </v-card-text>
                     <v-card-actions>
                         <div class="flex-grow-1"></div>

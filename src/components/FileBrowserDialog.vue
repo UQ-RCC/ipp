@@ -63,16 +63,19 @@
         computed: {
             dialogTitle(){
                 if (this.options.mode === 'selectfilesinfolder'){
-                    return 'Select files in a folder';
+                    return 'Select files in a folder'
                 }
                 else if(this.options.mode === 'selectfiles'){
-                    return 'Select files';
+                    return 'Select files'
                 }
                 else if(this.options.mode === 'selectfile'){
-                    return 'Select a single file';
+                    return 'Select a single file'
                 }
                 else if(this.options.mode === 'selectfolder'){
-                    return 'Select a folder';
+                    if(this.options.parentComponent === 'FilesManager')
+                        return 'Select Copy Destination Folder'
+                    else
+                        return 'Select a folder'
                 }
                 return "";
             }

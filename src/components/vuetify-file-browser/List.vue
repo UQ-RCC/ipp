@@ -305,7 +305,7 @@ export default {
             filter_str: "",
             // value used to filter
             filter: "",
-            filterType: {'type':'prefix', 'label': 'Starts'},
+            filterType: {'type':'contains', 'label': 'Contains'},
             filterTypes: [{'type':'prefix', 'label': 'Starts'},
                           {'type':'postfix', 'label': 'Ends'},
                           {'type':'contains', 'label': 'Contains'},
