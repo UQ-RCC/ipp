@@ -367,7 +367,7 @@
                     }
                     
                     if(this.loaded.length === 0){
-                        this.outputFolderName = "tif"
+                        this.outputFolderName = "output_convert"
                         this.outputBasePath = paths[0].path.split("/").slice(0,-1).join("/")
                     }
                     this.loaded = this.loaded.concat(paths)
