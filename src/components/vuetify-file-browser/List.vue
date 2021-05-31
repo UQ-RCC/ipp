@@ -26,71 +26,57 @@
                 v-model="filter_str"
                 class="ml-n1"
                 @keydown="regexKeyDown"
+                prepend-icon="mdi-case-sensitive-alt"
             >
                 <template v-slot:prepend>
-                    <v-tooltip
-                        bottom
+                    <v-icon
+                        medium
+                        title = "Case sentitivity"
+                        :color="caseSentive? '#49075e': ''"
+                        @click="caseChanged"
                     >
-                        <template v-slot:activator="{ on }">
-                        <v-icon v-on="on" @click="helpGlob">
-                            mdi-help-circle-outline
-                        </v-icon>
-                        </template>
-                        Click here to read more about filter!
-                    </v-tooltip>
+                        mdi-case-sensitive-alt
+                    </v-icon>
+                </template>
+
+                <template v-slot:append>
+                    <v-menu offset-y >
+                        <template v-slot:activator="{ on, attrs }">
+                                <v-btn v-bind="attrs" v-on="{ ...on }" icon title="Change types of filter">
+                                    {{ filterType.label }}
+                                    <v-icon>mdi-dots-vertical</v-icon>
+                                </v-btn>  
+                            </template>
+                        <v-list>
+                            <v-list-item v-for="(item, index) in filterTypes" :key="index" @click="changeFilterType(item)">
+                            <v-list-item-title>{{ item.label }}</v-list-item-title>
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+                </template>
+                <template v-slot:append-outer>
+                    <v-icon 
+                        @click="filterChanged"
+                        title="Update filter"
+                        >
+                        mdi-filter-outline
+                    </v-icon>
+                    <v-icon
+                        title="Refresh current path"
+                        @click="load"
+                        >
+                        mdi-refresh
+                    </v-icon>
+                    <v-icon 
+                        title="Click here to see how filter works"
+                        @click="helpGlob">
+                        mdi-help-circle-outline
+                    </v-icon>
                 </template>
             </v-text-field>
-            <v-btn icon v-if="false">
-                <v-icon>mdi-eye-settings-outline</v-icon>
-            </v-btn>
-            
-            <v-menu offset-y >
-                <template v-slot:activator="{ on, attrs }">
-                    <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                            <v-btn v-bind="attrs" v-on="{ ...tooltip, ...on }" icon>
-                            {{ filterType.label }}
-                            <v-icon>mdi-dots-vertical</v-icon>
-                            </v-btn>
-                        </template>
-                        <span>Change types of filter</span>
-                    </v-tooltip>    
-                    </template>
-                <v-list>
-                    <v-list-item v-for="(item, index) in filterTypes" :key="index" @click="changeFilterType(item)">
-                    <v-list-item-title>{{ item.label }}</v-list-item-title>
-                    </v-list-item>
-                </v-list>
-            </v-menu>
-                
-            <v-tooltip bottom class="ml-n1">
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                    icon 
-                    @click="filterChanged"
-                    v-bind="attrs"
-                    v-on="on"
-                    >
-                    <v-icon>mdi-filter-outline</v-icon>
-                    </v-btn>
-                </template>
-                <span>Update filter</span>
-            </v-tooltip>
             
 
-            <v-tooltip bottom class="ml-n1">
-                <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                    icon 
-                    @click="load"
-                    v-bind="attrs"
-                    v-on="on"
-                    >
-                    <v-icon>mdi-refresh</v-icon>
-                    </v-btn>
-                </template>
-                <span>Refresh current path</span>
-            </v-tooltip>
+            
         </v-toolbar>
         <v-divider v-if="path && isDir"></v-divider>
         
@@ -310,6 +296,7 @@ export default {
                           {'type':'postfix', 'label': 'Ends'},
                           {'type':'contains', 'label': 'Contains'},
                           {'type':'custom', 'label': 'Custom'}],
+            caseSentive: false, 
             maxSize: 0 // in bytes
         };
     },
@@ -336,6 +323,12 @@ export default {
             this.filterType = fType
             this.filterChanged()
         },
+
+        caseChanged(){
+            this.caseSentive = !this.caseSentive
+            this.filterChanged()
+        },
+
         clearSelectedItem(){
             this.items.forEach(item => item.selected=false)
             this.selectedItems = []
@@ -346,7 +339,12 @@ export default {
             this.$emit("path-changed", path)
         },
         filterChanged() {
-            this.filter = this.filter_str.trim()
+            // case in/sentitivity
+            if (this.caseSentive)
+                this.filter = this.filter_str.trim()
+            else
+                this.filter = this.filter_str.toLowerCase().trim()
+            // now add filter    
             if (this.filter != '*' && this.filter != ''){
                 if(this.filterType.type == 'prefix')
                     this.filter = this.filter + '*'
