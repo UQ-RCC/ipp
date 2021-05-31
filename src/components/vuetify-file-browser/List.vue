@@ -22,7 +22,7 @@
                 solo
                 flat
                 hide-details
-                label="filter"
+                label="Search"
                 v-model="filter_str"
                 class="ml-n1"
                 @keydown="regexKeyDown"
@@ -31,7 +31,7 @@
                 <template v-slot:prepend>
                     <v-icon
                         medium
-                        title = "Case sentitivity"
+                        title = "Case sensitivity"
                         :color="caseSentive? '#49075e': ''"
                         @click="caseChanged"
                     >
@@ -485,7 +485,7 @@ export default {
             return this.filter;
         },
         helpGlob(){
-            window.open('https://facelessuser.github.io/wcmatch/glob/', '_blank');
+            window.open('https://uq-rcc.github.io/ipp/#/guide', '_blank');
         },
         // call this one to update displayItems
         updateDisplayItems(){
