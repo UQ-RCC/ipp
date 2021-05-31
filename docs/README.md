@@ -1,8 +1,8 @@
 #  What is IPP (Image processing portal)?
 
-The IPP is a HTML based web interface for biologists to interact with High Performance Compute (HPC) systems at The University of Queensland.
+The IPP is a Web page for biologists to interact with High Performance Compute (HPC) systems at The University of Queensland.
 
-The IPP is designed and funded by the IMB Microscopy Facility & the Research Computing Centre (RCC)
+The IPP is designed, funded and developed by the IMB Microscopy Facility & the Research Computing Centre (RCC)
 
 # Why portal? 
 
