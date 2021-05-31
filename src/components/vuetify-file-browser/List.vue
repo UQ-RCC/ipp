@@ -339,11 +339,7 @@ export default {
             this.$emit("path-changed", path)
         },
         filterChanged() {
-            // case in/sentitivity
-            if (this.caseSentive)
-                this.filter = this.filter_str.trim()
-            else
-                this.filter = this.filter_str.toLowerCase().trim()
+            this.filter = this.filter_str.trim()
             // now add filter    
             if (this.filter != '*' && this.filter != ''){
                 if(this.filterType.type == 'prefix')
@@ -495,7 +491,7 @@ export default {
         updateDisplayItems(){
             if(this.filter) {
                 this.filteredItems = this.items.filter(
-                   item =>  !this.filter || minimatch(item.basename, this.filter, { matchBase: true })
+                   item =>  !this.filter || minimatch(item.basename, this.filter, { matchBase: true, nocase: !this.caseSentive })
                 )
                 this.total_files = 0
                 this.total_folders = 0
