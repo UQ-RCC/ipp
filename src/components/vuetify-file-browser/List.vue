@@ -485,7 +485,7 @@ export default {
             return this.filter;
         },
         helpGlob(){
-            window.open('https://uq-rcc.github.io/ipp/#/guide', '_blank');
+            window.open('https://uq-rcc.github.io/ipp-docs/#/guide?id=search-bar', '_blank');
         },
         // call this one to update displayItems
         updateDisplayItems(){
