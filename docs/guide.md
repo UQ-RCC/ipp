@@ -11,14 +11,18 @@ Files Manager consists of 5 sub components:
     <li><b>Search bar</b> for filtering files/folders in the current path</li>
     <li><b>Current directory</b> for showing files/folders in the current path</li>
 </ul>
+
 ### Search bar
-You can use this for filtering files/folders of interests. 
-* You can toggle case sensitivity with the button on the left
-* You can change different modes of filtering, including
-** Contains: any folder/file name contains the search text
-** StartsWith: any folder/file name starts with the search text
-** EndsWith: any folder/file that ends with the search text 
-** Custom: any glob filter
+![image](images/searchbar.png)
+
+IPP supports 4 types of filter
+<ul>
+    <li><b>Contains</b> Files Manager displays any folder/file that contains the given search text</li>
+    <li><b>StartsWith</b> Files Manager displays any folder/file that starts with the given search text</li>
+    <li><b>EndsWith</b> Files Manager displays any folder/file that ends with the given search text</li>
+    <li><b>Custom</b> Files Manager displays any folder/file that matches the [glob filter](https://facelessuser.github.io/wcmatch/glob/) specified in the given search text</li>
+</ul>
+
 
 ## Converter
 
