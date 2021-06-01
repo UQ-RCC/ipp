@@ -1,0 +1,1 @@
+MODIFIED from: https://github.com/semeniuk/vuetify-file-browser
