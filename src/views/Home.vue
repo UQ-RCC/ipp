@@ -15,6 +15,7 @@
         <li>When you create the collection, ensure you tick the "<i><b>The project data needs to be mounted on UQ HPC facilities</b></i>" 
             tickbox in the Data storage options section at the bottom of the webpage. This will create a "Q" collection that 
             is mountable on the Wiener HPC.</li> 
+        <li>UQ VPN</li>
     </ul>
     <b>Preferable:</b>
     <ul>
