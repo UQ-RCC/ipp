@@ -32,6 +32,7 @@
         },
         mounted: async function() {
             if(this.$route.query.relpath){
+                console.log("---->relative path:")
                 console.log(this.$route.query.relpath)
                 var _collectionName = this.$route.query.relpath.split('/')[0]
                 if(_collectionName) {
@@ -47,7 +48,7 @@
                             if(!_fullPath.endsWith("/")) {
                                 _fullPath = _fullPath + '/'
                             }
-                            // console.log("@Filemanager chapge path to:" + _fullPath)
+                            console.log("@Filemanager chapge path to:" + _fullPath)
                             this.$refs.filebrowser.pathChanged(decodeURIComponent(_fullPath))
                         }
                     })
