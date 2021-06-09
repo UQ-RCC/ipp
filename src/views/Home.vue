@@ -46,6 +46,8 @@
                 let forwardedPath = '/filesmanager'
                 if(this.$route.query.path)
                     forwardedPath = forwardedPath + '?path=' + this.$route.query.path
+                if(this.$route.query.relpath)
+                    forwardedPath = forwardedPath + '?relpath=' + this.$route.query.relpath
                 this.$router.push({ 
                     path: forwardedPath
                 })
