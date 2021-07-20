@@ -124,7 +124,7 @@
             <!-- <v-col class="d-flex" cols="20" sm="5" md="7"> -->
             <v-col class="d-flex">
                 <v-row>
-                    <v-col cols="30" sm="7" md="9">
+                    <v-col cols="27" sm="6" md="8">
                         <v-row>
                             <v-switch
                                 v-model="workingItem.deskew"
@@ -137,7 +137,14 @@
                                 v-if="workingItem.deskew"
                                 >
                             </v-switch>
+                            <v-spacer></v-spacer>
                         </v-row>
+                    </v-col>
+                    <v-col cols="5" sm="3" md="3" dense justify="end" align="right" v-if="workingItem.deskew">
+                        <div class="grey--text mx-0">
+                        # input files: {{ deskewFiles }} <br />
+                        # output files: {{ deskewFiles }}
+                        </div>
                     </v-col>
                     <v-col v-if="workingItem.deskew" cols="40" sm="9" md="11"> 
                         <v-row> 
@@ -265,7 +272,7 @@
                                 </template>
                         </v-data-table>
                     </v-col>
-                    <v-col cols="40" sm="9" md="11">
+                    <v-col cols="25" sm="5" md="6">
                         <v-switch
                             v-model="workingItem.centerAndAverage"
                             label="Centre & Average"
@@ -273,12 +280,19 @@
                             >
                         </v-switch>
                     </v-col>
+                    <v-col cols="10" sm="5" md="5" dense justify="end" align="right" v-if="workingItem.centerAndAverage">
+                        <div class="grey--text mx-0">
+                        # input files: {{ centerInputFiles }}<br />
+                        # output files: {{ centerOutputFiles }}
+                        </div>
+                    </v-col>
+
                 </v-row>
             </v-col>
         </v-row>
-
+        <v-divider></v-divider>
         <v-col>
-            <v-row align="center" justify="center">   
+            <v-row align="center" justify="left">   
                  <v-switch
                     v-model="preprocessing.combine"
                     @change="combineChanged"
@@ -287,8 +301,22 @@
                     :persistent-hint="true"
                     >
                 </v-switch>
+                <v-col cols="10" sm="4" md="4">
+                    <v-text-field
+                        label="Combined file name"
+                        hide-details="auto"
+                        v-model="combinedFileName"
+                        v-if="preprocessing.combine"
+                    ></v-text-field>
+                </v-col>
+                <v-col cols="10" sm="5" md="5" dense align="right" v-if="preprocessing.combine">
+                    <div class="grey--text mx-0">
+                    # input files: {{ combinedInputFiles }}<br />
+                    # output files: {{ combinedInputFiles == 0 ? 0 : 1 }}
+                    </div>
+                </v-col>
             </v-row>
-            <v-row align="center" justify="center">    
+            <v-row align="center" justify="left">    
                 <v-col cols="20" sm="5" md="7">
                     <v-text-field
                         label="Output Base Path"
@@ -373,6 +401,7 @@
                 },
                 outputBasePath: "",
                 outputFolderName: "",
+                combinedFileName: "combined.tif",
                 //deskew edit
                 deskewEditDialog: false,
                 //deskew metadata
@@ -411,7 +440,12 @@
                 numberRules: [
                     value => value && value >= 0 || 'Must be 0 or a positive number'
                 ],
-                emailNeeded: true
+                emailNeeded: true,
+                // inputs and outputs files for each step
+                deskewFiles: 0, // deskew #input files = #outputfiles
+                centerInputFiles: 0,
+                centerOutputFiles: 0,
+                combinedInputFiles : 0
             }
             return data
         },
