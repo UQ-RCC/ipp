@@ -450,6 +450,7 @@
              * save settings from workingItem back to selected, and save to db
              */
             saveSettings(){
+                console.log("Save settings")
                 this.selected.forEach(decon => {
                     decon.setting = Object.assign({}, this.workingItem.setting)
                     decon.step = this.workingItem.step
@@ -702,6 +703,7 @@
              */
             async submitAll(){
                 for (let i=0; i< this.loaded.length; i++) {
+                    console.log(this.loaded[i].setting)
                     if (!this.loaded[i].setting.valid) {
                         this.validityDialog = true
                         return
@@ -718,6 +720,7 @@
                 if(this.selected.length === 0)
                     return
                 for (let i=0; i< this.selected.length; i++) {
+                    console.log(this.loaded[i].setting)
                     if (!this.selected[i].setting.valid) {
                         this.validityDialog = true
                         return
@@ -785,6 +788,8 @@
                 this.workingItem.visitedSteps.forEach(it => {
                     // Vue.$log.info("Loading ....")
                     // Vue.$log.info(decon.setting)
+                    if(this.workingItem.setting.psfType !== 3 && it ===3)
+                        return
                     let _acomponent = this.getStepComponent(it)
                     if(_acomponent){
                         _acomponent.load_serie(decon.setting)
@@ -792,10 +797,17 @@
                             _anyInvalidStep = true
                     }
                 })
-                if(this.workingItem.visitedSteps.length < 8)
-                    this.workingItem.setting.valid = false
-                else
-                    this.workingItem.setting.valid = !_anyInvalidStep
+                if(this.workingItem.setting.psfType !== 3){
+                    if(this.workingItem.visitedSteps.length < 7)
+                        this.workingItem.setting.valid = false
+                    else
+                        this.workingItem.setting.valid = !_anyInvalidStep
+                } else {
+                    if(this.workingItem.visitedSteps.length < 8)
+                        this.workingItem.setting.valid = false
+                    else
+                        this.workingItem.setting.valid = !_anyInvalidStep
+                }
                  
             },
 
@@ -820,6 +832,7 @@
                         // otherwise do nothing --> meaning any change will write back to anItem
                         Vue.$log.info("TODO here")
                     }
+                    PreferenceAPI.update_decon(anItem.item.id, anItem.item)    
                 } else {
                     Vue.$log.info("Unselect item")
                     //save
@@ -833,7 +846,6 @@
                         this.display_decon(series.defaultDecon(), false)
                     }
                 }
-                PreferenceAPI.update_decon(anItem.item.id, anItem.item)    
             }, 
 
             /**
