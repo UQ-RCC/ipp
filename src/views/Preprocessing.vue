@@ -142,8 +142,8 @@
                     </v-col>
                     <v-col cols="5" sm="3" md="3" dense justify="end" align="right" v-if="workingItem.deskew">
                         <div class="grey--text mx-0">
-                        # input files: {{ deskewFiles }} <br />
-                        # output files: {{ deskewFiles }}
+                        # input files: {{ workingItem.series ? workingItem.series.total : 0 }} <br />
+                        # output files: {{ workingItem.series ? workingItem.series.total : 0 }}
                         </div>
                     </v-col>
                     <v-col v-if="workingItem.deskew" cols="40" sm="9" md="11"> 
@@ -272,6 +272,11 @@
                                 </template>
                         </v-data-table>
                     </v-col>
+                    
+                    <v-col cols="40" sm="9" md="11">
+                        <v-divider></v-divider>
+                    </v-col>
+                    
                     <v-col cols="25" sm="5" md="6">
                         <v-switch
                             v-model="workingItem.centerAndAverage"
@@ -282,17 +287,17 @@
                     </v-col>
                     <v-col cols="10" sm="5" md="5" dense justify="end" align="right" v-if="workingItem.centerAndAverage">
                         <div class="grey--text mx-0">
-                        # input files: {{ centerInputFiles }}<br />
-                        # output files: {{ centerOutputFiles }}
+                        # input files: {{ workingItem.series ? workingItem.series.total : 0  }}<br />
+                        # output files: {{ workingItem.series ? workingItem.series.total : 0 }}
                         </div>
                     </v-col>
-
-                </v-row>
+                </v-row>    
             </v-col>
-        </v-row>
+            
+        </v-row>        
         <v-divider></v-divider>
         <v-col>
-            <v-row align="center" justify="left">   
+            <v-row align="center" justify="start">   
                  <v-switch
                     v-model="preprocessing.combine"
                     @change="combineChanged"
@@ -311,12 +316,12 @@
                 </v-col>
                 <v-col cols="10" sm="5" md="5" dense align="right" v-if="preprocessing.combine">
                     <div class="grey--text mx-0">
-                    # input files: {{ combinedInputFiles }}<br />
-                    # output files: {{ combinedInputFiles == 0 ? 0 : 1 }}
+                    # input files: {{ loaded.length }}<br />
+                    # output files: {{ loaded.length == 0 ? 0 : 1 }}
                     </div>
                 </v-col>
             </v-row>
-            <v-row align="center" justify="left">    
+            <v-row align="center" justify="start">    
                 <v-col cols="20" sm="5" md="7">
                     <v-text-field
                         label="Output Base Path"
@@ -393,7 +398,7 @@
                 selected: [],
                 loaded: [],
                 workingItem: {
-                    deskew: true, 
+                    deskew: true
                 },
                 preprocessing: {
                     combine: true,
@@ -441,11 +446,6 @@
                     value => value && value >= 0 || 'Must be 0 or a positive number'
                 ],
                 emailNeeded: true,
-                // inputs and outputs files for each step
-                deskewFiles: 0, // deskew #input files = #outputfiles
-                centerInputFiles: 0,
-                centerOutputFiles: 0,
-                combinedInputFiles : 0
             }
             return data
         },
@@ -591,6 +591,10 @@
                         for(let _index = 0; _index < _storedSeries.length; _index++){
                             let _storedSerie = _storedSeries[_index]
                             let _psetting = await PreferenceAPI.create_psetting(this.preprocessing.id, _storedSerie.id)
+                            // this is because file loaded has total = null
+                            if (_psetting && _psetting.series && !_psetting.series.total){
+                                _psetting.series.total = 1
+                            }
                             items.push(_psetting)
                         }
                     } else {
@@ -613,6 +617,10 @@
                             try{
                                 _serie = await PreferenceAPI.create_serie(_serie)
                                 let _psetting = await PreferenceAPI.create_psetting(this.preprocessing.id, _serie.id)
+                                // this is because file loaded has total = null
+                                if (_psetting && _psetting.series && !_psetting.series.total){
+                                    _psetting.series.total = 1
+                                }
                                 items.push(_psetting)
                             }
                             catch(err) {
@@ -759,6 +767,7 @@
                         memInMb = item.maxFileSizeInMb
                     preprocessingjobinfo.files.push(_newItem)
                 })
+                preprocessingjobinfo.combinedfile = this.combinedFileName
                 // double the amount for read + write
                 // double due to decon
                 // 4 * 5 due to size of buffer
@@ -800,23 +809,13 @@
             // center changed
             async centerChanged(){
                 console.log("center changed:" + this.workingItem.centerAndAverage)
-                if(this.workingItem.centerAndAverage === false){
-                    this.preprocessing.combine = false
-                    await this.saveToDb()
-                }
+                await this.saveToDb()
                 await PreferenceAPI.save_psetting(this.workingItem)
             }, 
 
             async combineChanged(){
                 console.log("combne changed:" + this.preprocessing.combine)
-                if(this.preprocessing.combine === true){
-                    // make all center and averae true
-                    this.loaded.map(file => {
-                        file.centerAndAverage = true
-                        PreferenceAPI.save_psetting(file)
-                    })
-                    await this.saveToDb()
-                }
+                await this.saveToDb()
             }
 
 
@@ -841,6 +840,12 @@
             for(let i = 0; i< this.preprocessing.psettings.length; i++){
                 // query series as well
                 let _psetting = await PreferenceAPI.get_psetting(this.preprocessing.psettings[i].id)
+                // this is because file loaded has total = null
+                if (_psetting && _psetting.series && !_psetting.series.total){
+                    _psetting.series.total = 1
+                }
+                console.log(_psetting)
+
                 let j =0
                 while(j < this.loaded.length && this.loaded[j].order < _psetting.order)
                     j++

@@ -841,6 +841,10 @@
              */
             psfChanged(){
                 // console.log('psftype=' + this.workingItem.setting.psfType)
+                if (this.workingItem.setting.psfType !== 3 ) {
+                    this.workingItem.setting.deskew = false
+                    this.workingItem.setting.keepDeskew = false
+                }
                 this.saveSettings()
                 // is this needed
                 this.display_decon(this.workingItem, false)

@@ -58,26 +58,45 @@
                     </v-list-item-icon>
                     <v-list-item-title class="ml-n5">FilesManager</v-list-item-title>
                 </v-list-item>
-                <v-list-item to="/converter">
-                    <v-list-item-icon>
-                        <v-icon>mdi-arrow-left-right</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title class="ml-n5">Converter</v-list-item-title>
-                </v-list-item>
-                <v-list-item to="/preprocessing">
-                    <v-list-item-icon>
-                        <v-icon>mdi-scissors-cutting</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title class="ml-n5">Preprocessing</v-list-item-title>
-                </v-list-item>
 
-                <v-list-item to="/deconvolution">
-                    <v-list-item-icon>
-                        <v-icon>mdi-send</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title class="ml-n5">Deconvolution</v-list-item-title>
-                </v-list-item>
+                <v-list-group
+                    :value="true"
+                    no-action
+                    >
+                    <template v-slot:activator>
+                        <v-list-item-title>Light microscopy</v-list-item-title>
+                    </template>
 
+                    <v-list-item to="/converter">
+                        <v-list-item-icon>
+                            <v-icon>mdi-arrow-left-right</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title class="ml-n5">Converter</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item to="/preprocessing">
+                        <v-list-item-icon>
+                            <v-icon>mdi-scissors-cutting</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title class="ml-n5">Preprocessing</v-list-item-title>
+                    </v-list-item>
+
+                    <v-list-item to="/deconvolution">
+                        <v-list-item-icon>
+                            <v-icon>mdi-send</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title class="ml-n5">Deconvolution</v-list-item-title>
+                    </v-list-item>
+                </v-list-group>
+
+
+                <!-- <v-list-group
+                    :value="true"
+                    no-action
+                    >
+                    <template v-slot:activator>
+                        <v-list-item-title>Electron microscopy</v-list-item-title>
+                    </template>
+                </v-list-group> -->
 
                 <v-list-item to="/jobs">
                     <v-list-item-icon>
