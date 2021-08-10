@@ -266,7 +266,7 @@
                         if(this.dialog) {
                             this.getDesktops()
                         }
-                    }, 60000)
+                    }, 50000)
                 }
             },
             agree() {
@@ -322,7 +322,8 @@
                 console.log(item)
                 this.loading = true
                 await DesktopAPI.stop_desktop(item.jobid)
-                await this.getDesktops()
+                this.desktops = []
+                this.currentDesktop = null
                 this.loading = false
             },
             // go to the desktop
@@ -338,20 +339,23 @@
                 console.log(this.selectedApp)
                 this.loading = true
                 // get display number
-                let vncDisplayRes = DesktopAPI.vncdisplay()
-                console.log("vnc display response:")
-                console.log(vncDisplayRes)
-                let displayNumber = Number(vncDisplayRes.commandResult[0])
+                let vncDisplayRes = await DesktopAPI.vncdisplay()
+                console.log("vnc display:" + Number(vncDisplayRes.commandResult[0].vncDisplay))
+                let displayNumber = Number(vncDisplayRes.commandResult[0].vncDisplay)
                 //
                 this.options.files.forEach(async(item) => {
                     await DesktopAPI.launchapp(this.currentDesktop.node, this.selectedApp, displayNumber, item, this.copyFilesToScratch)
                 });
                 this.loading = false
             },
+            
+
             // create a new desktop
             async launchDesktop(){
                 this.loading = true
                 await DesktopAPI.start_desktop(this.desktopConfig.mem, this.desktopConfig.ppn, this.desktopConfig.hours)
+                // sleep for 5 seconds
+                await new Promise(r => setTimeout(r, 5000))
                 await this.getDesktops()
                 this.loading = false
             }
