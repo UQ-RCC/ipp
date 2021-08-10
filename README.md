@@ -26,3 +26,7 @@ Links to recent master version of keycloak documentation:
 
 2. add User to default role, remove users and add them bcak if needed
 
+
+
+
+To build with docker locally (might conflict if vpn is used): docker build . -t tagname --network host
