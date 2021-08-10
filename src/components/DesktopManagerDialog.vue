@@ -343,10 +343,29 @@
                 console.log("vnc display:" + Number(vncDisplayRes.commandResult[0].vncDisplay))
                 let displayNumber = Number(vncDisplayRes.commandResult[0].vncDisplay)
                 //
+                let count = 0
                 this.options.files.forEach(async(item) => {
-                    await DesktopAPI.launchapp(this.currentDesktop.node, this.selectedApp, displayNumber, item, this.copyFilesToScratch)
+                    if(item.endsWith("/")){
+                        Vue.notify({
+                            group: 'sysnotif',
+                            type: 'error',
+                            title: 'Opening folder is not supported',
+                            text: 'Cannot open: ' + item
+                        })
+                    } else {
+                        Vue.notify({
+                            group: 'sysnotif',
+                            type: 'info',
+                            title: this.selectedApp,
+                            text: item + ' is being loaded to ' + this.selectedApp
+                        })
+                        await DesktopAPI.launchapp(this.currentDesktop.node, this.selectedApp, displayNumber, item, this.copyFilesToScratch)
+                    }
+                    count = count + 1
+                    if (count === this.options.files.length) {
+                        this.loading = false
+                    }
                 });
-                this.loading = false
             },
             
 
