@@ -99,6 +99,9 @@
         mounted: async function() {
             await this.updateJobs()
         },
+        destroyed() {
+            delete this.timer
+        },
         methods: {
             /**
              * get jobs

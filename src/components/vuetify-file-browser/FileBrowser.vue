@@ -155,6 +155,7 @@ export default {
             if(filter){
                 this.filter = filter
                 this.$emit("filter", filter)
+                this.$refs.toolbar.filterChanged(filter)
                 this.savePref()                
             }
         },

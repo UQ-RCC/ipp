@@ -72,12 +72,13 @@ service.interceptors.response.use(
         })
         window.location.reload()
       } else {
-        Vue.notify({
+        // no need to tell the problem
+        /*Vue.notify({
           group: 'sysnotif',
           type: 'error',
           title: 'Error',
           text: 'There has been a problem:' + String(error)
-        })
+        })*/
       }
       return Promise.reject(error)
     }

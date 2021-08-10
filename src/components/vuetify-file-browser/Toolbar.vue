@@ -3,6 +3,7 @@
         <file-browser-dialog ref="filedialog" />
         <confirm ref="confirm"></confirm>
         <copy-confirm-dialog ref="copyconfirm"></copy-confirm-dialog>
+        <desktop-manager-dialog ref="desktopdialog" />
  
         <v-toolbar-items>
 
@@ -116,6 +117,9 @@
                 </v-btn>
             </template>
 
+            <v-btn icon title="Display in Virtual Desktop" @click="openVirtualDesktop">
+                <v-icon>mdi-remote-desktop</v-icon>
+            </v-btn>
 
 
         </template>
@@ -129,12 +133,15 @@ import Vue from 'vue'
 import Confirm from "./Confirm.vue"
 import FileBrowserDialog from '../FileBrowserDialog.vue'
 import CopyConfirmDialog from './CopyConfirmDialog.vue'
+import DesktopManagerDialog from '../DesktopManagerDialog.vue'
+
 export default {
     name: 'Toolbar',
     components: {
         Confirm, 
         FileBrowserDialog,
-        CopyConfirmDialog
+        CopyConfirmDialog,
+        DesktopManagerDialog
     },
     props: {
         path: String,
@@ -148,6 +155,7 @@ export default {
             newFolderPopper: false,
             copyFolderPopper: false,
             newFolderName: "",
+            filter: "",
             selectedItems: []
         };
     },
@@ -339,6 +347,25 @@ export default {
         // to be called from parent
         selectedItemsChanged(items) {
             this.selectedItems = items
+        },
+
+        // to be called when filter changed
+        filterChanged(filterStr) {
+            console.log("filter@toolbar:" + filterStr)
+            this.filter = filterStr
+        },
+
+        /////////////virtual desktop
+        async openVirtualDesktop(){
+            let itemsToBeOpen = []
+            if ( this.selectedItems && this.selectedItems.length > 0){
+                for(let _index =0; _index < this.selectedItems.length; _index++){
+                    itemsToBeOpen.push(this.selectedItems[_index].path)
+                }
+            }
+            else if(this.filter.trim() !== '')
+                itemsToBeOpen = [this.path + this.filter]
+            await this.$refs.desktopdialog.open(itemsToBeOpen)
         }
     },
     mounted() {
