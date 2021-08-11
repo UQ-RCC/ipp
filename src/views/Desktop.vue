@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div />
+        <br />
         <v-progress-linear
             color="primary accent-4"
             indeterminate
@@ -15,8 +15,11 @@
             <iframe 
                 src="/guacamole/"
                 id="guacamoleFrame"
-                layout-fill seamless='seamless'
-                frameborder="0" 
+                layout-fill 
+                seamless='seamless'
+                frameborder="0"
+                width="100%"
+                height="100"
                 v-if="cookiesReady"
                 v-show="desktopReady"
                 >
@@ -110,7 +113,8 @@
                             'port': this.tunnel.localPort.toString(),
                             'password': this.otp,
                             'protocol': 'vnc',
-                            'name': this.desktopName
+                            'name': this.desktopName,
+                            'enable-sftp': 'false'
                         }
                     ), 2 * 60 * 1000)
                     localStorage.removeItem("GUAC_AUTH")
