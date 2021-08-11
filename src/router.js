@@ -8,6 +8,7 @@ import Deconvolution from './views/Deconvolution.vue'
 import Jobshistory from './views/Jobshistory.vue'
 import Admin from './views/Admin.vue'
 import Release from './views/Release.vue'
+import Desktop from './views/Desktop.vue'
 
 Vue.use(Router)
 
@@ -54,6 +55,11 @@ export default new Router({
             path: '/release',
             name: 'Release',
             component: Release
+        },
+        {
+            path: '/desktop',
+            name: 'Desktop',
+            component: Desktop
         },
         { path: '*', redirect: '/home' }  
     ]

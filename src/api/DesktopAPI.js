@@ -80,10 +80,10 @@ export default {
   });
     return data
   },
-  async stopvnctunnel(execHost) {
+  async stopvnctunnel(id) {
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/stopvnctunnel`, {
       params: {
-        execHost: execHost
+        id: id
       }
   });
     return data

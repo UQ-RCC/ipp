@@ -1,3 +1,4 @@
+# TODO: decouple guacamole from ipp - see if it works
 FROM alpine:3.12.3 as builder
 WORKDIR /app
 
@@ -15,7 +16,7 @@ COPY --from=builder /app/dist/ /usr/share/nginx/html/
 COPY --from=builder /app/nginx/ipp.conf /etc/nginx/conf.d/default.conf
 
 RUN mkdir -p /etc/guacamole/extensions && mkdir -p /etc/guacamole/lib
-RUN wget https://bitbucket.org/terndatateam/massive-guacamole-remote/downloads/massive-guacamole-remote-1.3.0.jar -O /etc/guacamole/extensions/massive-guacamole-remote-1.3.0.jar
+RUN wget https://bitbucket.org/terndatateam/massive-guacamole-remote/downloads/massive-guacamole-remote-1.3.1.jar -O /etc/guacamole/extensions/massive-guacamole-remote-1.3.1.jar
 RUN wget https://repo1.maven.org/maven2/com/google/code/gson/gson/2.4/gson-2.4.jar -O /etc/guacamole/lib/gson-2.4.jar
 COPY --from=builder /app/guacamole/guacamole.properties /etc/guacamole/
 

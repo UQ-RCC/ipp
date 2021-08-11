@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" persistent scrollable max-height="60%" max-width="50%">
+    <v-dialog v-model="dialog" persistent scrollable max-height="80%" max-width="50%">
         
         <v-card>
             <v-toolbar dark color="#49075e">
@@ -193,7 +193,7 @@
                     </v-btn>
                 </v-row>
             </div>
-
+            <div/>
             <v-card-actions>
                 <v-row align="center" justify="center"> 
                     <v-btn class="my-1" color="success" rounded dark large 
@@ -203,6 +203,7 @@
                     </v-btn>
                 </v-row>
             </v-card-actions>
+            <div/>
         </v-card>
     </v-dialog>
 </template>
@@ -257,8 +258,8 @@
             //////////////////////////////////////
             // methods for opening/closing this dialogue
             async open(files) {
-                console.log("files to be opened:")
-                console.log(files)
+                Vue.$log.info("files to be opened:")
+                Vue.$log.info(files)
                 this.options.files = files
                 this.dialog = true
                 if(!this.timer){
@@ -319,7 +320,7 @@
             },
             // delete the desktop
             async deleteDesktop(item){
-                console.log(item)
+                Vue.$log.info(item)
                 this.loading = true
                 await DesktopAPI.stop_desktop(item.jobid)
                 this.desktops = []
@@ -327,20 +328,25 @@
                 this.loading = false
             },
             // go to the desktop
-            openDesktop(item){
-                console.log(item)
+            openDesktop(){
+                Vue.$log.info("Opening dekstop")
+                Vue.$log.info(this.currentDesktop)
+                let route = this.$router.resolve({path: '/desktop'})
+                let url = route.href + "?desktopid="+ this.currentDesktop.jobid + "&exechost=" + this.currentDesktop.node
+                Vue.$log.info(url )
+                window.open(url, '_blank')
             },
             // open a program in the selected desktop
             async launchProgram(){
                 if(this.currentDesktop === null) {
-                    console.log("No desktop running. exit!!!")
+                    Vue.$log.info("No desktop running. exit!!!")
                     return
                 }
-                console.log(this.selectedApp)
+                Vue.$log.info(this.selectedApp)
                 this.loading = true
                 // get display number
                 let vncDisplayRes = await DesktopAPI.vncdisplay()
-                console.log("vnc display:" + Number(vncDisplayRes.commandResult[0].vncDisplay))
+                Vue.$log.info("vnc display:" + Number(vncDisplayRes.commandResult[0].vncDisplay))
                 let displayNumber = Number(vncDisplayRes.commandResult[0].vncDisplay)
                 //
                 let count = 0

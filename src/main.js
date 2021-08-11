@@ -7,10 +7,12 @@ import '@mdi/font/css/materialdesignicons.css'
 import * as Keycloak from 'keycloak-js'
 import VueLogger from 'vuejs-logger'
 import Notifications from 'vue-notification'
+import VueCookies from 'vue-cookies'
 
 import axios from 'axios'
 
 Vue.use(VueLogger)
+Vue.use(VueCookies)
 Vue.use(Notifications)
 
 let config = null
