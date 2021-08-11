@@ -83,9 +83,13 @@
                             this.tunnel = tunnels[_index]
                         }
                     }
-                    if (this.tunnel != null) {
+                    if (this.tunnel === null) {
                         let viaGateway = null
                         this.tunnel = await DesktopAPI.startvnctunnel(this.desktopName, this.otp, this.exechost, this.vncdisplay, viaGateway, this.config)
+                        console.log("Creating tunnel")
+                        console.log(this.tunnel)
+                        console.log(">>>")
+                        
                     } 
                     if (this.tunnel == null) {
                         Vue.notify({
@@ -112,7 +116,7 @@
                     localStorage.removeItem("GUAC_AUTH")
                     localStorage.removeItem("GUAC_HISTORY")
                     this.cookiesReady = true
-
+                    
                     this.timer = setInterval(() => {
                         var guacamoleFrame = document.getElementById("guacamoleFrame")
                         if(!guacamoleFrame){
