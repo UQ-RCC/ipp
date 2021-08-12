@@ -1,5 +1,5 @@
 # can use the tomcat official image, but it is quite big
-FROM nginx:1.21.1-alpine
+FROM alpine:3.12.3
 
 RUN mkdir -p /etc/guacamole/extensions && mkdir -p /etc/guacamole/lib
 RUN wget https://bitbucket.org/terndatateam/massive-guacamole-remote/downloads/massive-guacamole-remote-1.3.2.jar -O /etc/guacamole/extensions/massive-guacamole-remote-1.3.2.jar
