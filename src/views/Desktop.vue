@@ -82,15 +82,17 @@
                     for(let _index =0; _index < tunnels.length; _index++){
                         if (tunnels[_index].desktopName === this.desktopName) {
                             this.tunnel = tunnels[_index]
+                        } else {
+                            // delete other tunnels
+                            await DesktopAPI.stopvnctunnel(tunnels[_index].id)
                         }
                     }
                     if (this.tunnel === null) {
-                        let viaGateway = null
+                        let viaGateway = Vue.prototype.$Config.loginHost
+                        console.log("viagateway=" + viaGateway)
                         this.tunnel = await DesktopAPI.startvnctunnel(this.desktopName, this.otp, this.exechost, this.vncdisplay, viaGateway, this.config)
                         console.log("Creating tunnel")
                         console.log(this.tunnel)
-                        console.log(">>>")
-                        
                     } 
                     if (this.tunnel == null) {
                         Vue.notify({

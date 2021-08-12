@@ -11,7 +11,8 @@
         "pref": "http://localhost:8000",
         "wiener": "https://wwi-test.qbi.uq.edu.au/devwienerbackend"
       },
-      "signoutUrl": "https://uq-rcc.github.io/ipp/"
+      "signoutUrl": "https://uq-rcc.github.io/ipp/",
+      "loginHost": "wiener.hpc.dc.uq.edu.au"
   },
   "production": {
       "keycloak": {
@@ -25,6 +26,7 @@
         "pref": "https://dev.pref.ipp.rcc.uq.edu.au",
         "wiener": "https://wwi-test.qbi.uq.edu.au/devwienerbackend"
       },
-      "signoutUrl": "https://uq-rcc.github.io/ipp/"
+      "signoutUrl": "https://uq-rcc.github.io/ipp/",
+      "loginHost": "wiener.hpc.dc.uq.edu.au"
   }
 }
