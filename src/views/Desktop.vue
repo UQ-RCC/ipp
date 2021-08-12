@@ -83,7 +83,7 @@
                         if (tunnels[_index].desktopName === this.desktopName) {
                             this.tunnel = tunnels[_index]
                         } else {
-                            // delete other tunnels
+                            // delete other tunnels 
                             await DesktopAPI.stopvnctunnel(tunnels[_index].id)
                         }
                     }
