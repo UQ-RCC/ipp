@@ -82,10 +82,12 @@
                     for(let _index =0; _index < tunnels.length; _index++){
                         if (tunnels[_index].desktopName === this.desktopName) {
                             this.tunnel = tunnels[_index]
-                        } else {
-                            // delete other tunnels 
-                            await DesktopAPI.stopvnctunnel(tunnels[_index].id)
                         }
+                        // maybe not --> keeps creating new ones
+                        // else {
+                        //     // delete other tunnels 
+                        //     await DesktopAPI.stopvnctunnel(tunnels[_index].id)
+                        // }
                     }
                     if (this.tunnel === null) {
                         let viaGateway = Vue.prototype.$Config.loginHost
