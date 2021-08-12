@@ -11,7 +11,6 @@
         <div v-if="!valid">
             <h3>Could not open virtual desktop. Please try again!</h3>
         </div>
-        <div class="container">
             <iframe 
                 src="/guacamole/"
                 id="guacamoleFrame"
@@ -24,7 +23,6 @@
                 v-show="desktopReady"
                 >
            </iframe>
-        </div>
     </div>
 </template>
 
@@ -63,7 +61,7 @@
             }
             if(this.valid === true) {
                 Vue.$log.info("Continue ...")
-                this.desktopName = "desktop" + this.desktopid
+                this.desktopName = "desktop" + Date.now()
                 // get vnc display
                 let vncDisplayRes = await DesktopAPI.vncdisplay()
                 // Vue.$log.info(vncDisplayRes)
@@ -134,6 +132,7 @@
                             guacamoleFrame.contentWindow.focus()
                             this.desktopReady = true
                             this.loading = false
+                            window.location.href = guacamoleContent.location
                         }
                     }, 2000)
                     //end
