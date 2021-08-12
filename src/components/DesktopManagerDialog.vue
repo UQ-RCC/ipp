@@ -193,7 +193,7 @@
                     </v-btn>
                 </v-row>
             </div>
-            <div/>
+            <br />
             <v-card-actions>
                 <v-row align="center" justify="center"> 
                     <v-btn class="my-1" color="success" rounded dark large 
