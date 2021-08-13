@@ -7,7 +7,7 @@
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
                 <v-card-title class="headline">
-                    Desktop Manager
+                    Desktops Manager
                 </v-card-title>
             </v-toolbar>
 
