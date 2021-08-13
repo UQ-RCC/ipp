@@ -9,6 +9,7 @@ import Jobshistory from './views/Jobshistory.vue'
 import Admin from './views/Admin.vue'
 import Release from './views/Release.vue'
 import Desktop from './views/Desktop.vue'
+import Virtualdesktopmanager from './views/Virtualdesktopmanager.vue'
 
 Vue.use(Router)
 
@@ -25,6 +26,11 @@ export default new Router({
             path: '/filesmanager',
             name: 'Filesmanager',
             component: Filesmanager
+        },
+        {
+            path: '/desktopmanager',
+            name: 'Virtualdesktopmanager',
+            component: Virtualdesktopmanager
         },
         {
             path: '/converter',

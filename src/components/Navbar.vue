@@ -56,7 +56,14 @@
                     <v-list-item-icon>
                         <v-icon>mdi-folder-multiple</v-icon>
                     </v-list-item-icon>
-                    <v-list-item-title class="ml-n5">FilesManager</v-list-item-title>
+                    <v-list-item-title class="ml-n5">Files Manager</v-list-item-title>
+                </v-list-item>
+
+                <v-list-item to="/desktopmanager">
+                    <v-list-item-icon>
+                        <v-icon>mdi-remote-desktop</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title class="ml-n5">Desktops Manager</v-list-item-title>
                 </v-list-item>
 
                 <v-list-group
