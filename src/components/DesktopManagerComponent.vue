@@ -244,7 +244,6 @@
             ///////////////////////////////////////
             // list of running desktops
             async getDesktops(){
-                this.loading = true
                 let response = await DesktopAPI.list_desktop()
                 Vue.$log.debug("Open desktops :")
                 Vue.$log.debug(response)
@@ -254,7 +253,6 @@
                 } else {
                     this.currentDesktop = null
                 }
-                this.loading = false
             },
             // list of supported apps
             async getApps(){
@@ -369,9 +367,11 @@
         },
         mounted: async function(){
             // get the current desktops
+            this.loading = true
             this.getDesktops()
             this.getApps()
-            this.startTimer(10000)
+            this.startTimer(20000)
+            this.loading = false
         },
         destroyed() {
             this.stopTimer()

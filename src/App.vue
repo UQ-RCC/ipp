@@ -1,6 +1,7 @@
 <template>
     <v-app id="app">
         <navbar v-if="!['/desktop'].includes(this.$router.currentRoute.path)" />
+        
         <v-main>
             <notifications group="sysnotif" position="top left"/>
             <notifications group="datanotif" position="bottom right"/>

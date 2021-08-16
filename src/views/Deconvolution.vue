@@ -1,6 +1,5 @@
 <template>
     <div>
-        <br />
         <v-progress-linear
             color="primary accent-4"
             indeterminate

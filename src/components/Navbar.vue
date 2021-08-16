@@ -1,5 +1,6 @@
 <template>
     <div>
+        <feedback-dialog ref="feedback" /> 
         <v-app-bar
             :clipped-left="$vuetify.breakpoint.lgAndUp"
             app
@@ -13,6 +14,10 @@
                 </v-btn>
             </v-toolbar-title>
             <div class="flex-grow-1"></div>
+            <v-btn fab color="#49075e" @click="openComment" title="Feedback">
+                <v-icon big>mdi-comment-processing-outline</v-icon>
+            </v-btn>
+
             <div v-if="$vuetify.breakpoint.smAndUp">
                 <span>{{ this.email }}</span>
                 <v-menu
@@ -43,6 +48,7 @@
 
             </div>
         </v-app-bar>
+        
         <v-navigation-drawer v-model="drawer" fixed app :clipped="$vuetify.breakpoint.lgAndUp">
             <v-list>
                 <v-list-item to="/">
@@ -134,14 +140,27 @@
                     </v-list-item-icon>
                     <v-list-item-title class="ml-n5">Documentation</v-list-item-title>
                 </v-list-item>
+
             </v-list>
+            <br />
+            <!-- <div align="right" justify="right">
+                <v-btn fab medium depressed bottom right title="Report bug" @click="openBugDialog">
+                    <v-icon>mdi-bug</v-icon>
+                </v-btn>
+            </div> -->
         </v-navigation-drawer>
+        
     </div>
 </template>
 
 <script>
     import Vue from 'vue'
+    import FeedbackDialog from './FeedbackDialog.vue'
+
     export default {
+        components:{
+            FeedbackDialog
+        },
         data: () => ({
             drawer: null
         }),
@@ -157,6 +176,10 @@
             signout: function(){
                 // signout
                 this.$keycloak.logout({'redirectUri': Vue.prototype.$Config.signoutUrl})
+            },
+            openComment: function(){
+                console.log("opencomment")
+                this.$refs.feedback.open()
             }
         }
     }

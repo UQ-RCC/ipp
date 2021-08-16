@@ -236,8 +236,7 @@ export default {
   async create_new_processing(){
     const { data } = await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/preprocessingpage/preprocessing`)
     return data
-  }
-
+  },
 
     
 }
