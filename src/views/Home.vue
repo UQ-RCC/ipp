@@ -27,6 +27,10 @@
         collections on the correct caches - use the following email template and copy the RDM collection shortnames 
         into the email - <a href="mailto:ITS@uq.edu.au,i.porebski@uq.edu.au,h.nguyen30@uq.edu.au?cc=microscopes@imb.uq.edu.au&subject=Wiener HPC Portal Access&body=Could you please provide me with access to the Wiener HPC via the Image Processing Portal%0A%0AI will also require the following RDM collections mounted on both Wiener and my institute caches%0A%0ABest regards,">email link</a>
 
+    <br />
+    <br />
+    <p />
+    You can provide feedback (bug report, feature request, etc) by click on the feedback button next to your email address at the top right corner of this page. 
 </div>
 </template>
 
