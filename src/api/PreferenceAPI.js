@@ -154,6 +154,27 @@ export default {
     })
     return data
   },
+
+  // filter jobs
+  async filter_jobs(status, username, start, jobname){
+    if (status && status.trim() === '')
+      status = null
+    if (username && username.trim() === '')
+      username = null
+    if (jobname && jobname.trim() === '')
+      jobname = null
+    if (start && start.trim() === '')
+      start = null
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/jobs`, {
+      params: {
+        status: status,
+        username: username,
+        start: start,
+        jobname: jobname
+      }
+    })
+    return data
+  },
   // list a job
   async list_decon_job(jobid){
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/jobs/${jobid}`, {
