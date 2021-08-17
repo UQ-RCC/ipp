@@ -526,26 +526,30 @@
             async removeCurrentlySelected(){
                 Vue.$log.info("Removing currently seleced item")
                 let found = false
-                this.selected.forEach(async(item) => {
+                for(let j=0; j < this.selected.length; j++){
                     for(let i = 0; i < this.loaded.length; i++){
-                        if(this.loaded[i].series.path === item.series.path){
+                        if(this.loaded[i].series.path === this.selected[j].series.path){
                             found = true
                             // delete psetting
                             try{
-                                await PreferenceAPI.delete_psetting(item.id)
+                                await PreferenceAPI.delete_psetting(this.selected[j].id)
                                 this.loaded.splice(i, 1)
                             }
                             catch(err) {
-                                Vue.$log.error("Problem deleting " + item.id)
+                                Vue.$log.error("Problem deleting " + this.selected[j].id)
                                 Vue.$log.error(err)
                             }// end catch
                             break
                         } 
                     }
-                })
+                }
                 if(found){
+                    Vue.$log.debug("Found the item")
                     this.selected = []
-                    if(this.loaded.length == 0){
+                    Vue.$log.debug(this.loaded)
+                    Vue.$log.debug(this.loaded.length)
+                    if(this.loaded.length === 0){
+                        Vue.$log.debug("Not more files/series left")
                         this.outputFolderName = ""
                         this.outputBasePath = ""
                     }
@@ -616,6 +620,8 @@
                             try{
                                 _serie = await PreferenceAPI.create_serie(_serie)
                                 let _psetting = await PreferenceAPI.create_psetting(this.preprocessing.id, _serie.id)
+                                Vue.$log.debug(">>>psetting :")
+                                Vue.$log.debug(_psetting)
                                 // this is because file loaded has total = null
                                 if (_psetting && _psetting.series && !_psetting.series.total){
                                     _psetting.series.total = 1
@@ -698,6 +704,16 @@
                     }
                     if ((!this.selected || this.selected.length ==0) && this.loaded.length > 0){
                         this.selected = [ this.loaded[0] ]
+                        this.workingItem = this.selected[0]
+                    }
+                    // if outputpath
+                    if (this.outputBasePath === '' && this.outputFolderName === '') {
+                        if(this.workingItem && this.workingItem.series.path) {
+                            var _pathParts = this.workingItem.series.path.split("/")
+                            this.outputBasePath = _pathParts.slice(0,-1).join("/")
+                            this.outputFolderName = "preprocessing_ouput"
+                            this.saveToDb()
+                        }
                     }
                     this.loading = false                    
                 }
@@ -721,12 +737,16 @@
                 if (!options.cancelled && options.path) {
                     var selectedFolder = options.path
                     Vue.$log.debug("selected folder:" + selectedFolder)
-                    if(selectedFolder.endsWith('/'))
-                        selectedFolder = selectedFolder.slice(0, -1)
-                    var _pathParts = selectedFolder.split("/")
-                    this.outputBasePath = _pathParts.slice(0,-1).join("/")
-                    this.outputFolderName = _pathParts.slice(-1)[0]
+                    this.setOutputPath(selectedFolder)
                 }
+            },
+
+            setOutputPath(outputFolder){
+                if(outputFolder.endsWith('/'))
+                    outputFolder = outputFolder.slice(0, -1)
+                var _pathParts = outputFolder.split("/")
+                this.outputBasePath = _pathParts.slice(0,-1).join("/")
+                this.outputFolderName = _pathParts.slice(-1)[0]
             },
 
             //anItem looks like this { item: any, value: boolean }
@@ -735,6 +755,8 @@
              * copy this item settings to the working one ?
              */
             async selectedChanged(anItem){
+                Vue.$log.debug("Selected changed")
+                Vue.$log.info(anItem)
                 // if selected, load it
                 anItem.item.selected = anItem.value
                 if (anItem.value){
@@ -743,7 +765,7 @@
                     Vue.$log.info(this.workingItem)
                 } else {
                     // save this working item
-                    await PreferenceAPI.save_psetting(this.workingItem)
+                    await PreferenceAPI.save_psetting(this.workingItem)                
                 }
             },
 
@@ -833,8 +855,11 @@
             // load from db 
             let _preprocessingpage = await PreferenceAPI.get_preprocessingpage()
             this.preprocessing = _preprocessingpage.preprocessing
-            if(this.preprocessing.outputPath == null)
+            Vue.$log.debug("Output path:" + this.preprocessing.outputPath)
+            if(!this.preprocessing.outputPath) {
+                Vue.$log.debug("No output path specified")
                 this.preprocessing.outputPath = ""
+            } 
 
             for(let i = 0; i< this.preprocessing.psettings.length; i++){
                 // query series as well
@@ -852,12 +877,16 @@
             }
             if(this.loaded.length > 0){
                 var _pathParts = []
-                if(this.preprocessing.outputPath !== "")
+                if(this.preprocessing.outputPath !== ""){
                     _pathParts = this.preprocessing.outputPath.split("/")
-                else
+                    this.outputBasePath = _pathParts.slice(0,-1).join("/")
+                    this.outputFolderName = _pathParts[_pathParts.length -1]
+                }
+                else{
                     _pathParts = this.loaded[0].series.path.split("/")
-                this.outputBasePath = _pathParts.slice(0,-1).join("/")
-                this.outputFolderName = "psf_output"
+                    this.outputBasePath = _pathParts.slice(0,-1).join("/")
+                    this.outputFolderName = "preprocessing_output"
+                }
                 this.selected = [this.loaded[0]]
                 this.workingItem = this.selected[0]
             } else {
