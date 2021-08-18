@@ -321,34 +321,38 @@
                 </v-col>
             </v-row>
             <v-row align="center" justify="start">    
-                <v-col cols="20" sm="5" md="7">
+                <v-col cols="18" sm="5" md="7">
                     <v-text-field
                         label="Output Base Path"
                         hide-details="auto"
                         v-model="outputBasePath"
                     ></v-text-field>
                 </v-col>
-                <v-col cols="10" sm="2" md="3">
+                <v-col cols="4" sm="2" md="2">
                     <v-text-field
                         label="Output Folder Name"
                         hide-details="auto"
                         v-model="outputFolderName"
                     ></v-text-field>
                 </v-col>
-                <v-tooltip bottom>
-                    <template v-slot:activator="{ on, attrs }">
-                        <v-btn 
-                            class="my-3" 
-                            color="primary" 
-                            @click.stop="chooseOutputFolder"
-                            rounded dark large 
-                            v-bind="attrs" v-on="on"
-                            >
-                            Choose Output Folder
-                        </v-btn>
-                    </template>
-                    <span>Select where to save the outputs</span>
-                </v-tooltip>
+                <v-btn 
+                    class="mx-1" 
+                    color="primary" 
+                    @click.stop="chooseOutputFolder"
+                    rounded dark large 
+                    title="Select where to save the outputs"
+                    >
+                    Choose Output Folder
+                </v-btn>
+                <v-btn 
+                    class="mx-1" 
+                    color="primary" 
+                    title="Browse output folder in a new Window"
+                    @click.stop="openOutputFolder"
+                    fab medium
+                    :disabled="!outputBasePath && !outputFolderName">
+                        <v-icon>mdi-open-in-app</v-icon>
+                </v-btn>
             </v-row>
             <br />
             <v-row align="center" justify="center">
@@ -837,6 +841,20 @@
             async combineChanged(){
                 console.log("combne changed:" + this.preprocessing.combine)
                 await this.saveToDb()
+            },
+
+
+            // open folder
+            openOutputFolder() {
+                if (this.outputBasePath && !this.outputBasePath.endsWith("/"))
+                    this.outputBasePath = this.outputBasePath + "/"
+                let outputPath = this.outputBasePath + this.outputFolderName
+                if ( !outputPath.endsWith("/") )
+                    outputPath = outputPath + "/"
+                let route = this.$router.resolve({path: '/'})
+                let url = route.href + "?component=filesmanager&path=" + outputPath
+                Vue.$log.info(url )
+                window.open(url, '_blank')
             }
 
 
