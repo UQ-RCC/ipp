@@ -788,8 +788,8 @@
                     let _newItem = Object.assign({}, item)
                     _newItem.path = _newItem.series.path
                     delete _newItem.series
-                    if (item.maxFileSizeInMb > memInMb)
-                        memInMb = item.maxFileSizeInMb
+                    if (item.series.maxFileSizeInMb > memInMb)
+                        memInMb = item.series.maxFileSizeInMb
                     preprocessingjobinfo.files.push(_newItem)
                 })
                 preprocessingjobinfo.combinedfile = this.combinedFileName
