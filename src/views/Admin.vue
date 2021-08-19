@@ -148,6 +148,19 @@
                     return
                 this.loading = true
                 this.jobs = await PreferenceAPI.filter_jobs(this.filters.status, this.filters.username, this.filters.start, this.filters.jobname)
+                for(let i = 0; i< this.jobs.length; i++){
+                    let job = this.jobs[i]
+                    if(job.start) {
+                        // convert to local timezone
+                        job.start = new Date(Date.parse(job.start) + new Date().getTimezoneOffset())
+                        // ot string
+                        job.start = job.start.toLocaleString()
+                    }
+                    if(job.end){
+                        job.end = new Date(Date.parse(job.end) + new Date().getTimezoneOffset())
+                        job.end = job.end.toLocaleString()
+                    }
+                }
                 this.loading = false
             },
             async applyFilter(){
