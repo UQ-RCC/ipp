@@ -814,7 +814,8 @@
                         closeOnClick: true,
                         duration: 5000,
                     })
-                    // this.preprocessing = await PreferenceAPI.create_new_processing()
+                    this.preprocessing = await PreferenceAPI.create_new_processing()
+                    this.saveToDb()
                 }
                 catch(err) {
                     Vue.$log.error("-----error submittin-----------")
