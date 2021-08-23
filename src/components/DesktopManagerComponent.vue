@@ -297,8 +297,8 @@
                 Vue.$log.info("vnc display:" + Number(vncDisplayRes.commandResult[0].vncDisplay))
                 let displayNumber = Number(vncDisplayRes.commandResult[0].vncDisplay)
                 //
-                let count = 0
-                this.files.forEach(async(item) => {
+                let filesToBeLoaded = []
+                this.files.map(item => {
                     if(item.endsWith("/")){
                         Vue.notify({
                             group: 'sysnotif',
@@ -307,19 +307,18 @@
                             text: 'Cannot open: ' + item
                         })
                     } else {
-                        Vue.notify({
-                            group: 'sysnotif',
-                            type: 'info',
-                            title: this.selectedApp,
-                            text: item + ' is being loaded to ' + this.selectedApp
-                        })
-                        await DesktopAPI.launchapp(this.currentDesktop.node, this.selectedApp, displayNumber, item, this.copyFilesToScratch)
+                        filesToBeLoaded.push(item)
                     }
-                    count = count + 1
-                    if (count === this.files.length) {
-                        this.loading = false
-                    }
-                });
+                })
+                let filesList = filesToBeLoaded.join(";")
+                Vue.notify({
+                    group: 'sysnotif',
+                    type: 'info',
+                    title: this.selectedApp,
+                    text: filesList + ' are being loaded to ' + this.selectedApp
+                })
+                await DesktopAPI.launchapp(this.currentDesktop.node, this.selectedApp, displayNumber, filesList, this.copyFilesToScratch)
+                this.loading = false
             },
             
 

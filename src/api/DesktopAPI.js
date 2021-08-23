@@ -48,7 +48,7 @@ export default {
           execHost: execHost,
           appid: appid,
           dnum: displayNumber, 
-          filespath: filespath,
+          filespath: btoa(filespath),
           copytoscratch: copytoscratch
         }
     });
