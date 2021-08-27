@@ -56,7 +56,7 @@ var series = {
         if (!series['RI'])    
             series['RI'] = 1.515
         if (!series['objectiveRIOption']) 
-            series['objectiveRIOption'] = 1.33
+            series['objectiveRIOption'] = series['RI']
         if (!series['ns'])
             series['ns'] = 1.33
         if (!series['mediumRIOption'])
