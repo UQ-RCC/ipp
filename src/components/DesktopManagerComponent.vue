@@ -154,20 +154,17 @@
                     ></v-checkbox>
                 </v-row>
                 <v-row align="center" justify="center">
-                    <v-col cols="12" sm="5" md="8">
+                    <v-col cols="6" sm="4" md="4">
                         <v-select
                             :items="apps"
                             v-model="selectedApp"
                             item-text="displayText"
                             item-value="id"
                             label="App"
-                            outlined
                             :readonly="currentDesktop === null"
                         >
                         </v-select>
                     </v-col>
-                </v-row>
-                <v-row align="center" justify="center">
                     <v-btn class="my-1" color="success" rounded dark large 
                             @click="launchProgram" 
                             :disabled="currentDesktop === null"> 
