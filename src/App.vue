@@ -44,7 +44,7 @@ export default {
         this.git_hash = process.env.VUE_APP_GIT_HASH
         this.git_hash_url = "https://github.com/UQ-RCC/ipp/commits/" + this.git_hash
         this.git_tag = process.env.VUE_APP_GIT_TAG
-        this.git_tag_url =  "https://github.com/UQ-RCC/ipp/commits/" + this.git_tag
+        this.git_tag_url =  "https://github.com/UQ-RCC/ipp/releases/tag/" + this.git_tag
     }
 };
 </script>
