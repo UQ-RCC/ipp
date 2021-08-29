@@ -7,7 +7,7 @@ import Converter from './views/Converter.vue'
 import Deconvolution from './views/Deconvolution.vue'
 import Jobshistory from './views/Jobshistory.vue'
 import Admin from './views/Admin.vue'
-import Release from './views/Release.vue'
+// import Release from './views/Release.vue'
 import Desktop from './views/Desktop.vue'
 import Virtualdesktopmanager from './views/Virtualdesktopmanager.vue'
 
@@ -57,11 +57,11 @@ export default new Router({
             name: 'Admin',
             component: Admin
         },
-        {
-            path: '/release',
-            name: 'Release',
-            component: Release
-        },
+        // {
+        //     path: '/release',
+        //     name: 'Release',
+        //     component: Release
+        // },
         {
             path: '/desktop',
             name: 'Desktop',

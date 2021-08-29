@@ -118,12 +118,12 @@
                     <v-list-item-title class="ml-n5">Jobs</v-list-item-title>
                 </v-list-item>
 
-                <v-list-item to="/release">
+                <!-- <v-list-item to="/release">
                     <v-list-item-icon>
                         <v-icon>mdi-information-variant</v-icon>
                     </v-list-item-icon>
                     <v-list-item-title class="ml-n5">Release</v-list-item-title>
-                </v-list-item>
+                </v-list-item> -->
 
 
                 <v-list-item to="/admin" v-if="this.is_admin">
