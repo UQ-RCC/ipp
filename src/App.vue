@@ -12,10 +12,10 @@
                 <v-row justify="end">
                     <a href="https://github.com/UQ-RCC/ipp">IPP</a>&nbsp;(
                         <div v-if="git_tag !== 'null'">
-                            version <a href="git_tag_url">{{ git_tag }} </a>
+                            version <a :href="git_tag_url">{{ git_tag }} </a>
                         </div>
                         <div v-else>
-                            commit <a href="git_hash_url">{{ git_hash }} </a>
+                            commit <a :href="git_hash_url">{{ git_hash }} </a>
                         </div>
                     )
                 </v-row>
