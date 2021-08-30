@@ -16,7 +16,7 @@
                 :value="message"
             ></v-textarea>
             <v-card-actions class="pt-0">
-                <v-btn depressed color="primary" @click="close">Yes</v-btn>
+                <v-btn depressed color="primary" @click="close">OK</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>

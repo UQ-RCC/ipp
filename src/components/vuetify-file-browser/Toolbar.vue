@@ -37,7 +37,9 @@
                 </v-list>                
             </v-menu>
 
-            <v-btn text :input-value="path === '/'" @click="changePath('/')">
+
+                
+            <!-- <v-btn text :input-value="path === '/'" @click="changePath('/')">
                 /
             </v-btn>
 
@@ -49,11 +51,36 @@
                     :key="index + '-btn'"
                     @click="changePath(segment.path)"
                 >{{ segment.name }}</v-btn>
-            </template>
-        </v-toolbar-items>
-        <div class="flex-grow-1"></div>
+            </template> -->
 
+            <v-sheet
+                max-width="1280"
+                flat color="blue-grey lighten-5"
+            >
+            <v-slide-group class="pa-2">
+                <v-slide-item key="/"> 
+                    <v-btn flat text :input-value="path === '/'" @click="changePath('/')">
+                        /
+                    </v-btn>
+                </v-slide-item>
+                <template v-for="(segment, index) in pathSegments">
+                    <v-slide-item  :key="index + '-btn'" max-width="100%">
+                    <v-btn
+                        flat
+                        text
+                        :input-value="index === pathSegments.length - 1"
+                        @click="changePath(segment.path)"
+                    >{{ segment.name }} /</v-btn>
+                    </v-slide-item>
+                </template>
+            </v-slide-group>
+            </v-sheet>
+
+
+        </v-toolbar-items>
+         <!-- <div class="flex-grow-1"></div> -->
         <template v-if="$vuetify.breakpoint.smAndUp">
+            <v-row justify="end">
             <v-tooltip bottom v-if="pathSegments.length > 0">
                 <template v-slot:activator="{ on }">
                     <v-btn icon @click="goUp" v-on="on">
@@ -121,7 +148,7 @@
                 <v-icon>mdi-remote-desktop</v-icon>
             </v-btn>
 
-
+        </v-row>
         </template>
     </v-toolbar>
 </template>
