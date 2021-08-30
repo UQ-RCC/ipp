@@ -29,6 +29,11 @@
 
     <br />
     <br />
+    In order to launch a <a href="https://www.cvl.org.au/">CVL</a> desktop via the <a href="/desktopmanager">Desktops Manager</a> you will need to have a CVL account at Wiener. 
+    Please send an email to <a href="mailto:helpdesk@qbi.uq.edu.au"> QBI helpdesk</a>, explaining why you need access to CVL@Wiener, 
+    and request to be added to the wiener-cvl group.   
+    <br />
+    <br />
     <p />
     You can provide feedback (bug report, feature request, etc) by click on the feedback button next to your email address at the top right corner of this page. 
 </div>
