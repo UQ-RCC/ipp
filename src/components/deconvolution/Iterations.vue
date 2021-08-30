@@ -85,6 +85,7 @@
             <v-col cols="20" sm="4" md="5">
                 <v-text-field 
                     outlined dense
+                    disabled
                     type="number"
                     :rules="positiveInteger"   
                     label="Save every iterations" 
