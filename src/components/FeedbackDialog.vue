@@ -70,6 +70,20 @@
         methods: {
             open() {
                 this.dialog = true
+                this.title = ""
+                this.contents = ""
+                this.file = null
+                this.imageBlob = null
+                var canvas = document.getElementById("mycanvas")
+                if (canvas) {
+                    while (canvas.firstChild) {
+                        canvas.removeChild(canvas.lastChild)
+                    }
+                }
+                const context = canvas.getContext('2d');
+                context.clearRect(0, 0, canvas.width, canvas.height)
+                canvas.width = 300
+                canvas.height = 150
             },
             agree() {
                 this.dialog = false
@@ -130,6 +144,13 @@
                     // Creates a DOMString containing a URL representing the object given in the parameter
                     // namely the original Blob
                     img.src = URLObj.createObjectURL(this.file)
+                } else {
+                    let canvas = document.getElementById("mycanvas")
+                    const context = canvas.getContext('2d');
+                    context.clearRect(0, 0, canvas.width, canvas.height)
+                    canvas.width = 300
+                    canvas.height = 150
+
                 }
             },
             get_browser() {
