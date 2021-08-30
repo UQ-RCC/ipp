@@ -114,7 +114,8 @@
                         return
                     }
                     // save
-                    TemplateAPI.create_template(this.name, this.options.settings)
+                    // console.log(this.options.settings.setting)
+                    TemplateAPI.create_template(this.name, this.options.settings.setting)
                     this.options.success = true
                 }
                 this.resolve(this.options)

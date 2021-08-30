@@ -763,10 +763,12 @@
             async loadTemplate(){
                 let options = await this.$refs.templatedialog.open(false, '')
                 if (!options.cancelled) {
-                    // Vue.$log.info("Template loaded")
-                    // Vue.$log.info(options.settings)
-                    this.workingItem = Object.assign({}, options.settings)
+                    Vue.$log.info("Template loaded")
+                    Vue.$log.info(options.settings)
+                    this.workingItem.setting = Object.assign({}, options.settings)
                     this.saveSettings()
+                    // update the current display
+                    this.display_decon(this.workingItem, false)
                 }
             },
             /****************************************************************************** */
