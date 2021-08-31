@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" persistent max-height="70%" max-width="70%">
+    <v-dialog v-model="dialog" persistent max-width="60%">
         <v-card>
             <v-toolbar dark color="#49075e">
                 <v-btn icon dark @click="cancel" title="Close this dialogue">
@@ -12,7 +12,7 @@
 
 
             <v-row>
-                <v-col cols="12" sm="6" md="5">
+                <v-col cols="12" sm="6" md="5"  class="mx-5">
                         <v-text-field label="Title" v-model="title" :rules="notEmptyRule"></v-text-field>
                         <v-textarea
                             label="Contents"
@@ -31,9 +31,12 @@
                         </v-row>
                     </v-card-actions>
                 </v-col>
-                <v-col>
-                    Screenshot can be attached by selecting a file in your computer, or pasting directly to the white area below. 
-                    <v-col cols="12" sm="6" md="5">
+                <v-spacer></v-spacer>
+                <v-col cols="12" sm="6" md="5" align="center" class="mx-5">
+                    <div align="left">
+                        Screenshot can be attached by selecting a file in your computer, or pasting directly to the white area below. 
+                    </div>
+                    <v-col>
                         <v-file-input show-size label="Screenshot" accept="image/*" v-model="file" @change="fileAdded" :rules="maxFileSize"></v-file-input>
                     </v-col>
                     <canvas style="border:1px solid grey;" max-width="100%" max-height="200" id="mycanvas" title="Paste screenshot here"></canvas>
