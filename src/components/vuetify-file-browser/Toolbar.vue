@@ -1,63 +1,47 @@
 <template>
-    <v-toolbar flat dense color="blue-grey lighten-5">
+    <v-toolbar flat dense color="blue-grey lighten-5" width="100%">
         <file-browser-dialog ref="filedialog" />
         <confirm ref="confirm"></confirm>
         <copy-confirm-dialog ref="copyconfirm"></copy-confirm-dialog>
         <desktop-manager-dialog ref="desktopdialog" />
- 
-        <v-toolbar-items>
 
-            <v-menu offset-y>
-                <template v-slot:activator="{ on: menu, attrs }">
-                    <v-tooltip bottom>
-                        <template v-slot:activator="{ on: tooltip }">
-                            <v-btn icon class="recent-select-button mr-3" v-bind="attrs" v-on="{ ...tooltip, ...menu }">
-                                <v-icon>mdi-chevron-down</v-icon>
-                            </v-btn>
-                        </template>
-                        <span>Recent paths</span>
-                    </v-tooltip>
-                </template>
-                <v-list class="recent-select-list">
-                    <v-subheader>Recent paths</v-subheader>
-                    <v-list-item-group color="primary">
-                        <v-list-item
-                            v-for="lastpath in lastpaths"
-                            :key="lastpath"
-                            @click="changePath(lastpath)"
-                            >
-                            <v-list-item-icon>
-                                <v-icon>mdi-folder</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                                <v-list-item-title  v-text="lastpath"></v-list-item-title>
-                            </v-list-item-content>
-                        </v-list-item>
-                    </v-list-item-group>
-                </v-list>                
-            </v-menu>
+        <v-menu offset-y class="pa-2">
+            <template v-slot:activator="{ on: menu, attrs }">
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on: tooltip }">
+                        <v-btn icon class="recent-select-button mr-3" v-bind="attrs" v-on="{ ...tooltip, ...menu }">
+                            <v-icon>mdi-chevron-down</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>Recent paths</span>
+                </v-tooltip>
+            </template>
+            <v-list class="recent-select-list">
+                <v-subheader>Recent paths</v-subheader>
+                <v-list-item-group color="primary">
+                    <v-list-item
+                        v-for="lastpath in lastpaths"
+                        :key="lastpath"
+                        @click="changePath(lastpath)"
+                        >
+                        <v-list-item-icon>
+                            <v-icon>mdi-folder</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                            <v-list-item-title  v-text="lastpath"></v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list-item-group>
+            </v-list>                
+        </v-menu>
 
 
-                
-            <!-- <v-btn text :input-value="path === '/'" @click="changePath('/')">
-                /
-            </v-btn>
-
-            <template v-for="(segment, index) in pathSegments">
-                <v-icon :key="index + '-icon'">mdi-chevron-right</v-icon>
-                <v-btn
-                    text
-                    :input-value="index === pathSegments.length - 1"
-                    :key="index + '-btn'"
-                    @click="changePath(segment.path)"
-                >{{ segment.name }}</v-btn>
-            </template> -->
-
-            <v-sheet
-                max-width="1280"
-                color="blue-grey lighten-5"
-            >
-            <v-slide-group class="pa-2">
+            
+        <v-sheet
+            width="75%"
+            color="blue-grey lighten-5"
+        >
+            <v-slide-group>
                 <v-slide-item key="/"> 
                     <v-btn text :input-value="path === '/'" @click="changePath('/')">
                         /
@@ -73,13 +57,10 @@
                     </v-slide-item>
                 </template>
             </v-slide-group>
-            </v-sheet>
+        </v-sheet>
 
 
-        </v-toolbar-items>
-         <!-- <div class="flex-grow-1"></div> -->
-        <template v-if="$vuetify.breakpoint.smAndUp">
-            <v-row justify="end">
+        <v-row justify="end">
             <v-tooltip bottom v-if="pathSegments.length > 0">
                 <template v-slot:activator="{ on }">
                     <v-btn icon @click="goUp" v-on="on">
@@ -148,7 +129,7 @@
             </v-btn>
 
         </v-row>
-        </template>
+        
     </v-toolbar>
 </template>
 

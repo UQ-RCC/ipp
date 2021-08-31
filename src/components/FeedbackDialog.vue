@@ -30,7 +30,7 @@
                         </v-btn>
                         </v-row>
                     </v-card-actions>
-                    <h5>*Your browser name and version will be submited as part of this feedback.</h5>
+                    <h5>*Additional information collection: browser name, version and window/screen size</h5>
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="12" sm="6" md="5" align="center" class="mx-5">
@@ -107,6 +107,9 @@
                 let email = this.contents + "\n\n\nAdditional information:"
                 email = email + "\n\nCurrent page: " + this.$route.name
                 email = email + "\nPlatform information: " +this.platform
+                email = email + "\nWindow size(not including toolbar): " +window.innerWidth + "x" + window.innerHeight
+                email = email + "\nScreen size: " +screen.width + "x" + screen.height
+                
                 let file = this.file
                 if (!this.file && this.imageBlob){
                     file = this.imageBlob 
