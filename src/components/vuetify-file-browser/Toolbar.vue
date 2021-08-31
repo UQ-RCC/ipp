@@ -55,18 +55,17 @@
 
             <v-sheet
                 max-width="1280"
-                flat color="blue-grey lighten-5"
+                color="blue-grey lighten-5"
             >
             <v-slide-group class="pa-2">
                 <v-slide-item key="/"> 
-                    <v-btn flat text :input-value="path === '/'" @click="changePath('/')">
+                    <v-btn text :input-value="path === '/'" @click="changePath('/')">
                         /
                     </v-btn>
                 </v-slide-item>
                 <template v-for="(segment, index) in pathSegments">
                     <v-slide-item  :key="index + '-btn'" max-width="100%">
                     <v-btn
-                        flat
                         text
                         :input-value="index === pathSegments.length - 1"
                         @click="changePath(segment.path)"

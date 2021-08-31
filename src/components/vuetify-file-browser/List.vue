@@ -125,6 +125,15 @@
                         <!-- <v-list-item-action> -->
                             <v-tooltip bottom>
                                 <template v-slot:activator="{ on }">
+                                    <v-btn icon @click.stop="copyItemPathToClipboard(item)" v-on="on">
+                                        <v-icon color="lighten-1">mdi-content-copy</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>Copy folder path to clipboard</span>
+                            </v-tooltip>
+
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on }">
                                     <v-btn icon @click.stop="renameItem(item)" v-on="on">
                                         <v-icon color="lighten-1">mdi-rename-box</v-icon>
                                     </v-btn>
@@ -192,6 +201,15 @@
                                     </v-btn>
                                 </template>
                                 <span>View file</span>
+                            </v-tooltip>
+
+                            <v-tooltip bottom>
+                                <template v-slot:activator="{ on }">
+                                    <v-btn icon @click.stop="copyItemPathToClipboard(item)" v-on="on">
+                                        <v-icon color="lighten-1">mdi-content-copy</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>Copy file path to clipboard</span>
                             </v-tooltip>
 
                             <v-tooltip bottom>
@@ -364,6 +382,7 @@ export default {
             if (this.isDir) {
                 try{
                     let response = await FilesAPI.list(this.path)
+                    // console.log(response)
                     this.total_files = 0
                     this.total_folders = 0
                     this.items = response.commandResult.map(responseItem => {
@@ -401,6 +420,28 @@ export default {
                 // TODO: load file
             }
             this.$emit("loading", false);
+        },
+        async copyItemPathToClipboard(item) {
+            const el = document.createElement('textarea');  
+            el.value = item.path;                                 
+            el.setAttribute('readonly', '');                
+            el.style.position = 'absolute';                     
+            el.style.left = '-9999px';                      
+            document.body.appendChild(el);                  
+            const selected =  document.getSelection().rangeCount > 0  ? document.getSelection().getRangeAt(0) : false;                                    
+            el.select();                                    
+            document.execCommand('copy');                   
+            document.body.removeChild(el);                  
+            if (selected) {                                 
+                document.getSelection().removeAllRanges();    
+                document.getSelection().addRange(selected);   
+            }
+            Vue.notify({
+                group: 'sysnotif',
+                type: 'info',
+                title: 'Copied',
+                text: 'Path copied to clipboard!'
+            });
         },
         async renameItem(item) {
             let options = await this.$refs.namemodify.open(item.name)
