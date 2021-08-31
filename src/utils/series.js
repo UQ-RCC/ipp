@@ -118,7 +118,7 @@ var series = {
             series['splitIdx'] = 0
             /////// DEVICES
         if (!series['autoDetect'])
-            series['autoDetect']= false
+            series['autoDetect']= true
         if (!series['instances'])
             series['instances']= 1
         if (!series['mem']) {

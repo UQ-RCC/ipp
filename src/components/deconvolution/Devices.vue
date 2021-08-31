@@ -1,11 +1,12 @@
 <template>
     <v-card :disabled="readonly">
         <v-row align="center" justify="center">
-            <v-switch
+            <!-- <v-switch
                 v-model="serie.autoDetect"
                 label="Autodetect"
+                disabled
                 >
-            </v-switch>
+            </v-switch> -->
         </v-row>
         <v-col align="center" justify="center">
             <v-col cols="15" sm="3" md="4">
