@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" persistent max-width="60%">
+    <v-dialog v-model="dialog" persistent max-width="55%">
         <v-card>
             <v-toolbar dark color="#49075e">
                 <v-btn icon dark @click="cancel" title="Close this dialogue">
@@ -12,7 +12,7 @@
 
 
             <v-row>
-                <v-col cols="12" sm="6" md="5"  class="mx-5">
+                <v-col cols="12" sm="6" md="6"  class="mx-5">
                         <v-text-field label="Title" v-model="title" :rules="notEmptyRule"></v-text-field>
                         <v-textarea
                             label="Contents"
@@ -30,10 +30,11 @@
                         </v-btn>
                         </v-row>
                     </v-card-actions>
+                    <h5>*Your browser name and version will be submited as part of this feedback.</h5>
                 </v-col>
                 <v-spacer></v-spacer>
                 <v-col cols="12" sm="6" md="5" align="center" class="mx-5">
-                    <div align="left">
+                    <div align="left" class="mt-5">
                         Screenshot can be attached by selecting a file in your computer, or pasting directly to the white area below. 
                     </div>
                     <v-col>
@@ -53,6 +54,7 @@
 <script>
     import Vue from 'vue'
     import FeedbackAPI from "@/api/FeedbackAPI"
+    import * as platform from 'platform'
     export default {
         name: 'FeedbackDialog',
         data() {
@@ -67,7 +69,8 @@
                 ], 
                 maxFileSize: [
                     value => !value || value.size < 2000000 || 'Image size should be less than 2 MB!',
-                ]
+                ],
+                platform: null
             }
         },
         methods: {
@@ -82,11 +85,13 @@
                     while (canvas.firstChild) {
                         canvas.removeChild(canvas.lastChild)
                     }
+                    const context = canvas.getContext('2d');
+                    context.clearRect(0, 0, canvas.width, canvas.height)
+                    canvas.width = 300
+                    canvas.height = 150
                 }
-                const context = canvas.getContext('2d');
-                context.clearRect(0, 0, canvas.width, canvas.height)
-                canvas.width = 300
-                canvas.height = 150
+                this.platform = platform
+                console.log(this.platform)
             },
             agree() {
                 this.dialog = false
@@ -100,8 +105,8 @@
                     return
                 }
                 let email = this.contents + "\n\n\nAdditional information:"
-                email = email + "\nBrowser information: " +this.get_browser()
-                email = email + "\nCurrent page: " + this.$route.name
+                email = email + "\n\nCurrent page: " + this.$route.name
+                email = email + "\nPlatform information: " +this.platform
                 let file = this.file
                 if (!this.file && this.imageBlob){
                     file = this.imageBlob 
