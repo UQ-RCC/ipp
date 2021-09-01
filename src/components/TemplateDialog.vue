@@ -21,7 +21,7 @@
                         :items="templates"
                         :single-select="true"
                         :disable-pagination="true"
-                        item-key="name"
+                        item-key="id"
                         show-select
                         class="elevation-1"
                         height="250px" width="30%"
@@ -49,6 +49,9 @@
                 </v-btn>
                 <v-btn class="my-1" color="warning" rounded dark large @click="cancel"> 
                     Cancel
+                </v-btn>
+                <v-btn class="my-1" color="error" rounded dark large @click="deleteTemplate"> 
+                    Delete
                 </v-btn>
                 </v-row>
             </v-card-actions>
@@ -94,14 +97,16 @@
                 this.isnew = isnew
                 this.options.settings = settings
                 this.options.success = false
-                if(!isnew)
+                if(!isnew) {
                     this.templates = await TemplateAPI.list_templates()
+                    console.log(this.templates)
+                }
                 return new Promise((resolve, reject) => {
                     this.resolve = resolve
                     this.reject = reject
                 });
             },
-            agree() {
+            async agree() {
                 this.options.cancelled = false
                 if (this.isnew) {
                     if(! this.name) {
@@ -115,7 +120,7 @@
                     }
                     // save
                     // console.log(this.options.settings.setting)
-                    TemplateAPI.create_template(this.name, this.options.settings.setting)
+                    await TemplateAPI.create_template(this.name, this.options.settings.setting)
                     this.options.success = true
                 }
                 this.resolve(this.options)
@@ -125,6 +130,13 @@
                 this.options.cancelled = true
                 this.resolve(this.options)
                 this.dialog = false
+            },
+            async deleteTemplate() {
+                console.log(this.selectedTemplate)
+                if (this.selectedTemplate.length > 0) {
+                    await TemplateAPI.delete_template(this.selectedTemplate[0].id)
+                    this.templates = await TemplateAPI.list_templates()
+                }
             },
             async templateChanged(anItem) {
                 // select
