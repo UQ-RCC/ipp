@@ -13,12 +13,20 @@
 
             <v-row>
                 <v-col cols="12" sm="6" md="6"  class="mx-5">
-                        <v-text-field label="Title" v-model="title" :rules="notEmptyRule"></v-text-field>
-                        <v-textarea
-                            label="Contents"
-                            v-model="contents"
-                            :rules="notEmptyRule"
-                        ></v-textarea>
+                    <v-text-field label="Title" v-model="title" :rules="notEmptyRule"></v-text-field>
+                    <v-textarea
+                        label="Contents"
+                        v-model="contents"
+                        :rules="notEmptyRule"
+                    ></v-textarea>
+                    <v-select
+                        :items="priorityTypes"
+                        v-model="priority"
+                        item-text="label"
+                        item-value="value"
+                        label="Priority"
+                    >
+                    </v-select>
                     
                     <v-card-actions>
                         <v-row align="center" justify="center">    
@@ -70,7 +78,9 @@
                 maxFileSize: [
                     value => !value || value.size < 2000000 || 'Image size should be less than 2 MB!',
                 ],
-                platform: null
+                platform: null,
+                priority: 'Medium',
+                priorityTypes: ['Low', 'Medium', 'High', 'Critical']
             }
         },
         methods: {
@@ -104,11 +114,11 @@
                     })
                     return
                 }
-                let email = this.contents + "\n\n\nAdditional information:"
-                email = email + "\n\nCurrent page: " + this.$route.name
-                email = email + "\nPlatform information: " +this.platform
-                email = email + "\nWindow size(not including toolbar): " +window.innerWidth + "x" + window.innerHeight
-                email = email + "\nScreen size: " +screen.width + "x" + screen.height
+                let email = this.contents + "<p />Additional information:"
+                email = email + "<br />Current page: " + this.$route.name
+                email = email + "<br />Platform information: " +this.platform
+                email = email + "<br />Window size(not including toolbar): " +window.innerWidth + "x" + window.innerHeight
+                email = email + "<br />Screen size: " +screen.width + "x" + screen.height
                 
                 let file = this.file
                 if (!this.file && this.imageBlob){
@@ -124,7 +134,7 @@
                     return
                 }
                 // send it
-                let resp = FeedbackAPI.send_feedback(this.title, email, file)
+                let resp = FeedbackAPI.send_feedback(this.title, email, file, this.priority)
                 console.log(resp)
                 Vue.notify({
                         group: 'sysnotif',
