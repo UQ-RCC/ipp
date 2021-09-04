@@ -60,14 +60,14 @@
                                                 <v-col cols="10" sm="5" md="4">
                                                     <v-text-field
                                                         v-model="desktopConfig.ppn"
-                                                        label="Processors per node" type="number"
+                                                        label="Cores per node" type="number"
                                                         :rules="numberRules" 
                                                     ></v-text-field>
                                                 </v-col>
                                                <v-col cols="10" sm="5" md="4">
                                                         <v-text-field
                                                         v-model="desktopConfig.mem"
-                                                        label="Memory (gb)" type="number"
+                                                        label="Memory (GB) per node" type="number"
                                                         :rules="numberRules" 
                                                     ></v-text-field>
                                                 </v-col>
@@ -212,8 +212,8 @@
                 ],
                 desktopConfigHeader: [
                     {text: 'Nodes', align: 'center', sortable: false, value: 'nodes'},
-                    {text: 'Processors per node', align: 'center', sortable: false, value: 'ppn'},
-                    {text: 'Memory (gb)', align: 'center', sortable: false, value: 'mem'},
+                    {text: 'Cores per node', align: 'center', sortable: false, value: 'ppn'},
+                    {text: 'Memory (GB) per node', align: 'center', sortable: false, value: 'mem'},
                     {text: 'Time (hours)', align: 'center', sortable: false, value: 'hours'},
                     {text: 'Actions', value: 'actions', sortable: false},
                 ],
