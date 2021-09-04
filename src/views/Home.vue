@@ -35,7 +35,7 @@
     <br />
     <br />
     <p />
-    You can provide feedback (bug report, feature request, etc) by click on the feedback button next to your email address at the top right corner of this page. 
+    You can provide feedback (bug report, feature request, etc) by clicking on the feedback button next to your email address at the top right corner of this page. 
 </div>
 </template>
 

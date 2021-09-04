@@ -715,7 +715,7 @@
                         if(this.workingItem && this.workingItem.series.path) {
                             var _pathParts = this.workingItem.series.path.split("/")
                             this.outputBasePath = _pathParts.slice(0,-1).join("/")
-                            this.outputFolderName = "preprocessing_ouput"
+                            this.outputFolderName = "preprocessing_output"
                             this.saveToDb()
                         }
                     }
