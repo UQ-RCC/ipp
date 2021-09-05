@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="mx-3">
     <h3>Welcome to the Image Processing Portal,</h3><br/>
     Commissioned by <a href="https://imb.uq.edu.au/microscopy">IMB Microscopy</a> and jointly developed with <a href="https://rcc.uq.edu.au/">UQ RCC</a>.
     <br />

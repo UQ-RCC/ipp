@@ -38,10 +38,10 @@
 
             
         <v-sheet
-            width="75%"
+            max-width="60%"
             color="blue-grey lighten-5"
         >
-            <v-slide-group>
+            <v-slide-group show-arrows center-active>
                 <v-slide-item key="/"> 
                     <v-btn text :input-value="path === '/'" @click="changePath('/')">
                         /
@@ -71,10 +71,7 @@
                 <span v-else>Up to "{{pathSegments[pathSegments.length - 2].name}}"</span>
             </v-tooltip>            
 
-            <v-btn icon title="Clear all selected items" @click="clearAllselected">
-                <v-icon>mdi-notification-clear-all</v-icon>
-            </v-btn>
-
+            
             <v-btn icon title="Add to bookmark" @click="addBookmark">
                 <v-icon>mdi-bookmark-plus</v-icon>
             </v-btn>

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="mx-2">
         <v-row>
             <v-col>
                 <file-browser ref="filebrowser"

@@ -169,12 +169,12 @@ export default {
         },
         // all selected items got deleted
         itemsDeleted(){
-            this.$refs.filelist.clearSelectedItem()
+            this.$refs.filelist.clearAllSelected()
             this.selectedItemsChanged([])
             this.refreshPending = true
         },
         clearAllSelected(){
-            this.$refs.filelist.clearSelectedItem()
+            this.$refs.filelist.clearAllSelected()
             this.selectedItemsChanged([])
         },
         async savePref(){
@@ -206,7 +206,7 @@ export default {
         },
         // clear selected item from list
         clearSelectedItem(){
-            this.$refs.filelist.clearSelectedItem()
+            this.$refs.filelist.clearAllSelected()
         }
     },
     async mounted() {

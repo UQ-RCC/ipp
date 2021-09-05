@@ -246,6 +246,7 @@
                     >
                     </v-select>
                 </v-col>
+                <v-spacer></v-spacer>
                 <v-col cols="20" sm="4" md="5">
                     <v-pagination
                         v-model="pageindex"
@@ -254,6 +255,14 @@
                         @input="pageIndexChanged"
                     ></v-pagination>
 
+                </v-col>
+                <v-spacer></v-spacer>
+                <v-col cols="2" sm="2" md="2" justify="end">
+                        <div class="mt-3" justify="end"> {{ selectedItems.length }} items selected
+                        <v-btn icon title="Clear all selected items" @click="clearAllSelected">
+                            <v-icon>mdi-notification-clear-all</v-icon>
+                        </v-btn>
+                        </div>
                 </v-col>
             </v-row>
         </v-card-text>
@@ -337,6 +346,15 @@ export default {
         }
     },
     methods: {
+
+        clearAllSelected(){
+            this.selectedItems.forEach(item => item.selected=false)
+            // this.items.forEach(item => item.selected=false)
+            this.selectedItems = []
+            this.maxSize = 0
+            this.$emit("selected-items-changed", this.selectedItems)
+        },
+
         changeFilterType(fType) {
             this.filterType = fType
             this.filterChanged()
@@ -347,11 +365,11 @@ export default {
             this.filterChanged()
         },
 
-        clearSelectedItem(){
-            this.items.forEach(item => item.selected=false)
-            this.selectedItems = []
-            this.maxSize = 0
-        },
+        // clearSelectedItem(){
+        //     this.items.forEach(item => item.selected=false)
+        //     this.selectedItems = []
+        //     this.maxSize = 0
+        // },
         changePath(path) {
             this.pageindex = 1
             this.$emit("path-changed", path)
