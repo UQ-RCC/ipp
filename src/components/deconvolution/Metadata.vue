@@ -102,7 +102,7 @@
 <script>
     // import Vue from 'vue';
     import series from "@/utils/series.js"
-    import PreferenceAPI from "@/api/PreferenceAPI"
+    // import PreferenceAPI from "@/api/PreferenceAPI"
     import FileBrowserDialog from '@/components/FileBrowserDialog.vue'
     
     export default {
@@ -132,14 +132,17 @@
             async load_serie(serie){
                 this.serie = serie
                 // load origional serie
-                if(this.serie.path){
-                    let _storedSeries = await PreferenceAPI.get_serie(this.serie.path)
-                    if ( _storedSeries && _storedSeries.length > 0 ) {
-                        this.origionalSerie = _storedSeries[0]
-                    } else 
-                        this.origionalSerie = {}
-                } else
-                    this.origionalSerie = {}
+                // if(this.serie.path){
+                //     let _storedSeries = await PreferenceAPI.get_serie(this.serie.path)
+                //     console.log("===> stored series")
+                //     console.log(_storedSeries)
+                //     if ( _storedSeries && _storedSeries.length > 0 ) {
+                //         this.origionalSerie = _storedSeries[0]
+                //     } else 
+                //         this.origionalSerie = {}
+                // } else
+                //     this.origionalSerie = {}
+                this.origionalSerie = Object.assign({}, this.serie)
                 // update outputpath
                 if(serie.outputPath) {
                     var _pathParts = serie.outputPath.split("/")
