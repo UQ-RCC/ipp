@@ -22,7 +22,7 @@
             ref="toolbar"
         ></toolbar>
         <v-row>
-            <v-col v-if="tree && $vuetify.breakpoint.lgAndUp" sm="auto">
+            <v-col v-show="showNavigator" sm="auto">
                 <v-col>
                     <tree
                         :path = path
@@ -123,6 +123,7 @@ export default {
     data() {
         return {
             loading: false,
+            showNavigator: true,
             path: "",
             filter: "",
             prefid: -1,
@@ -131,6 +132,7 @@ export default {
         };
     },
     computed: {
+
     },
     methods: {
         loadingChanged(loading) {
@@ -200,6 +202,12 @@ export default {
         // clear selected item from list
         clearSelectedItem(){
             this.$refs.filelist.clearAllSelected()
+        },
+
+        myEventHandler(e) {
+            if(e.type == "resize") {
+                this.showNavigator = this.tree && window.innerWidth >= 1446
+            }
         }
     },
     async mounted() {
@@ -215,7 +223,14 @@ export default {
         await this.getPref()
         // this.$emit("change", this.path)
         this.pathChanged(this.path)
-    }
+    },
+    created() {
+        window.addEventListener("resize", this.myEventHandler);
+    },
+    destroyed() {
+        window.removeEventListener("resize", this.myEventHandler);
+    },
+
 };
 </script>
 

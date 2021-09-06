@@ -7,7 +7,7 @@
             dark
             color="#49075e"
         >
-            <v-app-bar-nav-icon @click.stop="drawer = !drawer" class="mr-0"></v-app-bar-nav-icon>
+            <v-app-bar-nav-icon @click.stop="toggleDrawer" class="mr-0"></v-app-bar-nav-icon>
             <v-toolbar-title>
                 <v-btn text to="/">
                     <span class="headline">Image Processing Portal</span>
@@ -183,20 +183,9 @@
                 console.log("opencomment")
                 this.$refs.feedback.open()
             },
-            myEventHandler(e) {
-                if(e.type == "resize") {
-                    if(window.innerWidth < 1446)
-                        this.drawer = false
-                    else
-                        this.drawer = true
-                }
+            toggleDrawer(){
+                this.drawer = !this.drawer
             }
-        },
-        created() {
-            window.addEventListener("resize", this.myEventHandler);
-        },
-        destroyed() {
-            window.removeEventListener("resize", this.myEventHandler);
         },
     }
 </script>
