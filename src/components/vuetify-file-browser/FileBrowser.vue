@@ -22,27 +22,21 @@
             ref="toolbar"
         ></toolbar>
         <v-row>
-            <v-col v-if="tree && $vuetify.breakpoint.smAndUp" sm="auto">
-                <v-col no-gutters>
+            <v-col v-if="tree && $vuetify.breakpoint.lgAndUp" sm="auto">
+                <v-col>
                     <tree
                         :path = path
                         :icons = icons
                         :refreshPending = refreshPending
                         :parentComponent = parentComponent
                         :mode = mode
+                        :prefid = prefid
+                        :bookmarks = pref.bookmarks
                         v-on:path-changed = pathChanged
+                        v-on:bookmark-changed = bookmarkChanged
                         v-on:loading = loadingChanged
                         v-on:refreshed = "refreshPending = false"
                     ></tree>
-                    <v-divider horizontal></v-divider>
-                    <bookmark
-                        :parentComponent = parentComponent
-                        :prefid = prefid
-                        :bookmarks = pref.bookmarks
-                        v-on:bookmark-changed = bookmarkChanged
-                        v-on:path-changed = pathChanged
-                    >
-                    </bookmark>
                 </v-col>
             </v-col>
             <v-divider v-if="tree" vertical></v-divider>
@@ -72,7 +66,7 @@
 import Toolbar from "./Toolbar.vue";
 import Tree from "./Tree.vue";
 import List from "./List.vue";
-import Bookmark from "./Bookmark.vue";
+// import Bookmark from "./Bookmark.vue";
 import PreferenceAPI from "@/api/PreferenceAPI";
 import Vue from 'vue';
 
@@ -107,8 +101,7 @@ export default {
     components: {
         Toolbar,
         Tree,
-        List,
-        Bookmark
+        List
     },
     model: {
         prop: "path",

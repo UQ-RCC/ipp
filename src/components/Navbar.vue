@@ -158,13 +158,13 @@
 <script>
     import Vue from 'vue'
     import FeedbackDialog from './FeedbackDialog.vue'
-
+    
     export default {
         components:{
             FeedbackDialog
         },
         data: () => ({
-            drawer: null
+            drawer: true
         }),
         computed: {
             email: function() {
@@ -182,8 +182,22 @@
             openComment: function(){
                 console.log("opencomment")
                 this.$refs.feedback.open()
+            },
+            myEventHandler(e) {
+                if(e.type == "resize") {
+                    if(window.innerWidth < 1446)
+                        this.drawer = false
+                    else
+                        this.drawer = true
+                }
             }
-        }
+        },
+        created() {
+            window.addEventListener("resize", this.myEventHandler);
+        },
+        destroyed() {
+            window.removeEventListener("resize", this.myEventHandler);
+        },
     }
 </script>
 
