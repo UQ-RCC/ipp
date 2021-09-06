@@ -49,7 +49,7 @@
         <!-- main GUI: tables, tabs -->
         <v-row>
             <!-- table and buttons-->
-            <v-col class="d-flex" cols="12" sm="4">
+            <v-col class="d-flex" cols="12" sm="2" md="4" lg="4" xl="4">
                 <div class="text-center">
                     <v-data-table
                         v-model="selected"
@@ -131,7 +131,7 @@
             <v-col class="d-flex">
                 <v-col>
                     <v-row class="d-flex" v-bind:style="{height: '85%'}">
-                        <v-stepper alt-labels v-model="workingItem.step" v-bind:style="{width: '100%'}" @change="stepChanged">
+                        <v-stepper non-linear flat alt-labels v-model="workingItem.step" v-bind:style="{width: '100%'}" @change="stepChanged">
                             <v-stepper-header>
                                 <v-stepper-step :editable="checkStepVisibility(1)"
                                     step="1" 
