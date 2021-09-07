@@ -34,15 +34,15 @@ jobs:
         run: |
           GIT_DESCRIBE=$(git describe)
           sed -i -e "s/%GIT_DESCRIBE%/$(git describe)/g" index.html
-          tar -czf artifacts/imbportal-${GIT_DESCRIBE}.tar.gz \
-            --transform "s/^\./imbportal-${GIT_DESCRIBE}/" \
+          tar -czf artifacts/ipp-${GIT_DESCRIBE}.tar.gz \
+            --transform "s/^\./ipp-${GIT_DESCRIBE}/" \
             --exclude=./artifacts \
             --exclude=./.git \
             .
       - uses: actions/upload-artifact@v2
         with:
           name: release-artifacts
-          path: artifacts/imbportal-*.tar.gz
+          path: artifacts/ipp-*.tar.gz
 
   deploy:
     needs: build
