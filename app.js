@@ -25,14 +25,13 @@ angular.module('microvolution', [
         }])
     .constant('settings', {
         'URLs': {
-            'base': '/client/',
-            'apiBase': '/client/api/',
+            'base': window.__env.base,
+            'apiBase': window.__env.apiBase,
             'oauthStart': 'login',
             'logout': 'end_session?service=wiener',
             'sessionInfo': 'session_info?service=wiener',
             'accessToken': 'access_token?service=wiener',
-            'resourceApiBase': 'https://backend.nimrod-portal.cloud.edu.au/wienerbackend/api/',
-            // 'resourceApiBase': 'http://localhost/wienerbackend/api/',
+            'resourceApiBase': window.__env.resourceApiBase,
             'home': 'execute/home',
             'stop': 'execute/stop',
             'listJobs': 'execute/listall',
