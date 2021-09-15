@@ -152,7 +152,7 @@
             return {
                 serie:series.formatSeries(null),
                 scalingTypes: [
-                    {'label': '32-bit (default)', 'value': 0},
+                    {'label': '32-bit', 'value': 0},
                     {'label': 'Same as input', 'value': 1}
                 ],
                 fileFormatTypes: [
