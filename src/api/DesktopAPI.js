@@ -41,6 +41,11 @@ export default {
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/listapps`);
     return data
   },
+  //list flavours
+  async listdesktopflavours() {
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/listflavours`);
+    return data
+  },
   // launch app
   async launchapp(execHost, appid, displayNumber, filespath, copytoscratch) {
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/launchapp`, {

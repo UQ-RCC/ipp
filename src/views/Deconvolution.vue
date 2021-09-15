@@ -256,9 +256,9 @@
                             <span>Previous step</span>
                         </v-tooltip>
                         
-                        <div class="flex-grow-1"></div>
+                        <v-spacer></v-spacer>
 
-
+                        
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn  color="primary" rounded dark large 
@@ -270,6 +270,7 @@
                             </template>
                             <span>Save template</span>
                         </v-tooltip>
+                        <v-spacer></v-spacer>
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn 
@@ -280,7 +281,7 @@
                             </template>
                             <span>Load an existing template</span>
                         </v-tooltip>
-
+                        <v-spacer></v-spacer>
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn 
@@ -293,7 +294,7 @@
                             </template>
                             <span>Submit the selected series/files</span>
                         </v-tooltip>
-
+                        <v-spacer></v-spacer>
 
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
@@ -309,7 +310,8 @@
                         </v-tooltip>
 
                 
-                        <div class="flex-grow-1"></div>
+                        <!-- <div class="flex-grow-1"></div> -->
+                        <v-spacer></v-spacer>
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn fab dark small color="primary" 

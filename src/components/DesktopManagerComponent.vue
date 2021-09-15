@@ -11,7 +11,7 @@
             ></v-progress-linear>
             
             <div align="center" justify="center" v-if="desktopManagerOnly===false && files.length >0">
-                <v-list-group :value="false" no-action>
+                <v-list-group :value="true" no-action>
                     <template v-slot:activator>
                         <v-card-title>
                             Selected files
@@ -28,85 +28,39 @@
                 <v-card-title align="start" justify="center">
                     Launch a desktop
                 </v-card-title>
-                <v-row align="center" justify="center">
-                    <v-data-table
-                        :headers="desktopConfigHeader"
-                        :items="[{nodes: desktopConfig.nodes, ppn: desktopConfig.ppn, mem: desktopConfig.mem, hours: desktopConfig.hours}]"
-                        class="elevation-1"
-                        hide-default-footer
+                <v-row align="center" justify="center" class="mx-3">
+                    <v-col cols="2" sm="1" md="2" lg="2">
+                        <v-select
+                            :items="flavours"
+                            v-model="selectedFlavour"
+                            item-text="type"
+                            label="Flavour"
+                            return-object
                         >
-
-                        <template v-slot:top>
-                            <v-dialog 
-                                v-model="desktopConfigDialogue"
-                                persistent
-                                max-width="500px"
-                            >
-                                <v-card>
-                                    <v-card-title>
-                                        <span class="headline">Edit desktop configuration</span>
-                                    </v-card-title>
-
-                                    <v-card-text>
-                                        <v-container>
-                                            <v-row>
-                                                <v-col cols="10" sm="5" md="4">
-                                                    <v-text-field
-                                                        v-model="desktopConfig.nodes"
-                                                        label="Nodes" type="number"
-                                                        :rules="numberRules" 
-                                                    ></v-text-field>
-                                                </v-col>
-                                                <v-col cols="10" sm="5" md="4">
-                                                    <v-text-field
-                                                        v-model="desktopConfig.ppn"
-                                                        label="Cores per node" type="number"
-                                                        :rules="numberRules" 
-                                                    ></v-text-field>
-                                                </v-col>
-                                               <v-col cols="10" sm="5" md="4">
-                                                        <v-text-field
-                                                        v-model="desktopConfig.mem"
-                                                        label="Memory (GB) per node" type="number"
-                                                        :rules="numberRules" 
-                                                    ></v-text-field>
-                                                </v-col>
-                                                <v-col cols="10" sm="5" md="4">
-                                                        <v-text-field
-                                                        v-model="desktopConfig.hours"
-                                                        label="Time (hours)" type="number"
-                                                        :rules="numberRules" 
-                                                    ></v-text-field>
-                                                </v-col>
-                                            </v-row>
-                                        </v-container>
-                                    </v-card-text>
-
-                                    <v-card-actions>
-                                        <v-spacer></v-spacer>
-                                        <v-btn
-                                            color="blue darken-1"
-                                            text
-                                            :disabled="!valid_dialog_values"
-                                            @click="saveDesktopConfigitem"
-                                        >
-                                            Save
-                                        </v-btn>
-                                    </v-card-actions>
-                                    </v-card>
-                            </v-dialog>
-                        </template>
-
-                        <template v-slot:item.actions="{ item }">
-                            <v-icon small class="mr-2" @click="editDesktopConfigItem(item)">
-                                mdi-pencil
-                            </v-icon>
-                        </template>
-                                
-                    </v-data-table>
-                    
+                        </v-select>
+                    </v-col>
+                    <v-col cols="2" sm="1" md="2" lg="2">
+                        <v-text-field 
+                            v-model="walltime"
+                            regular
+                            type="number"
+                            :rules="numberRules" 
+                            label="Time (hours)">
+                        </v-text-field>
+                    </v-col>
                 </v-row>
-                <v-row align="center" justify="center">
+                <v-row align="center" justify="center" class="mx-3">
+                    <v-col cols="8" sm="4" md="8" lg="8">
+                        <v-data-table
+                            :headers="desktopConfigHeader"
+                            :items="[{nodes: 1, ppn: selectedFlavour.cpu, mem: selectedFlavour.ram, gpu: selectedFlavour.gpu, gpuram: selectedFlavour.gpuram}]"
+                            class="elevation-1"
+                            hide-default-footer
+                            >
+                        </v-data-table>
+                    </v-col>                    
+                </v-row>
+                <v-row align="center" justify="center" class="mx-5">
                     <v-btn class="my-1" color="success" rounded dark large @click="launchDesktop"> 
                             Launch Desktop
                     </v-btn>
@@ -118,7 +72,7 @@
                 <v-card-title align="start" justify="center">
                     Running Desktops
                 </v-card-title>
-                <v-row align="center" justify="center">
+                <v-row align="center" justify="center" class="mx-3">
                     <v-col cols="45" sm="11" md="13">
                         <v-data-table
                             :headers="runningDesktopsTableHeaders"
@@ -129,7 +83,7 @@
                             >
                                 <template v-slot:item.actions="{ item }">
                                     <v-icon
-                                        class="my-3"
+                                        class="mx-3"
                                         color="warning" 
                                         title="Stop desktop"
                                         @click="deleteDesktop(item)"
@@ -202,7 +156,10 @@
                 desktops: [],
                 currentDesktop: null,
                 apps: [],
+                flavours: [],
                 selectedApp: "",
+                selectedFlavour: {},
+                walltime: 4, 
                 copyFilesToScratch: true,
                 runningDesktopsTableHeaders: [
                     {text: 'Job ID', align: 'center', sortable: false, value: 'jobid'},
@@ -211,33 +168,17 @@
                     {text: 'Actions', value: 'actions', sortable: false},
                 ],
                 desktopConfigHeader: [
-                    {text: 'Nodes', align: 'center', sortable: false, value: 'nodes'},
-                    {text: 'Cores per node', align: 'center', sortable: false, value: 'ppn'},
-                    {text: 'Memory (GB) per node', align: 'center', sortable: false, value: 'mem'},
-                    {text: 'Time (hours)', align: 'center', sortable: false, value: 'hours'},
-                    {text: 'Actions', value: 'actions', sortable: false},
+                    {text: '#CPUs', align: 'center', sortable: false, value: 'ppn'},
+                    {text: 'Total Memory (GB)', align: 'center', sortable: false, value: 'mem'},
+                    {text: '#GPU', align: 'center', sortable: false, value: 'gpu'},
+                    // {text: 'GPU Memory (GB)', align: 'center', sortable: false, value: 'gpuram'},
                 ],
                 numberRules: [
                     value => value && value > 0 && Number.isInteger(Number(value)) || 'Must be an positive integer'
-                ],
-                desktopConfigDialogue: false,
-                desktopConfig: {
-                    nodes: 1, 
-                    ppn: 4, 
-                    mem: 4,
-                    hours: 4
-                }
-            }
+                ]            }
         },
 
         methods: {
-            editDesktopConfigItem() {
-                this.desktopConfigDialogue = true
-            },
-
-            saveDesktopConfigitem() {
-                this.desktopConfigDialogue = false
-            },
             ///////////////////////////////////////
             // list of running desktops
             async getDesktops(){
@@ -261,6 +202,16 @@
                     element.displayText = element.name + " version " + element.version
                     this.apps.push(element)
                     this.selectedApp = this.apps[0].id
+                });
+            },
+            async getFlavours(){
+                let response = await DesktopAPI.listdesktopflavours()
+                Vue.$log.debug("Supported flavours :")
+                Vue.$log.debug(response)
+                this.flavours = []
+                response.commandResult.forEach(element => {
+                    this.flavours.push(element)
+                    this.selectedFlavour = this.flavours[0]
                 });
             },
             // delete the desktop
@@ -322,7 +273,7 @@
             // create a new desktop
             async launchDesktop(){
                 this.loading = true
-                await DesktopAPI.start_desktop(this.desktopConfig.mem, this.desktopConfig.ppn, this.desktopConfig.hours)
+                await DesktopAPI.start_desktop(this.selectedFlavour.ram, this.selectedFlavour.cpu, this.walltime)
                 // sleep for 5 seconds
                 await new Promise(r => setTimeout(r, 5000))
                 await this.getDesktops()
@@ -349,23 +300,12 @@
                 }
             }
         },
-        computed: {
-            valid_dialog_values(){
-                if(this.desktopConfig.nodes && this.desktopConfig.nodes >0 && Number.isInteger(Number(this.desktopConfig.nodes)) &&
-                    this.desktopConfig.ppn && this.desktopConfig.ppn >0 && Number.isInteger(Number(this.desktopConfig.ppn)) &&
-                    this.desktopConfig.mem && this.desktopConfig.mem >0 && Number.isInteger(Number(this.desktopConfig.mem)) &&
-                    this.desktopConfig.hours && this.desktopConfig.hours >0 && Number.isInteger(Number(this.desktopConfig.hours))
-                    )
-                    return true
-                else
-                    return false
-            }
-        },
         mounted: async function(){
             // get the current desktops
             this.loading = true
             this.getDesktops()
             this.getApps()
+            this.getFlavours()
             this.startTimer(20000)
             this.loading = false
         },
