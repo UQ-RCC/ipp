@@ -1,142 +1,140 @@
 <template>
-    <div>
-        <v-card>
-            <br />
-            <v-progress-linear
-                color="primary accent-4"
-                indeterminate
-                rounded
-                height="4"
-                :active="loading"
-            ></v-progress-linear>
-            
-            <div align="center" justify="center" v-if="desktopManagerOnly===false && files.length >0">
-                <v-list-group :value="true" no-action>
-                    <template v-slot:activator>
-                        <v-card-title>
-                            Selected files
-                        </v-card-title>
-                    </template>
+    <v-card max-height="100%" max-width="99%">
+        <br />
+        <v-progress-linear
+            color="primary accent-4"
+            indeterminate
+            rounded
+            height="4"
+            :active="loading"
+        ></v-progress-linear>
+        
+        <div align="center" justify="center" v-if="desktopManagerOnly===false && files.length >0">
+            <v-list-group :value="true" no-action>
+                <template v-slot:activator>
+                    <v-card-title>
+                        Selected files
+                    </v-card-title>
+                </template>
 
-                    <v-list-item v-for="afile in files" :key="afile">
-                        <v-list-item-title>{{ afile }}</v-list-item-title>
-                    </v-list-item>
-                </v-list-group>
-            </div>
+                <v-list-item v-for="afile in files" :key="afile">
+                    <v-list-item-title>{{ afile }}</v-list-item-title>
+                </v-list-item>
+            </v-list-group>
+        </div>
 
-            <div v-if="desktops.length === 0">
-                <v-card-title align="start" justify="center">
-                    Launch a desktop
-                </v-card-title>
-                <v-row align="center" justify="center" class="mx-3">
-                    <v-col cols="2" sm="1" md="2" lg="2">
-                        <v-select
-                            :items="flavours"
-                            v-model="selectedFlavour"
-                            item-text="type"
-                            label="Flavour"
-                            return-object
+        <div v-if="desktops.length === 0">
+            <v-card-title align="start" justify="center">
+                Launch a desktop
+            </v-card-title>
+            <v-row align="center" justify="center" class="mx-3">
+                <v-col cols="2" sm="1" md="2" lg="2">
+                    <v-select
+                        :items="flavours"
+                        v-model="selectedFlavour"
+                        item-text="type"
+                        label="Flavour"
+                        return-object
+                    >
+                    </v-select>
+                </v-col>
+                <v-col cols="2" sm="1" md="2" lg="2">
+                    <v-text-field 
+                        v-model="walltime"
+                        regular
+                        type="number"
+                        :rules="numberRules" 
+                        label="Time (hours)">
+                    </v-text-field>
+                </v-col>
+            </v-row>
+            <v-row align="center" justify="center" class="mx-3">
+                <v-col cols="8" sm="4" md="8" lg="8">
+                    <v-data-table
+                        :headers="desktopConfigHeader"
+                        :items="[{nodes: 1, ppn: selectedFlavour.cpu, mem: selectedFlavour.ram, gpu: selectedFlavour.gpu, gpuram: selectedFlavour.gpuram}]"
+                        class="elevation-1"
+                        hide-default-footer
                         >
-                        </v-select>
-                    </v-col>
-                    <v-col cols="2" sm="1" md="2" lg="2">
-                        <v-text-field 
-                            v-model="walltime"
-                            regular
-                            type="number"
-                            :rules="numberRules" 
-                            label="Time (hours)">
-                        </v-text-field>
-                    </v-col>
-                </v-row>
-                <v-row align="center" justify="center" class="mx-3">
-                    <v-col cols="8" sm="4" md="8" lg="8">
-                        <v-data-table
-                            :headers="desktopConfigHeader"
-                            :items="[{nodes: 1, ppn: selectedFlavour.cpu, mem: selectedFlavour.ram, gpu: selectedFlavour.gpu, gpuram: selectedFlavour.gpuram}]"
-                            class="elevation-1"
-                            hide-default-footer
-                            >
-                        </v-data-table>
-                    </v-col>                    
-                </v-row>
-                <v-row align="center" justify="center" class="mx-5">
-                    <v-btn class="my-1" color="success" rounded dark large @click="launchDesktop"> 
-                            Launch Desktop
-                    </v-btn>
-                </v-row>
+                    </v-data-table>
+                </v-col>                    
+            </v-row>
+            <v-row align="center" justify="center" class="mx-5">
+                <v-btn class="my-1" color="success" rounded dark large @click="launchDesktop"> 
+                        Launch Desktop
+                </v-btn>
+            </v-row>
 
-            </div>            
+        </div>            
 
-            <div v-if="desktops.length > 0">
-                <v-card-title align="start" justify="center">
-                    Running Desktops
-                </v-card-title>
-                <v-row align="center" justify="center" class="mx-3">
-                    <v-col cols="45" sm="11" md="13">
-                        <v-data-table
-                            :headers="runningDesktopsTableHeaders"
-                            :items="[{jobid: currentDesktop.jobid, status: currentDesktop.status, usedTime: currentDesktop.usedTime, jobName: currentDesktop.jobName, username: currentDesktop.uname}]"
-                            class="elevation-1"
-                            hide-default-footer
-                            v-if="currentDesktop"
-                            >
-                                <template v-slot:item.actions="{ item }">
-                                    <v-icon
-                                        class="mx-3"
-                                        color="warning" 
-                                        title="Stop desktop"
-                                        @click="deleteDesktop(item)"
-                                    >
-                                        mdi-delete
-                                    </v-icon>
-                                </template>
-                        </v-data-table>
-                    </v-col>
-                </v-row>
-            </div>
+        <div v-if="desktops.length > 0">
+            <v-card-title align="start" justify="center">
+                Running Desktops
+            </v-card-title>
+            <v-row align="center" justify="center" class="mx-3">
+                <v-col cols="45" sm="11" md="13">
+                    <v-data-table
+                        :headers="runningDesktopsTableHeaders"
+                        :items="[{jobid: currentDesktop.jobid, status: currentDesktop.status, usedTime: currentDesktop.usedTime, jobName: currentDesktop.jobName, username: currentDesktop.uname}]"
+                        class="elevation-1"
+                        hide-default-footer
+                        v-if="currentDesktop"
+                        >
+                            <template v-slot:item.actions="{ item }">
+                                <v-icon
+                                    class="mx-3"
+                                    color="warning" 
+                                    title="Stop desktop"
+                                    @click="deleteDesktop(item)"
+                                >
+                                    mdi-delete
+                                </v-icon>
+                            </template>
+                    </v-data-table>
+                </v-col>
+            </v-row>
+        </div>
 
-            <div v-if="currentDesktop !== null && desktopManagerOnly===false">
-                <v-card-title align="start" justify="center">
-                    Select a program to open selected files
-                </v-card-title>
-                <v-row align="center" justify="center">
-                    <v-checkbox
-                        v-model="copyFilesToScratch"
-                        label="Copy files to scratch"
+        <div v-if="currentDesktop !== null && desktopManagerOnly===false">
+            <v-card-title align="start" justify="center">
+                Select a program to open selected files
+            </v-card-title>
+            <v-row align="center" justify="center">
+                <v-checkbox
+                    v-model="copyFilesToScratch"
+                    label="Copy files to scratch"
+                    :readonly="currentDesktop === null"
+                ></v-checkbox>
+            </v-row>
+            <v-row align="center" justify="center">
+                <v-col cols="6" sm="4" md="4">
+                    <v-select
+                        :items="apps"
+                        v-model="selectedApp"
+                        item-text="displayText"
+                        item-value="id"
+                        label="App"
                         :readonly="currentDesktop === null"
-                    ></v-checkbox>
-                </v-row>
-                <v-row align="center" justify="center">
-                    <v-col cols="6" sm="4" md="4">
-                        <v-select
-                            :items="apps"
-                            v-model="selectedApp"
-                            item-text="displayText"
-                            item-value="id"
-                            label="App"
-                            :readonly="currentDesktop === null"
-                        >
-                        </v-select>
-                    </v-col>
-                    <v-btn class="my-1" color="success" rounded dark large 
-                            @click="launchProgram" 
-                            :disabled="currentDesktop === null"> 
-                            Open Program
-                    </v-btn>
-                </v-row>
-            </div>
-            <v-card-actions>
-                <v-row align="center" justify="center"> 
-                    <v-btn class="my-1" color="success" rounded dark large 
-                        @click="openDesktop" 
+                    >
+                    </v-select>
+                </v-col>
+                <v-btn class="my-1" color="success" rounded dark large 
+                        @click="launchProgram" 
                         :disabled="currentDesktop === null"> 
-                        Show Desktop
-                    </v-btn>
-                </v-row>
-            </v-card-actions>
-        </v-card>
-    </div>
+                        Open Program
+                </v-btn>
+            </v-row>
+        </div>
+        <v-card-actions>
+            <v-row align="center" justify="center"> 
+                <v-btn class="my-1" color="success" rounded dark large 
+                    @click="openDesktop" 
+                    :disabled="currentDesktop === null"> 
+                    Show Desktop
+                </v-btn>
+            </v-row>
+        </v-card-actions>
+    </v-card>
 </template>
 
 <script>

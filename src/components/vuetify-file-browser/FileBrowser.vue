@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <v-card max-height="99%" max-width="99%">
         <v-progress-linear
             color="primary accent-4"
             indeterminate
