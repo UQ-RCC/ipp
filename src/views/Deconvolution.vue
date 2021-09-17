@@ -478,6 +478,9 @@
                             let _decon = _decons[_index]
                             let _serie = await PreferenceAPI.get_serie_by_id(_decon.series_id)
                             let _setting = await PreferenceAPI.get_setting_by_id(_decon.setting_id)
+                            if (!('psfType' in _setting)){
+                                _setting['psfType'] = this.workingItem.setting.psfType
+                            }
                             _decon.series = _serie
                             _decon.setting = series.formatSeries(_setting)
                             items.push(_decon)
@@ -489,6 +492,9 @@
                             Vue.$log.debug("Found serie in database")
                             for(let _index = 0; _index < _storedSeries.length; _index++){
                                 let _storedSerie = _storedSeries[_index]
+                                if (!( 'psfType' in _storedSerie)){
+                                    _storedSerie['psfType'] = this.workingItem.setting.psfType
+                                }
                                 let _setting = series.formatSeries(_storedSerie)
                                 let _decon = await PreferenceAPI.create_decon(_storedSerie.id, _setting)
                                 _decon.series = _storedSerie
@@ -519,6 +525,9 @@
                                 // let _setting = series.formatSeries(_responseItem)
                                 try{
                                     _serie = await PreferenceAPI.create_serie(_serie)
+                                    if (!('psfType' in _serie)){
+                                        _serie['psfType'] = this.workingItem.setting.psfType
+                                    }
                                     let _setting = series.formatSeries(_serie)
                                     let _decon = await PreferenceAPI.create_decon(_serie.id, _setting)
                                     _decon.series = _serie
