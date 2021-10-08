@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" persistent max-width="55%">
+    <v-dialog v-model="dialog" persistent max-width="70%">
         <v-card>
             <v-toolbar dark color="#49075e">
                 <v-btn icon dark @click="cancel" title="Close this dialogue">
