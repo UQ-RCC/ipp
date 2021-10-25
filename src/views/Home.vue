@@ -16,7 +16,7 @@
 
 
     <h3>Feedback</h3>
-    The IPP is currently undergoing active development, any general feedback, comments, queries are welcome <a href="https://github.com/UQ-RCC/ipp/discussions">here</a>.<br />
+    The IPP is currently undergoing active development, any general feedback, comments, queries are welcome <a href="https://github.com/UQ-RCC/ipp/discussions">here</a> (You will need a Github account to submit new items for discussion).<br />
     Any issues or bugs you encounter can be submitted directly from the page you experienced them on by clicking the feedback button <v-icon big>mdi-comment-processing-outline</v-icon>.<br />
 
     <br />
