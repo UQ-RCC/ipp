@@ -112,7 +112,6 @@
         <v-row align="center" justify="center">
             <v-col cols="15" sm="3" md="4">
                 <v-select
-                    disabled
                     :items="splitChannelTypes"
                     v-model="serie.split"
                     item-text="label"
