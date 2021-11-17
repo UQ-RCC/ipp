@@ -123,6 +123,7 @@
             </v-col>
             <v-col cols="15" sm="3" md="4">
                 <v-text-field
+                    disabled
                     v-if="serie.split !== 0"
                     dense 
                     outlined
