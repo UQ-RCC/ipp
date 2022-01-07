@@ -8,6 +8,7 @@ import Deconvolution from './views/Deconvolution.vue'
 import Jobshistory from './views/Jobshistory.vue'
 import Admin from './views/Admin.vue'
 // import Release from './views/Release.vue'
+import Particlecounting from './views/Particlecounting.vue'
 import Desktop from './views/Desktop.vue'
 import Virtualdesktopmanager from './views/Virtualdesktopmanager.vue'
 
@@ -62,6 +63,11 @@ export default new Router({
         //     name: 'Release',
         //     component: Release
         // },
+        {
+            path: '/particlecounting',
+            name: 'ParticleCounting',
+            component: Particlecounting
+        },
         {
             path: '/desktop',
             name: 'Desktop',
