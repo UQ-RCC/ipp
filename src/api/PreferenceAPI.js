@@ -259,6 +259,26 @@ export default {
     return data
   },
 
+  // particle counting
+  async get_pcpage(){
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/particlecountingpage`)
+    return data
+  },
+
+  async get_pc_job(pcid, sendemail){
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/particlecounting/${pcid}/job?sendemail=${sendemail}`)
+    return data
+  },
+
+  async create_new_pc(){
+    const { data } = await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/particlecountingpage/particlecounting`)
+    return data
+  },
+
+  async update_pc(pcid, payload){
+    const { data } = await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/particlecounting/${pcid}`, payload)
+    return data
+  },
     
 }
   

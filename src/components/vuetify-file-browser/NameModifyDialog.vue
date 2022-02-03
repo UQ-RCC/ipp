@@ -1,7 +1,7 @@
 <template>
     <v-dialog
         v-model="dialog"
-        max-width="30%"
+        max-width="50%"
     >
         <v-card>
             <v-toolbar color="#49075e" dense flat>

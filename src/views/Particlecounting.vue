@@ -146,7 +146,7 @@
     import FileBrowserDialog from '@/components/FileBrowserDialog.vue'
     //api
     import PreferenceAPI from "@/api/PreferenceAPI"
-    import ConvertAPI from "@/api/ConvertAPI.js"
+    import ParticleCountingAPI from "@/api/ParticleCountingAPI.js"
     import miscs from '@/utils/miscs.js'
 
     export default {
@@ -174,8 +174,8 @@
         mounted: async function() {
             // load from db
             try{
-                let convertpage = await PreferenceAPI.get_convertpage()
-                this.dbinfo = convertpage.convert
+                let pcpage = await PreferenceAPI.get_pcpage()
+                this.dbinfo = pcpage.particlecounting
             }
             catch(err) {
                 Vue.$log.error(err)
@@ -225,27 +225,25 @@
                 }
                 Vue.$log.info("maxsize is:" + maxSize)
                 //create job:
-                let _job = await PreferenceAPI.get_convert_job(this.dbinfo.id, this.emailNeeded)
+                let _job = await PreferenceAPI.get_pc_job(this.dbinfo.id, this.emailNeeded)
                 // then submit
                 try{
-                    let convertinfo = {
+                    let pcinfo = {
                         files: this.dbinfo.inputPaths,
                         output: this.dbinfo.outputPath,
-                        method: this.dbinfo.method,
-                        prefix: this.dbinfo.prefix,
                         jobid: _job.id
                     }
-                    await ConvertAPI.convert(convertinfo, maxSize)
+                    await ParticleCountingAPI.pc(pcinfo, maxSize)
                     // create a new convert
                     Vue.notify({
                         group: 'datanotif',
                         type: 'success',
                         title: 'Submission',
-                        text: 'Successfully submit converting job',
+                        text: 'Successfully submit particle counting job',
                         closeOnClick: true,
                         duration: 5000,
                     })
-                    this.dbinfo = await PreferenceAPI.create_new_convert()
+                    this.dbinfo = await PreferenceAPI.create_new_pc()
                 }
                 catch(err) {
                     Vue.$log.error("-----error submittin-----------")
@@ -255,7 +253,7 @@
                         group: 'datanotif',
                         type: 'error',
                         title: 'Submission',
-                        text: 'Fail to submit converting job, please try again',
+                        text: 'Fail to submit particle counting job, please try again',
                         closeOnClick: true,
                         duration: 10000,
                     })

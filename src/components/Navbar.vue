@@ -110,12 +110,12 @@
                         <v-list-item-title>Electron microscopy</v-list-item-title>
                     </template>
 
-                    <v-list-item to="/particlecounting">
+                    <!-- <v-list-item to="/particlecounting">
                         <v-list-item-icon>
                             <v-icon>mdi-google-circles-extended</v-icon>
                         </v-list-item-icon>
                         <v-list-item-title class="ml-n5">Particle Counting</v-list-item-title>
-                    </v-list-item>
+                    </v-list-item> -->
 
                 </v-list-group>
 
