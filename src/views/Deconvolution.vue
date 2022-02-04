@@ -1031,9 +1031,9 @@
     }
 
     .buttons-margin{
-        margin-top: 20px;
+        margin-top: 50px;
     }
     .buttons-extra-margin{
-        margin-top: 50px;
+        margin-top: 70px;
     }
 </style>
