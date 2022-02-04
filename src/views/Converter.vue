@@ -12,7 +12,7 @@
         <v-row>
             <!-- table and buttons-->
             <v-col class="d-flex" cols="12" sm="4">
-                <div class="text-center">
+                <div class="text-center table-area">
                     <v-data-table
                         v-model="selected"
                         :items="loaded"
@@ -422,3 +422,17 @@
         }
     }
 </script>
+
+<style lang="scss" scoped>
+    .table-area {
+        height: 200px;
+        max-width: 410px;
+        
+        .scroll-x {
+            overflow-x: auto;
+        }
+        .scroll-y {
+            overflow-y: auto;
+        }
+    }
+</style>
