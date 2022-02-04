@@ -130,8 +130,11 @@
             <v-divider vertical></v-divider>
             <v-col class="d-flex">
                 <v-col>
-                    <v-row class="d-flex" v-bind:style="{height: '85%'}">
-                        <v-stepper non-linear flat alt-labels v-model="workingItem.step" v-bind:style="{width: '100%'}" @change="stepChanged">
+                    <v-row class="d-flex" v-bind:style="{height: '85%'}" v-on:keyup.right="nextStep">
+                        <v-stepper non-linear outlined
+                            v-model="workingItem.step" 
+                            v-bind:style="{width: '100%'}" 
+                            @change="stepChanged">
                             <v-stepper-header>
                                 <v-stepper-step :editable="checkStepVisibility(1)"
                                     step="1" 
@@ -241,8 +244,8 @@
                             </v-stepper-items>
                         </v-stepper>
                     </v-row>
-                    <p/>
-                    <br/><br/>
+                    <div class="buttons-margin"/>
+                    <div class="buttons-extra-margin" v-if="workingItem && workingItem.step == 8"/>
                     <v-row class="d-flex">
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
@@ -1025,5 +1028,12 @@
 <style lang="scss" scoped>
     .fullWidth{
         width: 100%;
+    }
+
+    .buttons-margin{
+        margin-top: 20px;
+    }
+    .buttons-extra-margin{
+        margin-top: 50px;
     }
 </style>
