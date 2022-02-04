@@ -86,7 +86,7 @@
                         </v-list-item-icon>
                         <v-list-item-title class="ml-n5">Converter</v-list-item-title>
                     </v-list-item>
-                    <v-list-item to="/preprocessing" disabled>
+                    <v-list-item to="/preprocessing">
                         <v-list-item-icon>
                             <v-icon>mdi-scissors-cutting</v-icon>
                         </v-list-item-icon>
