@@ -799,7 +799,7 @@
                 // 2 to make it safe
                 let totalMemSuggestedGbs = (memInMb * 2 * 2 * 4 * 5)/1024
                 // round up
-                totalMemSuggestedGbs = Math.ceil(totalMemSuggestedGbs)
+                totalMemSuggestedGbs = Math.ceil(totalMemSuggestedGbs) + 5
                 // totalMemSuggestedGbs = Math.ceil(totalMemSuggestedGbs/10) * 10 + 5
                 if(totalMemSuggestedGbs > 380)
                     totalMemSuggestedGbs = 380
