@@ -89,6 +89,13 @@
                                 >
                                     mdi-delete
                                 </v-icon>
+                                <v-icon
+                                    class="mx-3"
+                                    title="Refresh"
+                                    @click="getDesktops()"
+                                >
+                                    mdi-refresh
+                                </v-icon>
                             </template>
                     </v-data-table>
                 </v-col>
@@ -191,6 +198,7 @@
                         this.loading = true
                 } else {
                     this.currentDesktop = null
+                    this.loading = false
                 }
             },
             // list of supported apps
@@ -217,9 +225,12 @@
             },
             // delete the desktop
             async deleteDesktop(item){
+                Vue.$log.info("Deleting ....")
                 Vue.$log.info(item)
                 this.loading = true
                 await DesktopAPI.stop_desktop(item.jobid)
+                // await new Promise(r => setTimeout(r, 5000))
+                // await this.getDesktops()                
                 this.desktops = []
                 this.currentDesktop = null
                 this.loading = false
