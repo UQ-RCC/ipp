@@ -276,7 +276,7 @@
                 this.loading = true
                 await DesktopAPI.start_desktop(this.selectedFlavour.ram, this.selectedFlavour.cpu, this.walltime)
                 // sleep for 5 seconds
-                await new Promise(r => setTimeout(r, 5000))
+                await new Promise(r => setTimeout(r, 10000))
                 await this.getDesktops()
                 // this.loading = false
             },
@@ -307,7 +307,7 @@
             this.getDesktops()
             this.getApps()
             this.getFlavours()
-            this.startTimer(20000)
+            this.startTimer(7000)
             this.loading = false
         },
         destroyed() {
