@@ -60,8 +60,8 @@
                 </v-col>                    
             </v-row>
             <v-row align="center" justify="center" class="mx-5">
-                <v-btn class="my-1" color="success" rounded dark large @click="launchDesktop"> 
-                        Launch Desktop
+                <v-btn class="my-1" color="success" rounded dark large :disabled="flavours.length == 0" @click="launchDesktop"> 
+                    Launch Desktop
                 </v-btn>
             </v-row>
 
@@ -95,7 +95,7 @@
             </v-row>
         </div>
 
-        <div v-if="currentDesktop !== null && desktopManagerOnly===false">
+        <div v-if="currentDesktop !== null && desktopManagerOnly===false && currentDesktop.status =='RUNNING'">
             <v-card-title align="start" justify="center">
                 Select a program to open selected files
             </v-card-title>
@@ -119,8 +119,7 @@
                     </v-select>
                 </v-col>
                 <v-btn class="my-1" color="success" rounded dark large 
-                        @click="launchProgram" 
-                        :disabled="currentDesktop === null"> 
+                        @click="launchProgram"> 
                         Open Program
                 </v-btn>
             </v-row>
@@ -129,7 +128,7 @@
             <v-row align="center" justify="center"> 
                 <v-btn class="my-1" color="success" rounded dark large 
                     @click="openDesktop" 
-                    :disabled="currentDesktop === null"> 
+                    :disabled="currentDesktop === null || currentDesktop.status !='RUNNING'"> 
                     Show Desktop
                 </v-btn>
             </v-row>
@@ -186,6 +185,10 @@
                 this.desktops = response.commandResult
                 if(this.desktops.length > 0) {
                     this.currentDesktop = this.desktops[0]
+                    if (this.currentDesktop.status == 'RUNNING')
+                        this.loading = false
+                    else
+                        this.loading = true
                 } else {
                     this.currentDesktop = null
                 }
@@ -275,7 +278,7 @@
                 // sleep for 5 seconds
                 await new Promise(r => setTimeout(r, 5000))
                 await this.getDesktops()
-                this.loading = false
+                // this.loading = false
             },
 
             // set files
