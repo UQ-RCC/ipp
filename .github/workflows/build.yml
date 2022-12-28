@@ -6,17 +6,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          node-version: 16
       # Work around https://github.com/actions/checkout/issues/290
       - run: git fetch --force --tags
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: '12'
+          node-version: 16
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -33,13 +34,13 @@ jobs:
       - name: create tarball
         run: |
           GIT_DESCRIBE=$(git describe)
-          sed -i -e "s/%GIT_DESCRIBE%/$(git describe)/g" index.html
+          sed -i -e "s/%GIT_DESCRIBE%/$(git describe)/g" ./public/index.html
           tar -czf artifacts/imbportal-${GIT_DESCRIBE}.tar.gz \
             --transform "s/^\./imbportal-${GIT_DESCRIBE}/" \
             --exclude=./artifacts \
             --exclude=./.git \
             .
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: release-artifacts
           path: artifacts/imbportal-*.tar.gz
