@@ -65,6 +65,21 @@
                 </v-icon>
             </template>
 
+            <template v-slot:item.space="props">
+                <v-edit-dialog
+                :return-value.sync="props.item.space"
+                >
+                {{ props.item.space }}                    
+                <template v-slot:input>
+                    <v-text-field
+                    v-model="props.item.space"
+                    label="Edit"
+                    single-line
+                    ></v-text-field>
+                </template>
+                </v-edit-dialog>
+            </template>
+
         
         </v-data-table>
         <p />
@@ -123,7 +138,8 @@
                     iterations: 0, 
                     background: 0,
                     wavelength: 525,
-                    pinhole: 0
+                    pinhole: 0,
+                    space: 0
                 },
 
                 // background types
@@ -168,6 +184,14 @@
                         sortable: false,
                         value: 'pinhole',
                     },
+                    {
+                        text: 'Pinhole spacing (nm)',
+                        align: ' d-none',
+                        sortable: false,
+                        value: 'space',
+                    },
+
+
                     // {   text: 'Actions',
                     //     align: 'center', 
                     //     value: 'actions', 
@@ -199,7 +223,8 @@
                 if(this.serie['psfType'] === 3 ){
                     this.backgroundTypeChanged()
                     this.channelTableHeaders[3].align = ' d-none';
-                    this.channelTableHeaders[4].align = ' d-none';    
+                    this.channelTableHeaders[4].align = ' d-none';   
+                    this.channelTableHeaders[5].align = ' d-none';    
                 } 
                 // confocal wavelength, pinhole, claculator shown 
                 else if (this.serie['psfType'] === 1 ) {
@@ -207,11 +232,19 @@
                     this.channelTableHeaders[3].align = 'center';
                     this.channelTableHeaders[4].align = 'center';    
                 }
+                //spinning disk-wavelength, pinhole calc and pinhole spacing shown
+                else if (this.serie['psfType'] === 4 ) {
+                    this.channelTableHeaders[2].align = ' d-none';
+                    this.channelTableHeaders[3].align = 'center';
+                    this.channelTableHeaders[4].align = 'center';  
+                    this.channelTableHeaders[5].align = 'center';
+                }
                 // else: pinhole, calculator hidden, wavelength shown
                 else {
                     this.channelTableHeaders[2].align = ' d-none';  
                     this.channelTableHeaders[3].align = 'center';
                     this.channelTableHeaders[4].align = ' d-none';
+                    this.channelTableHeaders[5].align = ' d-none';
                       
                 }
             },

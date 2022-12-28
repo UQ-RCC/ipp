@@ -387,6 +387,7 @@
                     {label: 'Confocal', value: 1},
                     {label: 'Two Photon', value: 2},
                     {label: 'Light Sheet', value: 3},  
+                    {label: 'Spinning Disk', value: 4}, 
                 ],
                 nsPresets: [
                     {'label': 'Presets', 'value': -1},
