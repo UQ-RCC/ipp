@@ -9,7 +9,7 @@
             </v-switch> -->
         </v-row>
         <v-col align="center" justify="center">
-            <v-col cols="15" sm="3" md="4">
+            <v-col cols="15" sm="3" md="4" style="padding-top:30px">
                 <v-tooltip right>
                     <template v-slot:activator="{ on, attrs }">
                         <v-text-field 

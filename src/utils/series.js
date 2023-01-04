@@ -25,7 +25,7 @@ var series = {
                 for(var i=1; i <=numOfChannels; i++){
                     var channelName = 'Channel ' + i;
                     channels.push({'name': channelName, 'iterations': 10,
-                                    'wavelength': 525, 'pinhole': 0, 'background': 0})
+                                    'wavelength': 525, 'pinhole': 0, 'background': 0 , 'space': 0})
                 }
                 series['channels'] = channels;
             }catch(err){

@@ -69,7 +69,7 @@
                 <v-edit-dialog
                 :return-value.sync="props.item.space"
                 >
-                {{ props.item.space }}                    
+                {{ props.item.space ?? 0 }}                 
                 <template v-slot:input>
                     <v-text-field
                     v-model="props.item.space"
@@ -79,6 +79,7 @@
                 </template>
                 </v-edit-dialog>
             </template>
+
 
         
         </v-data-table>
@@ -139,7 +140,7 @@
                     background: 0,
                     wavelength: 525,
                     pinhole: 0,
-                    space: 0
+                    space: 0,
                 },
 
                 // background types
