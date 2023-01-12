@@ -461,6 +461,7 @@
                     decon.step = this.workingItem.step
                     decon.visitedSteps = this.workingItem.visitedSteps
                     // save it
+                    console.log(decon)
                     PreferenceAPI.update_decon(decon.id, decon)
                 })
             },

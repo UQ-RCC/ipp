@@ -1,6 +1,7 @@
 import request from '@/utils/request'
 import Vue from 'vue'
 
+
 export default {
   // --------------------- filesexplorer --------------------------//
   // get config of the whole component
@@ -60,11 +61,14 @@ export default {
   },
 
 
+
   // update setting
   async update_setting(settingid, setting){
     const { data } = await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/settings/${settingid}`, setting)
     return data
   },
+
+  
 
   // update decon
   async update_decon(deconid, decon){
@@ -77,6 +81,8 @@ export default {
       decon: newDecon,
       setting: setting
     }
+
+    console.log (payload);
     const { data } = await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/deconpage/decons/${deconid}`, payload)
     return data
   },

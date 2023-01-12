@@ -65,14 +65,14 @@
                 </v-icon>
             </template>
 
-            <template v-slot:item.space="props">
+            <template v-slot:item.pinholeSpacing="props">
                 <v-edit-dialog
-                :return-value.sync="props.item.space"
+                :return-value.sync="props.item.pinholeSpacing"
                 >
-                {{ props.item.space ?? 0 }}                 
+                {{ props.item.pinholeSpacing ?? 0 }}                 
                 <template v-slot:input>
                     <v-text-field
-                    v-model="props.item.space"
+                    v-model="props.item.pinholeSpacing"
                     label="Edit"
                     single-line
                     ></v-text-field>
@@ -140,7 +140,7 @@
                     background: 0,
                     wavelength: 525,
                     pinhole: 0,
-                    space: 0,
+                    pinholeSpacing: 0,
                 },
 
                 // background types
@@ -189,7 +189,7 @@
                         text: 'Pinhole spacing (nm)',
                         align: ' d-none',
                         sortable: false,
-                        value: 'space',
+                        value: 'pinholeSpacing',
                     },
 
 
