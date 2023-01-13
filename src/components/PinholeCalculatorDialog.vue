@@ -39,6 +39,13 @@
                                 label="Physical diameter (µm)" 
                                 v-model="spinningdisk.rphys">
                             </v-text-field>
+                            <v-text-field regular 
+                                type="number" 
+                                :rules="numberRules"
+                                @change="valueChange" 
+                                label="Pinhole spacing (µm)" 
+                                v-model="spinningdisk.phspg">
+                            </v-text-field>
                         </v-col>
                     </v-row>
                 </v-tab-item>
@@ -159,6 +166,17 @@
                 </v-col>
             </v-row>
 
+            <v-row align="center" justify="center" v-if="show">    
+                <v-col cols="20" sm="4" md="5">        
+                    <v-text-field regular 
+                        type="number" 
+                        label="Back Projected Pinhole spacing (nm)" 
+                        v-model="options.pinholeSpacingnm"
+                        disabled>
+                    </v-text-field>
+                </v-col>
+            </v-row>
+
             <v-card-actions>
                 <v-row align="center" justify="center">    
                 <v-btn class="my-1" color="success" rounded dark large @click="agree"> 
@@ -183,14 +201,17 @@
             dialog: false,
             resolve: null,
             reject: null,
+            show: false,
             options:{
                 pinholeRadius: 0,
+                pinholeSpacingnm: 0,
                 cancelled: false,
             },
             spinningdisk: {
                 mo: 60,
                 msys: 1,
                 rphys: 50,
+                phspg: 500
             },
             airy: {
                 n: 1, 
@@ -236,15 +257,19 @@
             },
             valueChange(){
                 if(this.tab === 0) {
+                    this.show = true
                     if(this.spinningdisk.mo && this.spinningdisk.msys && this.spinningdisk.rphys){
                         // follow: https://svi.nl/PinholeRadius
                         this.options.pinholeRadius = 1000 * 0.5 * this.spinningdisk.rphys /
                                                         (this.spinningdisk.mo * this.spinningdisk.msys)
                         this.options.pinholeRadius = series.roundToTwo(this.options.pinholeRadius)
+                        this.options.pinholeSpacingnm = (1000 * this.spinningdisk.phspg) / (this.spinningdisk.mo * this.spinningdisk.msys)
+                        this.options.pinholeSpacingnm = series.roundToTwo(this.options.pinholeSpacingnm)
                     }
                 }
                 else if(this.tab === 1) {
                     // here: https://svi.nl/DifficultiesCalculatingThePinhole
+                    this.show = false
                     let shapefactor = 1
                     if(this.airy.shape === 'Circular')
                         shapefactor = 0.5
@@ -259,6 +284,7 @@
                     this.options.pinholeRadius = series.roundToTwo(this.options.pinholeRadius)
                 }
                 else if(this.tab === 2) {
+                    this.show = false
                     let shapefactor = 1
                     if(this.pointscanning.shape === 'Circular')
                         shapefactor = 0.5

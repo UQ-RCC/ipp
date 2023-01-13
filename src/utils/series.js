@@ -87,7 +87,7 @@ var series = {
             // series['dr'] = series.roundToTwo(series['dr'])
             // series['dz'] = series.roundToTwo(series['dz'])
             //
-        if(![0, 1, 2, 3].includes(series['psfType']))
+        if(![0, 1, 2, 3, 4].includes(series['psfType']))
             series['psfType'] = 3
             
             /////////// NOISE

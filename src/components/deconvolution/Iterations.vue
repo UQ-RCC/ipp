@@ -65,7 +65,7 @@
                 </v-icon>
             </template>
 
-            <template v-slot:item.pinholeSpacing="props">
+           <!--  <template v-slot:item.pinholeSpacing="props">
                 <v-edit-dialog
                 :return-value.sync="props.item.pinholeSpacing"
                 >
@@ -78,6 +78,11 @@
                     ></v-text-field>
                 </template>
                 </v-edit-dialog>
+            </template> -->
+
+            <template v-slot:item.pinholeSpacing="props">
+                {{ props.item.pinholeSpacing ?? 0 }}  
+                
             </template>
 
 
@@ -282,9 +287,15 @@
                 this.iterationsEditedIndex = this.serie.channels.indexOf(item)
                 this.iterationsEditedItem = Object.assign({}, item)
                 let options = await this.$refs.calculatordialog.open()
-                if (!options.cancelled && options.pinholeRadius) {
-                    item = options.pinholeRadius
-                    this.serie.channels[this.iterationsEditedIndex].pinhole = options.pinholeRadius
+                if (!options.cancelled ) {
+                    if (options.pinholeRadius) { 
+                        item = options.pinholeRadius
+                        this.serie.channels[this.iterationsEditedIndex].pinhole = options.pinholeRadius
+                    }
+                    if (options.pinholeSpacingnm) {
+                        item = options.pinholeSpacingnm
+                        this.serie.channels[this.iterationsEditedIndex].pinholeSpacing = options.pinholeSpacingnm
+                    } 
                 }
                 else {
                     console.log("cancelled")
