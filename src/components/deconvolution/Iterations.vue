@@ -236,7 +236,8 @@
                 else if (this.serie['psfType'] === 1 ) {
                     this.channelTableHeaders[2].align = ' d-none';
                     this.channelTableHeaders[3].align = 'center';
-                    this.channelTableHeaders[4].align = 'center';    
+                    this.channelTableHeaders[4].align = 'center';  
+                    this.channelTableHeaders[5].align = ' d-none';  
                 }
                 //spinning disk-wavelength, pinhole calc and pinhole spacing shown
                 else if (this.serie['psfType'] === 4 ) {
