@@ -9,6 +9,17 @@
             hide-default-footer
             >
 
+            <template v-slot:header.pinhole="{ header}">
+                {{ header.text }}<v-icon
+                    small
+                    class="mr-2"
+                    @click="calculator(serie.channels)"
+                    >
+                    mdi-calculator
+                </v-icon> 
+            </template>
+           
+
             <template v-slot:item.iterations="props">
                 <v-edit-dialog
                 :return-value.sync="props.item.iterations"
@@ -56,34 +67,14 @@
 
             <template v-slot:item.pinhole="props">
                 {{ props.item.pinhole }}
-                <v-icon
-                    small
-                    class="mr-2"
-                    @click="calculator(props.item)"
-                    >
-                    mdi-calculator
-                </v-icon>
             </template>
-
-           <!--  <template v-slot:item.pinholeSpacing="props">
-                <v-edit-dialog
-                :return-value.sync="props.item.pinholeSpacing"
-                >
-                {{ props.item.pinholeSpacing ?? 0 }}                 
-                <template v-slot:input>
-                    <v-text-field
-                    v-model="props.item.pinholeSpacing"
-                    label="Edit"
-                    single-line
-                    ></v-text-field>
-                </template>
-                </v-edit-dialog>
-            </template> -->
 
             <template v-slot:item.pinholeSpacing="props">
                 {{ props.item.pinholeSpacing ?? 0 }}  
                 
             </template>
+
+            
 
 
         
@@ -284,24 +275,25 @@
             is_valid(){
                 return true
             }, 
-            async calculator(item){
-                this.iterationsEditedIndex = this.serie.channels.indexOf(item)
-                this.iterationsEditedItem = Object.assign({}, item)
+            async calculator(channels){
+                let channelsList = channels
                 let options = await this.$refs.calculatordialog.open()
                 if (!options.cancelled ) {
-                    if (options.pinholeRadius) { 
-                        item = options.pinholeRadius
-                        this.serie.channels[this.iterationsEditedIndex].pinhole = options.pinholeRadius
+                    if (options.pinholeRadius && options.pinholeSpacingnm ) { 
+
+                        for (let i=0; i < channelsList.length; i++) {
+                            this.serie.channels[i].pinhole = options.pinholeRadius
+                            this.serie.channels[i].pinholeSpacing = options.pinholeSpacingnm
+                        }   
                     }
-                    if (options.pinholeSpacingnm) {
-                        item = options.pinholeSpacingnm
-                        this.serie.channels[this.iterationsEditedIndex].pinholeSpacing = options.pinholeSpacingnm
-                    } 
                 }
                 else {
                     console.log("cancelled")
                 }
-            }
-        }
+            },
+            
+        },
+       
+
     }
 </script>
