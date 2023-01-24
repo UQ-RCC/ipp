@@ -32,28 +32,34 @@
                                 label="System magnification" 
                                 v-model="spinningdisk.msys">
                             </v-text-field>
-                            <v-select
-                                :items="models"
-                                v-model="spinningdisk.model"
-                                label="Microscope Model Preset"
-                                @change="valueChange"
-                                return-object
-                                >
+                            <v-select 
+                                    id="models"
+                                    :items="models"
+                                    v-model="spinningdisk.model"
+                                    label="Microscope model preset"
+                                    @change="valueChange"
+                                    return-object
+                                     >
                             </v-select>
-                            <v-text-field regular 
+                                
+                                <v-text-field regular 
                                 type="number" 
                                 :rules="numberRules"
                                 @change="valueChange" 
                                 label="Physical diameter (µm)" 
-                                v-model="spinningdisk.rphys">
+                                v-model="spinningdisk.rphys"
+                                >
                             </v-text-field>
                             <v-text-field regular 
-                                type="number" 
-                                :rules="numberRules"
-                                @change="valueChange" 
-                                label="Pinhole spacing (µm)" 
-                                v-model="spinningdisk.phspg">
-                            </v-text-field>
+                            type="number" 
+                            :rules="numberRules"
+                            @change="valueChange" 
+                            label="Pinhole spacing (µm)" 
+                            v-model="spinningdisk.phspg"
+                            >
+                        </v-text-field>
+                        
+                    
                         </v-col>
                     </v-row>
                 </v-tab-item>
@@ -78,7 +84,7 @@
                                 type="number" 
                                 :rules="numberRules"
                                 @change="valueChange" 
-                                label="Numerical Aperture" 
+                                label="Numerical aperture" 
                                 v-model="airy.na">
                             </v-text-field>
                             <v-row align="center" justify="center">
@@ -203,8 +209,11 @@
     import Vue from 'vue'
     import series from "@/utils/series.js";
     import VueCookies from 'vue-cookies'
+  
+      
     Vue.use(VueCookies)
     
+
     export default {
         name: 'PinholeCalculatorDialog',
         data: () => ({
@@ -244,7 +253,8 @@
             numberRules: [
                 value => value && parseInt(value) && String(value).match(/^\d+(\.\d+)?$/).length > 0 || 'Must be a positive number'
             ],
-            models: ['Yokogawa X1 - 50', 'Yokogawa W1 - 50', 'Yokogawa W1 - 25', 'Dragonfly - 40', 'Dragonfly - 25'],
+            models: [   'Yokogawa X1 - 50','Yokogawa W1 - 50','Yokogawa W1 - 25','Dragonfly - 40','Dragonfly - 25'], 
+           
            
         }),
         computed: {
@@ -290,26 +300,53 @@
                 }
                 
             },
+            getModels() {
+                if (this.$cookies.get('spdSettings')) {
+                    this.spinningdisk.model = this.$cookies.get('spdSettings').model
+                    this.spinningdisk.rphys = this.$cookies.get('spdSettings').rphys 
+                    this.spinningdisk.phspg = this.$cookies.get('spdSettings').phspg 
+                } else {
+                    if (this.spinningdisk.model === 'Yokogawa X1 - 50') {
+                        this.spinningdisk.rphys =  50
+                        this.spinningdisk.phspg = 250
+                    } else if (this.spinningdisk.model === 'Yokogawa W1 - 50') {
+                        this.spinningdisk.rphys =  50
+                        this.spinningdisk.phspg = 500
+                    } else if (this.spinningdisk.model === 'Yokogawa W1 - 25') {
+                        this.spinningdisk.rphys =  25
+                        this.spinningdisk.phspg = 500
+                    } else if (this.spinningdisk.model === 'Dragonfly - 40') {
+                        this.spinningdisk.rphys =  40
+                        this.spinningdisk.phspg =  700
+                    } else if (this.spinningdisk.model === 'Dragonfly - 25') {
+                        this.spinningdisk.rphys = 25
+                        this.spinningdisk.phspg = 700
+                    } 
+
+                }
+            },
+           
+          /*   addItem() {
+                let newItem = document.getElementById("models").value
+                let count = this.models.length + 1
+                const containItem = !!this.models.find(model => {
+                    return model.Name === newItem
+                })
+                if (!containItem) {
+                     const newRecord = {
+                        "ID": count, "Name": newItem, "Diameter" : 0, "Spacing" : 0,
+            
+                    } 
+                    console.log(newRecord)
+                    //this.models.push(newRecord)
+                }
+
+
+            }, */
             
             valueChange(){
                 if(this.tab === 0) {
                     this.show = true
-                    if (this.spinningdisk.model === 'Yokogawa X1 - 50') {
-                        this.spinningdisk.rphys = 50
-                        this.spinningdisk.phspg = 250
-                    } else if (this.spinningdisk.model === 'Yokogawa W1 - 50') {
-                        this.spinningdisk.rphys = 50
-                        this.spinningdisk.phspg = 500
-                    } else if (this.spinningdisk.model === 'Yokogawa W1 - 25') {
-                        this.spinningdisk.rphys = 25
-                        this.spinningdisk.phspg = 500
-                    } else if (this.spinningdisk.model === 'Dragonfly - 40') {
-                        this.spinningdisk.rphys = 40
-                        this.spinningdisk.phspg = 700
-                    } else if (this.spinningdisk.model === 'Dragonfly - 25') {
-                        this.spinningdisk.rphys = 25
-                        this.spinningdisk.phspg = 700
-                    }
 
                     if(this.spinningdisk.mo && this.spinningdisk.msys && this.spinningdisk.rphys && this.spinningdisk.phspg){
                         // follow: https://svi.nl/PinholeRadius
@@ -386,11 +423,14 @@
                     this.$cookies.set('pointscanning',pointscanning, new Date(9999, 0o1, 0o1).toUTCString())
 
                 }
-            }
+            },
+            
+
         },
-        mounted: function(){
+        mounted: function(){   
             this.setCookies()
             this.getCookies() 
+            this.getModels()
             this.valueChange()
             
             
