@@ -37,7 +37,7 @@
                                     :items="models"
                                     v-model="spinningdisk.model"
                                     label="Microscope model preset"
-                                    @change="valueChange"
+                                    @change="selectChange"
                                     return-object
                                      >
                             </v-select>
@@ -326,23 +326,26 @@
                 }
             },
            
-          /*   addItem() {
-                let newItem = document.getElementById("models").value
-                let count = this.models.length + 1
-                const containItem = !!this.models.find(model => {
-                    return model.Name === newItem
-                })
-                if (!containItem) {
-                     const newRecord = {
-                        "ID": count, "Name": newItem, "Diameter" : 0, "Spacing" : 0,
-            
+            selectChange() {
+                if (this.spinningdisk.model === 'Yokogawa X1 - 50') {
+                        this.spinningdisk.rphys =  50
+                        this.spinningdisk.phspg = 250
+                    } else if (this.spinningdisk.model === 'Yokogawa W1 - 50') {
+                        this.spinningdisk.rphys =  50
+                        this.spinningdisk.phspg = 500
+                    } else if (this.spinningdisk.model === 'Yokogawa W1 - 25') {
+                        this.spinningdisk.rphys =  25
+                        this.spinningdisk.phspg = 500
+                    } else if (this.spinningdisk.model === 'Dragonfly - 40') {
+                        this.spinningdisk.rphys =  40
+                        this.spinningdisk.phspg =  700
+                    } else if (this.spinningdisk.model === 'Dragonfly - 25') {
+                        this.spinningdisk.rphys = 25
+                        this.spinningdisk.phspg = 700
                     } 
-                    console.log(newRecord)
-                    //this.models.push(newRecord)
-                }
-
-
-            }, */
+                    this. valueChange()
+                   
+            },
             
             valueChange(){
                 if(this.tab === 0) {
