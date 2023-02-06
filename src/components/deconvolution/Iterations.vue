@@ -1,7 +1,8 @@
 <template>
     <v-card :disabled="readonly">
-        <pinhole-calculator-dialog ref="calculatordialog" />
-        
+        <PsCalculatorDialog ref="calculatordialog" />
+        <SdcCalculatorDialog ref="spdcalculatordialog" />
+       
         <v-data-table
             :headers="channelTableHeaders"
             :items="serie.channels"
@@ -9,11 +10,11 @@
             hide-default-footer
             >
 
-            <template v-slot:header.pinhole="{ header}">
+            <template v-slot:header.pinhole="{ header}" v-if="showCalc==false" >
                 {{ header.text }}<v-icon
                     small
                     class="mr-2"
-                    @click="calculator(serie.channels)"
+                    @click="spdcalculator(serie.channels)"
                     >
                     mdi-calculator
                 </v-icon> 
@@ -67,6 +68,13 @@
 
             <template v-slot:item.pinhole="props">
                 {{ props.item.pinhole }}
+                <v-icon
+                    small
+                    class="mr-2"
+                    @click="lsmcalculator(props.item)"
+                    v-if="showCalc">
+                    mdi-calculator
+                </v-icon>
             </template>
 
             <template v-slot:item.pinholeSpacing="props">
@@ -113,12 +121,15 @@
 <script>
     // import Vue from 'vue';
     import series from "@/utils/series.js";
-    import PinholeCalculatorDialog from '@/components/PinholeCalculatorDialog.vue'
+    import PsCalculatorDialog from '@/components/PsCalculatorDialog.vue'
+    import SdcCalculatorDialog from '@/components/SdcCalculatorDialog.vue'
     
     export default {
         name: 'DeconvolutionIterations',
         components: {
-            PinholeCalculatorDialog,
+            PsCalculatorDialog,
+            SdcCalculatorDialog,
+           
         },
         props: {
             readonly: { type: Boolean, default: false }, 
@@ -127,6 +138,7 @@
             return {
                 valid: true,
                 serie: series.formatSeries(null),
+                showCalc : false,
                 // iterations edit
                 iterationsEditDialog: false,
                 iterationsEditedIndex: -1,
@@ -225,6 +237,7 @@
                 } 
                 // confocal wavelength, pinhole, claculator shown 
                 else if (this.serie['psfType'] === 1 ) {
+                    this.showCalc = true;
                     this.channelTableHeaders[2].align = ' d-none';
                     this.channelTableHeaders[3].align = 'center';
                     this.channelTableHeaders[4].align = 'center';  
@@ -232,6 +245,7 @@
                 }
                 //spinning disk-wavelength, pinhole calc and pinhole spacing shown
                 else if (this.serie['psfType'] === 4 ) {
+                    this.showCalc = false;
                     this.channelTableHeaders[2].align = ' d-none';
                     this.channelTableHeaders[3].align = 'center';
                     this.channelTableHeaders[4].align = 'center';  
@@ -275,16 +289,75 @@
             is_valid(){
                 return true
             }, 
-            async calculator(channels){
+            /* async calculator(channels){
                 let channelsList = channels
+                let size = channelsList.length
                 let options = await this.$refs.calculatordialog.open()
+                console.log(channelsList)
                 if (!options.cancelled ) {
-                    if (options.pinholeRadius && options.pinholeSpacingnm ) { 
+                    if (options.pinholeRadius ) { 
+                        
+                        if (size > 1 ) {
+                            for (let i=0; i < channelsList.length; i++) {
+                                this.serie.channels[i].pinhole = options.pinholeRadius
+                                //this.serie.channels[i].pinholeSpacing = options.pinholeSpacingnm
+                            }
+                        } else {
+                            this.iterationsEditedIndex = this.serie.channels.indexOf(channels)
+                            this.iterationsEditedItem = Object.assign({}, channels)
+                            channels = options.pinholeRadius
+                            this.serie.channels[this.iterationsEditedIndex].pinhole = options.pinholeRadius
+                        }
 
-                        for (let i=0; i < channelsList.length; i++) {
-                            this.serie.channels[i].pinhole = options.pinholeRadius
-                            this.serie.channels[i].pinholeSpacing = options.pinholeSpacingnm
-                        }   
+                    } else if (options.pinholeRadius && options.pinholeSpacingnm ) {
+                        if (size > 1 ) {
+                            for (let i=0; i < channelsList.length; i++) {
+                                this.serie.channels[i].pinhole = options.pinholeRadius
+                                this.serie.channels[i].pinholeSpacing = options.pinholeSpacingnm
+                            }
+                        }
+
+                    }
+                }
+                else {
+                    console.log("cancelled")
+                }
+            }, */
+            async lsmcalculator(item){
+                console.log("inside dialog method")
+                this.iterationsEditedIndex = this.serie.channels.indexOf(item)
+                this.iterationsEditedItem = Object.assign({}, item)
+                console.log(this.iterationsEditedItem)
+                let options = await this.$refs.calculatordialog.open()
+                if (!options.cancelled  && options.pinholeRadius ) {
+                    item = options.pinholeRadius
+                    this.serie.channels[this.iterationsEditedIndex].pinhole = options.pinholeRadius
+                } 
+                else {
+                    console.log("cancelled")
+                }
+            },
+
+            async spdcalculator(channels){
+                let channelsList = channels
+                let size = channelsList.length
+                let options = await this.$refs.spdcalculatordialog.open()
+                if (!options.cancelled ) {
+                    if (options.pinholeRadius && options.pinholeSpacingnm ) {
+                        if (size > 1 ) {
+                            for (let i=0; i < channelsList.length; i++) {
+                                this.serie.channels[i].pinhole = options.pinholeRadius
+                                this.serie.channels[i].pinholeSpacing = options.pinholeSpacingnm
+                            }
+                        }
+                        else {
+                            this.iterationsEditedIndex = this.serie.channels.indexOf(channels)
+                            this.iterationsEditedItem = Object.assign({}, channels)
+                            channels = options.pinholeRadius
+                            this.serie.channels[this.iterationsEditedIndex].pinhole = options.pinholeRadius
+                            this.serie.channels[this.iterationsEditedIndex].pinholeSpacing = options.pinholeSpacingnm
+                        }
+
                     }
                 }
                 else {
@@ -293,6 +366,9 @@
             },
             
         },
+        mounted: function() {
+           this.showCalc = false
+        }
        
 
     }

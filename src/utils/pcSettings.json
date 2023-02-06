@@ -1,0 +1,146 @@
+{
+
+    "spinningDisk" : [{
+        "model" : "Yokogawa X1 50",
+        "sysmagnification" : 1,
+        "pinholeshape" : "Circular",
+        "shapefactor" : 500,
+        "pinholesize" : 50,
+        "pinholespacing" : 500
+
+    },
+    {
+        "model" : "Yokogawa W1 50",
+        "sysmagnification" : 1,
+        "pinholeshape" : "Circular",
+        "shapefactor" : 500,
+        "pinholesize" : 50,
+        "pinholespacing" : 500
+
+    },
+    {
+        "model" : "Yokogawa W1 25",
+        "sysmagnification" : 1,
+        "pinholeshape" : "Circular",
+        "shapefactor" : 500,
+        "pinholesize" : 25,
+        "pinholespacing" : 500
+
+    },
+    {
+        "model" : "Andor Dragonfly 40",
+        "sysmagnification" : 1,
+        "pinholeshape" : "Circular",
+        "shapefactor" : 500,
+        "pinholesize" : 40,
+        "pinholespacing" : 700
+
+    },
+    {
+        "model" : "Andor Dragonfly 25",
+        "sysmagnification" : 1,
+        "pinholeshape" : "Circular",
+        "shapefactor" : 500,
+        "pinholesize" : 25,
+        "pinholespacing" : 700
+
+    },
+    {
+        "model" : "Visitech Infinity",
+        "sysmagnification" : 1,
+        "pinholeshape" : "Circular",
+        "shapefactor" : 500,
+        "pinholesize" : 50,
+        "pinholespacing" : 250
+
+    }
+],
+
+    "pointScanning" : [{
+        "model" : "Zeiss LSM AxioObserver (Invert) Sideport",
+        "pinholeshape" : "Square",
+        "pinholeside" : "side",
+        "shapefactor" : 564.19,
+        "sysmagnification" : 1.74
+    },
+    {
+        "model" : "Zeiss LSM AxioObserver (Invert) Rearport",
+        "pinholeshape" : "Square",
+        "pinholeside" : "side",
+        "shapefactor" : 564.19,
+        "sysmagnification" : 1.6
+    },
+    {
+        "model" : "Zeiss LSM AxioImager (Upright) Rearport",
+        "pinholeshape" : "Square",
+        "pinholeside" : "side",
+        "shapefactor" : 564.19,
+        "sysmagnification" : 1.6
+    },
+    {
+        "model" : "Zeiss LSM AxioImager (Upright) Top Port",
+        "pinholeshape" : "Square",
+        "pinholeside" : "side",
+        "shapefactor" : 564.19,
+        "sysmagnification" : 1.74
+    },
+    {
+        "model" : "Zeiss LSM AxioExaminer (Upright) Top Port",
+        "pinholeshape" : "Square",
+        "pinholeside" : "side",
+        "shapefactor" : 564.19,
+        "sysmagnification" : 2.37
+    },
+    {
+        "model" : "Zeiss LSM 700/800/900 All Stands",
+        "pinholeshape" : "Square",
+        "pinholeside" : "side",
+        "shapefactor" : 564.19,
+        "sysmagnification" : 1.52
+    },
+    {
+        "model" : "Zeiss LSM 510 All Stands",
+        "pinholeshape" : "Circlar",
+        "pinholeside" : "diameter",
+        "shapefactor" : 500,
+        "sysmagnification" : 3.33
+    },
+    {
+        "model" : "Leica SP2",
+        "pinholeshape" : "Square",
+        "pinholeside" : "side",
+        "shapefactor" : 564.19,
+        "sysmagnification" : 3.6
+    },
+    {
+        "model" : "Leica SP5/SP8",
+        "pinholeshape" : "Square",
+        "pinholeside" : "side",
+        "shapefactor" : 564.19,
+        "sysmagnification" : 3
+    },
+    {
+        "model" : "Olympus Fluoview 1000",
+        "pinholeshape" : "Square",
+        "pinholeside" : "side",
+        "shapefactor" : 564.19,
+        "sysmagnification" : 3.82
+    },
+    {
+        "model" : "Olympus Fluoview 3000",
+        "pinholeshape" : "Square",
+        "pinholeside" : "side",
+        "shapefactor" : 564.19,
+        "sysmagnification" : 7.6
+    },
+    {
+        "model" : "Nikon A1/AX",
+        "pinholeshape" : "hexagonal",
+        "pinholeside" : "diagonal",
+        "shapefactor" : 455,
+        "sysmagnification" : 1
+    }]
+}
+
+    
+    

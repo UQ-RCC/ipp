@@ -1,0 +1,380 @@
+<template>
+    <div>
+        <SettingsDialog ref="settingsdialog" />
+   
+        <v-dialog v-model="dialog" scrollable persistent max-height="100%" max-width="50%">
+            <v-card max-width="100%" max-height="100%">
+                <v-toolbar dark color="#49075e">
+                    <v-btn icon dark @click="cancel">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    <v-card-title class="headline">
+                        Backprojected Spinning Disc Calculator
+                    </v-card-title>
+                </v-toolbar>
+                
+                    
+                    <v-row align="center" justify="center">    
+                        <v-col cols="6" sm="6" md="8">
+                            <v-row align="center" justify="center">
+                                <v-col cols="3" sm="4" md="6">
+                                    <v-text-field regular 
+                                        type="number"
+                                        :rules="[rules.required]"
+                                        @change="valueChange" 
+                                        label="Objective Magnification" 
+                                        v-model="spinningDisc.objmagnification"
+                                        required 
+                                        autofocus>
+                                    </v-text-field>
+
+                                </v-col>
+                                <v-col cols="3" sm="4" md="6">
+                                    <v-text-field regular 
+                                        type="number"
+                                        :rules="[rules.required]"
+                                        @change="valueChange" 
+                                        label="Auxillary Magnification" 
+                                        v-model="spinningDisc.auxmagnification"
+                                        required
+                                        autofocus>
+                                    </v-text-field>
+
+                                </v-col>
+
+                            </v-row>
+                            
+                            <v-select 
+                                    id="spmodels"
+                                    :items="spdmodels"
+                                    item-text = "model"
+                                    v-model="spinningDisc.model"
+                                    label="Microscope Configuration"
+                                    @change="getspdData"
+                                    return-object
+                                        >
+                                    
+                            </v-select>
+                            <v-row align="center" justify="center">
+                                <v-col cols="3" sm="4" md="6">
+                                    <v-select
+                                        :items="spdmodels"
+                                        item-text = "pinholeshape"
+                                        v-model="spinningDisc.pinholeshape"
+                                        label="Pinhole Shape"
+                                        @change="valueChange"
+                                        return-object
+                                        >
+                                    </v-select>
+                                </v-col>
+                                    <v-col cols="3" sm="4" md="6">
+                                    <v-text-field regular 
+                                        type="number" 
+                                        :rules="[rules.numberRules]"
+                                        @change="valueChange" 
+                                        label="Shape Factor" 
+                                        v-model="spinningDisc.shapefactor">
+                                    </v-text-field>
+                                    </v-col>
+                            </v-row>
+                            
+                            <v-text-field regular 
+                                type="number" 
+                                :rules="[rules.numberRules]"
+                                @change="valueChange" 
+                                label="Internal System magnification" 
+                                v-model="spinningDisc.sysmagnification">
+                            </v-text-field> 
+                                
+                            <v-text-field regular 
+                                type="number" 
+                                :rules="[rules.numberRules]"
+                                @change="valueChange" 
+                                label="Pinhole Size (µm)" 
+                                v-model="spinningDisc.pinholesize"
+                            >
+                            </v-text-field>
+                            <v-text-field regular 
+                            type="number" 
+                            :rules="[rules.numberRules]"
+                            @change="valueChange" 
+                            label="Pinhole Spacing (µm)" 
+                            v-model="spinningDisc.pinholespacing"
+                            >
+                        </v-text-field>
+                        
+                    
+                        </v-col>
+                    </v-row>
+                        
+                    <v-divider ></v-divider>
+                    <v-row align="center" justify="center"> 
+                        <v-col cols="6" sm="6" md="8">
+                            <v-row align="center" justify="center">
+                                <v-col cols="3" sm="4" md="6">        
+                                    <v-text-field regular 
+                                        type="number" 
+                                        label="B.P. Pinhole Radius (nm)" 
+                                        v-model="options.pinholeRadius"
+                                        readonly>
+                                    </v-text-field>
+                                </v-col>
+                                <v-col cols="3" sm="4" md="6" >        
+                                    <v-text-field regular 
+                                        type="number" 
+                                        label="B.P. Pinhole Spacing (nm)" 
+                                        v-model="options.pinholeSpacingnm"
+                                        readonly>
+                                    </v-text-field>
+                                </v-col>
+                            </v-row>
+                        </v-col>   
+                    </v-row>
+                        
+                        
+                        <v-row align="center" justify="center">  
+                            <v-col cols="6" sm="6" md="8">
+                                <v-card-actions>
+
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-btn 
+                                                class="my-3" 
+                                                color="success" 
+                                                fab dark  
+                                                v-bind="attrs" 
+                                                v-on="on"
+                                                @click.stop="agree" >
+                                                <v-icon>mdi-send</v-icon>
+                                            </v-btn>
+                                        </template>
+                                        <span>Send Results to Panel</span>
+                                    </v-tooltip>
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-btn 
+                                                class="my-3" 
+                                                color="error" 
+                                                fab dark  
+                                                v-bind="attrs" 
+                                                v-on="on"
+                                                @click="cancel">
+                                                <v-icon>mdi-cancel</v-icon>
+                                            </v-btn>
+                                        </template>
+                                        <span>Cancel</span>
+                                    </v-tooltip>
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-btn 
+                                                class="my-3" 
+                                                color="primary" 
+                                                fab dark  
+                                                v-bind="attrs" 
+                                                v-on="on"
+                                                @click="loadSettings(true)">
+                                                <v-icon>mdi-web</v-icon>
+                                            </v-btn>
+                                        </template>
+                                        <span>Load Global Settings</span>
+                                    </v-tooltip>
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-btn 
+                                                class="my-3" 
+                                                color="secondary" 
+                                                fab dark  
+                                                v-bind="attrs" 
+                                                v-on="on"
+                                                @click="loadSettings(false)"
+                                                >
+                                                <v-icon>mdi-file-import</v-icon>
+                                            </v-btn>
+                                        </template>
+                                        <span>Load My Settings</span>
+                                    </v-tooltip>
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-btn 
+                                                class="my-3" 
+                                                color="blue-grey" 
+                                                fab dark  
+                                                v-bind="attrs" 
+                                                v-on="on"
+                                                @click.stop="saveSettings()" 
+                                                >
+                                                <v-icon>mdi-content-save</v-icon>
+                                            </v-btn>
+                                        </template>
+                                        <span>Save Settings</span>
+                                    </v-tooltip>
+                                </v-card-actions>
+                                </v-col>  
+                            </v-row>
+
+                </v-card>
+        </v-dialog>
+    </div>
+</template>
+
+
+<script>
+    import Vue from 'vue'
+    import series from "@/utils/series.js";
+    import VueCookies from 'vue-cookies'
+    import pcSettings from '@/utils/pcSettings'
+    import SettingsDialog from '@/components/SettingsDialog'
+  
+  
+      
+    Vue.use(VueCookies)
+    
+
+    export default {
+        name: 'SdcCalculator',
+        components: {
+            SettingsDialog,
+        },
+        data: () => ({
+            tab: 0,
+            dialog: false,
+            resolve: null,
+            reject: null,
+            show: false,
+            settings: pcSettings,
+            options:{
+                pinholeRadius: 0,
+                pinholeSpacingnm: 0,
+                cancelled: false,
+            },
+            spinningDisc: {
+                model: "Yokogawa X1 50",
+                objmagnification:  null,
+                auxmagnification: null,
+                sysmagnification: 1,
+                pinholesize: 50,
+                pinholespacing: 500,
+                shapefactor: 500,
+                pinholeshape: "Circular"
+            },
+            rules: {
+                required : value => !! value || "The input is required",
+                numberRules: value => value && parseInt(value) && String(value).match(/^\d+(\.\d+)?$/).length > 0 || 'Must be a positive number',
+
+
+            }
+           
+        }),
+        computed: {
+            username: function() {
+                return this.$keycloak && this.$keycloak.idTokenParsed ? this.$keycloak.idTokenParsed.email  : ''
+            },
+           
+            spdmodels() {
+                const obj= this.settings.spinningDisk
+                const resultArray = Object.keys(obj).map(function(key) {
+                    return obj[key]
+                })
+                return resultArray
+            }
+           
+        },
+        methods: {
+           
+           
+            getspdData() {
+
+                this.spinningDisc.pinholeshape = this.spinningDisc.model.pinholeshape
+                //this.spinningdisk.square_side = this.spinningdisk.model.reportedSide 
+                this.spinningDisc.shapefactor = this.spinningDisc.model.shapefactor
+                this.spinningDisc.sysmagnification = this.spinningDisc.model.sysmagnification 
+                this.spinningDisc.pinholesize = this.spinningDisc.model.pinholesize
+                this.spinningDisc.pinholespacing = this.spinningDisc.model.pinholespacing
+
+                this.valueChange()
+
+            },
+            open() {
+                this.dialog = true;
+                return new Promise((resolve, reject) => {
+                    this.resolve = resolve
+                    this.reject = reject
+                });
+            },
+            agree() {
+                if(this.spinningDisc.objmagnification && this.spinningDisc.auxmagnification) {
+                    this.options.cancelled = false
+                    this.resolve(this.options)
+                    this.dialog = false
+                }
+                
+             
+               
+            },
+            cancel() {
+                this.options.cancelled = true
+                this.resolve(this.options)
+                this.dialog = false
+            },
+            setCookies() {
+                this.$cookies.set('username',this.username, new Date(9999, 0o1, 0o1).toUTCString())
+            },
+            
+            valueChange(){
+                    if(this.spinningDisc.objmagnification && this.spinningDisc.sysmagnification && this.spinningDisc.pinholesize && this.spinningDisc.pinholespacing && this.spinningDisc.auxmagnification ){
+                        // follow: https://svi.nl/PinholeRadius
+                        this.options.pinholeRadius =  this.spinningDisc.pinholesize / (this.spinningDisc.objmagnification * this.spinningDisc.sysmagnification * this.spinningDisc.auxmagnification) / 2 * 1000                           
+                        this.options.pinholeRadius = series.roundToTwo(this.options.pinholeRadius)
+                        this.options.pinholeSpacingnm = (this.spinningDisc.pinholespacing / (this.spinningDisc.objmagnification * this.spinningDisc.sysmagnification * this.spinningDisc.auxmagnification) * 1000)
+                        this.options.pinholeSpacingnm = series.roundToTwo(this.options.pinholeSpacingnm)
+                        
+                    }
+        },
+         /**
+             * save settings to databsae: save the working one
+             */
+             async saveSettings(){
+                if(this.spinningDisc.objmagnification && this.spinningDisc.auxmagnification) {
+                
+                    let illuminationType = 'spinningdisc'
+                    let options = await this.$refs.settingsdialog.open(true, this.spinningDisc, false, illuminationType )
+                    if (!options.cancelled) {
+                        if(options.success)
+                            Vue.notify({
+                                group: 'datanotif',
+                                type: 'info',
+                                title: 'Save Settings',
+                                text: 'Successfully save settings'
+                            })
+                        else 
+                            Vue.notify({
+                                group: 'datanotif',
+                                type: 'error',
+                                title: 'Save Settings',
+                                text: 'Problem saving settings. Please try again!'
+                            })
+                    }   
+                }
+
+            },
+
+            async loadSettings(isGlobal){
+                let illuminationType = 'spinningdisc'
+                let options = await this.$refs.settingsdialog.open(false, '', isGlobal, illuminationType)
+                if (!options.cancelled) {
+                    Vue.$log.info("Setting file loaded")
+                    Vue.$log.info(options.settings)
+                    this.spinningDisc = Object.assign({}, options.settings)
+                    this.valueChange()
+                }
+            },
+
+        mounted: function(){   
+            this.valueChange()
+            
+            
+        },
+    }
+}
+
+</script>
