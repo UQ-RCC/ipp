@@ -47,7 +47,8 @@
                                             label="Objective Magnification" 
                                             v-model="pointscanning.objmagnification"
                                             required
-                                            autofocus>
+                                            autofocus
+                                            ref="om">
                                         </v-text-field>
 
                                     </v-col>
@@ -59,7 +60,7 @@
                                             label="Auxillary Magnification" 
                                             v-model="pointscanning.auxmagnification"
                                             required
-                                            autofocus>
+                                            ref="am">
                                         </v-text-field>
 
                                     </v-col>
@@ -72,7 +73,7 @@
                                     label="Reported Pinhole Size (µm)" 
                                     v-model="pointscanning.pinholesize"
                                     required
-                                    autofocus>
+                                    ref = "size">
                                 </v-text-field>
                                 <v-select 
                                         id="models"
@@ -137,83 +138,87 @@
                             
                         </v-row>
                         
-                        <v-card-actions>
-                            <v-row align="center" justify="center">    
+                        
+                            <v-row align="center" justify="center">
+                                <v-col cols="6" sm="4" md="5"> 
+                                    <v-card-actions>
                                 
-                                <v-tooltip bottom>
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-btn 
-                                            class="my-3" 
-                                            color="success" 
-                                            fab dark  
-                                            v-bind="attrs" 
-                                            v-on="on"
-                                            @click="agree">
-                                            <v-icon>mdi-send</v-icon>
-                                        </v-btn>
-                                    </template>
-                                    <span>Send Results to Panel</span>
-                                </v-tooltip>
-                                <v-tooltip bottom>
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-btn 
-                                            class="my-3" 
-                                            color="error" 
-                                            fab dark  
-                                            v-bind="attrs" 
-                                            v-on="on"
-                                            @click="cancel">
-                                            <v-icon>mdi-cancel</v-icon>
-                                        </v-btn>
-                                    </template>
-                                    <span>Cancel</span>
-                                </v-tooltip>
-                                <v-tooltip bottom>
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-btn 
-                                            class="my-3" 
-                                            color="primary" 
-                                            fab dark  
-                                            v-bind="attrs" 
-                                            v-on="on"
-                                            @click="loadSettings(true)">
-                                            <v-icon>mdi-web</v-icon>
-                                        </v-btn>
-                                    </template>
-                                    <span>Load Global Settings</span>
-                                </v-tooltip>
-                                <v-tooltip bottom>
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-btn 
-                                            class="my-3" 
-                                            color="secondary" 
-                                            fab dark  
-                                            v-bind="attrs" 
-                                            v-on="on"
-                                            @click="loadSettings(false)"
-                                            >
-                                            <v-icon>mdi-file-import</v-icon>
-                                        </v-btn>
-                                    </template>
-                                    <span>Load My Settings</span>
-                                </v-tooltip>
-                                <v-tooltip bottom>
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-btn 
-                                            class="my-3" 
-                                            color="blue-grey" 
-                                            fab dark  
-                                            v-bind="attrs" 
-                                            v-on="on"
-                                            @click.stop="saveSettings()" 
-                                            >
-                                            <v-icon>mdi-content-save</v-icon>
-                                        </v-btn>
-                                    </template>
-                                    <span>Save Settings</span>
-                                </v-tooltip>
-                            </v-row>
-                        </v-card-actions>
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn 
+                                                    class="my-3" 
+                                                    color="success" 
+                                                    fab dark  
+                                                    v-bind="attrs" 
+                                                    v-on="on"
+                                                    @click="agree" :disabled="!btnshow">
+                                                    <v-icon>mdi-send</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span>Send Results to Panel</span>
+                                        </v-tooltip>
+                                        
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn 
+                                                    class="my-3" 
+                                                    color="primary" 
+                                                    fab dark  
+                                                    v-bind="attrs" 
+                                                    v-on="on"
+                                                    @click="loadSettings(true)">
+                                                    <v-icon>mdi-web</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span>Load Global Settings</span>
+                                        </v-tooltip>
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn 
+                                                    class="my-3" 
+                                                    color="secondary" 
+                                                    fab dark  
+                                                    v-bind="attrs" 
+                                                    v-on="on"
+                                                    @click="loadSettings(false)"
+                                                    >
+                                                    <v-icon>mdi-file-import</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span>Load My Settings</span>
+                                        </v-tooltip>
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn 
+                                                    class="my-3" 
+                                                    color="warning" 
+                                                    fab dark  
+                                                    v-bind="attrs" 
+                                                    v-on="on"
+                                                    @click.stop="saveSettings()" 
+                                                    :disabled="!btnshow">
+                                                    <v-icon>mdi-content-save</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span>Save Settings</span>
+                                        </v-tooltip>
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn 
+                                                    class="my-3" 
+                                                    color="error" 
+                                                    fab dark  
+                                                    v-bind="attrs" 
+                                                    v-on="on"
+                                                    @click="cancel">
+                                                    <v-icon>mdi-cancel</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span>Cancel</span>
+                                        </v-tooltip>
+                                    </v-card-actions>
+                                </v-col> 
+                        </v-row>
                     
                 </form>
             
@@ -253,6 +258,7 @@
             resolve: null,
             reject: null,
             show: false,
+            btnshow : false,
             settings: pcSettings,
             options:{
                 pinholeRadius: 0,
@@ -276,7 +282,6 @@
             rules: {
                 required : value => !! value || "The input is required",
                 numberRules: value => value && parseInt(value) && String(value).match(/^\d+(\.\d+)?$/).length > 0 || 'Must be a positive number',
-
 
             }
            
@@ -317,12 +322,12 @@
                     this.reject = reject
                 });
             },
+         
             agree() {
-                if (this.pointscanning.objmagnification && this.pointscanning.auxmagnification && this.pointscanning.pinholesize) {
                     this.options.cancelled = false
                     this.resolve(this.options)
                     this.dialog = false
-                }
+                 
             },
             cancel() {
                 this.options.cancelled = true
@@ -330,21 +335,28 @@
                 this.dialog = false
             },
             valueChange(){
-                
+
+                if (!this.pointscanning.objmagnification || !this.pointscanning.auxmagnification || !this.pointscanning.pinholesize || !this.pointscanning.shapefactor || !this.pointscanning.pinholesize || !this.pointscanning.sysmagnification) {
+                    this.options.pinholeRadius = null
+                    this.btnshow =false
+                } else {
+
                     let shapefactor = this.pointscanning.shapefactor
                     
                     this.options.pinholeRadius = shapefactor *  this.pointscanning.pinholesize /
                                                         (this.pointscanning.objmagnification * this.pointscanning.sysmagnification * this.pointscanning.auxmagnification)
                     this.options.pinholeRadius = series.roundToTwo(this.options.pinholeRadius)
                     this.pointscanning.pinholeRadius = this.options.pinholeRadius
+                    this.btnshow =true
+                } 
+                
 
             },
              /**
              * save settings to databsae: save the working one
              */
             async saveSettings(){
-                if (this.pointscanning.objmagnification && this.pointscanning.auxmagnification && this.pointscanning.pinholesize) {
-                
+              
                     let illuminationType = 'confocal'
                     let options = await this.$refs.settingsdialog.open(true, this.pointscanning, false, illuminationType )
                     if (!options.cancelled) {
@@ -362,8 +374,8 @@
                                 title: 'Save Settings',
                                 text: 'Problem saving settings. Please try again!'
                             })
-                    }   
-                }
+                    }
+                
             },
 
             async loadSettings(isGlobal){
@@ -390,3 +402,9 @@
     }
 
 </script>
+
+<style lang="scss" scoped>
+    .theme--dark.v-btn.v-btn--disabled.v-btn--has-bg {
+        background-color: #969494!important;
+    }
+</style>

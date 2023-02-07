@@ -5,8 +5,11 @@
                 <v-btn icon dark @click="cancel">
                     <v-icon>mdi-close</v-icon>
                 </v-btn>
-                <v-card-title class="headline" v-if="!isnew">
-                    Load existing settings
+                <v-card-title class="headline" v-if="!isnew && !isglobal">
+                    Load my settings
+                </v-card-title>
+                <v-card-title class="headline" v-if="!isnew && isglobal">
+                    Load global settings
                 </v-card-title>
                 <v-card-title class="headline" v-if="isnew">
                     Save current settings
@@ -38,7 +41,7 @@
                 </v-col>
 
                 <v-col height="300px" width="70%">
-                    <json-viewer :value="options.settings" boxed></json-viewer>
+                    <json-viewer :value="options.settings " boxed></json-viewer>
                 </v-col>
             </v-row>
 
@@ -50,7 +53,7 @@
                 <v-btn class="my-1" color="warning" rounded dark large @click="cancel"> 
                     Cancel
                 </v-btn>
-                <v-btn class="my-1" color="error" rounded dark large @click="deleteSettingFile" v-if="!isnew"> 
+                <v-btn class="my-1" color="error" rounded dark large @click="deleteSettingFile" v-if="!isnew && !isglobal"> 
                     Delete
                 </v-btn>
                 </v-row>
@@ -87,7 +90,7 @@
                     { text: 'Name', value: 'name' }
                 ],
                 options:{
-                    settings: '',
+                    settings: null,
                     success: false,
                     cancelled: false,
                 },
@@ -115,7 +118,7 @@
         methods: {
             async open(isnew, settings, isglobal, illuminationType) {
                 console.log("json display")
-                console.log(settings)
+                this.selectedTemplate = []
                 this.dialog = true
                 this.isnew = isnew
                 this.isglobal = isglobal
@@ -151,8 +154,6 @@
                         this.dbrecord.username = this.username 
                     }
 
-                    console.log(this.options.settings.model instanceof Object)
-
                     this.dbrecord.name = this.name
                     this.dbrecord.illuminationtype = this.illuminationType
                     this.dbrecord.objmagnification = this.options.settings.objmagnification
@@ -164,13 +165,15 @@
                     this.dbrecord.shapefactor = this.options.settings.shapefactor
                     this.dbrecord.sysmagnification = this.options.settings.sysmagnification
                     this.dbrecord.pinholespacing = this.options.settings.pinholespacing ?? null  
-                   // this.options.settings = this.dbrecord 
+                     
+                   /*  console.log(this.options.settings)
+                    this.options.settings.model = this.options.settings.model instanceof Object ? this.options.settings.model.model : this.options.settings.model
+                    console.log(this.options.settings) */
                 
-                    console.log(this.dbrecord)
-                    console.log(this.options.settings)
                     await TemplateAPI.save_settings_file(this.dbrecord)
                     this.options.success = true
                 }
+                
                 this.resolve(this.options)
                 this.dialog = false
             },
@@ -185,14 +188,21 @@
                 if (this.selectedTemplate.length > 0) {
                     await TemplateAPI.delete_setting_file(this.selectedTemplate[0].id)
                     this.templates = await TemplateAPI.list_settings(this.illuminationType, this.isglobal)
+                    this.options.settings = ''
                 }
             },
             async templateChanged(anItem) {
                 // select
                 if(anItem.value){
-                    // now load
-                   // this.options.settings = await TemplateAPI.get_cal_setting(anItem.item.id)
+                   this.name = anItem.item.name
                    this.options.settings = anItem.item
+                   const data = anItem.item
+                   delete data.username
+                   //delete data.name
+                   delete data.illuminationtype
+                  // delete data.id
+                   this.options.settings = data
+
                 }
                 else {
                     this.options.settings = ""

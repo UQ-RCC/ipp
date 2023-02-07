@@ -25,7 +25,8 @@
                                         label="Objective Magnification" 
                                         v-model="spinningDisc.objmagnification"
                                         required 
-                                        autofocus>
+                                        autofocus
+                                        ref="om">
                                     </v-text-field>
 
                                 </v-col>
@@ -37,7 +38,7 @@
                                         label="Auxillary Magnification" 
                                         v-model="spinningDisc.auxmagnification"
                                         required
-                                        autofocus>
+                                        ref="am">
                                     </v-text-field>
 
                                 </v-col>
@@ -133,7 +134,7 @@
                         
                         
                         <v-row align="center" justify="center">  
-                            <v-col cols="6" sm="6" md="8">
+                            <v-col cols="6" sm="4" md="5">
                                 <v-card-actions>
 
                                     <v-tooltip bottom>
@@ -144,26 +145,13 @@
                                                 fab dark  
                                                 v-bind="attrs" 
                                                 v-on="on"
-                                                @click.stop="agree" >
+                                                @click.stop="agree" :disabled="!btnshow">
                                                 <v-icon>mdi-send</v-icon>
                                             </v-btn>
                                         </template>
                                         <span>Send Results to Panel</span>
                                     </v-tooltip>
-                                    <v-tooltip bottom>
-                                        <template v-slot:activator="{ on, attrs }">
-                                            <v-btn 
-                                                class="my-3" 
-                                                color="error" 
-                                                fab dark  
-                                                v-bind="attrs" 
-                                                v-on="on"
-                                                @click="cancel">
-                                                <v-icon>mdi-cancel</v-icon>
-                                            </v-btn>
-                                        </template>
-                                        <span>Cancel</span>
-                                    </v-tooltip>
+                                    
                                     <v-tooltip bottom>
                                         <template v-slot:activator="{ on, attrs }">
                                             <v-btn 
@@ -197,16 +185,30 @@
                                         <template v-slot:activator="{ on, attrs }">
                                             <v-btn 
                                                 class="my-3" 
-                                                color="blue-grey" 
+                                                color="warning" 
                                                 fab dark  
                                                 v-bind="attrs" 
                                                 v-on="on"
                                                 @click.stop="saveSettings()" 
-                                                >
+                                                :disabled="!btnshow">
                                                 <v-icon>mdi-content-save</v-icon>
                                             </v-btn>
                                         </template>
                                         <span>Save Settings</span>
+                                    </v-tooltip>
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-btn 
+                                                class="my-3" 
+                                                color="error" 
+                                                fab dark  
+                                                v-bind="attrs" 
+                                                v-on="on"
+                                                @click="cancel">
+                                                <v-icon>mdi-cancel</v-icon>
+                                            </v-btn>
+                                        </template>
+                                        <span>Cancel</span>
                                     </v-tooltip>
                                 </v-card-actions>
                                 </v-col>  
@@ -241,6 +243,7 @@
             resolve: null,
             reject: null,
             show: false,
+            btnshow : false,
             settings: pcSettings,
             options:{
                 pinholeRadius: 0,
@@ -302,14 +305,10 @@
                 });
             },
             agree() {
-                if(this.spinningDisc.objmagnification && this.spinningDisc.auxmagnification) {
+                
                     this.options.cancelled = false
                     this.resolve(this.options)
                     this.dialog = false
-                }
-                
-             
-               
             },
             cancel() {
                 this.options.cancelled = true
@@ -321,22 +320,25 @@
             },
             
             valueChange(){
-                    if(this.spinningDisc.objmagnification && this.spinningDisc.sysmagnification && this.spinningDisc.pinholesize && this.spinningDisc.pinholespacing && this.spinningDisc.auxmagnification ){
+                    if(!this.spinningDisc.objmagnification || !this.spinningDisc.sysmagnification || !this.spinningDisc.pinholesize || !this.spinningDisc.pinholespacing || !this.spinningDisc.auxmagnification ){
+                        this.options.pinholeSpacingnm = null
+                        this.options.pinholeRadius = null
+                        this.btnshow =false
+                    }else {
                         // follow: https://svi.nl/PinholeRadius
                         this.options.pinholeRadius =  this.spinningDisc.pinholesize / (this.spinningDisc.objmagnification * this.spinningDisc.sysmagnification * this.spinningDisc.auxmagnification) / 2 * 1000                           
                         this.options.pinholeRadius = series.roundToTwo(this.options.pinholeRadius)
                         this.options.pinholeSpacingnm = (this.spinningDisc.pinholespacing / (this.spinningDisc.objmagnification * this.spinningDisc.sysmagnification * this.spinningDisc.auxmagnification) * 1000)
                         this.options.pinholeSpacingnm = series.roundToTwo(this.options.pinholeSpacingnm)
-                        
+                        this.btnshow =true
                     }
         },
          /**
              * save settings to databsae: save the working one
              */
              async saveSettings(){
-                if(this.spinningDisc.objmagnification && this.spinningDisc.auxmagnification) {
-                
                     let illuminationType = 'spinningdisc'
+                    console.log(this.spinningDisc)
                     let options = await this.$refs.settingsdialog.open(true, this.spinningDisc, false, illuminationType )
                     if (!options.cancelled) {
                         if(options.success)
@@ -354,8 +356,6 @@
                                 text: 'Problem saving settings. Please try again!'
                             })
                     }   
-                }
-
             },
 
             async loadSettings(isGlobal){
@@ -371,10 +371,15 @@
 
         mounted: function(){   
             this.valueChange()
-            
+            //this.$refs.om.focus();
             
         },
     }
 }
 
 </script>
+<style lang="scss" scoped>
+    .theme--dark.v-btn.v-btn--disabled.v-btn--has-bg {
+        background-color: #969494!important;
+    }
+</style>
