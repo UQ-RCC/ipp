@@ -117,13 +117,14 @@
         },
         methods: {
             async open(isnew, settings, isglobal, illuminationType) {
-                console.log("json display")
                 this.selectedTemplate = []
                 this.dialog = true
                 this.isnew = isnew
                 this.isglobal = isglobal
                 this.illuminationType = illuminationType
                 this.options.settings = settings
+                if (this.options.settings)
+                    this.options.settings.model = this.options.settings.model instanceof Object ? this.options.settings.model.model : this.options.settings.model    
                 this.options.success = false
                 if(!isnew) {
                         console.log(isglobal)
