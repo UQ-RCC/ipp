@@ -170,7 +170,22 @@
                                         <template v-slot:activator="{ on, attrs }">
                                             <v-btn 
                                                 class="my-3" 
-                                                color="secondary" 
+                                                color="primary" 
+                                                fab dark  
+                                                v-bind="attrs" 
+                                                v-on="on"
+                                                @click.stop="saveSettings(true)" 
+                                                :disabled="!btnshow" v-if="is_admin">
+                                                <v-icon>mdi-content-save-settings</v-icon>
+                                            </v-btn>
+                                        </template>
+                                        <span>Save Global Settings</span>
+                                    </v-tooltip>
+                                    <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-btn 
+                                                class="my-3" 
+                                                color="warning" 
                                                 fab dark  
                                                 v-bind="attrs" 
                                                 v-on="on"
@@ -189,12 +204,12 @@
                                                 fab dark  
                                                 v-bind="attrs" 
                                                 v-on="on"
-                                                @click.stop="saveSettings()" 
+                                                @click.stop="saveSettings(false)" 
                                                 :disabled="!btnshow">
                                                 <v-icon>mdi-content-save</v-icon>
                                             </v-btn>
                                         </template>
-                                        <span>Save Settings</span>
+                                        <span>Save My Settings</span>
                                     </v-tooltip>
                                     <v-tooltip bottom>
                                         <template v-slot:activator="{ on, attrs }">
@@ -272,6 +287,9 @@
             username: function() {
                 return this.$keycloak && this.$keycloak.idTokenParsed ? this.$keycloak.idTokenParsed.email  : ''
             },
+            is_admin: function() {
+                return this.$keycloak.hasRealmRole("admin")
+            },
            
             spdmodels() {
                 const obj= this.settings.spinningDisk
@@ -283,8 +301,7 @@
            
         },
         methods: {
-           
-           
+
             getspdData() {
 
                 this.spinningDisc.pinholeshape = this.spinningDisc.model.pinholeshape
@@ -315,10 +332,6 @@
                 this.resolve(this.options)
                 this.dialog = false
             },
-            setCookies() {
-                this.$cookies.set('username',this.username, new Date(9999, 0o1, 0o1).toUTCString())
-            },
-            
             valueChange(){
                     if(!this.spinningDisc.objmagnification || !this.spinningDisc.sysmagnification || !this.spinningDisc.pinholesize || !this.spinningDisc.pinholespacing || !this.spinningDisc.auxmagnification ){
                         this.options.pinholeSpacingnm = null
@@ -332,14 +345,14 @@
                         this.options.pinholeSpacingnm = series.roundToTwo(this.options.pinholeSpacingnm)
                         this.btnshow =true
                     }
-        },
+            },
          /**
              * save settings to databsae: save the working one
              */
-             async saveSettings(){
+            async saveSettings(isGlobal){
                     let illuminationType = 'spinningdisc'
                     console.log(this.spinningDisc)
-                    let options = await this.$refs.settingsdialog.open(true, this.spinningDisc, false, illuminationType )
+                    let options = await this.$refs.settingsdialog.open(true, this.spinningDisc, isGlobal, illuminationType )
                     if (!options.cancelled) {
                         if(options.success)
                             Vue.notify({
@@ -368,18 +381,19 @@
                     this.valueChange()
                 }
             },
+        },
 
         mounted: function(){   
+            console.log(this.$keycloak)
+            console.log(this.is_admin)
+            console.log("this.is_admin")
             this.valueChange()
-            //this.$refs.om.focus();
-            
         },
     }
-}
 
 </script>
 <style lang="scss" scoped>
     .theme--dark.v-btn.v-btn--disabled.v-btn--has-bg {
-        background-color: #969494!important;
+        background-color: #d4d0d0!important;
     }
 </style>

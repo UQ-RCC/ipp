@@ -173,10 +173,25 @@
                                             <span>Load Global Settings</span>
                                         </v-tooltip>
                                         <v-tooltip bottom>
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <v-btn 
+                                                class="my-3" 
+                                                color="primary" 
+                                                fab dark  
+                                                v-bind="attrs" 
+                                                v-on="on"
+                                                @click.stop="saveSettings(true)" 
+                                                :disabled="!btnshow" v-if="is_admin">
+                                                <v-icon>mdi-content-save-settings</v-icon>
+                                            </v-btn>
+                                        </template>
+                                        <span>Save Global Settings</span>
+                                    </v-tooltip>
+                                        <v-tooltip bottom>
                                             <template v-slot:activator="{ on, attrs }">
                                                 <v-btn 
                                                     class="my-3" 
-                                                    color="secondary" 
+                                                    color="warning" 
                                                     fab dark  
                                                     v-bind="attrs" 
                                                     v-on="on"
@@ -195,13 +210,14 @@
                                                     fab dark  
                                                     v-bind="attrs" 
                                                     v-on="on"
-                                                    @click.stop="saveSettings()" 
+                                                    @click.stop="saveSettings(false)" 
                                                     :disabled="!btnshow">
                                                     <v-icon>mdi-content-save</v-icon>
                                                 </v-btn>
                                             </template>
-                                            <span>Save Settings</span>
+                                            <span>Save My Settings</span>
                                         </v-tooltip>
+                                        
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on, attrs }">
                                                 <v-btn 
@@ -221,14 +237,6 @@
                         </v-row>
                     
                 </form>
-            
-
-
-
-           
-
-            
-
         </v-card>
     </v-dialog>
        
@@ -298,6 +306,9 @@
                 })
                 return resultArray
             },
+            is_admin: function() {
+                return this.$keycloak.hasRealmRole("admin")
+            },
            
            
         },
@@ -355,10 +366,10 @@
              /**
              * save settings to databsae: save the working one
              */
-            async saveSettings(){
+            async saveSettings(isGlobal){
               
                     let illuminationType = 'confocal'
-                    let options = await this.$refs.settingsdialog.open(true, this.pointscanning, false, illuminationType )
+                    let options = await this.$refs.settingsdialog.open(true, this.pointscanning, isGlobal, illuminationType )
                     if (!options.cancelled) {
                         if(options.success)
                             Vue.notify({
