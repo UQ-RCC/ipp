@@ -181,7 +181,7 @@
                                                 v-bind="attrs" 
                                                 v-on="on"
                                                 @click.stop="saveSettings(true)" 
-                                                :disabled="!btnshow" v-if="is_admin">
+                                                 v-if="is_admin">
                                                 <v-icon>mdi-content-save-settings</v-icon>
                                             </v-btn>
                                         </template>
@@ -211,7 +211,7 @@
                                                     v-bind="attrs" 
                                                     v-on="on"
                                                     @click.stop="saveSettings(false)" 
-                                                    :disabled="!btnshow">
+                                                    >
                                                     <v-icon>mdi-content-save</v-icon>
                                                 </v-btn>
                                             </template>
@@ -281,7 +281,7 @@
                 shapefactor : 564.19,
                 sysmagnification : 1.74,
                 objmagnification: null,
-                auxmagnification: null,
+                auxmagnification: 1,
                 pinholesize: null,
                // pinholeRadius: null,
                 

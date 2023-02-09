@@ -175,7 +175,7 @@
                                                 v-bind="attrs" 
                                                 v-on="on"
                                                 @click.stop="saveSettings(true)" 
-                                                :disabled="!btnshow" v-if="is_admin">
+                                                 v-if="is_admin">
                                                 <v-icon>mdi-content-save-settings</v-icon>
                                             </v-btn>
                                         </template>
@@ -205,7 +205,7 @@
                                                 v-bind="attrs" 
                                                 v-on="on"
                                                 @click.stop="saveSettings(false)" 
-                                                :disabled="!btnshow">
+                                                >
                                                 <v-icon>mdi-content-save</v-icon>
                                             </v-btn>
                                         </template>
@@ -268,7 +268,7 @@
             spinningDisc: {
                 model: "Yokogawa X1 50",
                 objmagnification:  null,
-                auxmagnification: null,
+                auxmagnification: 1,
                 sysmagnification: 1,
                 pinholesize: 50,
                 pinholespacing: 500,
