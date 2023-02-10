@@ -160,7 +160,7 @@
 
                     this.dbrecord.name = this.name
                     this.dbrecord.illuminationtype = this.illuminationType
-                    this.dbrecord.objmagnification = this.options.settings.objmagnification
+                    this.dbrecord.objmagnification = this.options.settings.objmagnification === "" ? null : this.options.settings.objmagnification
                     this.dbrecord.auxmagnification = this.options.settings.auxmagnification
                     this.dbrecord.pinholesize = this.options.settings.pinholesize
                     this.dbrecord.model = this.options.settings.model instanceof Object ? this.options.settings.model.model : this.options.settings.model
@@ -170,7 +170,6 @@
                     this.dbrecord.sysmagnification = this.options.settings.sysmagnification
                     this.dbrecord.pinholespacing = this.options.settings.pinholespacing ?? null  
                     
-                
                     await TemplateAPI.save_settings_file(this.dbrecord)
                     this.options.success = true
                 }
