@@ -53,7 +53,7 @@
                 <v-btn class="my-1" color="warning" rounded dark large @click="cancel"> 
                     Cancel
                 </v-btn>
-                <v-btn class="my-1" color="error" rounded dark large @click="deleteSettingFile" v-if="!isnew && !isglobal"> 
+                <v-btn class="my-1" color="error" rounded dark large @click="deleteSettingFile" v-if="(!isnew && !isglobal) ||(!isnew && is_admin)"> 
                     Delete
                 </v-btn>
                 </v-row>
@@ -113,6 +113,9 @@
         computed: {
             username: function() {
                 return this.$keycloak && this.$keycloak.idTokenParsed ? this.$keycloak.idTokenParsed.preferred_username  : ''
+            },
+            is_admin: function() {
+                return this.$keycloak.hasRealmRole("admin")
             },
         },
         methods: {
