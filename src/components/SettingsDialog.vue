@@ -169,10 +169,7 @@
                     this.dbrecord.shapefactor = this.options.settings.shapefactor
                     this.dbrecord.sysmagnification = this.options.settings.sysmagnification
                     this.dbrecord.pinholespacing = this.options.settings.pinholespacing ?? null  
-                     
-                   /*  console.log(this.options.settings)
-                    this.options.settings.model = this.options.settings.model instanceof Object ? this.options.settings.model.model : this.options.settings.model
-                    console.log(this.options.settings) */
+                    
                 
                     await TemplateAPI.save_settings_file(this.dbrecord)
                     this.options.success = true
