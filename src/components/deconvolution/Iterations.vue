@@ -262,10 +262,28 @@
             },
             // background correction type changed
             backgroundTypeChanged(){
-                if (this.serie.backgroundType === 0)
+                if (this.serie.backgroundType === 0) {
                     this.channelTableHeaders[2].align = 'center';
-                else
-                    this.channelTableHeaders[2].align = ' d-none'; 
+                }else{
+                    this.channelTableHeaders[2].align = ' d-none';
+                    let channelsList = this.serie.channels
+                    let size = channelsList.length
+                    for (let i=0; i < size; i++ ) {
+                        if (this.serie.backgroundType == -1) {
+                            this.serie.channels[i].background = 0
+                        } else if (this.serie.backgroundType == 0.01) {
+                            this.serie.channels[i].background = 0.01
+                        } else if (this.serie.backgroundType == 0.05) {
+                            this.serie.channels[i].background = 0.05
+                        } else if (this.serie.backgroundType == 0.1) {
+                            this.serie.channels[i].background = 0.1
+                        } else if (this.serie.backgroundType == 0.25) {
+                            this.serie.channels[i].background = 0.25
+                        }  
+                    }
+
+                }       
+                    
             },
             // edit iterations
             editIterationsItem (item) {
