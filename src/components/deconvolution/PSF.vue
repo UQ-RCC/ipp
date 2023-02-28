@@ -12,7 +12,7 @@
         
         <v-col v-if="serie.generatePsf">
             <v-row>
-                <v-col cols="15" sm="3" md="4">
+                <v-col cols="10" sm="3" md="4">
                     <v-select
                         :items="psfModels"
                         v-model="serie.psfModel"
@@ -24,7 +24,7 @@
                     </v-select>
                 </v-col>
                 <v-row v-if="serie.psfModel!==0">
-                    <v-col cols="20" sm="4" md="5">
+                    <v-col cols="10" sm="3" md="4">
                         <v-text-field 
                             v-model="serie.ns"
                             @change="nsChanged"
@@ -36,7 +36,7 @@
                     </v-col>
 
                     
-                    <v-col cols="15" sm="3" md="4">
+                    <v-col cols="10" sm="3" md="4">
                         <v-select
                             :items="mediumRIOptions"
                             v-model="serie.mediumRIOption"
@@ -53,20 +53,18 @@
                 
             </v-row>
             <v-row>
-                <v-col cols="15" sm="3" md="4">
+                <v-col cols="10" sm="3" md="4">
                     <v-text-field regular label="Objective NA" type="number" 
                         :rules="[rules.positive, rules.na_NARI]" v-model="serie.NA">
                     </v-text-field>
                 </v-col>
-                <v-col cols="15" sm="3" md="4" v-if="serie.psfType === 3">
+                <v-col cols="10" sm="3" md="4" v-if="serie.psfType === 3">
                     <v-text-field regular label="Light sheet illumination NA" type="number" 
                         :rules="[rules.positive]" v-model="serie.lightSheetIlluminationNA">
                     </v-text-field>
                 </v-col>
-            </v-row>
-
-            <v-row>
-                <v-col cols="15" sm="3" md="4">
+            
+                <v-col cols="10" sm="3" md="4">
                     <v-text-field 
                         v-model="serie.RI"
                         @change="RIChanged"
@@ -76,7 +74,7 @@
                         type="number">
                     </v-text-field>
                 </v-col>
-                <v-col cols="15" sm="3" md="4">
+                <v-col cols="10" sm="3" md="4">
                     <v-select
                         :items="objectiveRIOptions"
                         v-model="serie.objectiveRIOption"
@@ -88,6 +86,51 @@
                         >
                     </v-select>
                 </v-col>
+            </v-row>
+
+            <v-row>
+                <v-col cols="10" sm="3" md="4" v-if="serie.psfType === 9 || serie.psfType === 10">
+                    <v-text-field 
+                        regular 
+                        label="Objective magnification" 
+                        type="number" 
+                        :rules="[rules.positive]" 
+                        v-model="serie.objMagnification">
+                    </v-text-field>
+                </v-col>
+                <v-row v-if="serie.psfType === 9">
+                    <v-col cols="10" sm="3" md="4">
+                        <v-select
+                            :items="lensFocalLength"
+                            v-model="serie.lensFocalLength"
+                            item-text="label"
+                            item-value="value"
+                            label="Tube lens focal length (mm)"
+                            dense outlined 
+                            >
+                        </v-select>
+                    </v-col>
+                    <v-col cols="10" sm="3" md="4">
+                        <v-text-field 
+                            v-model="serie.slitWidth"
+                            regular 
+                            label="Emission slit width (microns)"
+                            :rules="[rules.positive]" 
+                            type="number">
+                        </v-text-field>
+                    </v-col>
+                    <v-col cols="10" sm="3" md="4">
+                        <v-select
+                            :items="slitDirection"
+                            v-model="serie.slitDirection"
+                            item-text="label"
+                            item-value="value"
+                            label="Slit Direction"
+                            outlined dense
+                            >
+                        </v-select>
+                    </v-col>
+                </v-row>
             </v-row>
 
         </v-col>
@@ -216,6 +259,16 @@
                     {'label': 'Mowiol(low RI)', 'value': 1.41},
                     {'label': 'Mowiol(low RI)', 'value': 1.49},
                     {'label': '80% Glycerol', 'value': 1.45}
+                ],
+                lensFocalLength: [
+                    {label: 'Leica (200 mm)', value: 0},
+                    {label: 'Nikon (200 mm)', value: 1},
+                    {label: 'Olympus (180 mm)', value: 2},
+                    {label: 'Zeiss (165 mm)', value: 3},
+                ],
+                slitDirection : [
+                    {label: 'Vertical', value: 0},
+                    {label: 'Horizontal', value: 1},
                 ],
                 rules: {
                     present: value => !!value || 'Required! You need to load a file.',

@@ -260,6 +260,7 @@
             show: false,
             btnshow : false,
             settings: pcSettings,
+            illuminationType : null,
             options:{
                 pinholeRadius: 0,
                 pinholeSpacingnm: 0,
@@ -314,8 +315,9 @@
                 this.valueChange()
 
             },
-            open() {
+            open(illuminationType) {
                 this.dialog = true;
+                this.illuminationType = illuminationType;
                 return new Promise((resolve, reject) => {
                     this.resolve = resolve
                     this.reject = reject
@@ -350,30 +352,28 @@
              * save settings to databsae: save the working one
              */
             async saveSettings(isGlobal){
-                    let illuminationType = 'spinningdisc'
-                    console.log(this.spinningDisc)
-                    let options = await this.$refs.settingsdialog.open(true, this.spinningDisc, isGlobal, illuminationType )
-                    if (!options.cancelled) {
-                        if(options.success)
-                            Vue.notify({
-                                group: 'datanotif',
-                                type: 'info',
-                                title: 'Save Settings',
-                                text: 'Successfully save settings'
-                            })
-                        else 
-                            Vue.notify({
-                                group: 'datanotif',
-                                type: 'error',
-                                title: 'Save Settings',
-                                text: 'Problem saving settings. Please try again!'
-                            })
-                    }   
-            },
+                
+                let options = await this.$refs.settingsdialog.open(true, this.spinningDisc, isGlobal, this.illuminationType )
+                if (!options.cancelled) {
+                    if(options.success)
+                        Vue.notify({
+                            group: 'datanotif',
+                            type: 'info',
+                            title: 'Save Settings',
+                            text: 'Successfully save settings'
+                        })
+                    else 
+                        Vue.notify({
+                            group: 'datanotif',
+                            type: 'error',
+                            title: 'Save Settings',
+                            text: 'Problem saving settings. Please try again!'
+                        })
+                }   
+        },
 
             async loadSettings(isGlobal){
-                let illuminationType = 'spinningdisc'
-                let options = await this.$refs.settingsdialog.open(false, '', isGlobal, illuminationType)
+                let options = await this.$refs.settingsdialog.open(false, '', isGlobal, this.illuminationType)
                 if (!options.cancelled) {
                     Vue.$log.info("Setting file loaded")
                     Vue.$log.info(options.settings)

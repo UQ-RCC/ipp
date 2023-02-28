@@ -121,8 +121,10 @@
 <script>
     // import Vue from 'vue';
     import series from "@/utils/series.js";
-    import PsCalculatorDialog from '@/components/PsCalculatorDialog.vue'
-    import SdcCalculatorDialog from '@/components/SdcCalculatorDialog.vue'
+    import PsCalculatorDialog from '@/components/PsCalculatorDialog.vue';
+    import SdcCalculatorDialog from '@/components/SdcCalculatorDialog.vue';
+    
+   
     
     export default {
         name: 'DeconvolutionIterations',
@@ -236,7 +238,7 @@
                     this.channelTableHeaders[5].align = ' d-none';    
                 } 
                 // confocal wavelength, pinhole, claculator shown 
-                else if (this.serie['psfType'] === 1 ) {
+                else if (this.serie['psfType'] === 1 || this.serie['psfType'] === 6 ) {
                     this.showCalc = true;
                     this.channelTableHeaders[2].align = ' d-none';
                     this.channelTableHeaders[3].align = 'center';
@@ -244,14 +246,13 @@
                     this.channelTableHeaders[5].align = ' d-none';  
                 }
                 //spinning disk-wavelength, pinhole calc and pinhole spacing shown
-                else if (this.serie['psfType'] === 4 ) {
+                else if (this.serie['psfType'] === 4 || this.serie['psfType'] === 7 || this.serie['psfType'] === 8   ) {
                     this.showCalc = false;
                     this.channelTableHeaders[2].align = ' d-none';
                     this.channelTableHeaders[3].align = 'center';
                     this.channelTableHeaders[4].align = 'center';  
                     this.channelTableHeaders[5].align = 'center';
                 }
-                // else: pinhole, calculator hidden, wavelength shown
                 else {
                     this.channelTableHeaders[2].align = ' d-none';  
                     this.channelTableHeaders[3].align = 'center';
@@ -260,6 +261,8 @@
                       
                 }
             },
+
+           
             // background correction type changed
             backgroundTypeChanged(){
                 if (this.serie.backgroundType === 0) {
@@ -307,46 +310,20 @@
             is_valid(){
                 return true
             }, 
-            /* async calculator(channels){
-                let channelsList = channels
-                let size = channelsList.length
-                let options = await this.$refs.calculatordialog.open()
-                console.log(channelsList)
-                if (!options.cancelled ) {
-                    if (options.pinholeRadius ) { 
-                        
-                        if (size > 1 ) {
-                            for (let i=0; i < channelsList.length; i++) {
-                                this.serie.channels[i].pinhole = options.pinholeRadius
-                                //this.serie.channels[i].pinholeSpacing = options.pinholeSpacingnm
-                            }
-                        } else {
-                            this.iterationsEditedIndex = this.serie.channels.indexOf(channels)
-                            this.iterationsEditedItem = Object.assign({}, channels)
-                            channels = options.pinholeRadius
-                            this.serie.channels[this.iterationsEditedIndex].pinhole = options.pinholeRadius
-                        }
-
-                    } else if (options.pinholeRadius && options.pinholeSpacingnm ) {
-                        if (size > 1 ) {
-                            for (let i=0; i < channelsList.length; i++) {
-                                this.serie.channels[i].pinhole = options.pinholeRadius
-                                this.serie.channels[i].pinholeSpacing = options.pinholeSpacingnm
-                            }
-                        }
-
-                    }
-                }
-                else {
-                    console.log("cancelled")
-                }
-            }, */
+           
             async lsmcalculator(item){
-                console.log("inside dialog method")
+                
+                let illuminationType = ''
+                if (this.serie['psfType'] == 1) {
+                    illuminationType = 'confocal'
+                } else if (this.serie['psfType'] == 6) {
+                    illuminationType = 'RCM'
+                }
+                console.log(illuminationType)
                 this.iterationsEditedIndex = this.serie.channels.indexOf(item)
                 this.iterationsEditedItem = Object.assign({}, item)
                 console.log(this.iterationsEditedItem)
-                let options = await this.$refs.calculatordialog.open()
+                let options = await this.$refs.calculatordialog.open(illuminationType)
                 if (!options.cancelled  && options.pinholeRadius ) {
                     item = options.pinholeRadius
                     this.serie.channels[this.iterationsEditedIndex].pinhole = options.pinholeRadius
@@ -357,13 +334,21 @@
             },
 
             async spdcalculator(channels){
+                let illuminationType = ''
+                if (this.serie['psfType'] == 4) {
+                    illuminationType = 'spinningdisc'
+                } else if (this.serie['psfType'] == 7) {
+                    illuminationType = 'iSIM'
+                } else if (this.serie['psfType'] == 8) {
+                    illuminationType = 'SoRa'
+                }
                 let channelsList = channels
                 let size = channelsList.length
-                let options = await this.$refs.spdcalculatordialog.open()
+                let options = await this.$refs.spdcalculatordialog.open(illuminationType)
                 if (!options.cancelled ) {
                     if (options.pinholeRadius && options.pinholeSpacingnm ) {
                         if (size > 1 ) {
-                            for (let i=0; i < channelsList.length; i++) {
+                            for (let i=0; i < size; i++) {
                                 this.serie.channels[i].pinhole = options.pinholeRadius
                                 this.serie.channels[i].pinholeSpacing = options.pinholeSpacingnm
                             }

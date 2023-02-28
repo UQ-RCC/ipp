@@ -47,6 +47,15 @@ var series = {
             series['unit'] = 'µm'
         
             // default value if null
+        if (!series['objMagnification'])
+            series['objMagnification'] = 200
+        if (!series['lensFocalLength'])
+            series['lensFocalLength'] = 0
+        if (!series['slitWidth'])
+            series['slitWidth'] = 60
+        if (!series['slitDirection'])
+            series['slitDirection'] = 1
+        
         if (!series['generatePsf'])
             series['generatePsf'] = false
         if (!series['readSpacing'])
@@ -87,7 +96,7 @@ var series = {
             // series['dr'] = series.roundToTwo(series['dr'])
             // series['dz'] = series.roundToTwo(series['dz'])
             //
-        if(![0, 1, 2, 3, 4].includes(series['psfType']))
+        if(![0, 1, 2, 3, 4, 6, 7, 8, 9, 10].includes(series['psfType']))
             series['psfType'] = 3
             
             /////////// NOISE

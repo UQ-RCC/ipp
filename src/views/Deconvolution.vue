@@ -388,6 +388,11 @@
                     {label: 'Two Photon', value: 2},
                     {label: 'Light Sheet', value: 3},  
                     {label: 'Spinning Disk', value: 4}, 
+                    {label: 'Re-scan Confocal', value: 6}, 
+                    {label: 'iSIM', value: 7}, 
+                    {label: 'SoRa', value: 8}, 
+                    {label: 'NL5', value: 9}, 
+                    {label: 'RCM2', value: 10}, 
                 ],
                 nsPresets: [
                     {'label': 'Presets', 'value': -1},
@@ -1020,6 +1025,7 @@
                         _component = this.$refs.deconreview
                         break
                 }
+                
                 return _component
             }
 
