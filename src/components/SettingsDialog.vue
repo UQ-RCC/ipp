@@ -106,7 +106,8 @@
                     pinholeside: '',
                     shapefactor: null,
                     sysmagnification: null,
-                    pinholespacing: null
+                    pinholespacing: null,
+                    pinholeradius: null
                 },
             }
         },
@@ -158,6 +159,7 @@
                         this.dbrecord.username = this.username 
                     }
 
+
                     this.dbrecord.name = this.name
                     this.dbrecord.illuminationtype = this.illuminationType
                     this.dbrecord.objmagnification = this.options.settings.objmagnification === "" ? null : this.options.settings.objmagnification
@@ -169,6 +171,7 @@
                     this.dbrecord.shapefactor = this.options.settings.shapefactor
                     this.dbrecord.sysmagnification = this.options.settings.sysmagnification
                     this.dbrecord.pinholespacing = this.options.settings.pinholespacing ?? null  
+                    this.dbrecord.pinholeradius = this.options.settings.pinholeRadius ?? null  
                     
                     await TemplateAPI.save_settings_file(this.dbrecord)
                     this.options.success = true

@@ -284,7 +284,7 @@
                 objmagnification: null,
                 auxmagnification: 1,
                 pinholesize: null,
-               // pinholeRadius: null,
+                pinholeRadius: null,
                 
             },
 
