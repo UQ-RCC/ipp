@@ -130,6 +130,9 @@
             <v-divider vertical></v-divider>
             <v-col class="d-flex">
                 <v-col>
+                    <v-row>
+                        <p>Microvolution Version 2022.10</p>
+                    </v-row>
                     <v-row class="d-flex" v-bind:style="{height: '85%'}" v-on:keyup.right="nextStep">
                         <v-stepper non-linear outlined
                             v-model="workingItem.step" 

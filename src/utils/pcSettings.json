@@ -1,15 +1,17 @@
 {
 
     "spinningDisk" : [{
+        "id" : 0,
         "model" : "Yokogawa X1 50",
         "sysmagnification" : 1,
         "pinholeshape" : "Circular",
         "shapefactor" : 500,
         "pinholesize" : 50,
-        "pinholespacing" : 500
+        "pinholespacing" : 253
 
     },
     {
+        "id" : 1,
         "model" : "Yokogawa W1 50",
         "sysmagnification" : 1,
         "pinholeshape" : "Circular",
@@ -19,6 +21,7 @@
 
     },
     {
+        "id" : 2,
         "model" : "Yokogawa W1 25",
         "sysmagnification" : 1,
         "pinholeshape" : "Circular",
@@ -28,6 +31,7 @@
 
     },
     {
+        "id" : 3, 
         "model" : "Andor Dragonfly 40",
         "sysmagnification" : 1,
         "pinholeshape" : "Circular",
@@ -37,6 +41,7 @@
 
     },
     {
+        "id" : 4,
         "model" : "Andor Dragonfly 25",
         "sysmagnification" : 1,
         "pinholeshape" : "Circular",
@@ -46,6 +51,7 @@
 
     },
     {
+        "id" : 5,
         "model" : "Visitech Infinity",
         "sysmagnification" : 1,
         "pinholeshape" : "Circular",
@@ -53,7 +59,38 @@
         "pinholesize" : 50,
         "pinholespacing" : 250
 
+    },
+    {
+        "id" : 6,
+        "model" : "Crest X-Light v3",
+        "sysmagnification" : 1,
+        "pinholeshape" : "Circular",
+        "shapefactor" : 500,
+        "pinholesize" : 50,
+        "pinholespacing" : 250
+
+    },
+    {
+        "id" : 7,
+        "model" : "Crest X-Light v3",
+        "sysmagnification" : 1,
+        "pinholeshape" : "Circular",
+        "shapefactor" : 500,
+        "pinholesize" : 50,
+        "pinholespacing" : 500
+
+    },
+    {
+        "id" : 8,
+        "model" : "iSIM",
+        "sysmagnification" : 1,
+        "pinholeshape" : "Circular",
+        "shapefactor" : 500,
+        "pinholesize" : null,
+        "pinholespacing" : null
+
     }
+
 ],
 
     "pointScanning" : [{

@@ -97,7 +97,7 @@
             </v-col>
             <v-col cols="15" sm="3" md="4">
                 <v-select
-                    disabled
+                    
                     :items="fileFormatTypes"
                     v-model="serie.fileformat"
                     item-text="label"
@@ -158,10 +158,11 @@
                 fileFormatTypes: [
                     {'label': 'TIFF', 'value': 0},
                     {'label': 'OME-TIFF', 'value': 1}, 
-                    {'label': 'HDF5', 'value': 2}, 
+                    {'label': 'IMS', 'value': 6} 
+                    /* {'label': 'HDF5', 'value': 2}, 
                     {'label': 'Imaris 5.0', 'value': 3},
                     {'label': 'Slidebook 6.0', 'value': 4}, 
-                    {'label': 'Arivis .SIS', 'value': 5}
+                    {'label': 'Arivis .SIS', 'value': 5} */
                 ],
                 splitChannelTypes: [
                     {'label': 'No Split', 'value': 0},

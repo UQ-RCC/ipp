@@ -17,7 +17,7 @@
                     <v-row align="center" justify="center">    
                         <v-col cols="6" sm="6" md="8">
                             <v-row align="center" justify="center">
-                                <v-col cols="3" sm="4" md="6">
+                                <v-col cols="3" sm="4" md="6" >
                                     <v-text-field regular 
                                         type="number"
                                         :rules="[rules.required]"
@@ -30,7 +30,8 @@
                                     </v-text-field>
 
                                 </v-col>
-                                <v-col cols="3" sm="4" md="6">
+                                
+                                <v-col cols="3" sm="4" md="6" v-if="!isSoRa">
                                     <v-text-field regular 
                                         type="number"
                                         :rules="[rules.required]"
@@ -42,24 +43,38 @@
                                     </v-text-field>
 
                                 </v-col>
+                                
+                                <v-col cols="3" sm="4" md="6" v-if="isSoRa">
+                                    <v-select
+                                        :items="auxmag"
+                                        item-text= "label"
+                                        item-value="value"
+                                        label="Auxillary Magnification" 
+                                        v-model="spinningDisc.auxmagnification"
+                                        required 
+                                        @change="getObjMag"
+                                        
+                                        >
+                                    </v-select>
+                                </v-col>
 
                             </v-row>
                             
                             <v-select 
-                                    id="spmodels"
-                                    :items="spdmodels"
-                                    item-text = "model"
-                                    v-model="spinningDisc.model"
+                                    :items="models"
+                                    item-text="label"
+                                    item-value="value"
+                                    v-model="modelId"
                                     label="Microscope Configuration"
                                     @change="getspdData"
-                                    return-object
-                                        >
+                                   
+                                    >
                                     
                             </v-select>
                             <v-row align="center" justify="center">
                                 <v-col cols="3" sm="4" md="6">
                                     <v-select
-                                        :items="spdmodels"
+                                        :items="settings"
                                         item-text = "pinholeshape"
                                         v-model="spinningDisc.pinholeshape"
                                         label="Pinhole Shape"
@@ -259,8 +274,11 @@
             reject: null,
             show: false,
             btnshow : false,
-            settings: pcSettings,
+            settings: pcSettings.spinningDisk,
             illuminationType : null,
+            isSoRa: false,
+            auxmag: [ 2.8, 4 ],
+            modelId:0,
             options:{
                 pinholeRadius: 0,
                 pinholeSpacingnm: 0,
@@ -272,16 +290,28 @@
                 auxmagnification: 1,
                 sysmagnification: 1,
                 pinholesize: 50,
-                pinholespacing: 500,
+                pinholespacing: 253,
                 shapefactor: 500,
                 pinholeshape: "Circular"
             },
             rules: {
                 required : value => !! value || "The input is required",
                 numberRules: value => value && parseInt(value) && String(value).match(/^\d+(\.\d+)?$/).length > 0 || 'Must be a positive number',
+            },
+            models: [
+                {label:"Yokogawa X1 50", value:0},
+                {label:"Yokogawa W1 50", value:1},
+                {label:"Yokogawa W1 25", value:2},
+                {label:"Andor Dragonfly 40", value:3},
+                {label:"Andor Dragonfly 25", value:4},
+                {label:"Visitech Infinity", value:5},
+                {label:"Crest X-Light v3", value:6},
+                {label:"Crest X-Light v3", value:7},
+                {label:"iSIM", value:8}
 
+            ]
 
-            }
+            
            
         }),
         computed: {
@@ -304,16 +334,38 @@
         methods: {
 
             getspdData() {
-
-                this.spinningDisc.pinholeshape = this.spinningDisc.model.pinholeshape
-                //this.spinningdisk.square_side = this.spinningdisk.model.reportedSide 
-                this.spinningDisc.shapefactor = this.spinningDisc.model.shapefactor
-                this.spinningDisc.sysmagnification = this.spinningDisc.model.sysmagnification 
-                this.spinningDisc.pinholesize = this.spinningDisc.model.pinholesize
-                this.spinningDisc.pinholespacing = this.spinningDisc.model.pinholespacing
-
+                
+                
+                for (let i=0; i< this.settings.length; i++) {
+                    if (this.modelId === this.settings[i].id ) {
+                        this.spinningDisc.model = this.settings[i].model
+                        this.spinningDisc.sysmagnification = this.settings[i].sysmagnification
+                        this.spinningDisc.pinholesize = this.settings[i].pinholesize
+                        this.spinningDisc.pinholespacing = this.settings[i].pinholespacing
+                        this.spinningDisc.shapefactor = this.settings[i].shapefactor
+                        this.spinningDisc.pinholeshape = this.settings[i].pinholeshape
+                    }
+                } 
+                if (this.illuminationType === 'SoRa'){
+                    if (this.modelId == 1 || this.modelId == 2  ){
+                        this.isSoRa = true
+                    } else {
+                        this.isSoRa = false
+                        this.spinningDisc.auxmagnification = null
+                    }
+                }
+                
                 this.valueChange()
 
+            },
+            getObjMag () {
+                if(this.spinningDisc.auxmagnification === 2.8) {
+                    this.spinningDisc.objmagnification = 60
+                }
+                if(this.spinningDisc.auxmagnification === 4){
+                    this.spinningDisc.objmagnification = 100
+                }
+                this.valueChange()
             },
             open(illuminationType) {
                 this.dialog = true;
@@ -378,15 +430,18 @@
                     Vue.$log.info("Setting file loaded")
                     Vue.$log.info(options.settings)
                     this.spinningDisc = Object.assign({}, options.settings)
+                    for (let i=0; i< this.settings.length; i++) {
+                        if (this.spinningDisc.model === this.settings[i].model) {
+                            this.modelId = this.settings[i].id
+                        }
+                    }
                     this.valueChange()
                 }
             },
         },
 
         mounted: function(){   
-            console.log(this.$keycloak)
-            console.log(this.is_admin)
-            console.log("this.is_admin")
+            
             this.valueChange()
         },
     }
