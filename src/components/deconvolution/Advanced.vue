@@ -157,9 +157,9 @@
                 ],
                 fileFormatTypes: [
                     {'label': 'TIFF', 'value': 0},
-                    {'label': 'OME-TIFF', 'value': 1}, 
+                   /* {'label': 'OME-TIFF', 'value': 1}, 
                     {'label': 'IMS', 'value': 3},
-                    /*{'label': 'IMS', 'value': 6} 
+                    {'label': 'IMS', 'value': 6} 
                      {'label': 'HDF5', 'value': 2}, 
                     {'label': 'Slidebook 6.0', 'value': 4}, 
                     {'label': 'Arivis .SIS', 'value': 5} */
