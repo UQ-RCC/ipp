@@ -347,12 +347,15 @@
                     }
                 } 
                 if (this.illuminationType === 'SoRa'){
-                    if (this.modelId == 1 || this.modelId == 2  ){
+                    if (this.modelId === 1 || this.modelId === 2  ){
                         this.isSoRa = true
                     } else {
                         this.isSoRa = false
                         this.spinningDisc.auxmagnification = null
                     }
+                } else {
+                    this.isSoRa = false
+                    //this.spinningDisc.auxmagnification = null
                 }
                 
                 this.valueChange()
@@ -443,6 +446,7 @@
         mounted: function(){   
             
             this.valueChange()
+            this.isSoRa = false
         },
     }
 

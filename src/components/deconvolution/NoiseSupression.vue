@@ -117,6 +117,9 @@
                 return true
             }
         },
+        mounted: function() {
+           this.get_serie()
+        }
   }
 </script>
 

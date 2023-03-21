@@ -32,24 +32,12 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <!-- psfType -->
-        <v-row align="center">
-            <v-col class="d-flex" cols="36" sm="12">
-                <v-select
-                    :items="psfTypes"
-                    v-model="workingItem.setting.psfType"
-                    item-text="label"
-                    item-value="value"
-                    label="Illumination Type"
-                    @change="psfChanged"
-                    outlined dense
-                ></v-select>
-            </v-col>
-        </v-row>
+        
+        
         <!-- main GUI: tables, tabs -->
-        <v-row>
+        <v-row >
             <!-- table and buttons-->
-            <v-col class="d-flex" cols="12" sm="2" md="4" lg="4" xl="4">
+            <v-col  cols="12" sm="12" md="4" lg="4" xl="4">
                 <div class="text-center table-area">
                     <v-data-table
                         v-model="selected"
@@ -128,11 +116,62 @@
                 </div>
             </v-col>
             <v-divider vertical></v-divider>
-            <v-col class="d-flex">
+            <v-col cols="12" sm="12" md="8" lg="8" xl="8">
                 <v-col>
                     <v-row>
-                        <p>Microvolution Version 2022.10</p>
+                        <v-col>
+                            <p class="version-text">Microvolution Version 2022.10</p>
+
+                        </v-col>
                     </v-row>
+                    <!-- psfType -->
+                    <v-row align="center">
+                        <v-col class="d-flex" cols="36" sm="12">
+                            <v-select
+                                :items="psfTypes"
+                                v-model="workingItem.setting.psfType"
+                                item-text="label"
+                                item-value="value"
+                                label="Illumination Type"
+                                @change="psfChanged"
+                                outlined dense
+                            ></v-select>
+                        </v-col>
+                    </v-row>
+
+                     <v-row class="d-flex">
+                        <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn fab dark small color="primary" 
+                                        @click.stop="previousStep" v-bind="attrs" v-on="on">
+                                    <v-icon dark>
+                                        mdi-chevron-left
+                                    </v-icon>
+                                </v-btn>
+                            </template>
+                            <span>Previous step</span>
+                        </v-tooltip>
+                        <v-spacer></v-spacer>
+                        <!-- <p v-if="errors.length">
+                            
+                            <b style="color: red;" v-for="error in errors" :key="error">{{ error }}</b>
+                            
+                        </p>
+                        <v-spacer></v-spacer> -->
+                        <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn fab dark small color="primary" 
+                                        @click.stop="nextStep" v-bind="attrs" v-on="on">
+                                    <v-icon darkd>
+                                        mdi-chevron-right
+                                    </v-icon>
+                                </v-btn>
+                            </template>
+                            <span>Next step</span>
+                        </v-tooltip>
+
+                    </v-row>
+                    
                     <v-row class="d-flex" v-bind:style="{height: '85%'}" v-on:keyup.right="nextStep">
                         <v-stepper non-linear outlined
                             v-model="workingItem.step" 
@@ -377,11 +416,13 @@
                 loading: false,
                 fileBrowserDialog: false,
                 fileBrowserDialogMode: '',
+                selectedColor:null,
+                errors:[],
                 
                 // -- selected files table
                 selectedFilesTable: {
                     headers: [
-                        { text: 'Name', value: 'series.path' }
+                        { text: 'Job Name', value: 'series.path' }
                     ],
                 },
 
@@ -479,6 +520,7 @@
             /** this part loads files/folders  **/
             // this is different from display_decon
             async load_path(pathToBeLoaded, isfolder) {
+                console.log("load path")
                 let items = []
                 try{
                     // first, check the database the decons with given path
@@ -817,7 +859,13 @@
                         return
                     let _acomponent = this.getStepComponent(it)
                     if(_acomponent){
-                        _acomponent.load_serie(decon.setting)
+                        console.log("display_decon load serie")
+                        console.log(decon.series)
+                        if(!decon.series.padding) {
+                            _acomponent.load_serie(decon.setting)
+                        } else {
+                            _acomponent.load_serie(decon.series) //previous decon.setting
+                        }
                         if(!_acomponent.is_valid())
                             _anyInvalidStep = true
                     }
@@ -849,6 +897,7 @@
                     if ( this.singleSelect ) {
                         this.selected = [ anItem.item ]
                         this.display_decon(anItem.item)
+
                         //save
                     }
                     else {
@@ -857,9 +906,12 @@
                         // otherwise do nothing --> meaning any change will write back to anItem
                         Vue.$log.info("TODO here")
                     }
-                    PreferenceAPI.update_decon(anItem.item.id, anItem.item)    
-                } else {
+                    PreferenceAPI.update_decon(anItem.item.id, anItem.item)
+                }
+                    
+                else {
                     Vue.$log.info("Unselect item")
+                    
                     //save
                     // remove this from selected
                     for(let i = 0; i < this.selected.length; i++){
@@ -867,10 +919,13 @@
                             this.selected.splice(i, 1)
                         }
                     }
-                    if(this.selected.length == 0) {
+                    
+                     if(this.selected.length == 0) {
                         this.display_decon(series.defaultDecon(), false)
-                    }
+                    } 
                 }
+                
+                
             }, 
 
             /**
@@ -878,6 +933,7 @@
              */
             psfChanged(){
                 // console.log('psftype=' + this.workingItem.setting.psfType)
+                this.errors = []
                 if (this.workingItem.setting.psfType !== 3 ) {
                     this.workingItem.setting.deskew = false
                     this.workingItem.setting.keepDeskew = false
@@ -886,8 +942,12 @@
                 // is this needed
                 this.display_decon(this.workingItem, false)
             },
+            changeColor(color) {
+                document.body.style.background = color
+            },
 
             stepClicked() {
+                
                 this.workingItem.step = parseInt(this.workingItem.step)
                 console.log("@stepClicked:" + this.workingItem.step)
                 if(!this.checkStepVisibility(this.workingItem.step))
@@ -904,6 +964,7 @@
                     this.saveSettings()
                 
                 }
+                
             },
 
             stepChanged(number){
@@ -915,13 +976,65 @@
                 if(this.workingItem.selected){
                     let _component = this.getStepComponent(stepNumber)
                     if (_component)
+                        console.log("this.workingItem.setting inside step changes")
+                        console.log(this.workingItem)
                         _component.load_serie(this.workingItem.setting)
                     PreferenceAPI.update_decon(this.workingItem.id, this.workingItem)   
                 }
             },
 
+            
+
             nextStep(){
                 this.workingItem.step = parseInt(this.workingItem.step)
+                this.errors = []
+                if(this.workingItem.step === 4) {
+                    let channels = this.workingItem.setting.channels
+                    let psfType = this.workingItem.setting.psfType
+                    let pinhole = 0
+                    let pinhole_spacing = 0
+                    for (let i=0; i< channels.length; i++) {
+                        pinhole = channels[i].pinhole
+                        pinhole_spacing = channels[i].pinholeSpacing
+                        let iteration = channels[i].iterations
+                        if (iteration === 0) {
+                            this.workingItem.setting.channels[i].pinhole = 0
+                            this.workingItem.setting.channels[i].pinholeSpacing = 0
+                            this.workingItem.setting.channels[i].wavelength = 0
+
+                        }
+                        else if (psfType === 1 || psfType === 6 ) {
+                            this.errors = []
+                            if (iteration > 0 && pinhole === 0) {
+                               
+                                Vue.notify({
+                                    group: 'errornotif',
+                                    type: 'error',
+                                    title: 'Input Error',
+                                    text: "Invalid Channel "+(i+1)+ " pinhole radius: 0",
+                                    closeOnClick: true
+                                })
+                                return
+                            } 
+                        }
+                            
+                        else if (psfType === 4 || psfType === 7 || psfType === 8) {
+                            this.errors = []
+                            if (iteration > 0 && (pinhole === 0 || pinhole_spacing === 0)) {
+                                
+                                Vue.notify({
+                                    group: 'errornotif',
+                                    type: 'error',
+                                    title: 'Input Error',
+                                    text: 'Invalid pinhole radius and pinhole spacing: 0',
+                                    closeOnClick: true
+                                })
+                                return
+                            }
+                            
+                        }
+                    } 
+                }
                 if(this.workingItem.step === 8)
                     return
                 //even if current step is invalid, next will allow it to go if it has been visited
@@ -1049,8 +1162,8 @@
     }
 
     .table-area {
-        height: 200px;
-        max-width: 410px;
+        /* height: 200px;
+        max-width: 410px; */
         
         .scroll-x {
             overflow-x: auto;
@@ -1059,4 +1172,14 @@
             overflow-y: auto;
         }
     }
+    .theme--dark.v-btn.v-btn--disabled.v-btn--has-bg {
+        background-color: #959494!important;
+    }
+    .version-text {
+        font-size: 12px;
+        float: right;
+    }
+
+    
+
 </style>

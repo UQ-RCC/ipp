@@ -8,12 +8,16 @@ import * as Keycloak from 'keycloak-js'
 import VueLogger from 'vuejs-logger'
 import Notifications from 'vue-notification'
 import VueCookies from 'vue-cookies'
+import VueSimpleAlert from "vue-simple-alert";
+import './alert.css'
+
 
 import axios from 'axios'
 
 Vue.use(VueLogger)
 Vue.use(VueCookies)
 Vue.use(Notifications)
+Vue.use(VueSimpleAlert);
 
 let config = null
 

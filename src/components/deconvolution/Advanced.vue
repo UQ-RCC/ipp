@@ -190,6 +190,11 @@
             },
             load_serie(serie_advanced){
                 this.serie = serie_advanced
+                if(!serie_advanced.padding || !serie_advanced.tiling) {
+                    this.serie = series.formatSeries(null)
+                }
+                
+
             },
             is_valid_value(val){
                 if(val || val == 0)
@@ -212,6 +217,7 @@
                     return false
             }
         },
+       
   }
 </script>
 

@@ -59,7 +59,7 @@
                     </v-text-field>
                 </v-col>
                 <v-col cols="10" sm="3" md="4" v-if="serie.psfType === 3">
-                    <v-text-field regular label="Light sheet illumination NA" type="number" 
+                    <v-text-field regular label="Light sheet illumination NA" type="number"  
                         :rules="[rules.positive]" v-model="serie.lightSheetIlluminationNA">
                     </v-text-field>
                 </v-col>
@@ -284,6 +284,7 @@
                 return this.serie
             },
             async load_serie(serie){
+                console.log("inside psf load serie")
                 this.serie = serie
                 if(this.serie.psfFile){
                     let _storedSeries = await PreferenceAPI.get_serie(this.serie.psfFile)
@@ -291,8 +292,11 @@
                         this.psfSerie = _storedSeries[0]
                     } else 
                         this.psfSerie = {}
-                } else
+                } else {
+
                     this.psfSerie = {}
+                    
+                }
             },
             // psfModelChanged
             psfModelChanged() {
@@ -306,11 +310,13 @@
                     this.serie.mediumRIOption = -1
                 else
                     this.serie.mediumRIOption = this.serie.ns
+               // this.valueChange()
             },
             // change ns from select
             mediumRIChanged(){
                 if(this.serie.mediumRIOption > 0)
                     this.serie.ns = this.serie.mediumRIOption
+               //this.valueChange()
             },
             // RI == Objective immersion refractive index : objectiveRIOptions
             // RI input
@@ -320,6 +326,7 @@
                     this.serie.objectiveRIOption = -1
                 else
                     this.serie.objectiveRIOption = this.serie.RI
+                //this.valueChange()
             },
             // change RI from select
             objectiveRIChanged(){
@@ -379,8 +386,12 @@
                     this.serie.psfDr = this.psfSerie.dr
                     this.serie.psfDz = this.psfSerie.dz
                 }
-            }
-        }
+            },
+            /* valueChange(){
+                PreferenceAPI.update_setting(this.serie.id, this.serie)
+            } */
+        },
+        
         
     };
 </script>

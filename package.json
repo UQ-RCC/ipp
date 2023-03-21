@@ -23,6 +23,7 @@
     "vue-logger": "0.0.4",
     "vue-notification": "^1.3.20",
     "vue-router": "^3.4.3",
+    "vue-simple-alert": "^1.1.1",
     "vuejs-logger": "^1.5.4",
     "vuetify": "^2.3.10"
   },

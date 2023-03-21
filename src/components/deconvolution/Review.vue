@@ -1,61 +1,82 @@
 <template>
-    <v-expansion-panels accordion @change="change" v-model="panel">
-        <v-expansion-panel>
-            <v-expansion-panel-header>Metadata</v-expansion-panel-header>
-            <v-expansion-panel-content>
-                <deconvolution-metadata ref="revdeconmetadata" :readonly="true"/>
-            </v-expansion-panel-content>
-        </v-expansion-panel>
+    <div>
+        <div v-show="false">
 
-        <v-expansion-panel>
-            <v-expansion-panel-header>PSF</v-expansion-panel-header>
-            <v-expansion-panel-content>
-                <deconvolution-psf ref="revdeconpsf" :readonly="true"/>
-            </v-expansion-panel-content>
-        </v-expansion-panel>
-
-        <v-expansion-panel v-if="serie.psfType === 3">
-            <v-expansion-panel-header>Deskew</v-expansion-panel-header>
-            <v-expansion-panel-content>
-                <deconvolution-deskew ref="revdecondeskew" :readonly="true"/>
-            </v-expansion-panel-content>
-        </v-expansion-panel>
+            <DeconvolutionMetadata ref="revdeconmetadata" />
+            <DeconvolutionPsf ref="revdeconpsf" />
+            <DeconvolutionDeskew ref="revdecondeskew" />
+            <DeconvolutionIterations ref="revdeconiterations" />
+            <DeconvolutionNoise ref="revdeconnoise" />
+            <DeconvolutionAdvanced ref="revdeconadvanced" />
+            <DeconvolutionDevices ref="revdecondevices" />
+        </div>
 
 
-        <v-expansion-panel>
-            <v-expansion-panel-header>Iterations</v-expansion-panel-header>
-            <v-expansion-panel-content>
-                <deconvolution-iterations ref="revdeconiterations" :readonly="true"/>
-            </v-expansion-panel-content>
-        </v-expansion-panel>
+    
+        <v-expansion-panels accordion >
+            <v-expansion-panel @click="change(0)"  >
+                <v-expansion-panel-header>Metadata</v-expansion-panel-header>
+                <v-expansion-panel-content>
+                    <!-- <deconvolution-metadata ref="revdeconmetadata" :readonly="true"/> -->
+                    <DeconvolutionMetadata ref="revdeconmetadata" :readonly="true"/>
+                </v-expansion-panel-content>
+            </v-expansion-panel>
+
+            <v-expansion-panel @click="change(1)">
+                <v-expansion-panel-header>PSF</v-expansion-panel-header>
+                <v-expansion-panel-content>
+                    <!-- <deconvolution-psf ref="revdeconpsf" :readonly="true"/> -->
+                    <DeconvolutionPsf ref="revdeconpsf" :readonly="true"/>
+                </v-expansion-panel-content>
+            </v-expansion-panel>
+
+            <v-expansion-panel v-if="serie.psfType === 3" @click="change(2)">
+                <v-expansion-panel-header>Deskew</v-expansion-panel-header>
+                <v-expansion-panel-content>
+                    <!-- <deconvolution-deskew ref="revdecondeskew" :readonly="true"/> -->
+                    <DeconvolutionDeskew ref="revdecondeskew" :readonly="true"/>
+                </v-expansion-panel-content>
+            </v-expansion-panel>
 
 
-        <v-expansion-panel>
-            <v-expansion-panel-header>Noise Suppression</v-expansion-panel-header>
-            <v-expansion-panel-content>
-                <deconvolution-noise ref="revdeconnoise" :readonly="true"/>
-            </v-expansion-panel-content>
-        </v-expansion-panel>
-
-        <v-expansion-panel>
-            <v-expansion-panel-header>Advanced</v-expansion-panel-header>
-            <v-expansion-panel-content>
-                <deconvolution-advanced ref="revdeconadvanced" :readonly="true"/>
-            </v-expansion-panel-content>
-        </v-expansion-panel>
-
-        <v-expansion-panel>
-            <v-expansion-panel-header>Devices</v-expansion-panel-header>
-            <v-expansion-panel-content>
-                <deconvolution-devices ref="revdecondevices" :readonly="true"/>
-            </v-expansion-panel-content>
-        </v-expansion-panel>
-    </v-expansion-panels>
+            <v-expansion-panel @click="change(3)">
+                <v-expansion-panel-header>Iterations</v-expansion-panel-header>
+                <v-expansion-panel-content>
+                    <!-- <deconvolution-iterations ref="revdeconiterations" :readonly="true"/> -->
+                    <DeconvolutionIterations ref="revdeconiterations" :readonly="true"/>
+                </v-expansion-panel-content>
+            </v-expansion-panel>
 
 
+            <v-expansion-panel @click="change(4)">
+                <v-expansion-panel-header>Noise Suppression</v-expansion-panel-header>
+                <v-expansion-panel-content>
+                <!--  <deconvolution-noise ref="revdeconnoise" :readonly="true"/> -->
+                    <DeconvolutionNoise ref="revdeconnoise" :readonly="true"/>
+                </v-expansion-panel-content>
+            </v-expansion-panel>
+
+            <v-expansion-panel @click="change(5)">
+                <v-expansion-panel-header>Advanced</v-expansion-panel-header>
+                <v-expansion-panel-content>
+                    <!-- <deconvolution-advanced ref="revdeconadvanced" :readonly="true"/> -->
+                    <DeconvolutionAdvanced ref="revdeconadvanced" :readonly="true"/>
+                </v-expansion-panel-content>
+            </v-expansion-panel>
+
+            <v-expansion-panel @click="change(6)">
+                <v-expansion-panel-header>Devices</v-expansion-panel-header>
+                <v-expansion-panel-content>
+                    <!-- <deconvolution-devices ref="revdecondevices" :readonly="true"/> -->
+                    <DeconvolutionDevices ref="revdecondevices" :readonly="true"/>
+                </v-expansion-panel-content>
+            </v-expansion-panel>
+        </v-expansion-panels>
 
 
 
+
+    </div>
 </template>
 
 <script>
@@ -83,19 +104,23 @@
         },
         data() {
             return {
-                panel: 0,
+                panelId: 0,
                 serie: series.formatSeries(null),
+                panel: this.$refs.revdeconmetadata
             }
         }, 
         methods: {
             load_serie(serie){
                 this.serie = serie
-                this.change()
+                this.change(this.panelId)
             },
-            change(){
-                let _panel = this.getPanel(this.panel)
-                if(_panel)  
-                    _panel.load_serie(this.serie)
+            change(panelId){
+                
+                this.panel = this.getPanel(panelId)
+                if(this.panel ) {
+                    this.panel.load_serie(this.serie)
+                }
+                    
             },
             getPanel(panelId) {
                 let _panel = null
@@ -130,7 +155,16 @@
                 return true
             }
 
+        },
+        mounted: function() {
+            for (let i=0; i<7 ; i++){
+                this.panel = this.getPanel(i)
+                if(this.panel ) {
+                    this.panel.load_serie(this.serie)
+                }
+            }
         }
+
     }
 </script>
 

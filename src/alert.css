@@ -1,0 +1,33 @@
+
+.swal2-title {
+    font-size: 16px !important;
+    font-family: Roboto,sans-serif !important;
+}
+.swal2-confirm {
+    height:36px !important;
+    min-width:64px !important;
+    padding: 0 16px !important;
+    font-size: .875rem !important;
+    align-items: center !important;
+    font-weight: 500 !important;
+    font-family: Roboto,sans-serif !important;
+}
+
+.swal2-cancel {
+    height:36px !important;
+    min-width:64px !important;
+    padding: 0 16px !important;
+    font-size: .875rem !important;
+    align-items: center !important;
+    font-weight: 500 !important;
+    font-family: Roboto,sans-serif !important;
+}
+
+.swal2-popup {
+  font-family: Roboto,sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  letter-spacing: normal !important;
+}
+
+

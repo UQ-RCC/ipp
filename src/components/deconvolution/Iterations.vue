@@ -31,9 +31,11 @@
                     v-model="props.item.iterations"
                     label="Edit"
                     single-line
-                    ></v-text-field>
+                    :rules="[rules.positiveNumber]"
+                    @change="valueChange(props.item)" ></v-text-field>
                 </template>
                 </v-edit-dialog>
+                
             </template>
 
             <template v-slot:item.background="props">
@@ -46,7 +48,7 @@
                     v-model="props.item.background"
                     label="Edit"
                     single-line
-                    ></v-text-field>
+                    @change="valueChange(props.item)"></v-text-field>
                 </template>
                 </v-edit-dialog>
             </template>
@@ -61,12 +63,13 @@
                     v-model="props.item.wavelength"
                     label="Edit"
                     single-line
-                    ></v-text-field>
+                    @change="valueChange(props.item)"></v-text-field>
                 </template>
                 </v-edit-dialog>
             </template>
 
-            <template v-slot:item.pinhole="props">
+
+            <template v-slot:item.pinhole="props" :rules="[rules.required]">
                 {{ props.item.pinhole }}
                 <v-icon
                     small
@@ -75,9 +78,9 @@
                     v-if="showCalc">
                     mdi-calculator
                 </v-icon>
-            </template>
+            </template> 
 
-            <template v-slot:item.pinholeSpacing="props">
+            <template v-slot:item.pinholeSpacing="props" :rules="[rules.required]">
                 {{ props.item.pinholeSpacing ?? 0 }}  
                 
             </template>
@@ -107,7 +110,7 @@
                     outlined dense
                     disabled
                     type="number"
-                    :rules="positiveInteger"   
+                    :rules="[rules.positiveInteger]"   
                     label="Save every iterations" 
                     v-model="serie.saveEveryIterations"
                 >
@@ -209,12 +212,12 @@
                     //     sortable: false 
                     // },
                 ],
-                positiveNumber: [
-                    value => value > 0 || 'Must be a positive number',
-                ],
-                positiveInteger: [
-                    value => value && value >= 0 && Number.isInteger(parseFloat(value)) || 'Must be a positive integer'
-                ], 
+                rules: {
+                    required : value => value == 0 || "The input is required",
+                    positiveNumber: value => value > 0 || 'Must be zero or greater',
+                    positiveInteger: value => value && value >= 0 && Number.isInteger(parseFloat(value)) || 'Must be a positive integer',
+                   
+                },
 
             }
         },
@@ -270,6 +273,7 @@
                 }else{
                     this.channelTableHeaders[2].align = ' d-none';
                     let channelsList = this.serie.channels
+                    console.log(channelsList)
                     let size = channelsList.length
                     for (let i=0; i < size; i++ ) {
                         if (this.serie.backgroundType == -1) {
@@ -367,10 +371,29 @@
                     console.log("cancelled")
                 }
             },
+
+            valueChange(item) {
+            
+                this.iterationsEditedIndex = this.serie.channels.indexOf(item)
+                this.iterationsEditedItem = Object.assign({}, item)
+                if (item.iterations === "0") {
+                    this.iterationsEditedItem.pinhole = 0
+                    this.iterationsEditedItem.pinholeSpacing = 0
+                    this.iterationsEditedItem.wavelength = 0
+
+                    this.serie.channels[this.iterationsEditedIndex].pinhole = 0
+                    this.serie.channels[this.iterationsEditedIndex].pinholeSpacing = 0
+                    this.serie.channels[this.iterationsEditedIndex].wavelength = 0
+
+                }
+                //this.serie.channels[this.iterationsEditedIndex] = this.iterationsEditedItem
+             
+            },
             
         },
         mounted: function() {
            this.showCalc = false
+           
         }
        
 

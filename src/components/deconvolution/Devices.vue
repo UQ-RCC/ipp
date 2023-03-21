@@ -37,7 +37,7 @@
                             v-on="on"
                             type=number
                             :rules="positiveNumber"  
-                            label="Memory per job (GBs)" 
+                            label="Memory per instance[node]" 
                             v-model="serie.mem"
                         >
                         </v-text-field>
@@ -55,12 +55,12 @@
                             v-on="on"
                             type=number
                             :rules="positiveInteger"  
-                            label="Number of GPUs per job" 
+                            label="Number of GPUs per instance[node]" 
                             v-model="serie.gpus"
                         >
                         </v-text-field>
                     </template>
-                    <span>The number of GPUs to be used for each job (or instance)</span>
+                    <span>The number of GPUs to be used for each instance</span>
                 </v-tooltip>
             </v-col>
         </v-col>
@@ -95,6 +95,7 @@
             },
             load_serie(serie_devices){
                 this.serie = serie_devices
+                
             },
             is_valid(){
                 if(this.serie.instances && this.serie.instances >0

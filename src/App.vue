@@ -4,6 +4,8 @@
         <v-main>
             <notifications group="sysnotif" position="top left"/>
             <notifications group="datanotif" position="bottom right"/>
+            <notifications group="errornotif" position="top center"/>
+            
             <div>
                 <router-view />
             </div>
