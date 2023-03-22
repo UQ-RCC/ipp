@@ -357,21 +357,12 @@
                                 this.serie.channels[i].pinholeSpacing = options.pinholeSpacingnm
                             }
                         }
-                        else {
-                            this.iterationsEditedIndex = this.serie.channels.indexOf(channels)
-                            this.iterationsEditedItem = Object.assign({}, channels)
-                            console.log("iterationsEditedIndex ")
-                            console.log(this.iterationsEditedIndex)
+                        if (size === 1) {
                             
-                            console.log("iterationsEditedItem ")
-                            console.log(this.iterationsEditedItem)
-                            
-                            channels[this.iterationsEditedIndex].pinhole = options.pinholeRadius
-                            channels[this.iterationsEditedIndex].pinholeSpacing = options.pinholeSpacingnm
-                            console.log("channels ")
-                            console.log(channels)
-                            this.serie.channels[this.iterationsEditedIndex].pinhole = options.pinholeRadius
-                            this.serie.channels[this.iterationsEditedIndex].pinholeSpacing = options.pinholeSpacingnm
+                            channels[0].pinhole = options.pinholeRadius
+                            channels[0].pinholeSpacing = options.pinholeSpacingnm
+                            this.serie.channels[0].pinhole = options.pinholeRadius
+                            this.serie.channels[0].pinholeSpacing = options.pinholeSpacingnm
                         }
 
                     }
