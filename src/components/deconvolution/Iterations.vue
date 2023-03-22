@@ -346,8 +346,12 @@
                 } else if (this.serie['psfType'] == 8) {
                     illuminationType = 'SoRa'
                 }
+                console.log("channel ")
+                console.log(channels)
                 let channelsList = channels
                 let size = channelsList.length
+                console.log("channel size spd calculator")
+                console.log(size)
                 let options = await this.$refs.spdcalculatordialog.open(illuminationType)
                 if (!options.cancelled ) {
                     if (options.pinholeRadius && options.pinholeSpacingnm ) {
