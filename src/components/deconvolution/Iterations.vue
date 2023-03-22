@@ -346,12 +346,8 @@
                 } else if (this.serie['psfType'] == 8) {
                     illuminationType = 'SoRa'
                 }
-                console.log("channel ")
-                console.log(channels)
                 let channelsList = channels
                 let size = channelsList.length
-                console.log("channel size spd calculator")
-                console.log(size)
                 let options = await this.$refs.spdcalculatordialog.open(illuminationType)
                 if (!options.cancelled ) {
                     if (options.pinholeRadius && options.pinholeSpacingnm ) {
@@ -364,7 +360,16 @@
                         else {
                             this.iterationsEditedIndex = this.serie.channels.indexOf(channels)
                             this.iterationsEditedItem = Object.assign({}, channels)
-                            channels = options.pinholeRadius
+                            console.log("iterationsEditedIndex ")
+                            console.log(this.iterationsEditedIndex)
+                            
+                            console.log("iterationsEditedItem ")
+                            console.log(this.iterationsEditedItem)
+                            
+                            channels[this.iterationsEditedIndex].pinhole = options.pinholeRadius
+                            channels[this.iterationsEditedIndex].pinholeSpacing = options.pinholeSpacingnm
+                            console.log("channels ")
+                            console.log(channels)
                             this.serie.channels[this.iterationsEditedIndex].pinhole = options.pinholeRadius
                             this.serie.channels[this.iterationsEditedIndex].pinholeSpacing = options.pinholeSpacingnm
                         }
