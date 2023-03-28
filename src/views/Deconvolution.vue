@@ -117,7 +117,7 @@
             </v-col>
             <v-divider vertical></v-divider>
             <v-col cols="12" sm="12" md="8" lg="8" xl="8">
-                <v-col>
+                
                     <v-row>
                         <v-col>
                             <p class="version-text">Microvolution Version 2022.10</p>
@@ -125,8 +125,27 @@
                         </v-col>
                     </v-row>
                     <!-- psfType -->
-                    <v-row align="center">
-                        <v-col class="d-flex" cols="36" sm="12">
+                    <!-- <v-row align="center">
+                       
+                    </v-row> -->
+
+                    <v-row >
+                        <v-col class="d-flex" >
+                            <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn fab dark small color="primary" 
+                                            @click.stop="previousStep" v-bind="attrs" v-on="on">
+                                        <v-icon dark>
+                                            mdi-chevron-left
+                                        </v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>Previous step</span>
+                            </v-tooltip>
+                        </v-col>
+                        
+                        <v-spacer></v-spacer>
+                        <v-col class="d-flex" cols="10" sm="8">
                             <v-select
                                 :items="psfTypes"
                                 v-model="workingItem.setting.psfType"
@@ -137,46 +156,26 @@
                                 outlined dense
                             ></v-select>
                         </v-col>
-                    </v-row>
+                        <v-spacer></v-spacer> 
+                        <v-col class="d-flex" >
 
-                     <v-row class="d-flex">
-                        <v-tooltip top>
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-btn fab dark small color="primary" 
-                                        @click.stop="previousStep" v-bind="attrs" v-on="on">
-                                    <v-icon dark>
-                                        mdi-chevron-left
-                                    </v-icon>
-                                </v-btn>
-                            </template>
-                            <span>Previous step</span>
-                        </v-tooltip>
-                        <v-spacer></v-spacer>
-                        <!-- <p v-if="errors.length">
-                            
-                            <b style="color: red;" v-for="error in errors" :key="error">{{ error }}</b>
-                            
-                        </p>
-                        <v-spacer></v-spacer> -->
-                        <v-tooltip top>
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-btn fab dark small color="primary" 
-                                        @click.stop="nextStep" v-bind="attrs" v-on="on">
-                                    <v-icon darkd>
-                                        mdi-chevron-right
-                                    </v-icon>
-                                </v-btn>
-                            </template>
-                            <span>Next step</span>
-                        </v-tooltip>
+                            <v-tooltip top>
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn fab dark small color="primary" 
+                                            @click.stop="nextStep" v-bind="attrs" v-on="on">
+                                        <v-icon darkd>
+                                            mdi-chevron-right
+                                        </v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>Next step</span>
+                            </v-tooltip>
+                        </v-col>
 
                     </v-row>
                     
                     <v-row class="d-flex" v-bind:style="{height: '85%'}" v-on:keyup.right="nextStep">
-                        <v-stepper non-linear outlined
-                            v-model="workingItem.step" 
-                            v-bind:style="{width: '100%'}" 
-                            @change="stepChanged">
+                        <v-stepper non-linear outlined v-model="workingItem.step"  v-bind:style="{width: '100%'}"  @change="stepChanged" >
                             <v-stepper-header>
                                 <v-stepper-step :editable="checkStepVisibility(1)"
                                     step="1" 
@@ -186,7 +185,6 @@
                                     <small>Metadata</small>
                                 </v-stepper-step>
                                 <v-divider></v-divider>
-
                                 <v-stepper-step :editable="checkStepVisibility(2)" 
                                     step="2"
                                     :complete="workingItem.step!==2 && workingItem.visitedSteps.indexOf(2) >= 0"
@@ -195,7 +193,6 @@
                                     <small>PSF</small>
                                 </v-stepper-step>
                                 <v-divider></v-divider>
-
                                 <v-stepper-step :editable="checkStepVisibility(3)"
                                                 step="3" 
                                                 :complete="workingItem.step!==3 && workingItem.visitedSteps.indexOf(3) >= 0"
@@ -205,7 +202,6 @@
                                     <small>Deskew</small>
                                 </v-stepper-step>
                                 <v-divider></v-divider>
-
                                 <v-stepper-step :editable="checkStepVisibility(4)"
                                                 :complete="workingItem.step!==4 && workingItem.visitedSteps.indexOf(4) >= 0"
                                                 :rules="[rules.iterationstepvalid]"  
@@ -214,7 +210,6 @@
                                     <small>Iterations</small>
                                 </v-stepper-step>
                                 <v-divider></v-divider>
-
                                 <v-stepper-step :editable="checkStepVisibility(5)"
                                                 :complete="workingItem.step!==5 && workingItem.visitedSteps.indexOf(5) >= 0"
                                                 step="5"
@@ -222,7 +217,6 @@
                                     <small>Noise Suppression</small>
                                 </v-stepper-step>
                                 <v-divider></v-divider>
-
                                 <v-stepper-step :editable="checkStepVisibility(6)"
                                                 :complete="workingItem.step!==6 && workingItem.visitedSteps.indexOf(6) >= 0"
                                                 :rules="[rules.advancedstepvalid]"  
@@ -248,9 +242,11 @@
                                     <small>Review</small>
                                 </v-stepper-step>
 
+                                
                             </v-stepper-header>
 
                             <v-stepper-items>
+                            
                                 <v-stepper-content step=1>
                                     <deconvolution-metadata ref="deconmetadata"/>
                                 </v-stepper-content>
@@ -283,6 +279,7 @@
                                     <deconvolution-review ref="deconreview"/>
                                 </v-stepper-content>
 
+                                
                             </v-stepper-items>
                         </v-stepper>
                     </v-row>
@@ -370,7 +367,7 @@
                         </v-tooltip>
                     </v-row>
                     <p />
-                </v-col>
+                
 
             </v-col>
         </v-row>   
@@ -626,25 +623,27 @@
                     if(isfolder){
                         let _pathToBeLoaded = options.path + options.filter
                         Vue.$log.debug("selecting series:" + _pathToBeLoaded)
-                        let _exist = false
+                        //let _exist = false
                         this.loaded.map(file => {
                             if (file.series.path === _pathToBeLoaded)
-                                _exist = true
+                               // _exist = true
+                               console.log("files already exists")
                         })
-                        if (_exist)
-                            return
+                        /* if (_exist)
+                            return */
                         paths.push(_pathToBeLoaded)
                     } else {
                         Vue.$log.debug("selecting files:")
                         Vue.$log.debug(options.selectedItems)
                         for(let i = 0; i< options.selectedItems.length; i++){
-                            let _exists = false
+                            //let _exists = false
                             this.loaded.map(file => {
                                 if (file.series.path === options.selectedItems[i].path)
-                                    _exists = true
+                                    //_exists = true
+                                    console.log("files already exists")
                             })
-                            if (!_exists)
-                                paths.push(options.selectedItems[i].path)
+                            //if (!_exists)
+                            paths.push(options.selectedItems[i].path)
                         }
                     }
                     // if paths empty return
@@ -859,8 +858,6 @@
                         return
                     let _acomponent = this.getStepComponent(it)
                     if(_acomponent){
-                        console.log("display_decon load serie")
-                        console.log(decon.series)
                         if(!decon.series.padding) {
                             _acomponent.load_serie(decon.setting)
                         } else {

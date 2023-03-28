@@ -355,7 +355,7 @@
                     }
                 } else {
                     this.isSoRa = false
-                    //this.spinningDisc.auxmagnification = null
+                    this.spinningDisc.auxmagnification = 1
                 }
                 
                 this.valueChange()
