@@ -629,6 +629,10 @@
                                // _exist = true
                                console.log("files already exists")
                         })
+
+                        console.log("this loaded")
+                        console.log(this.loaded)
+
                         /* if (_exist)
                             return */
                         paths.push(_pathToBeLoaded)
@@ -665,6 +669,9 @@
                         Vue.$log.debug(items)
                         this.loaded = this.loaded.concat(items)
                     }
+                    console.log("this load")
+                    console.log(this.loaded)
+
                     if ((!this.selected || this.selected.length ==0) && this.loaded.length > 0){
                         this.selected = [ this.loaded[0] ]
                         this.display_decon(this.loaded[0])
@@ -888,11 +895,14 @@
              */
             selectedChanged(anItem){
                 // if selected, load it
-                anItem.item.selected = anItem.value
-                if (anItem.value){
+                console.log(anItem)
+                anItem.item.selected = anItem.id
+                //anItem.item.selected = anItem.value
+                if (anItem.id){
                     // console.log("selecting ...." + anItem.item.series.path)
                     if ( this.singleSelect ) {
                         this.selected = [ anItem.item ]
+                        console.log(anItem.item )
                         this.display_decon(anItem.item)
 
                         //save
