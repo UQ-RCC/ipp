@@ -45,7 +45,7 @@
                         :items="loaded"
                         :single-select="singleSelect"
                         :disable-pagination="true"
-                        item-key="series.path"
+                        item-key="tempID"
                         show-select
                         class="elevation-1"
                         height="250px" width="100%"
