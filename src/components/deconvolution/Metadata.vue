@@ -143,6 +143,8 @@
                 // } else
                 //     this.origionalSerie = {}
                 this.origionalSerie = Object.assign({}, this.serie)
+                console.log("serie.outputPath in metadata load")
+                console.log(serie.outputPath)
                 // update outputpath
                 if(serie.outputPath) {
                     var _pathParts = serie.outputPath.split("/")

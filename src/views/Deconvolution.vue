@@ -907,9 +907,9 @@
             selectedChanged(anItem){
                 // if selected, load it
                 console.log(anItem)
-                anItem.item.selected = anItem.tempID
+                anItem.item.selected = anItem.value
                 //anItem.item.selected = anItem.value
-                if (anItem.tempID){
+                if (anItem.value){
                     // console.log("selecting ...." + anItem.item.series.path)
                     if ( this.singleSelect ) {
                         this.selected = [ anItem.item ]
