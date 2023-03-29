@@ -486,7 +486,7 @@
                 _decon.setting = await PreferenceAPI.get_setting_by_id(_decon.setting_id)
                 _decon.setting = series.formatSeries(_decon.setting)
                 initialItems.push(_decon)
-                initialItems.tempID = new Date().getMilliseconds()
+                initialItems[_index].tempID = new Date().getMilliseconds()
             }
             this.loaded = this.loaded.concat(initialItems)
             console.log("thi loaded on mount")
@@ -675,7 +675,7 @@
                         Vue.$log.debug("Results:")
                         Vue.$log.debug(items)
                         this.tempID = new Date().getMilliseconds()
-                        items.tempID = this.tempID
+                        items[i].tempID = this.tempID
                         this.loaded = this.loaded.concat(items)
                     }
                     console.log("this load")
