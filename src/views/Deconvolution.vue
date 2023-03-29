@@ -415,6 +415,7 @@
                 fileBrowserDialogMode: '',
                 selectedColor:null,
                 errors:[],
+                tempID: null,
                 
                 // -- selected files table
                 selectedFilesTable: {
@@ -485,8 +486,11 @@
                 _decon.setting = await PreferenceAPI.get_setting_by_id(_decon.setting_id)
                 _decon.setting = series.formatSeries(_decon.setting)
                 initialItems.push(_decon)
+                initialItems.tempID = new Date().getMilliseconds()
             }
             this.loaded = this.loaded.concat(initialItems)
+            console.log("thi loaded on mount")
+            console.log(this.loaded)
             // for though loaded, add to selected if needeed
             this.loaded.forEach(item => {
                 if(item.selected) {
@@ -614,6 +618,9 @@
              */
             async selectFilesOrFolders(isfolder){
                 let options = null
+                /* let tempID = null
+                const today = new Date()
+                 */
                 if (isfolder)
                     options = await this.$refs.filedialog.open('selectfilesinfolder', 'Deconvolution', '/')
                 else 
@@ -667,10 +674,14 @@
                         let items = await this.load_path(paths[i], isfolder)
                         Vue.$log.debug("Results:")
                         Vue.$log.debug(items)
+                        this.tempID = new Date().getMilliseconds()
+                        items.tempID = this.tempID
                         this.loaded = this.loaded.concat(items)
                     }
                     console.log("this load")
                     console.log(this.loaded)
+                    console.log("this selected")
+                    console.log(this.selected)
 
                     if ((!this.selected || this.selected.length ==0) && this.loaded.length > 0){
                         this.selected = [ this.loaded[0] ]
