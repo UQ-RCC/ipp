@@ -391,6 +391,7 @@
     import DeconvolutionAPI from "@/api/DeconvolutionAPI.js"
     import PreferenceAPI from "@/api/PreferenceAPI"
     import series from '@/utils/series.js'
+    
 
     export default {
         name: 'Deconvolution',
@@ -414,8 +415,9 @@
                 fileBrowserDialog: false,
                 fileBrowserDialogMode: '',
                 selectedColor:null,
-                errors:[],
+                isSame: false,
                 tempID: null,
+                
                 
                 // -- selected files table
                 selectedFilesTable: {
@@ -486,11 +488,11 @@
                 _decon.setting = await PreferenceAPI.get_setting_by_id(_decon.setting_id)
                 _decon.setting = series.formatSeries(_decon.setting)
                 initialItems.push(_decon)
-                initialItems[_index].tempID = new Date().getMilliseconds()
+                //initialItems[_index].tempID = new Date().getMilliseconds()
+                initialItems[_index].tempID = this.uuid()
             }
             this.loaded = this.loaded.concat(initialItems)
-            console.log("thi loaded on mount")
-            console.log(this.loaded)
+            
             // for though loaded, add to selected if needeed
             this.loaded.forEach(item => {
                 if(item.selected) {
@@ -501,19 +503,32 @@
             
         },
         methods: {
+
+            uuid(){
+                let uuidValue = "",k, randomValue;
+                for (k=0; k< 32; k++) {
+                    randomValue = Math.random() * 16 | 0;
+                    if (k == 8 || k==12 || k == 16 || k==20) {
+                        uuidValue += "-"
+                    }
+                    uuidValue += (k == 12 ? 4 : (k==16 ? (randomValue & 3 | 8) : randomValue)).toString(16);
+                }
+                return uuidValue
+
+            },
             /**
              * save settings from workingItem back to selected, and save to db
              */
             saveSettings(){
-                console.log("Save settings")
+                
                 this.selected.forEach(decon => {
                     decon.setting = Object.assign({}, this.workingItem.setting)
                     decon.step = this.workingItem.step
                     decon.visitedSteps = this.workingItem.visitedSteps
                     // save it
-                    console.log(decon)
                     PreferenceAPI.update_decon(decon.id, decon)
                 })
+               
             },
 
 
@@ -521,28 +536,94 @@
             /** this part loads files/folders  **/
             // this is different from display_decon
             async load_path(pathToBeLoaded, isfolder) {
-                console.log("load path")
+                
                 let items = []
                 try{
-                    // first, check the database the decons with given path
-                    let _decons = await PreferenceAPI.get_decons(pathToBeLoaded)
-                    // found
-                    // Vue.$log.info(_decons)
-                    if ( _decons && _decons.length > 0 ) {
-                        Vue.$log.debug("Found decon in database")
-                        for(let _index =0; _index < _decons.length; _index++){
-                            let _decon = _decons[_index]
-                            let _serie = await PreferenceAPI.get_serie_by_id(_decon.series_id)
-                            let _setting = await PreferenceAPI.get_setting_by_id(_decon.setting_id)
-                            if (!('psfType' in _setting)){
-                                _setting['psfType'] = this.workingItem.setting.psfType
+                    let _decons = []
+                    if(!this.isSame) {
+                        _decons = await PreferenceAPI.get_decons(pathToBeLoaded)
+                        // found
+                        Vue.$log.info(_decons)
+
+                   
+                        if ( _decons && _decons.length > 0 ) {
+                            Vue.$log.debug("Found decon in database")
+                            for(let _index =0; _index < _decons.length; _index++){
+                                let _decon = _decons[_index]
+                                let _serie = await PreferenceAPI.get_serie_by_id(_decon.series_id)
+                                let _setting = await PreferenceAPI.get_setting_by_id(_decon.setting_id)
+                                if (!('psfType' in _setting)){
+                                    _setting['psfType'] = this.workingItem.setting.psfType
+                                }
+                                _decon.series = _serie
+                                _decon.setting = series.formatSeries(_setting)
+                                items.push(_decon)
+                                
                             }
-                            _decon.series = _serie
-                            _decon.setting = series.formatSeries(_setting)
-                            items.push(_decon)
-                        }
-                    } else {
-                        Vue.$log.debug("Not found. Do one more search from series")
+                        }else {
+                                Vue.$log.debug("Not found. Do one more search from series")
+                                let _storedSeries = await PreferenceAPI.get_serie(pathToBeLoaded)
+                                if ( _storedSeries && _storedSeries.length > 0 ) {
+                                    Vue.$log.debug("Found serie in database")
+                                    for(let _index = 0; _index < _storedSeries.length; _index++){
+                                        let _storedSerie = _storedSeries[_index]
+                                        if (!( 'psfType' in _storedSerie)){
+                                            _storedSerie['psfType'] = this.workingItem.setting.psfType
+                                        }
+                                        let _setting = series.formatSeries(_storedSerie)
+                                        let _decon = await PreferenceAPI.create_decon(_storedSerie.id, _setting)
+                                        _decon.series = _storedSerie
+                                        _decon.setting = _setting
+                                        _decon.step = 1
+                                        _decon.visitedSteps = []
+                                        _decon.selected = false
+                                        items.push(_decon)
+                                    
+                                    }
+                                } else {
+                                        Vue.$log.debug("Not found in database- a new decon and path")
+                                        let response = null
+                                        if (isfolder)
+                                            response = await DeconvolutionAPI.get_folder_info(pathToBeLoaded)
+                                        else 
+                                            response = await DeconvolutionAPI.get_file_info(pathToBeLoaded)
+                                        
+                                        Vue.$log.debug("Response :")
+                                        Vue.$log.debug(response)
+                                        Vue.$log.debug(JSON.parse(JSON.stringify(response)))
+                                        // add to database
+                                        for(let _index = 0; _index < response.commandResult.length; _index++){
+                                            let _responseItem  = response.commandResult[_index]
+                                            _responseItem.isfolder = isfolder
+                                            let _serie = series.fixSeriesUnit(_responseItem)
+                                            Vue.$log.debug("Series after fixing unit :")
+                                            Vue.$log.debug(_serie)
+                                            // let _setting = series.formatSeries(_responseItem)
+                                            try{
+                                                
+                                                _serie = await PreferenceAPI.create_serie(_serie)
+                                                if (!('psfType' in _serie)){
+                                                    _serie['psfType'] = this.workingItem.setting.psfType
+                                                }
+                                                let _setting = series.formatSeries(_serie)
+                                                let _decon = await PreferenceAPI.create_decon(_serie.id, _setting)
+                                                _decon.series = _serie
+                                                _decon.setting = await PreferenceAPI.get_setting_by_id(_decon.setting_id)
+                                                _decon.step = 1
+                                                _decon.visitedSteps = []
+                                                _decon.selected = false
+                                                items.push(_decon)
+                                            
+                                            }
+                                            catch(err) {
+                                                Vue.$log.error(err)
+                                            }// end catch                                    
+                                        }    // end for
+                                    } // end not found in db
+                            }
+                    }
+                    else {
+                        Vue.$log.debug("Same path. Do one more search from series")
                         let _storedSeries = await PreferenceAPI.get_serie(pathToBeLoaded)
                         if ( _storedSeries && _storedSeries.length > 0 ) {
                             Vue.$log.debug("Found serie in database")
@@ -559,48 +640,12 @@
                                 _decon.visitedSteps = []
                                 _decon.selected = false
                                 items.push(_decon)
-                            }
-                        } else {
-                            Vue.$log.debug("Not found in database")
-                            let response = null
-                            if (isfolder)
-                                response = await DeconvolutionAPI.get_folder_info(pathToBeLoaded)
-                            else 
-                                response = await DeconvolutionAPI.get_file_info(pathToBeLoaded)
                             
-                            Vue.$log.debug("Response :")
-                            Vue.$log.debug(response)
-                            Vue.$log.debug(JSON.parse(JSON.stringify(response)))
-                            // add to database
-                            for(let _index = 0; _index < response.commandResult.length; _index++){
-                                let _responseItem  = response.commandResult[_index]
-                                _responseItem.isfolder = isfolder
-                                let _serie = series.fixSeriesUnit(_responseItem)
-                                Vue.$log.debug("Series after fixing unit :")
-                                Vue.$log.debug(_serie)
-                                // let _setting = series.formatSeries(_responseItem)
-                                try{
-                                    _serie = await PreferenceAPI.create_serie(_serie)
-                                    if (!('psfType' in _serie)){
-                                        _serie['psfType'] = this.workingItem.setting.psfType
-                                    }
-                                    let _setting = series.formatSeries(_serie)
-                                    let _decon = await PreferenceAPI.create_decon(_serie.id, _setting)
-                                    _decon.series = _serie
-                                    _decon.setting = await PreferenceAPI.get_setting_by_id(_decon.setting_id)
-                                    _decon.step = 1
-                                    _decon.visitedSteps = []
-                                    _decon.selected = false
-                                    items.push(_decon)
-                                }
-                                catch(err) {
-                                    Vue.$log.error(err)
-                                }// end catch                                    
-                            } // end for
-                        } // end not found in db
+                            }
+                        }
                     }
-                    Vue.$log.debug("items :")
-                    Vue.$log.debug(items)
+                Vue.$log.debug("items :")
+                Vue.$log.debug(items)
                 }
                 catch(err){
                     Vue.$log.error(err)
@@ -611,16 +656,16 @@
                         text: 'Problem selecting files, try again!' + String(err)
                     })
                 }
+                
                 return items
             },
             /**
              * a common function; to be called by selectFiles, selectFilesInFolders
              */
             async selectFilesOrFolders(isfolder){
+                
                 let options = null
-                /* let tempID = null
-                const today = new Date()
-                 */
+                
                 if (isfolder)
                     options = await this.$refs.filedialog.open('selectfilesinfolder', 'Deconvolution', '/')
                 else 
@@ -632,16 +677,15 @@
                         Vue.$log.debug("selecting series:" + _pathToBeLoaded)
                         //let _exist = false
                         this.loaded.map(file => {
-                            if (file.series.path === _pathToBeLoaded)
-                               // _exist = true
-                               console.log("files already exists")
+                            if (file.series.path === _pathToBeLoaded){
+                                // _exist = true
+                                this.isSame = true
+                            }
+                            else {
+                                this.isSame = false
+                            }
+                               
                         })
-
-                        console.log("this loaded")
-                        console.log(this.loaded)
-
-                        /* if (_exist)
-                            return */
                         paths.push(_pathToBeLoaded)
                     } else {
                         Vue.$log.debug("selecting files:")
@@ -649,9 +693,13 @@
                         for(let i = 0; i< options.selectedItems.length; i++){
                             //let _exists = false
                             this.loaded.map(file => {
-                                if (file.series.path === options.selectedItems[i].path)
-                                    //_exists = true
-                                    console.log("files already exists")
+                                if (file.series.path === options.selectedItems[i].path){
+                                   this.isSame = true
+                                }
+                                else {
+                                    this.isSame = false
+                                }
+                                
                             })
                             //if (!_exists)
                             paths.push(options.selectedItems[i].path)
@@ -674,14 +722,11 @@
                         let items = await this.load_path(paths[i], isfolder)
                         Vue.$log.debug("Results:")
                         Vue.$log.debug(items)
-                        this.tempID = new Date().getMilliseconds()
-                        items[i].tempID = this.tempID
+                        //this.tempID = new Date().getMilliseconds()
+                        items[i].tempID = this.uuid()
                         this.loaded = this.loaded.concat(items)
                     }
-                    console.log("this load")
-                    console.log(this.loaded)
-                    console.log("this selected")
-                    console.log(this.selected)
+                    
 
                     if ((!this.selected || this.selected.length ==0) && this.loaded.length > 0){
                         this.selected = [ this.loaded[0] ]
@@ -689,6 +734,7 @@
                     }
                     this.loading = false                    
                 }
+                
             },
 
 
@@ -752,6 +798,7 @@
                 let _jobIds = _jobs.map(_job => {
                     return _job.id
                 })
+                
                 try{
                     await DeconvolutionAPI.execute_microvolution(item.setting.outputPath, _numberOfJobs, 
                                     item.setting.mem, item.setting.gpus, item, _jobIds, false)
@@ -785,7 +832,6 @@
              */
             async submitAll(){
                 for (let i=0; i< this.loaded.length; i++) {
-                    console.log(this.loaded[i].setting)
                     if (!this.loaded[i].setting.valid) {
                         this.validityDialog = true
                         return
@@ -802,7 +848,6 @@
                 if(this.selected.length === 0)
                     return
                 for (let i=0; i< this.selected.length; i++) {
-                    console.log(this.loaded[i].setting)
                     if (!this.selected[i].setting.valid) {
                         this.validityDialog = true
                         return
@@ -862,6 +907,7 @@
              */
             display_decon(decon, duplicate=true){
                 // update tab
+                //duplicate = this.duplicate
                 if(duplicate)
                     this.workingItem = Object.assign({}, decon)
                 else
@@ -876,8 +922,11 @@
                         return
                     let _acomponent = this.getStepComponent(it)
                     if(_acomponent){
+                        
                         if(!decon.series.padding) {
                             _acomponent.load_serie(decon.setting)
+                            //_acomponent.get_serie()
+
                         } else {
                             _acomponent.load_serie(decon.series) //previous decon.setting
                         }
@@ -906,14 +955,12 @@
              */
             selectedChanged(anItem){
                 // if selected, load it
-                console.log(anItem)
                 anItem.item.selected = anItem.value
                 //anItem.item.selected = anItem.value
                 if (anItem.value){
                     // console.log("selecting ...." + anItem.item.series.path)
                     if ( this.singleSelect ) {
                         this.selected = [ anItem.item ]
-                        console.log(anItem.item )
                         this.display_decon(anItem.item)
 
                         //save
@@ -924,7 +971,9 @@
                         // otherwise do nothing --> meaning any change will write back to anItem
                         Vue.$log.info("TODO here")
                     }
+                    //this.saveSettings()
                     PreferenceAPI.update_decon(anItem.item.id, anItem.item)
+                    
                 }
                     
                 else {
@@ -937,8 +986,7 @@
                             this.selected.splice(i, 1)
                         }
                     }
-                    
-                     if(this.selected.length == 0) {
+                    if(this.selected.length == 0) {
                         this.display_decon(series.defaultDecon(), false)
                     } 
                 }
@@ -967,7 +1015,6 @@
             stepClicked() {
                 
                 this.workingItem.step = parseInt(this.workingItem.step)
-                console.log("@stepClicked:" + this.workingItem.step)
                 if(!this.checkStepVisibility(this.workingItem.step))
                     return
                 if(this.workingItem.visitedSteps.indexOf(this.workingItem.step) < 0)
@@ -994,8 +1041,6 @@
                 if(this.workingItem.selected){
                     let _component = this.getStepComponent(stepNumber)
                     if (_component)
-                        console.log("this.workingItem.setting inside step changes")
-                        console.log(this.workingItem)
                         _component.load_serie(this.workingItem.setting)
                     PreferenceAPI.update_decon(this.workingItem.id, this.workingItem)   
                 }
@@ -1005,7 +1050,6 @@
 
             nextStep(){
                 this.workingItem.step = parseInt(this.workingItem.step)
-                this.errors = []
                 if(this.workingItem.step === 4) {
                     let channels = this.workingItem.setting.channels
                     let psfType = this.workingItem.setting.psfType
