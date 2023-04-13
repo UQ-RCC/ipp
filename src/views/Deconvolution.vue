@@ -174,7 +174,7 @@
 
                     </v-row>
                     
-                    <v-row class="d-flex" v-bind:style="{height: '70%'}" v-on:keyup.right="nextStep">
+                    <v-row class="d-flex" v-bind:style="{height: '70%',margin:'10px'}" v-on:keyup.right="nextStep">
                         <v-stepper non-linear outlined v-model="workingItem.step"  v-bind:style="{width: '100%'}"  @change="stepChanged" >
                             <v-stepper-header>
                                 <v-stepper-step :editable="checkStepVisibility(1)"
@@ -285,7 +285,7 @@
                     </v-row>
                     <div class="buttons-margin"/>
                     <div class="buttons-extra-margin" v-if="workingItem && workingItem.step == 8"/>
-                    <v-row class="d-flex">
+                    <v-row class="d-flex" v-bind:style="{margin:'10px'}" >
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn fab dark small color="primary" 
@@ -1265,6 +1265,7 @@
 
     .buttons-margin{
         margin-top: 50px;
+        
     }
     .buttons-extra-margin{
         margin-top: 70px;
