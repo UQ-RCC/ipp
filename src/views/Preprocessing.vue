@@ -11,8 +11,8 @@
         <file-browser-dialog ref="filedialog" />
         <v-row>
             <!-- table and buttons-->
-            <v-col class="d-flex" cols="12" sm="4">
-                <div class="text-center">
+            <v-col cols="12" sm="12" md="4" lg="4" xl="4">
+                <div class="text-center table-area">
                     <v-data-table
                         v-model="selected"
                         :headers="selectedFilesTable.headers"
@@ -121,7 +121,7 @@
             </v-col>
             <v-divider vertical></v-divider>
             <!-- <v-col class="d-flex" cols="20" sm="5" md="7"> -->
-            <v-col class="d-flex">
+            <v-col cols="12" sm="12" md="8" lg="8" xl="8">
                 <v-row>
                     <v-col cols="27" sm="6" md="8">
                         <v-row>
@@ -916,4 +916,16 @@
         }
     }
 </script>
-
+<style lang="scss" scoped>
+.table-area {
+        /* height: 200px;
+        max-width: 410px; */
+        
+        .scroll-x {
+            overflow-x: auto;
+        }
+        .scroll-y {
+            overflow-y: auto;
+        }
+    }
+</style>

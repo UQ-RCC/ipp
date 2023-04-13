@@ -79,7 +79,7 @@
                 class="mx-1" 
                 color="primary" 
                 @click.stop="chooseOutputFolder"
-                rounded dark large 
+                rounded dark small 
                 title="Select where to save the outputs"
                 >
                 Choose Output Folder
@@ -89,7 +89,7 @@
                 color="primary" 
                 title="Browse output folder in a new Window"
                 @click.stop="openOutputFolder"
-                fab medium
+                fab small
                 :disabled="!outputBasePath && !outputFolderName">
                     <v-icon>mdi-open-in-app</v-icon>
             </v-btn>

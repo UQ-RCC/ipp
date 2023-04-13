@@ -48,7 +48,7 @@
                         item-key="tempID"
                         show-select
                         class="elevation-1"
-                        height="250px" width="100%"
+                        height="575px" width="100%"
                         @item-selected="selectedChanged"
                     >
                     </v-data-table>
@@ -59,7 +59,7 @@
                                 <v-btn 
                                     class="my-3" 
                                     color="primary" 
-                                    fab dark large 
+                                    fab dark default 
                                     @click.stop="selectFiles()"
                                     v-bind="attrs" 
                                     v-on="on">
@@ -75,7 +75,7 @@
                                 <v-btn 
                                     class="my-3" 
                                     color="primary" 
-                                    fab dark large 
+                                    fab dark default 
                                     v-bind="attrs" 
                                     v-on="on"
                                     @click.stop="selectFilesInFolder()">
@@ -90,7 +90,7 @@
                                 <v-btn  class="my-3" 
                                         color="warning"
                                         @click.stop="removeCurrentlySelected()" 
-                                        fab dark large 
+                                        fab dark default 
                                         v-bind="attrs" 
                                         v-on="on">
                                     <v-icon>mdi-close</v-icon>
@@ -104,7 +104,7 @@
                                 <v-btn  class="my-3" 
                                         color="error"
                                         @click.stop="removeAll()"  
-                                        fab dark large 
+                                        fab dark default 
                                         v-bind="attrs" 
                                         v-on="on">
                                     <v-icon>mdi-close-octagon</v-icon>
@@ -116,7 +116,7 @@
                 </div>
             </v-col>
             <v-divider vertical></v-divider>
-            <v-col cols="12" sm="12" md="8" lg="8" xl="8">
+            <v-col cols="12" sm="12" md="8" lg="8" xl="8" style="height:700px">
                 
                     <v-row>
                         <v-col>
@@ -174,7 +174,7 @@
 
                     </v-row>
                     
-                    <v-row class="d-flex" v-bind:style="{height: '85%'}" v-on:keyup.right="nextStep">
+                    <v-row class="d-flex" v-bind:style="{height: '70%'}" v-on:keyup.right="nextStep">
                         <v-stepper non-linear outlined v-model="workingItem.step"  v-bind:style="{width: '100%'}"  @change="stepChanged" >
                             <v-stepper-header>
                                 <v-stepper-step :editable="checkStepVisibility(1)"
@@ -303,7 +303,7 @@
                         
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
-                                <v-btn  color="primary" rounded dark large 
+                                <v-btn  color="primary" rounded dark default 
                                         @click.stop="saveTemplate()" 
                                         v-bind="attrs" 
                                         :disabled="workingItem.step !== 8"
@@ -316,7 +316,7 @@
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn 
-                                    color="primary" rounded dark large 
+                                    color="primary" rounded dark default 
                                     @click.stop="loadTemplate()"
                                     v-bind="attrs" v-on="on">Load Template
                                 </v-btn>
@@ -327,7 +327,7 @@
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn 
-                                    color="primary" rounded dark large 
+                                    color="primary" rounded dark default 
                                     v-bind="attrs" v-on="on"
                                     :disabled="selected.length === 0"
                                     @click.stop="submitSelected()">
@@ -341,7 +341,7 @@
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn 
-                                    color="primary" rounded dark large 
+                                    color="primary" rounded dark default 
                                     v-bind="attrs" v-on="on"
                                     :disabled="selected.length === 0"
                                     @click.stop="submitAll()">
@@ -417,6 +417,8 @@
                 selectedColor:null,
                 isSame: false,
                 tempID: null,
+                outputpath:[],
+                path:[],
                 
                 
                 // -- selected files table
@@ -1019,6 +1021,8 @@
                     return
                 if(this.workingItem.visitedSteps.indexOf(this.workingItem.step) < 0)
                     this.workingItem.visitedSteps.push(this.workingItem.step)
+                console.log("this.workingItem.step")
+                console.log(this.workingItem.step)
                 // save from current step - review step is ignored
                 // if(this.selected && this.selected[0] && this.step !== 8){
                 if(this.workingItem.step !== 8){
@@ -1036,7 +1040,6 @@
                 var stepNumber = parseInt(number)
                 this.workingItem.step = stepNumber
                 // this.workingItem.visitedSteps = this.workingItem.visitedSteps.filter(item => item !== stepNumber)
-                // console.log(this.workingItem.visitedSteps)
                 // load series to new step
                 if(this.workingItem.selected){
                     let _component = this.getStepComponent(stepNumber)
@@ -1047,9 +1050,53 @@
             },
 
             
-
             nextStep(){
                 this.workingItem.step = parseInt(this.workingItem.step)
+                
+                if(this.workingItem.step === 1) {
+                    let item ={}
+                    item.id = this.workingItem.id
+                    item.outputpath = this.workingItem.setting.outputPath
+                    if(this.outputpath.length === 0) {
+                       this.outputpath.push(item)
+                    }else{
+                        let flag = false
+                        let tempID = -1
+                        for(let i=0; i<this.outputpath.length; i++){
+                            if((this.outputpath[i].id !== this.workingItem.id) && (this.outputpath[i].outputpath === this.workingItem.setting.outputPath)){
+                                Vue.notify({
+                                    group: 'errornotif',
+                                    type: 'error',
+                                    title: 'Input Error',
+                                    text: "Input Error - Jobs with the same name/path must have unique Output paths/folders to avoid overwrite",
+                                    closeOnClick: true
+                                })
+                                flag = true
+                                return
+                            }else {
+                                if(this.outputpath[i].id === this.workingItem.id){
+                                    tempID = i
+                                }
+                               
+                                
+                            }
+                        }
+                        if(!flag){
+                            console.log(flag)
+                            console.log(this.outputpath)
+
+                            if(tempID === -1){
+                                this.outputpath.push(item)
+                            } else {
+                                this.outputpath[tempID].outputpath = this.workingItem.setting.outputPath
+                               
+                            }
+                        }
+                        
+                    }
+                   
+
+                }
                 if(this.workingItem.step === 4) {
                     let channels = this.workingItem.setting.channels
                     let psfType = this.workingItem.setting.psfType
