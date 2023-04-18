@@ -35,6 +35,18 @@ export default {
     return data
   },
 
+  async validate_devices(jobs,mem,gpus){
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/validateDevices`, {
+      params: {
+        jobs: jobs,
+        mem: mem,
+        gpus: gpus
+      }
+  })
+  return data
+
+  },
+
   // execute
   async execute_microvolution(output, instances, mem, devices, executioninfo, jobs, is_test=false) {
     let _requestUrl = ""

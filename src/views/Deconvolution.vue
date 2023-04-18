@@ -903,6 +903,7 @@
             },
             /****************************************************************************** */
 
+            
 
             /**
              * load decon
@@ -1050,7 +1051,7 @@
             },
 
             
-            nextStep(){
+            async nextStep(){
                 this.workingItem.step = parseInt(this.workingItem.step)
                 
                 if(this.workingItem.step === 1) {
@@ -1068,7 +1069,7 @@
                                     group: 'errornotif',
                                     type: 'error',
                                     title: 'Input Error',
-                                    text: "Input Error - Jobs with the same name/path must have unique Output paths/folders to avoid overwrite",
+                                    text: "Jobs with the same name/path must have unique Output paths/folders to avoid overwrite",
                                     closeOnClick: true
                                 })
                                 flag = true
@@ -1143,6 +1144,34 @@
                             
                         }
                     } 
+                }
+                if(this.workingItem.step === 7) { /* validate devices in device tab */
+                    let msg 
+                    let jobs = this.workingItem.setting.instances
+                    let mem = this.workingItem.setting.mem
+                    let gpus = this.workingItem.setting.gpus
+                    let response = await DeconvolutionAPI.validate_devices(jobs,mem,gpus)
+                    let output = response.commandResult
+                    if (output.length > 0) {
+                        let json_output =  JSON.parse(output[0].out)
+                        if(!json_output.results.success){
+                            let limit_test =  json_output.results.limits_test.success
+                            let slurm_test = json_output.results.slurm_test.success
+                            if (!limit_test && !slurm_test || !limit_test && slurm_test){
+                                msg = json_output.results.limits_test.msg
+                            }
+                            else if (limit_test && !slurm_test) {
+                                msg = json_output.results.slurm_test.msg
+                            }
+                            Vue.notify({
+                                group: 'errornotif',
+                                type: 'error',
+                                title: 'Device Selection Error',
+                                text: msg.charAt(0).toUpperCase() + msg.slice(1)
+                            })
+                            return 
+                        }
+                    }
                 }
                 if(this.workingItem.step === 8)
                     return
