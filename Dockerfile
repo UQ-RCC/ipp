@@ -1,4 +1,4 @@
-FROM alpine:3.12.3 as builder
+FROM alpine:3.14.10 as builder
 WORKDIR /app
 
 RUN apk update
