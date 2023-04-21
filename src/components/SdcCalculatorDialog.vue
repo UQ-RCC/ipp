@@ -52,8 +52,7 @@
                                         label="Auxillary Magnification" 
                                         v-model="spinningDisc.auxmagnification"
                                         required 
-                                        @change="getObjMag"
-                                        
+                                       
                                         >
                                     </v-select>
                                 </v-col>
@@ -129,7 +128,6 @@
                             <v-row align="center" justify="center">
                                 <v-col cols="3" sm="4" md="6">        
                                     <v-text-field regular 
-                                        type="number" 
                                         label="B.P. Pinhole Radius (nm)" 
                                         v-model="options.pinholeRadius"
                                         readonly>
@@ -137,7 +135,6 @@
                                 </v-col>
                                 <v-col cols="3" sm="4" md="6" >        
                                     <v-text-field regular 
-                                        type="number" 
                                         label="B.P. Pinhole Spacing (nm)" 
                                         v-model="options.pinholeSpacingnm"
                                         readonly>
@@ -277,7 +274,7 @@
             settings: pcSettings.spinningDisk,
             illuminationType : null,
             isSoRa: false,
-            auxmag: [ 2.8, 4 ],
+            auxmag: [ 1,2.8, 3.2, 4 ],
             modelId:0,
             options:{
                 pinholeRadius: 0,
@@ -361,7 +358,7 @@
                 this.valueChange()
 
             },
-            getObjMag () {
+            /* getObjMag () {
                 if(this.spinningDisc.auxmagnification === 2.8) {
                     this.spinningDisc.objmagnification = 60
                 }
@@ -369,7 +366,7 @@
                     this.spinningDisc.objmagnification = 100
                 }
                 this.valueChange()
-            },
+            }, */
             open(illuminationType) {
                 this.dialog = true;
                 this.illuminationType = illuminationType;

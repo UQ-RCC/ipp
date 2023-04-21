@@ -129,7 +129,6 @@
                         <v-row align="center" justify="center">    
                             <v-col cols="6" sm="6" md="8">        
                                 <v-text-field regular 
-                                    type="number" 
                                     label="B.P. Pinhole Radius (nm)" 
                                     v-model="options.pinholeRadius"
                                     readonly>
