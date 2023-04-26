@@ -52,6 +52,7 @@
                                         label="Auxillary Magnification" 
                                         v-model="spinningDisc.auxmagnification"
                                         required 
+                                        @change="valueChange" 
                                        
                                         >
                                     </v-select>
