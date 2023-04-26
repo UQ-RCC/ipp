@@ -394,7 +394,7 @@
                         this.btnshow =false
                     }else {
                         // follow: https://svi.nl/PinholeRadius
-                        this.options.pinholeRadius =  this.spinningDisc.pinholesize / (this.spinningDisc.objmagnification * this.spinningDisc.sysmagnification * this.spinningDisc.auxmagnification) / 2 * 1000                           
+                        this.options.pinholeRadius =  (this.spinningDisc.pinholesize * this.spinningDisc.shapefactor) / (this.spinningDisc.objmagnification * this.spinningDisc.sysmagnification * this.spinningDisc.auxmagnification)                           
                         this.options.pinholeRadius = series.roundToTwo(this.options.pinholeRadius)
                         this.options.pinholeSpacingnm = (this.spinningDisc.pinholespacing / (this.spinningDisc.objmagnification * this.spinningDisc.sysmagnification * this.spinningDisc.auxmagnification) * 1000)
                         this.options.pinholeSpacingnm = series.roundToTwo(this.options.pinholeSpacingnm)
