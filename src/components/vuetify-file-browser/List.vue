@@ -184,7 +184,7 @@
                         </v-list-item-action>
                         
                         <v-list-item-avatar class="ma-0">
-                            <v-icon>{{ icons[item.extension.toLowerCase()] || icons['other'] }}</v-icon>
+                            <v-icon :style ="{color:iconColor(item)}">{{ icons[item.extension.toLowerCase()] || icons['other'] }}</v-icon>
                         </v-list-item-avatar>
 
                         <v-list-item-content class="py-2">
@@ -354,6 +354,47 @@ export default {
             this.maxSize = 0
             this.$emit("selected-items-changed", this.selectedItems)
         },
+        parse_size(file_size){
+            let size = file_size.trim()
+            if (size.endsWith("K")){
+                size = (size.split("K")[0])*2**10
+            }else if (size.endsWith("M")){
+                size = (size.split("M")[0])*2**20
+            }else if (size.endsWith("G")){
+                size = (size.split("G")[0])*2**30
+            }else if (size.endsWith("T")){
+                size = (size.split("T")[0])*2**40
+            }
+            console.log(size)
+            return size
+        },
+
+        iconColor(item){
+            let color
+            
+            if (item.path.startsWith("/afm03") || item.path.startsWith("/afm03")) {
+                let blocks = this.parse_size(item.blocks)
+                console.log(item)
+                console.log(blocks)
+                let size = this.parse_size(item.size)
+                console.log(size)
+                if (blocks > 0 && blocks < this.parse_size("16K")) {
+                    blocks = this.parse_size("16K")
+                }
+                console.log(blocks)
+                if(blocks >= size ) {
+                    color = "#000"
+                }else if (blocks > 0 && blocks < size) {
+                    color = "#fb8c00"
+                }else if (blocks == 0){
+                    color = "#db0707e8"
+                }
+            }else {
+                color = "grey"
+            }
+            return color
+
+        },
 
         changeFilterType(fType) {
             this.filterType = fType
@@ -400,7 +441,7 @@ export default {
             if (this.isDir) {
                 try{
                     let response = await FilesAPI.list(this.path)
-                    // console.log(response)
+                    console.log(response)
                     this.total_files = 0
                     this.total_folders = 0
                     this.items = response.commandResult.map(responseItem => {
@@ -534,6 +575,21 @@ export default {
                 if(item.selected && !_found)
                     this.selectedItems.push(item)
             }
+            if (this.iconColor(item)=="#db0707e8") {
+                Vue.notify({
+                    group: 'sysnotif',
+                    type: 'warn',
+                    title: 'File Cache Status',
+                    text: 'File is not available in cache, there may be recall delay acessing this file!'
+                });
+            }else if (this.iconColor(item) == "#fb8c00"){
+                Vue.notify({
+                    group: 'sysnotif',
+                    type: 'warn',
+                    title: 'File Cache Status',
+                    text: 'File is being recalled!'
+                });
+            }
             this.$emit("selected-items-changed", this.selectedItems);
         },
         // select all items
@@ -574,6 +630,7 @@ export default {
                     }
                 } 
             })
+            console.log(this.filteredItems)
             // emit maxsize changed
             console.log("maxsize:" + this.maxSize + " filteredItem size:" + this.filteredItems.length)
             this.$emit("maxsize-changed", this.maxSize)
@@ -582,6 +639,7 @@ export default {
             this.pagelength = Math.ceil(this.filteredItems.length / this.itemsperpage)        
             this.displayItems = this.filteredItems.slice((this.pageindex - 1) * this.itemsperpage, 
                                                 this.pageindex * this.itemsperpage)
+            console.log(this.displayItems)
         },
 
         pageIndexChanged(num){
