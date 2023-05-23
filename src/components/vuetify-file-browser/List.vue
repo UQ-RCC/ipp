@@ -189,7 +189,7 @@
 
                         <v-list-item-content class="py-2">
                             <v-list-item-title v-text="item.basename"></v-list-item-title>
-                            <v-list-item-subtitle>{{ item.size }}</v-list-item-subtitle>
+                            <v-list-item-subtitle>{{ item.size }} ({{cacheStatus(item)}})</v-list-item-subtitle>
                         </v-list-item-content>
 
                         <!-- <v-list-item-action> -->
@@ -374,25 +374,34 @@ export default {
             
             if (item.path.startsWith("/afm03") || item.path.startsWith("/afm03")) {
                 let blocks = this.parse_size(item.blocks)
-                console.log(item)
-                console.log(blocks)
                 let size = this.parse_size(item.size)
-                console.log(size)
                 if (blocks > 0 && blocks < this.parse_size("16K")) {
                     blocks = this.parse_size("16K")
                 }
-                console.log(blocks)
-                if(blocks >= size ) {
+                if(blocks >= size ) { //file on the disk
                     color = "#000"
-                }else if (blocks > 0 && blocks < size) {
+                }else if (blocks > 0 && blocks < size) { // being recalled
                     color = "#fb8c00"
-                }else if (blocks == 0){
+                }else if (blocks == 0){ //not in cache
                     color = "#db0707e8"
                 }
             }else {
                 color = "grey"
             }
             return color
+
+        },
+
+        cacheStatus(item) {
+            let status
+            if(this.iconColor(item) == "#000") {
+                status = "Available"
+            }else if (this.iconColor(item) == "#fb8c00"){
+                status = "Recalling"
+            }else if (this.iconColor(item) == "#db0707e8"){
+                status = "Not cached"
+            }
+            return status
 
         },
 
