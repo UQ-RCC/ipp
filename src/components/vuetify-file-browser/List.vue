@@ -189,7 +189,7 @@
 
                         <v-list-item-content class="py-2">
                             <v-list-item-title v-text="item.basename"></v-list-item-title>
-                            <v-list-item-subtitle>{{ item.size }} ({{cacheStatus(item)}})</v-list-item-subtitle>
+                            <v-list-item-subtitle>{{ item.size }} {{cacheStatus(item)}}</v-list-item-subtitle>
                         </v-list-item-content>
 
                         <!-- <v-list-item-action> -->
@@ -395,11 +395,11 @@ export default {
         cacheStatus(item) {
             let status
             if(this.iconColor(item) == "#000") {
-                status = "Available"
+                status = "(Available)"
             }else if (this.iconColor(item) == "#fb8c00"){
-                status = "Recalling"
+                status = "(Recalling)"
             }else if (this.iconColor(item) == "#db0707e8"){
-                status = "Not cached"
+                status = "(Not cached)"
             }
             return status
 

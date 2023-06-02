@@ -502,6 +502,8 @@
                     this.display_decon(item)    
                 }
             })
+            console.log(this.loaded)
+            console.log(this.selected)
             
         },
         methods: {
@@ -759,6 +761,7 @@
              */
             removeCurrentlySelected(){
                 Vue.$log.info("Removing currently seleced item")
+                console.log(this.selected)
                 this.selected.forEach(item => {
                     for(let i = 0; i < this.loaded.length; i++){
                         if(this.loaded[i].series.path === item.series.path){
@@ -767,7 +770,17 @@
                             PreferenceAPI.delete_decon(_deconid)
                         }
                     }
+                    if(this.outputpath) {
+                        for(let i = 0; i < this.outputpath.length; i++){
+                            if(this.outputpath[i].id === item.id) {
+                                console.log(this.outputpath[i].id)
+                                this.outputpath.splice(i,1)
+                                console.log(this.outputpath)
+                            }
+                        }
+                    } 
                 })
+                
                 this.selected = []
                 // load an empty one
                 this.workingItem = series.defaultDecon()
@@ -784,6 +797,7 @@
                 }
                 this.loaded = []
                 this.selected = []
+                this.outputpath = []
                 this.workingItem = series.defaultDecon()
                 this.display_decon(this.workingItem, false)
             },
@@ -801,6 +815,7 @@
                     return _job.id
                 })
                 
+                console.log(item)
                 try{
                     await DeconvolutionAPI.execute_microvolution(item.setting.outputPath, _numberOfJobs, 
                                     item.setting.mem, item.setting.gpus, item, _jobIds, false)
@@ -812,6 +827,7 @@
                         closeOnClick: true,
                         duration: 5000,
                     })
+                    
                 }
                 catch(err) {
                     Vue.$log.error("-----error submittin-----------")
@@ -1055,11 +1071,15 @@
                 this.workingItem.step = parseInt(this.workingItem.step)
                 
                 if(this.workingItem.step === 1) {
+                    console.log("this working item wen series")
+                    console.log(this.workingItem)
+                    console.log(this.outputpath)
                     let item ={}
                     item.id = this.workingItem.id
                     item.outputpath = this.workingItem.setting.outputPath
                     if(this.outputpath.length === 0) {
-                       this.outputpath.push(item)
+                        this.outputpath.push(item)
+                        console.log(this.outputpath)
                     }else{
                         let flag = false
                         let tempID = -1
@@ -1073,10 +1093,12 @@
                                     closeOnClick: true
                                 })
                                 flag = true
+                                console.log(this.outputpath)
                                 return
                             }else {
                                 if(this.outputpath[i].id === this.workingItem.id){
                                     tempID = i
+                                    console.log(this.outputpath)
                                 }
                                
                                 
@@ -1087,8 +1109,10 @@
                             console.log(this.outputpath)
 
                             if(tempID === -1){
+                                console.log(this.outputpath)
                                 this.outputpath.push(item)
                             } else {
+                                console.log(this.outputpath)
                                 this.outputpath[tempID].outputpath = this.workingItem.setting.outputPath
                                
                             }
