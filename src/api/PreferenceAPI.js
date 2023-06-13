@@ -285,6 +285,30 @@ export default {
     const { data } = await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/particlecounting/${pcid}`, payload)
     return data
   },
-    
+
+  //macro scripts
+
+  async get_macro(){
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/macro`)
+    return data
+  },
+
+  async create_new_macro(payload){
+    const { data } = await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/macro`, payload)
+    return data
+  },
+
+  async update_macro(macro_id, payload){
+    const { data } = await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/macro/${macro_id}`, payload)
+    return data
+  },
+
+  async get_macro_job(macro_id, sendemail){
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/macro/${macro_id}/job?sendemail=${sendemail}`)
+    return data
+  },
+
+ 
+  
 }
   

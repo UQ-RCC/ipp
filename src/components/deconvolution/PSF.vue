@@ -23,20 +23,9 @@
                         >
                     </v-select>
                 </v-col>
+                
                 <v-row v-if="serie.psfModel!==0">
-                    <v-col cols="10" sm="3" md="4">
-                        <v-text-field 
-                            v-model="serie.ns"
-                            @change="nsChanged"
-                            regular 
-                            label="Sample medium refractive index" 
-                            type="number"
-                            :rules="[rules.positive]">
-                        </v-text-field>
-                    </v-col>
-
-                    
-                    <v-col cols="10" sm="3" md="4">
+                    <v-col cols="10" sm="3" md="4" style="padding-top: 25px;">
                         <v-select
                             :items="mediumRIOptions"
                             v-model="serie.mediumRIOption"
@@ -48,7 +37,16 @@
                             >
                         </v-select>
                     </v-col>
-
+                    <v-col cols="10" sm="3" md="4">
+                        <v-text-field 
+                            v-model="serie.ns"
+                            @change="nsChanged"
+                            regular 
+                            label="Sample medium refractive index" 
+                            type="number"
+                            :rules="[rules.positive]">
+                        </v-text-field>
+                    </v-col>
                 </v-row>
                 
             </v-row>
@@ -74,7 +72,7 @@
                         type="number">
                     </v-text-field>
                 </v-col>
-                <v-col cols="10" sm="3" md="4">
+                <v-col cols="10" sm="3" md="4" style="padding-top: 25px;">
                     <v-select
                         :items="objectiveRIOptions"
                         v-model="serie.objectiveRIOption"

@@ -12,7 +12,11 @@
         "wiener": "https://wwi-test.qbi.uq.edu.au/devwienerbackend"
       },
       "signoutUrl": "https://uq-rcc.github.io/ipp/",
-      "loginHost": "wiener.hpc.dc.uq.edu.au"
+      "loginHost": "wiener.hpc.dc.uq.edu.au",
+      "github": {
+        "baseURL": "https://api.github.com/",
+        "AuthToken": "Bearer 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"
+    }
   },
   "production": {
       "keycloak": {
@@ -27,6 +31,11 @@
         "wiener": "https://wwi-test.qbi.uq.edu.au/devwienerbackend"
       },
       "signoutUrl": "https://uq-rcc.github.io/ipp/",
-      "loginHost": "wiener.hpc.dc.uq.edu.au"
+      "loginHost": "wiener.hpc.dc.uq.edu.au",
+      "github": {
+        "baseURL": "https://api.github.com/",
+        "AuthToken": "Bearer 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"
+    }
   }
+  
 }

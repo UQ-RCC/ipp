@@ -1,0 +1,14 @@
+[{
+    "id": 1,
+    "fileName" : "Z_Projection.ijm",
+    "ippLongName": "Batch Maximum Intensity Z-Projection",
+    "description": "Blank ImageJ Macro Script that loops through files in a directory"
+},
+{
+    "id": 2,
+    "fileName" : "test.ijm",
+    "ippLongName": "Testing",
+    "description": "Blank ImageJ Macro Script that loops through files in a directory.Testing"
+
+}
+]

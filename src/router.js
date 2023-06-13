@@ -7,6 +7,7 @@ import Converter from './views/Converter.vue'
 import Deconvolution from './views/Deconvolution.vue'
 import Jobshistory from './views/Jobshistory.vue'
 import Admin from './views/Admin.vue'
+import Macros from './views/Macros.vue'
 // import Release from './views/Release.vue'
 import Particlecounting from './views/Particlecounting.vue'
 import Desktop from './views/Desktop.vue'
@@ -72,6 +73,11 @@ export default new Router({
             path: '/desktop',
             name: 'Desktop',
             component: Desktop
+        },
+        {
+            path: '/macros',
+            name: 'Macros',
+            component: Macros
         },
         { path: '*', redirect: '/home' }  
     ]

@@ -29,6 +29,7 @@ export default {
     await request.delete(`${Vue.prototype.$Config.endpoints.pref}/preferences/templates/${templateid}`)
   },
 
+  //pinhole calculator 
   // list local settings
   async list_settings(illuminationType, isglobal) {
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/pinholeCalcSettings/${illuminationType}/${isglobal}`)

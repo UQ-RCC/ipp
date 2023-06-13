@@ -1,0 +1,158 @@
+$default    :   #C5C5C5;
+$green-1    :   #6590cc;
+$transiton  :   all 500ms ease;
+
+.wrapper-stepper{
+    background-color: #fff;
+    padding: 60px;
+    border-radius: 32px;
+    box-shadow: rgba($color: #000000, $alpha: 0.09);
+}
+
+.stepper{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 660px;
+    position: relative;
+    z-index: 0;
+    margin-bottom: 24px;
+
+    &-progress{
+        position: absolute;
+        background-color: $default;
+        height: 2px;
+        z-index: -1;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+
+        &-bar{
+            position: absolute;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background-color: $green-1;
+            transition: $transiton;
+        }
+    }
+}
+
+.stepper-item{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: $default;
+    transition: $transiton;
+
+    &-counter{
+        height: 68px;
+        width: 68px;
+        display: grid;
+        place-items: center;
+        background-color: #fff;
+        border-radius: 100%;
+        border: 2px solid $default;
+        position: relative;
+
+        .icon-success{
+            position: absolute;
+            opacity: 0;
+            transform: scale(0);
+            width: 24px;
+            transition: $transiton;
+        }
+
+        .number{
+            font-size: 22px;
+            transition: $transiton;
+        }
+    }
+
+    &-title{
+        position: absolute;
+        font-size: 14px;
+        bottom: -24px;
+    }
+}
+
+.stepper-item.success{
+    .stepper-item-counter{
+        
+        background-color: #ffffff;
+        color: #fff;
+        font-weight: 600;
+
+        .icon-success{
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .number{
+            opacity: 0;
+            transform: scale(0);
+        }
+    }
+
+    .stepper-item-title{
+        color: $green-1;
+    }
+}
+
+
+
+.stepper-item.current{
+    .stepper-item-counter{
+        border-color: $green-1;
+        background-color: $green-1;
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .stepper-item-title{
+        color: #818181;
+    }
+}
+
+.stepper-pane{
+    color: #333;
+    text-align: center;
+    padding: 120px 60px;
+    box-shadow: 0 8px 12px rgba($color: #000000, $alpha: 0.09);
+    margin: 40px 0;
+}
+
+.controls{
+    display: flex;
+}
+
+.btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 16px;
+    border: 1px solid;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    line-height: 1.5;
+    transition: all 150ms;
+    border-radius: 4px;
+    width: fit-content;
+    font-size: 0.75rem;
+    color: #333;
+    background-color: #f0f0f0;
+    border-color: #f0f0f0;
+
+    &:disabled{
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    &--green-1{
+        background-color: $green-1;
+        border-color: $green-1;
+        color: #fff;
+        margin-left: auto;
+    }
+}
