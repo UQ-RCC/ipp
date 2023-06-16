@@ -98,7 +98,7 @@
                 <v-stepper v-model="curr" color="green" style="height: 600px">
                     <v-stepper-header>
                         <v-stepper-step v-for="(step, n) in steps" :key="n" :complete="stepComplete(n + 1)" :step="n + 1"
-                            :color="stepStatus(n + 1)" editable>
+                            :color="stepStatus(n + 1)" :editable="checkStepVisibility(n + 1)" >
                             {{ step.name }}
                         </v-stepper-step>
                     </v-stepper-header>
@@ -108,12 +108,12 @@
                                 <v-row class="pa-4" color="text-h2 text-center">
                                     <v-select :items="ippModels" v-model="workingItem.macroType" item-text="ippLongName"
                                         item-value="id" label="Choose your macro:" @change="getMacro" outlined
-                                        dense></v-select>
+                                        dense :rules="[rules.required]"></v-select>
                                 </v-row>
                                 <v-row>
                                     <v-col cols="12" sm="8" md="12">
                                         <v-card class="macro-info-card mb-12 pa-4" color="text-h2 text-center">
-                                            <v-tabs @change="tabChanged" fixed-tabs>
+                                            <v-tabs fixed-tabs>
                                                 <v-tab>Description</v-tab>
                                                 <v-tab>Inputs</v-tab>
                                                 <v-tab>Code <v-btn class="ms-15" icon @click="openGIT(url)">
@@ -188,7 +188,7 @@
                                                 <template v-slot:activator="{ on, attrs }">
                                                     <v-text-field dense outlined v-bind="attrs" v-on="on"
                                                         :label="`${input.input[0].toUpperCase() + input.input.substring(1)}`"
-                                                        :hint="`${input.dataType}`" v-model="params[input.input]">
+                                                        :hint="`${input.dataType}`" v-model="params[input.input]" :rules="[rules.required]">
                                                     </v-text-field>
                                                 </template>
                                                 <span>Enter {{ input.dataType }} value</span>
@@ -353,9 +353,9 @@ export default {
             curr: 1,
             lastStep: 3,
             steps: [
-                { name: "Files & Macros", rules: [v => !!v || "Required."], valid: true, component: "<deconvolution-metadata ref=\"deconmetadata\"/>" },
-                { name: "Input Parameters", rules: [v => !!v || "Required."], valid: true, component: "<deconvolution-metadata ref=\"deconmetadata\"/>" },
-                { name: "Devices", rules: [v => !!v || "Required."], valid: true, component: "<deconvolution-metadata ref=\"deconmetadata\"/>" },
+                { name: "Files & Macros" , rules: [v => !!v || "Select a macro file."], valid: true},
+                { name: "Input Parameters", rules: [v => !!v || "Required."], valid: true },
+                { name: "Devices", rules: [v => !!v || "Required."], valid: true },
                 { name: "Review" },
 
             ],
@@ -370,7 +370,14 @@ export default {
             github: '',
             inputArr: [],
             params: {},
-            download_url: ''
+            download_url: '',
+            rules: {
+                    required : value => !!value || "The input is required",
+                    positiveNumber: value => value > 0 || 'Must be zero or greater',
+                    positiveInteger: value => value && value >= 0 && Number.isInteger(parseFloat(value)) || 'Must be a positive integer',
+                   
+                },
+            visitedSteps: [],
 
 
 
@@ -428,6 +435,7 @@ export default {
 
     },
     methods: {
+        
         async chooseOutputFolder() {
             let options = await this.$refs.filedialog.open('selectfolder', 'Preprocessing', '/')
             if (!options.cancelled && options.path) {
@@ -454,33 +462,67 @@ export default {
             window.open(url, '_blank')
         },
         async nextStep() {
-            this.curr = this.curr + 1
+            console.log(this.curr)
 
-            if (this.curr == 2) {
-                if (this.inputArr.length > 0) {
-                    console.log(this.inputArr)
-                    for (let i = 0; i < this.inputArr.length; i++) {
-                        if (this.inputArr[i].input === 'input') {
-                            this.params.input = this.selected[0].path
-                        }
-                        if (this.inputArr[i].input === 'output') {
-                            this.params.output = this.dbinfo.outputPath
-                        }
+            if (this.curr === 1) {
+                
+                if (!this.workingItem.macroType) {
+                    Vue.notify({
+                                    group: 'errornotif',
+                                    type: 'error',
+                                    title: 'Input Error',
+                                    text: "Please select a macro file to proceed",
+                                    closeOnClick: true
+                                })
+                    return
+                } else{
+                    
+                    
 
+                    if (this.inputArr.length > 0) {
+                        console.log(this.inputArr)
+                        for (let i = 0; i < this.inputArr.length; i++) {
+                            if (this.inputArr[i].input === 'input') {
+                                this.params.input = this.selected[0].path
+                            }
+                            if (this.inputArr[i].input === 'output') {
+                                this.params.output = this.dbinfo.outputPath
+                            }
+    
+                        }
                     }
-                }
-                console.log( this.dbinfo.outputPath)
-                //this.downloadMacroFile(this.download_url)
-                this.copyMacroFile(this.dbinfo.outputPath)
+                    
+                    this.copyMacroFile(this.dbinfo.outputPath)
+                    
+                } 
+                console.log(this.visitedSteps)
+                console.log(this.curr)
                 
             }
-            if (this.curr == 3) {
-                this.dbinfo = await PreferenceAPI.get_macro()
-                console.log(this.dbinfo)
+            if (this.curr === 2) {
+                console.log(Object.keys(this.params).length)
+                console.log(this.inputArr.length)
+                if (Object.keys(this.params).length !== this.inputArr.length) {
+                    Vue.notify({
+                                    group: 'errornotif',
+                                    type: 'error',
+                                    title: 'Input Error',
+                                    text: "Please input values for all the parameters",
+                                    closeOnClick: true
+                                })
+                    return
 
-                this.workingItem.params = this.params
+                } else {
+                    
+                    this.dbinfo = await PreferenceAPI.get_macro()
+                    console.log(this.curr)
+                    this.workingItem.params = this.params
+                    
+                }
+
             }
-            if (this.curr == 4) {
+            if (this.curr === 3) {
+                //this.visitedSteps.push(step)
                 let _component = this.$refs.decondevices
                 if (_component) {
                     let device = _component.get_serie()
@@ -489,26 +531,18 @@ export default {
                     this.workingItem.gpus = device.gpus
 
                 }
-                /* this.workingItem.instances = this.serie.instances
-                this.workingItem.mem = this.serie.mem
-                this.workingItem.gpus = this.serie.gpus */
-                console.log(this.workingItem)
+                
 
             }
+            if(this.visitedSteps.indexOf(this.curr) < 0)
+                this.visitedSteps.push(this.curr)
+            this.curr = this.curr + 1
             this.saveToDb()
         },
         previousStep() {
             this.curr = this.curr - 1
         },
-        tabChanged(number) {
-            this.tab = number
-            console.log(this.tab)
-
-
-            console.log(this.selected)
-            console.log(this.params)
-            //this.valueChange()
-        },
+        
 
         async getMacro() {
             let scriptLines = []
@@ -617,6 +651,12 @@ export default {
                 // continue to next
                 this.curr = n + 2
             }
+        },
+        checkStepVisibility(step) {
+            if (this.visitedSteps.indexOf(step)  >= 0)
+                return true
+            else
+                return false
         },
         done() {
             this.curr = 5

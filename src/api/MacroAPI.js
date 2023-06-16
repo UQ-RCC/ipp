@@ -5,7 +5,7 @@ export default {
 
     // execute
     async execute_macro_script(output, instances, mem, devices,macroinfo ) {
-        let _requestUrl =`${Vue.prototype.$Config.endpoints.wiener}/api/execute/executemacroscriptbase64`
+        let _requestUrl =`${Vue.prototype.$Config.endpoints.wiener}/api/execute/executeMacroBase64`
         console.log(_requestUrl)
         let arrayMax = parseInt(instances) - 1
         let endpoint = `${Vue.prototype.$Config.endpoints.pref}`

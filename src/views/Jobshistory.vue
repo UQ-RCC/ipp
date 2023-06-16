@@ -123,7 +123,7 @@
                             found = true
                     })
                     if (!found) {
-                        if (remoteJob.jobName.includes('ipp_decon') || remoteJob.jobName.includes('ipp_convert') || remoteJob.jobName.includes('ipp_preprocess'))
+                        if (remoteJob.jobName.includes('ipp_decon') || remoteJob.jobName.includes('ipp_convert') || remoteJob.jobName.includes('ipp_preprocess') || remoteJob.jobName.includes('ipp_macro'))
                             console.log("Not added, ipp job")
                         else
                             this.jobs.push({'jobid': remoteJob.jobid,
