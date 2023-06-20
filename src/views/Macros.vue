@@ -188,7 +188,7 @@
                                                 <template v-slot:activator="{ on, attrs }">
                                                     <v-text-field dense outlined v-bind="attrs" v-on="on"
                                                         :label="`${input.input[0].toUpperCase() + input.input.substring(1)}`"
-                                                        :hint="`${input.dataType}`" v-model="params[input.input]" :rules="[rules.required]">
+                                                        :hint="`${input.dataType}`" v-model="params[input.input]" :rules="[rules.required]" @keyup="validateInput(input.dataType,params[input.input])">
                                                     </v-text-field>
                                                 </template>
                                                 <span>Enter {{ input.dataType }} value</span>
@@ -201,7 +201,7 @@
 
                         </v-stepper-content>
                         <v-stepper-content step="3">
-                            <deconvolution-devices ref="decondevices" />
+                            <deconvolution-devices ref="decondevices" :readonly="true" />
                         </v-stepper-content>
                         <v-stepper-content step="4">
                             <v-card class="macro-info-card" color="text-h2 text-center">
@@ -375,7 +375,6 @@ export default {
                     required : value => !!value || "The input is required",
                     positiveNumber: value => value > 0 || 'Must be zero or greater',
                     positiveInteger: value => value && value >= 0 && Number.isInteger(parseFloat(value)) || 'Must be a positive integer',
-                   
                 },
             visitedSteps: [],
 
@@ -555,7 +554,7 @@ export default {
                 }
             }
 
-           await this.github.get("repos/ndasanayaka/TestMacro/contents/" + this.workingItem.fileName).then((response) => {
+           await this.github.get("/repos/UQ-RCC/ipp-repo/contents/macros/" + this.workingItem.fileName).then((response) => {
                
                 this.url = response.data.html_url
                 this.download_url = response.data.download_url
@@ -615,28 +614,7 @@ export default {
 
 
         },
-       /*  downloadMacroFile(fileUrl) {
-            axios({
-                url: fileUrl,
-                method: 'GET',
-                responseType: 'blob',
-                headers: {
-                    'Authorization': Vue.prototype.$Config.github.AuthToken,
-                }
-
-            }).then((res) => {
-
-                console.log(res)
-                let FILE = window.URL.createObjectURL(new Blob([res.data]));
-
-                let docUrl = document.createElement('x');
-                docUrl.href = FILE;
-                docUrl.setAttribute('download', 'file.pdf');
-                document.body.appendChild(docUrl);
-                docUrl.click(); 
-            });
-
-        }, */
+       
         stepComplete(step) {
             return this.curr > step
         },
@@ -651,6 +629,25 @@ export default {
                 // continue to next
                 this.curr = n + 2
             }
+        },
+        validateInput(dataType, input){
+            let dt= 'String'
+            const format = /[`!@#$%^&*'()_+\-=\\|,<>?~]/;
+            if(dataType.toUpperCase === dt.toUpperCase) {
+                if (format.test(input)) {
+                    Vue.notify({
+                                    group: 'errornotif',
+                                    type: 'error',
+                                    title: 'Input Error',
+                                    text: "Special characters are not allowed",
+                                    closeOnClick: true
+                                })
+                    return
+
+                }
+            }
+
+
         },
         checkStepVisibility(step) {
             if (this.visitedSteps.indexOf(step)  >= 0)
