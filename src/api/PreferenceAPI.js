@@ -303,11 +303,11 @@ export default {
     return data
   },
 
-  async get_macro_job(macro_id, sendemail){
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/macro/${macro_id}/job?sendemail=${sendemail}`)
+  async create_macro_job(macro_id, sendemail){
+    const { data } = await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/macro/jobs?macro_id=${macro_id}&sendemail=${sendemail}`)
     return data
   },
-
+ 
  
   
 }

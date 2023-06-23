@@ -321,7 +321,7 @@ import FileBrowserDialog from '@/components/FileBrowserDialog.vue'
 //api
 import PreferenceAPI from "@/api/PreferenceAPI"
 import axios from 'axios'
-import macro from '@/utils/macroDefs'
+//import macro from '@/utils/macroDefs'
 import DeconvolutionDevices from '@/components/deconvolution/Devices.vue'
 
 import MacroAPI from "@/api/MacroAPI.js"
@@ -361,7 +361,7 @@ export default {
             ],
             valid: false,
             stepForm: [],
-            macros: macro,
+            macros: {},
             workingItem: {},
             tab: null,
             description: '',
@@ -393,6 +393,11 @@ export default {
             }
         })
         this.github = GitHubClient
+        const response = await  this.github.get("repos/UQ-RCC/ipp-repo/contents/macros/macroDefs.json")
+        if(response.data) {
+            const macrodef = JSON.parse(atob(response.data.content))
+            this.macros = macrodef
+        }
         /*  const response = await GitHubClient.get("repos/ndasanayaka/TestMacro/contents")
          console.log(response)
          let macros_files = []
@@ -462,6 +467,7 @@ export default {
         },
         async nextStep() {
             console.log(this.curr)
+            console.log(this.inputArr)
 
             if (this.curr === 1) {
                 
@@ -475,11 +481,9 @@ export default {
                                 })
                     return
                 } else{
-                    
-                    
-
-                    if (this.inputArr.length > 0) {
+                        if (this.inputArr.length > 0) {
                         console.log(this.inputArr)
+                        console.log(this.dbinfo)
                         for (let i = 0; i < this.inputArr.length; i++) {
                             if (this.inputArr[i].input === 'input') {
                                 this.params.input = this.selected[0].path
@@ -544,7 +548,9 @@ export default {
         
 
         async getMacro() {
+            console.log(this.inputArr)
             let scriptLines = []
+            let input_params = []
             console.log(this.workingItem.macroType)
             for (let i = 0; i < this.macros.length; i++) {
                 if (this.workingItem.macroType === this.macros[i].id) {
@@ -568,7 +574,8 @@ export default {
                         let params = []
                         params.dataType = arr[0].replace("#@", "").trim()
                         params.input = arr[1]
-                        this.inputArr.push(params)
+                        //this.inputArr.push(params)
+                        input_params.push(params)
                     }
                     if (lines[i] !== "") {
                         scriptLines.push(lines[i])
@@ -577,6 +584,7 @@ export default {
 
                 }
                 this.code = scriptLines
+                this.inputArr = input_params
             });
 
 
@@ -838,7 +846,7 @@ export default {
         async submitSelected() {
             this.saveToDb()
             //create job:
-            let _job = await PreferenceAPI.get_macro_job(this.dbinfo.id, this.emailNeeded)
+            let _job = await PreferenceAPI.create_macro_job(this.dbinfo.id, this.emailNeeded)
             let args = this.dbinfo.inputs.params
             let files = this.dbinfo.inputPaths
             let keys = Object.keys(args)
