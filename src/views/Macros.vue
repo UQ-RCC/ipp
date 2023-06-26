@@ -62,7 +62,7 @@
                 <v-row class="ml-2 mr-2">
                     <!--  <v-col cols="12"  sm="12" md="4" lg="4" xl="4"> -->
 
-                    <v-text-field label="Output Base Path" hide-details="auto" v-model="outputBasePath"></v-text-field>
+                    <v-text-field label="Output Base Path" hide-details="auto" v-model="outputBasePath" @change="valueChange()"></v-text-field>
                     <!-- </v-col> -->
 
                 </v-row>
@@ -70,7 +70,7 @@
                 <v-row class="ml-2 mr-2">
 
 
-                    <v-text-field label="Output Folder Name" hide-details="auto" v-model="outputFolderName"></v-text-field>
+                    <v-text-field label="Output Folder Name" hide-details="auto" v-model="outputFolderName" @change="valueChange()" ></v-text-field>
 
                 </v-row>
                 <v-row>
@@ -201,7 +201,71 @@
 
                         </v-stepper-content>
                         <v-stepper-content step="3">
-                            <deconvolution-devices ref="decondevices" :readonly="true" />
+                            <!-- <deconvolution-devices ref="decondevices" :readonly="true" /> -->
+                            <v-card class=" macro-info-card scroll-y" color="text-h2 text-center">
+                                <div>
+                                    <v-row align="center" justify="center">
+                                        <v-col align="center" justify="center">
+                                            <v-col cols="15" sm="3" md="4" style="padding-top:30px">
+                                                <v-tooltip right>
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-text-field 
+                                                            dense 
+                                                            outlined
+                                                            v-bind="attrs"
+                                                            v-on="on"
+                                                            type=number
+                                                            :rules="[rules.positiveInteger]"  
+                                                            label="Number of instances [nodes]" 
+                                                            v-model="workingItem.instances"
+                                                            readonly
+                                                        >
+                                                        </v-text-field>
+                                                    </template>
+                                                    <span>The number of instances of Microvolution to be executed</span>
+                                                </v-tooltip>
+                                            </v-col>
+                                            <v-col cols="15" sm="3" md="4">
+                                                <v-tooltip right>
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-text-field 
+                                                            dense 
+                                                            outlined
+                                                            v-bind="attrs"
+                                                            v-on="on"
+                                                            type=number
+                                                            :rules="[rules.positiveInteger]"  
+                                                            label="Memory per instance[node]" 
+                                                            v-model="workingItem.mem"
+                                                        >
+                                                        </v-text-field>
+                                                    </template>
+                                                    <span>The amount of memory (in Gbs) for each instance</span>
+                                                </v-tooltip>
+                                            </v-col>
+                                            <v-col cols="15" sm="3" md="4">
+                                                <v-tooltip right>
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-text-field 
+                                                            dense 
+                                                            outlined
+                                                            v-bind="attrs"
+                                                            v-on="on"
+                                                            type=number
+                                                            :rules="[rules.positiveInteger]"  
+                                                            label="Number of GPUs per instance[node]" 
+                                                            v-model="workingItem.gpus"
+                                                        >
+                                                        </v-text-field>
+                                                    </template>
+                                                    <span>The number of GPUs to be used for each instance</span>
+                                                </v-tooltip>
+                                            </v-col>
+                                        </v-col>
+                                    </v-row>
+
+                                </div>
+                            </v-card>
                         </v-stepper-content>
                         <v-stepper-content step="4">
                             <v-card class="macro-info-card" color="text-h2 text-center">
@@ -321,8 +385,9 @@ import FileBrowserDialog from '@/components/FileBrowserDialog.vue'
 //api
 import PreferenceAPI from "@/api/PreferenceAPI"
 import axios from 'axios'
+import DeconvolutionAPI from "@/api/DeconvolutionAPI.js"
 //import macro from '@/utils/macroDefs'
-import DeconvolutionDevices from '@/components/deconvolution/Devices.vue'
+//import DeconvolutionDevices from '@/components/deconvolution/Devices.vue'
 
 import MacroAPI from "@/api/MacroAPI.js"
 import miscs from '@/utils/miscs.js'
@@ -332,7 +397,7 @@ export default {
     name: 'Macros',
     components: {
         FileBrowserDialog,
-        DeconvolutionDevices,
+        //DeconvolutionDevices,
 
         //DeconvolutionMetadata
     },
@@ -377,6 +442,7 @@ export default {
                     positiveInteger: value => value && value >= 0 && Number.isInteger(parseFloat(value)) || 'Must be a positive integer',
                 },
             visitedSteps: [],
+            dateTime:"",
 
 
 
@@ -398,23 +464,7 @@ export default {
             const macrodef = JSON.parse(atob(response.data.content))
             this.macros = macrodef
         }
-        /*  const response = await GitHubClient.get("repos/ndasanayaka/TestMacro/contents")
-         console.log(response)
-         let macros_files = []
-             if(response.data) {
-                 for (let i=0; i < response.data.length; i++) {
-                     console.log(response.data[i].name)
-                     let name = response.data[i].name
-                     if(name.endsWith(".ijm")) {
-                         let arr = name.split(".")
-                         macros_files.push(arr[0])
-                         console.log(arr[0])
-                     }
-                     
-                 }
-                 //this.macros = macros_files
-                 console.log(this.macros)
-             } */
+        
     },
     computed: {
         username: function () {
@@ -430,12 +480,7 @@ export default {
             })
             return resultArray
         },
-        filterInputs() {
-            let metaData = ['description', 'fileName', 'macroType']
-            let inputReview = this.workingItem.filter(item => !metaData.includes(item))
-            console.log(inputReview)
-            return inputReview
-        }
+        
 
     },
     methods: {
@@ -466,8 +511,7 @@ export default {
             window.open(url, '_blank')
         },
         async nextStep() {
-            console.log(this.curr)
-            console.log(this.inputArr)
+            
 
             if (this.curr === 1) {
                 
@@ -482,29 +526,28 @@ export default {
                     return
                 } else{
                         if (this.inputArr.length > 0) {
-                        console.log(this.inputArr)
-                        console.log(this.dbinfo)
-                        for (let i = 0; i < this.inputArr.length; i++) {
-                            if (this.inputArr[i].input === 'input') {
-                                this.params.input = this.selected[0].path
-                            }
-                            if (this.inputArr[i].input === 'output') {
-                                this.params.output = this.dbinfo.outputPath
-                            }
+                            
+                            
+                            for (let i = 0; i < this.inputArr.length; i++) {
+                                if (this.inputArr[i].input === "input") {
+                               // this.params.input = this.selected[0].path
+                                    this.params.input = this.outputBasePath
+                                }
+                                if (this.inputArr[i].input === "output") {
+                                    if (this.outputBasePath && !this.outputBasePath.endsWith("/"))
+                                        this.outputBasePath = this.outputBasePath + "/"
+                                    this.params.output = this.outputBasePath + this.outputFolderName
+                                }
     
+                            }
                         }
-                    }
-                    
-                    this.copyMacroFile(this.dbinfo.outputPath)
                     
                 } 
-                console.log(this.visitedSteps)
-                console.log(this.curr)
+                
                 
             }
             if (this.curr === 2) {
-                console.log(Object.keys(this.params).length)
-                console.log(this.inputArr.length)
+                
                 if (Object.keys(this.params).length !== this.inputArr.length) {
                     Vue.notify({
                                     group: 'errornotif',
@@ -518,25 +561,44 @@ export default {
                 } else {
                     
                     this.dbinfo = await PreferenceAPI.get_macro()
-                    console.log(this.curr)
                     this.workingItem.params = this.params
+                    this.workingItem.instances = this.workingItem.instances ?? 1
+                    this.workingItem.mem = this.workingItem.mem ?? 100
+                    this.workingItem.gpus = this.workingItem.gpus ?? 1
                     
                 }
 
             }
             if (this.curr === 3) {
-                //this.visitedSteps.push(step)
-                let _component = this.$refs.decondevices
-                if (_component) {
-                    let device = _component.get_serie()
-                    this.workingItem.instances = device.instances
-                    this.workingItem.mem = device.mem
-                    this.workingItem.gpus = device.gpus
-
+                let msg 
+                let jobs = this.workingItem.instances
+                let mem = this.workingItem.mem
+                let gpus = this.workingItem.gpus
+                let response = await DeconvolutionAPI.validate_devices(jobs,mem,gpus)
+                let output = response.commandResult
+                if (output.length > 0) {
+                    let json_output =  JSON.parse(output[0].out)
+                    if(!json_output.results.success){
+                        let limit_test =  json_output.results.limits_test.success
+                        let slurm_test = json_output.results.slurm_test.success
+                        if (!limit_test && !slurm_test || !limit_test && slurm_test){
+                            msg = json_output.results.limits_test.msg
+                        }
+                        else if (limit_test && !slurm_test) {
+                            msg = json_output.results.slurm_test.msg
+                        }
+                        Vue.notify({
+                            group: 'errornotif',
+                            type: 'error',
+                            title: 'Device Selection Error',
+                            text: msg.charAt(0).toUpperCase() + msg.slice(1)
+                        })
+                        return 
+                    }
                 }
                 
 
-            }
+            } 
             if(this.visitedSteps.indexOf(this.curr) < 0)
                 this.visitedSteps.push(this.curr)
             this.curr = this.curr + 1
@@ -545,17 +607,24 @@ export default {
         previousStep() {
             this.curr = this.curr - 1
         },
+
+        valueChange() {
+            this.dbinfo.outputPath = this.outputBasePath + this.outputFolderName
+            this.params.output = this.dbinfo.outputPath
+            if(this.workingItem.params) {
+                this.workingItem.params.output = this.params.output
+            }
+           
+
+        },
         
 
         async getMacro() {
-            console.log(this.inputArr)
             let scriptLines = []
             let input_params = []
-            console.log(this.workingItem.macroType)
             for (let i = 0; i < this.macros.length; i++) {
                 if (this.workingItem.macroType === this.macros[i].id) {
                     this.workingItem.description = this.macros[i].description
-                    console.log(this.workingItem.description)
                     this.workingItem.fileName = this.macros[i].fileName
                 }
             }
@@ -640,7 +709,7 @@ export default {
         },
         validateInput(dataType, input){
             let dt= 'String'
-            const format = /[`!@#$%^&*'()_+\-=\\|,<>?~]/;
+            const format = /[`!@#$%^&*'()+=|,<>?~]/;
             if(dataType.toUpperCase === dt.toUpperCase) {
                 if (format.test(input)) {
                     Vue.notify({
@@ -756,10 +825,7 @@ export default {
                         return
                     }
                     paths.push({ 'path': _pathToBeLoaded, 'size': options.maxsize })
-                    /* if(options.maxsize > this.dbinfo.maxsize)
-                        this.dbinfo.maxsize = options.maxsize
-                      */
-                    //paths.push({'path':_pathToBeLoaded})
+                    
                 } else {
                     Vue.$log.debug("selecting files:")
                     Vue.$log.debug(options.selectedItems)
@@ -780,9 +846,7 @@ export default {
                                 })
                                 return
                             }
-                            /* if(itemSize > this.dbinfo.maxsize)
-                                this.dbinfo.maxsize = itemSize
-                             */
+                            
                             paths.push({ 'path': options.selectedItems[i].path, 'size': itemSize })
                         }
                     }
@@ -798,7 +862,7 @@ export default {
                 }
 
                 if (this.loaded.length === 0) {
-                    this.outputFolderName = "Macro_Output"
+                    this.outputFolderName = "Macro_Output_"+ this.dateTime
                     this.outputBasePath = paths[0].path.split("/").slice(0, -1).join("/")
                 }
                 this.loaded = this.loaded.concat(paths)
@@ -845,6 +909,11 @@ export default {
 
         async submitSelected() {
             this.saveToDb()
+            if(this.params.output !== this.dbinfo.outputPath ) {
+                this.dbinfo.outputPath = this.params.output
+
+            }
+            await this.copyMacroFile(this.dbinfo.outputPath)
             //create job:
             let _job = await PreferenceAPI.create_macro_job(this.dbinfo.id, this.emailNeeded)
             let args = this.dbinfo.inputs.params
@@ -865,9 +934,7 @@ export default {
             macroinfo.filepath = macrosfilepath
             macroinfo.files = files
             macroinfo.args = args
-            console.log(macroinfo)
-            console.log(btoa(JSON.stringify(macroinfo)))
-            console.log(JSON.stringify(macroinfo))
+            
        
             try{
                 await MacroAPI.execute_macro_script(this.dbinfo.outputPath, parseInt(this.dbinfo.instances), this.dbinfo.mem, this.dbinfo.gpus, macroinfo) 
@@ -894,6 +961,8 @@ export default {
                     })
                     
             } 
+            //window.location.reload();
+            this.$router.go(0)
         }
 
 
@@ -901,11 +970,15 @@ export default {
 
     },
     mounted: async function () {
+        let today = new Date();
+        let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+        let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        this.dateTime = date+'_'+time;
+                    
         // load from db
         try {
             //let convertpage = await PreferenceAPI.get_convertpage()
             this.dbinfo = await PreferenceAPI.get_macro()
-            console.log(this.dbinfo)
             if (!this.dbinfo) {
                 this.dbinfo = {}
                 this.selected = []
@@ -933,17 +1006,15 @@ export default {
             this.dbinfo.outputPath = ""
         var _pathParts = this.dbinfo.outputPath.split("/")
         this.outputBasePath = _pathParts.slice(0, -1).join("/")
-        this.outputFolderName = _pathParts.slice(-1)[0]
+        this.outputFolderName = "Macro_Output_"+ this.dateTime
+        
+
+       
 
 
 
     },
-    /*  updated: async function() {
-         console.log("in the updated hook")
-         this.dbinfo = await PreferenceAPI.get_macro()
-             
-         console.log(this.dbinfo)
-     } */
+    
 
 }
 </script>
