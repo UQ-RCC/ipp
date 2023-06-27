@@ -255,6 +255,7 @@
                                                             :rules="[rules.positiveInteger]"  
                                                             label="Number of GPUs per instance[node]" 
                                                             v-model="workingItem.gpus"
+                                                            readonly
                                                         >
                                                         </v-text-field>
                                                     </template>
