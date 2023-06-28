@@ -153,12 +153,33 @@
                 </v-list-item> -->
 
 
-                <v-list-item to="/admin" v-if="this.is_admin">
+                <!-- <v-list-item to="/admin" v-if="this.is_admin">
                     <v-list-item-icon>
                         <v-icon>mdi-account-supervisor</v-icon>
                     </v-list-item-icon>
                     <v-list-item-title class="ml-n5">Admin</v-list-item-title>
-                </v-list-item>
+                </v-list-item> -->
+
+                <v-list-group :value="true" no-action  v-if="this.is_admin">
+                    <template v-slot:activator>
+                        <v-list-item-icon>
+                            <v-icon>mdi-account-supervisor</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title class="ml-n5">Admin</v-list-item-title>
+                    </template>
+                    <v-list-item to="/adminJobs" >
+                        <v-list-item-icon>
+                            <v-icon>mdi-history</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title class="ml-n5">Job History</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item to="/metadata">
+                        <v-list-item-icon>
+                            <v-icon>mdi-database</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title class="ml-n5">Configuration</v-list-item-title>
+                    </v-list-item>
+                </v-list-group>
 
                 
                 <v-list-item href="https://uq-rcc.github.io/ipp-docs" target="_blank">

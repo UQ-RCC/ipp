@@ -6,7 +6,9 @@ import Preprocessing from './views/Preprocessing.vue'
 import Converter from './views/Converter.vue'
 import Deconvolution from './views/Deconvolution.vue'
 import Jobshistory from './views/Jobshistory.vue'
-import Admin from './views/Admin.vue'
+//import Admin from './views/Admin.vue'
+import AdminJobs from './views/AdminJobs.vue'
+import Metadata from './views/Metadata.vue'
 import Macros from './views/Macros.vue'
 // import Release from './views/Release.vue'
 import Particlecounting from './views/Particlecounting.vue'
@@ -54,10 +56,22 @@ export default new Router({
             name: 'Jobs',
             component: Jobshistory
         },
-        {
+        /* {
             path: '/admin',
             name: 'Admin',
             component: Admin
+        }, */ 
+        {
+            path: '/adminJobs',
+            name: 'AdminJobs',
+            component: AdminJobs
+
+        },
+        {
+            path: '/metadata',
+            name: 'Metadata',
+            component: Metadata
+
         },
         // {
         //     path: '/release',

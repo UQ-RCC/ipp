@@ -11,14 +11,7 @@ export default {
         let endpoint = `${Vue.prototype.$Config.endpoints.pref}`
         
         let apihost = /^(?:\w+:\/\/)?([^/]+)(.*)$/.exec(endpoint)[1]
-        console.log(macroinfo)
-        console.log(btoa(JSON.stringify(macroinfo)))
-        console.log(JSON.stringify(macroinfo))
-        console.log(output)
-        console.log(arrayMax)
-        console.log(apihost)
-        console.log(mem)
-        console.log(devices)
+        
         
         const { data } = await request.get(_requestUrl, {
             params: {
