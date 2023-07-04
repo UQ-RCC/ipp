@@ -143,8 +143,8 @@
                                                                     </thead>
                                                                     <tbody>
                                                                         <tr v-for="input in inputArr"
-                                                                            v-bind:key="input.input">
-                                                                            <td class="text-left">{{ input.input }} </td>
+                                                                            v-bind:key="input.inputName">
+                                                                            <td class="text-left">{{ input.inputName }} </td>
                                                                             <td>{{ input.dataType }}</td>
 
                                                                         </tr>
@@ -184,12 +184,15 @@
                                 <div>
                                     <v-row align="center" justify="center">
                                         <v-col cols="40" sm="7" md="9" class="mt-4">
-                                            <v-tooltip right v-for="input in inputArr" v-bind:key="input.input">
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-text-field dense outlined v-bind="attrs" v-on="on"
-                                                        :label="`${input.input[0].toUpperCase() + input.input.substring(1)}`"
-                                                        :hint="`${input.dataType}`" v-model="params[input.input]" :rules="[rules.required]" @keyup="validateInput(input.dataType,params[input.input])">
+                                            <v-tooltip right v-for="input in inputArr" v-bind:key="input.inputName">
+                                                <template v-slot:activator="{ on, attrs }" >
+                                                    <v-text-field v-if="input.inputType ==='text'" dense outlined v-bind="attrs" v-on="on"
+                                                        :label="`${input.inputName[0].toUpperCase() + input.inputName.substring(1)}`"
+                                                        :hint="`${input.dataType}`" v-model="params[input.inputName]" :rules="[rules.required]" @keyup="validateInput(input.dataType,params[input.inputName])">
                                                     </v-text-field>
+                                                    <v-select v-if="input.inputType ==='listBox'" :items="`${input.options}`" v-model="params[input.inputName]" 
+                                                         :label="`${input.inputName[0].toUpperCase() + input.inputName.substring(1)}`" outlined
+                                                        dense :rules="[rules.required]"></v-select>
                                                 </template>
                                                 <span>Enter {{ input.dataType }} value</span>
                                             </v-tooltip>
@@ -530,11 +533,11 @@ export default {
                             
                             
                             for (let i = 0; i < this.inputArr.length; i++) {
-                                if (this.inputArr[i].input === "input") {
+                                if (this.inputArr[i].inputName === "input") {
                                // this.params.input = this.selected[0].path
                                     this.params.input = this.outputBasePath
                                 }
-                                if (this.inputArr[i].input === "output") {
+                                if (this.inputArr[i].inputName === "output") {
                                     if (this.outputBasePath && !this.outputBasePath.endsWith("/"))
                                         this.outputBasePath = this.outputBasePath + "/"
                                     this.params.output = this.outputBasePath + this.outputFolderName
@@ -639,12 +642,50 @@ export default {
 
 
                 for (let i = 0; i < lines.length; i++) {
-                    if (lines[i].startsWith("#@")) {
-                        let arr = lines[i].split(" ")
+                    
+                    if(lines[i].startsWith("#@") && lines[i].indexOf('(') > 0){
+                        let substring1 = lines[i].substring(2, lines[i].indexOf('(')).trim()
+                        let substring2 = lines[i].substring(lines[i].indexOf('('), lines[i].indexOf(')')+1).trim()
+                        let substring3 = lines[i].substring(lines[i].indexOf(')')+1).trim()
                         let params = []
-                        params.dataType = arr[0].replace("#@", "").trim()
-                        params.input = arr[1]
-                        //this.inputArr.push(params)
+                        params.dataType = substring1
+                        substring2 = substring2.replace('{', '[').replace('}',']').replaceAll('=',':').replace('(','{').replace(')','}')
+                        
+                        if(substring2.includes("choices")){
+                            substring2 = substring2.replace("choices",JSON.stringify("choices"))
+                        }if(substring2.includes("style")) {
+                            substring2 = substring2.replace("style",JSON.stringify("style"))
+                        }if(substring2.includes("value")) {
+                            substring2 = substring2.replace("value",JSON.stringify("value"))
+                        }
+                        substring2 = JSON.parse(substring2)
+                        
+                        if(substring2.style)
+                            params.inputType = substring2.style
+                        if(substring2.choices) {
+                            let options = []
+                            options = substring2.choices
+                            console.log(options)
+                            params.options =options
+                        }
+                        if(substring2.value)
+                            params.default = substring2.value
+                        
+                        params.inputName = substring3
+                        
+                        
+                        console.log(params)
+                        
+                        input_params.push(params)
+                        console.log(input_params)
+
+                    }else if (lines[i].startsWith("#@")) {
+                        let arr = lines[i].replace("#@", "").trim().split(" ")
+                        let params = []
+                        params.dataType = arr[0]
+                        params.inputName = arr[1]
+                        params.inputType = "text"
+                        console.log(params)
                         input_params.push(params)
                     }
                     if (lines[i] !== "") {
