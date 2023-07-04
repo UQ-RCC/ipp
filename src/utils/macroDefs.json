@@ -10,5 +10,18 @@
     "ippLongName": "Testing",
     "description": "Blank ImageJ Macro Script that loops through files in a directory.Testing"
 
-}
+},
+{
+    "id": 3,
+    "fileName" : "Thumbnail_generator.ijm",
+    "ippLongName": "Thumbnail Generator",
+    "description": "This script will loop over a directory of files creating scaled down pngs for quick searching"
+},
+{
+    "id": 4,
+    "fileName" : "Image_Destacker.ijm",
+    "ippLongName": "Image Destacker",
+    "description": "This script will loop over a directory of files reducing the dimensionality either by frames, slices and/or channels. Input directory should contain files while the output directory should not be within the input directory"
+
+} 
 ]

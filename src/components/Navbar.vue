@@ -173,7 +173,7 @@
                         </v-list-item-icon>
                         <v-list-item-title class="ml-n5">Job History</v-list-item-title>
                     </v-list-item>
-                    <v-list-item to="/metadata">
+                    <v-list-item to="/configuration">
                         <v-list-item-icon>
                             <v-icon>mdi-database</v-icon>
                         </v-list-item-icon>

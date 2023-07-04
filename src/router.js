@@ -8,7 +8,7 @@ import Deconvolution from './views/Deconvolution.vue'
 import Jobshistory from './views/Jobshistory.vue'
 //import Admin from './views/Admin.vue'
 import AdminJobs from './views/AdminJobs.vue'
-import Metadata from './views/Metadata.vue'
+import Configuration from './views/Configuration.vue'
 import Macros from './views/Macros.vue'
 // import Release from './views/Release.vue'
 import Particlecounting from './views/Particlecounting.vue'
@@ -68,9 +68,9 @@ export default new Router({
 
         },
         {
-            path: '/metadata',
-            name: 'Metadata',
-            component: Metadata
+            path: '/configuration',
+            name: 'Configuration',
+            component: Configuration
 
         },
         // {
