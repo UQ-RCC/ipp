@@ -122,13 +122,18 @@
 
 
                                                 <v-tab-item>
-                                                    <v-card class="scroll-y scroll-x">
-                                                        <v-card-text class=" text-body-1 ">{{ workingItem.description
-                                                        }}</v-card-text>
+                                                    <v-card class="macro-info-card">
+                                                        <v-card-text class=" text-body-1 ">
+                                                            <v-list>
+                                                                <v-list-item v-for="i in workingItem.description" :key="i + '-span'">
+
+                                                                    <v-list-item-content>{{ i }}</v-list-item-content>
+                                                                </v-list-item>
+                                                            </v-list></v-card-text>
                                                     </v-card>
                                                 </v-tab-item>
                                                 <v-tab-item>
-                                                    <v-card class="scroll-y scroll-x">
+                                                    <v-card class="macro-info-card">
                                                         <v-card-text>
                                                             <v-row class="mt-3 text-h6 " style="justify-content:center">This
                                                                 macro requires {{ inputArr.length }} inputs :</v-row>
@@ -158,7 +163,7 @@
                                                     </v-card>
                                                 </v-tab-item>
                                                 <v-tab-item>
-                                                    <v-card class="scroll-y scroll-x" style="height:300px">
+                                                    <v-card class="macro-info-card" style="height:300px">
                                                         <v-card-text>
                                                             <v-list>
                                                                 <v-list-item v-for="i in code" :key="i + '-span'">
@@ -180,7 +185,7 @@
                             </div>
                         </v-stepper-content>
                         <v-stepper-content step="2">
-                            <v-card class=" macro-info-card scroll-y" color="text-h2 text-center">
+                            <v-card class="macro-info-card" color="text-h2 text-center">
                                 <div>
                                     <v-row align="center" justify="center">
                                         <v-col cols="40" sm="7" md="9" class="mt-4">
@@ -190,9 +195,12 @@
                                                         :label="`${input.inputName[0].toUpperCase() + input.inputName.substring(1)}`"
                                                         :hint="`${input.dataType}`" v-model="params[input.inputName]" :rules="[rules.required]" @keyup="validateInput(input.dataType,params[input.inputName])">
                                                     </v-text-field>
-                                                    <v-select v-if="input.inputType ==='listBox'" :items="`${input.options}`" v-model="params[input.inputName]" 
+                                                    <v-select v-if="input.inputType ==='listBox'" :items="input.options" v-model="params[input.inputName]" 
                                                          :label="`${input.inputName[0].toUpperCase() + input.inputName.substring(1)}`" outlined
                                                         dense :rules="[rules.required]"></v-select>
+                                                    <v-radio-group v-if="input.inputType.includes('radioButton')" v-model="params[input.inputName]" :label="`${input.inputName[0].toUpperCase() + input.inputName.substring(1)}`" row>
+                                                        <v-radio v-for="radio in input.options" class="mx-4" :label="`${radio}`" :value="`${radio}`" v-bind:key="radio"></v-radio>
+                                                    </v-radio-group>
                                                 </template>
                                                 <span>Enter {{ input.dataType }} value</span>
                                             </v-tooltip>
@@ -205,7 +213,7 @@
                         </v-stepper-content>
                         <v-stepper-content step="3">
                             <!-- <deconvolution-devices ref="decondevices" :readonly="true" /> -->
-                            <v-card class=" macro-info-card scroll-y" color="text-h2 text-center">
+                            <v-card class=" macro-info-card" color="text-h2 text-center">
                                 <div>
                                     <v-row align="center" justify="center">
                                         <v-col align="center" justify="center">
@@ -272,7 +280,7 @@
                             </v-card>
                         </v-stepper-content>
                         <v-stepper-content step="4">
-                            <v-card class="macro-info-card" color="text-h2 text-center">
+                            <v-card  color="text-h2 text-center">
                                 <div>
                                     <v-expansion-panels accordion>
                                         <v-expansion-panel>
@@ -286,7 +294,7 @@
 
                                         <v-expansion-panel>
                                             <v-expansion-panel-header>Inputs</v-expansion-panel-header>
-                                            <v-expansion-panel-content class="scroll-y review-card">
+                                            <v-expansion-panel-content class="review-card">
                                                 <v-card>
                                                     <div>
                                                         <v-row align="center" justify="center">
@@ -305,7 +313,7 @@
 
                                         <v-expansion-panel>
                                             <v-expansion-panel-header>Devices</v-expansion-panel-header>
-                                            <v-expansion-panel-content class="scroll-y review-card">
+                                            <v-expansion-panel-content class="review-card">
                                                 <v-card>
                                                     <div>
                                                         <v-row align="center" justify="center">
@@ -385,6 +393,7 @@
 <script>
 
 import Vue from 'vue'
+import Vuetify from 'vuetify'
 import FileBrowserDialog from '@/components/FileBrowserDialog.vue'
 //api
 import PreferenceAPI from "@/api/PreferenceAPI"
@@ -396,7 +405,7 @@ import DeconvolutionAPI from "@/api/DeconvolutionAPI.js"
 import MacroAPI from "@/api/MacroAPI.js"
 import miscs from '@/utils/miscs.js'
 //import DeconvolutionMetadata from '@/components/deconvolution/Metadata.vue'
-
+Vue.use(Vuetify)
 export default {
     name: 'Macros',
     components: {
@@ -533,6 +542,7 @@ export default {
                             
                             
                             for (let i = 0; i < this.inputArr.length; i++) {
+                                console.log(this.inputArr[i])
                                 if (this.inputArr[i].inputName === "input") {
                                // this.params.input = this.selected[0].path
                                     this.params.input = this.outputBasePath
@@ -542,7 +552,10 @@ export default {
                                         this.outputBasePath = this.outputBasePath + "/"
                                     this.params.output = this.outputBasePath + this.outputFolderName
                                 }
-    
+                                if(this.inputArr[i].default){
+                                    this.params[this.inputArr[i].inputName] = this.inputArr[i].default    
+                                }
+
                             }
                         }
                     
@@ -628,7 +641,7 @@ export default {
             let input_params = []
             for (let i = 0; i < this.macros.length; i++) {
                 if (this.workingItem.macroType === this.macros[i].id) {
-                    this.workingItem.description = this.macros[i].description
+                    this.workingItem.description = this.macros[i].description.split("\n")
                     this.workingItem.fileName = this.macros[i].fileName
                 }
             }
@@ -660,22 +673,20 @@ export default {
                         }
                         substring2 = JSON.parse(substring2)
                         
-                        if(substring2.style)
+                        if(substring2.style){
                             params.inputType = substring2.style
+                        }
+                        else{
+                            params.inputType = "text"
+                            }
                         if(substring2.choices) {
-                            let options = []
-                            options = substring2.choices
-                            console.log(options)
-                            params.options =options
+                            params.options = substring2.choices
                         }
                         if(substring2.value)
                             params.default = substring2.value
                         
                         params.inputName = substring3
-                        
-                        
-                        console.log(params)
-                        
+                    
                         input_params.push(params)
                         console.log(input_params)
 
@@ -689,11 +700,13 @@ export default {
                         input_params.push(params)
                     }
                     if (lines[i] !== "") {
+                        
                         scriptLines.push(lines[i])
                     }
 
 
                 }
+                console.log(scriptLines)
                 this.code = scriptLines
                 this.inputArr = input_params
             });
@@ -709,7 +722,9 @@ export default {
                     for (let i=0; i< this.code.length; i++) {
                         sourceCode = sourceCode +this.code[i]+ "\n"
                     }
-                    await MacroAPI.saveFile(sourceCode, outputFolder, this.workingItem.fileName)
+                    
+
+                    await MacroAPI.saveFile(btoa(sourceCode), outputFolder, this.workingItem.fileName)
                     Vue.notify({
                         group: 'sysnotif',
                         type: 'info',
@@ -726,10 +741,36 @@ export default {
                         title: 'Save Macro File',
                         text: 'Fail to save ' + this.workingItem.fileName  + ' .Error:' + String(err)
                     });
+                    
                 }   
 
                 
-            }
+            } 
+
+            /* if (this.workingItem.fileName && outputFolder ) {
+                try{
+                    console.log(outputFolder)
+                    console.log(this.workingItem.fileName)
+                    await MacroAPI.saveFile(this.workingItem.fileName, outputFolder)
+                    Vue.notify({
+                        group: 'sysnotif',
+                        type: 'info',
+                        title: 'Save Macro File',
+                        text: this.workingItem.fileName + ' saved!'
+                    });
+                    this.$emit("file saved", this.workingItem.fileName);
+                }
+                catch(err){
+                    Vue.notify({
+                        group: 'sysnotif',
+                        type: 'error',
+                        title: 'Save Macro File',
+                        text: 'Fail to save ' + this.workingItem.fileName  + ' .Error:' + String(err)
+                    });
+                    console.log(String(err))
+                } 
+
+            } */
 
 
         },
@@ -1064,24 +1105,20 @@ export default {
 @import "./public/styles/uq/scss/stepper_component.scss";
 
 .macro-info-card {
-    height: 400px;
+    height:450px;
+    min-height: 400px;
+    max-height: 500px;
+    min-width: 75%;
+    max-width: 95%;
+    overflow-y: auto;
 
-    .scroll-x {
-        overflow-x: auto;
-    }
-
-    .scroll-y {
-        overflow-y: auto;
-    }
 }
 
 .review-card {
     max-height: 200px;
     font-size: 14px;
+    overflow-y: auto;
 
-    .scroll-y {
-        overflow-y: auto;
-    }
 }
 
 .table-area {

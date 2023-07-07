@@ -21,7 +21,7 @@
     "id": 4,
     "fileName" : "Image_Destacker.ijm",
     "ippLongName": "Image Destacker",
-    "description": "This script will loop over a directory of files reducing the dimensionality either by frames, slices and/or channels. Input directory should contain files while the output directory should not be within the input directory"
+    "description": "This script will loop over a directory of files reducing the dimensionality either by frames, slices and/or channels.\nInput directory should contain files while the output directory should not be within the input directory"
 
 } 
 ]
