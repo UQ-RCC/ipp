@@ -35,12 +35,13 @@ export default {
     return data
   },
 
-  async validate_devices(jobs,mem,gpus){
+  async validate_devices(jobs,mem,gpus,deconinfo){
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/validateDevices`, {
       params: {
         jobs: jobs,
         mem: mem,
-        gpus: gpus
+        gpus: gpus,
+        deconinfo: btoa(JSON.stringify(deconinfo)) 
       }
   })
   return data
@@ -68,6 +69,8 @@ export default {
     // delete execinfo.isfolder
     // delete execinfo.name
     delete execinfo.decon
+    console.log(execinfo)
+
     let endpoint = `${Vue.prototype.$Config.endpoints.pref}`
     // let apihost = /^(?:\w+\:\/\/)?([^\/]+)(.*)$/.exec(endpoint)[1]
     let apihost = /^(?:\w+:\/\/)?([^/]+)(.*)$/.exec(endpoint)[1]

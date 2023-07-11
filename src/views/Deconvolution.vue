@@ -7,9 +7,11 @@
             height="4"
             :active="loading"
         ></v-progress-linear>
+        <v-overlay v-model="overlay"></v-overlay>
         <br />
         <file-browser-dialog ref="filedialog" />
         <template-dialog ref="templatedialog" />
+        <MetadataDialog ref="metadatadialog" />
         <v-dialog v-model="validityDialog" max-width="290">
             <v-card>
                 <v-card-title class="headline">
@@ -387,8 +389,11 @@
     import DeconvolutionDevices from '@/components/deconvolution/Devices.vue'
     import DeconvolutionReview from '@/components/deconvolution/Review.vue'
     import TemplateDialog from '@/components/TemplateDialog.vue'
+    import MetadataDialog from '@/components/MetadataDialog.vue'
+    
     // api
     import DeconvolutionAPI from "@/api/DeconvolutionAPI.js"
+    import MetadataAPI from "@/api/MetadataAPI.js"
     import PreferenceAPI from "@/api/PreferenceAPI"
     import series from '@/utils/series.js'
     
@@ -405,13 +410,17 @@
             DeconvolutionAdvanced,
             DeconvolutionDevices,
             DeconvolutionReview,
-            TemplateDialog
+            TemplateDialog,
+            MetadataDialog,
+            
         },
+       
         data() {
             return {
                 validityDialog: false,
                 singleSelect: true,
                 loading: false,
+                overlay:false,
                 fileBrowserDialog: false,
                 fileBrowserDialogMode: '',
                 selectedColor:null,
@@ -677,6 +686,7 @@
                 if (!options.cancelled) {
                     let paths = []
                     if(isfolder){
+                        console.log(options)
                         let _pathToBeLoaded = options.path + options.filter
                         Vue.$log.debug("selecting series:" + _pathToBeLoaded)
                         //let _exist = false
@@ -718,7 +728,7 @@
                         Vue.$log.debug("Paths is not empty. Start loading.")
                         Vue.$log.debug(paths)
                     }
-                        
+                     
                     this.loading = true
                     // now load the paths
                     for(let i =0; i < paths.length; i++){
@@ -729,7 +739,9 @@
                         //this.tempID = new Date().getMilliseconds()
                         items[i].tempID = this.uuid()
                         this.loaded = this.loaded.concat(items)
+                        
                     }
+                    console.log(this.loaded)
                     
 
                     if ((!this.selected || this.selected.length ==0) && this.loaded.length > 0){
@@ -747,13 +759,59 @@
              */
             async selectFiles(){
                 await this.selectFilesOrFolders(false)
+                let filepath = this.loaded[0].series.path
+                this.loading =true
+                this.overlay = true
+                let metedataResults = await this.getMetadata(filepath, false)
+                this.loading = false
+                this.overlay = false
+                let options = await this.$refs.metadatadialog.open(metedataResults[0])
+                if (!options.cancelled) {
+                    Vue.$log.info("Metadata loaded")
+                    Vue.$log.info(options.settings)
+                    /* todo later with dialog box actions */
+                    
+                }
             },
             /**
              * select series
              */
             async selectFilesInFolder(){
                 await this.selectFilesOrFolders(true)
+                console.log(this.loaded)
             },
+
+            /**
+             * display metadata
+             */
+
+            async getMetadata(fileslist, folder) {
+                let fileslistbase64 = ''
+                
+                if (!folder) {
+                    fileslistbase64 = btoa(fileslist)
+                } else {
+                    for (let i=0 ; i< fileslist.length; i++) {
+                        fileslistbase64 = fileslistbase64 + fileslist[i]+ ";"
+                    }
+                    fileslistbase64 = btoa(fileslistbase64.substring(0,fileslistbase64.length-1))
+                }
+                try{
+                    const response= await MetadataAPI.execute_metedata_script(fileslistbase64, '', false)
+                    let output = response.commandResult
+                    if (output.length > 0) {
+                        let json_output =  JSON.parse(output[0].out)
+                        console.log(json_output)
+                        if(json_output.results.success){
+                            return json_output.results.metadata
+                        }
+                    }
+                    
+                }
+                catch(err){
+                    return "Error occured" + err
+                }
+            }, 
 
         
             /**
@@ -815,6 +873,7 @@
                     return _job.id
                 })
                 
+                console.log("item in submitsingle")
                 console.log(item)
                 try{
                     await DeconvolutionAPI.execute_microvolution(item.setting.outputPath, _numberOfJobs, 
@@ -1174,7 +1233,10 @@
                     let jobs = this.workingItem.setting.instances
                     let mem = this.workingItem.setting.mem
                     let gpus = this.workingItem.setting.gpus
-                    let response = await DeconvolutionAPI.validate_devices(jobs,mem,gpus)
+                    
+                    
+
+                    let response = await DeconvolutionAPI.validate_devices(jobs,mem,gpus,this.workingItem.setting)
                     let output = response.commandResult
                     if (output.length > 0) {
                         let json_output =  JSON.parse(output[0].out)
