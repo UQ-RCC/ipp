@@ -591,7 +591,8 @@ export default {
                 let jobs = this.workingItem.instances
                 let mem = this.workingItem.mem
                 let gpus = this.workingItem.gpus
-                let response = await DeconvolutionAPI.validate_devices(jobs,mem,gpus)
+                let settings=[]
+                let response = await DeconvolutionAPI.validate_devices(jobs,mem,gpus,settings)
                 let output = response.commandResult
                 if (output.length > 0) {
                     let json_output =  JSON.parse(output[0].out)
@@ -658,12 +659,22 @@ export default {
                     
                     if(lines[i].startsWith("#@") && lines[i].indexOf('(') > 0){
                         let substring1 = lines[i].substring(2, lines[i].indexOf('(')).trim()
-                        let substring2 = lines[i].substring(lines[i].indexOf('('), lines[i].indexOf(')')+1).trim()
+                        let substring2 = lines[i].substring(lines[i].indexOf('('), lines[i].lastIndexOf(')')+1).trim()
                         let substring3 = lines[i].substring(lines[i].indexOf(')')+1).trim()
                         let params = []
                         params.dataType = substring1
-                        substring2 = substring2.replace('{', '[').replace('}',']').replaceAll('=',':').replace('(','{').replace(')','}')
-                        
+                        console.log(substring2)
+
+                        substring2 = substring2.replace('{', '[').replace('}',']').replaceAll('=',':')
+
+                        String.prototype.replaceAt = function(index, replacement) {
+                            return this.substring(0, index) + replacement + this.substring(index + replacement.length);
+                        }
+
+                        substring2 = substring2.replaceAt(substring2.indexOf('('),'{').replaceAt(substring2.lastIndexOf(')'),'}')
+                        console.log(substring2);
+
+
                         if(substring2.includes("choices")){
                             substring2 = substring2.replace("choices",JSON.stringify("choices"))
                         }if(substring2.includes("style")) {
@@ -715,7 +726,7 @@ export default {
         },
         async copyMacroFile(outputFolder) {
 
-            if (this.code && outputFolder) {
+           /*  if (this.code && outputFolder) {
                 try {
                     
                     let sourceCode =""
@@ -745,13 +756,19 @@ export default {
                 }   
 
                 
-            } 
+            }  */
+            let commitId
+            const response = await this.github.get("repos/UQ-RCC/ipp-repo/commits/main")
+            if(response.data){
+                commitId = response.data.sha.substring(0,7)
+            }
+            console.log(commitId)
 
-            /* if (this.workingItem.fileName && outputFolder ) {
+            if (this.workingItem.fileName && outputFolder ) {
                 try{
                     console.log(outputFolder)
                     console.log(this.workingItem.fileName)
-                    await MacroAPI.saveFile(this.workingItem.fileName, outputFolder)
+                    await MacroAPI.saveFile(this.workingItem.fileName, outputFolder, commitId)
                     Vue.notify({
                         group: 'sysnotif',
                         type: 'info',
@@ -770,7 +787,7 @@ export default {
                     console.log(String(err))
                 } 
 
-            } */
+            } 
 
 
         },
@@ -1045,7 +1062,7 @@ export default {
                     
             } 
             //window.location.reload();
-            this.$router.go(0)
+            //this.$router.go(0)
         }
 
 

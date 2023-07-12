@@ -28,7 +28,7 @@ export default {
       },
 
       //save file
-      async saveFile(code, folder,filename) {
+      /* async saveFile(code, folder,filename) {
         
         const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/savemacrobase64`, {
             params: {
@@ -39,16 +39,18 @@ export default {
         })
         return data
 
-      }, 
-     /*  async saveFile(filename, folder) {
+      },  */
+     async saveFile(filename, folder, commitId) {
         
         const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/savemacrobase64`, {
             params: {
                 folder: folder,
-                filename : filename
+                filename : filename,
+                commitId : commitId
+
             }
         })
         return data
 
-      }, */
+      }, 
 }
