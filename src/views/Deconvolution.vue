@@ -759,7 +759,7 @@
              */
             async selectFiles(){
                 await this.selectFilesOrFolders(false)
-                let filepath = this.loaded[0].series.path
+                /* let filepath = this.loaded[0].series.path
                 this.loading =true
                 this.overlay = true
                 let metedataResults = await this.getMetadata(filepath, false)
@@ -769,9 +769,9 @@
                 if (!options.cancelled) {
                     Vue.$log.info("Metadata loaded")
                     Vue.$log.info(options.settings)
-                    /* todo later with dialog box actions */
+                   
                     
-                }
+                } */
             },
             /**
              * select series

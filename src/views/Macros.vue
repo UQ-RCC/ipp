@@ -95,7 +95,7 @@
 
             <v-col cols="12" sm="12" md="8" lg="8" xl="8">
 
-                <v-stepper v-model="curr" color="green" style="height: 600px">
+                <v-stepper v-model="curr" color="green" style="height: 800px">
                     <v-stepper-header>
                         <v-stepper-step v-for="(step, n) in steps" :key="n" :complete="stepComplete(n + 1)" :step="n + 1"
                             :color="stepStatus(n + 1)" :editable="checkStepVisibility(n + 1)" >
@@ -106,34 +106,64 @@
                         <v-stepper-content step="1">
                             <div>
                                 <v-row class="pa-4" color="text-h2 text-center">
-                                    <v-select :items="ippModels" v-model="workingItem.macroType" item-text="ippLongName"
-                                        item-value="id" label="Choose your macro:" @change="getMacro" outlined
-                                        dense :rules="[rules.required]"></v-select>
+                                    <v-col cols="6">
+                                        <v-radio-group  v-model="workingItem.macroSource" @change="reset()" row> 
+                                            <v-radio
+                                                label="Github"
+                                                value="1"
+                                            ></v-radio>
+                                            <v-radio
+                                                label="File System"
+                                                value="2"
+                                            ></v-radio>
+                                        </v-radio-group> 
+                                    </v-col>
+                                    <v-col cols="6">
+                                        <v-select v-if="workingItem.macroSource =='1'" :items="ippModels" v-model="workingItem.macroType" item-text="ippLongName"
+                                            item-value="id" label="Choose your macro:" @change="getMacro" outlined
+                                            dense :rules="[rules.required]"></v-select>
+    
+                                        <v-btn  v-if="workingItem.macroSource =='2'" class="mx-1" color="primary" @click.stop="selectMacroFile()" rounded dark large
+                                            title="Select macro script from the folder">
+                                                Select File
+                                        </v-btn>
+
+                                       
+                                    </v-col>
                                 </v-row>
-                                <v-row>
+                                <v-row v-if="workingItem.macroSource =='2'">
                                     <v-col cols="12" sm="8" md="12">
-                                        <v-card class="macro-info-card mb-12 pa-4" color="text-h2 text-center">
+
+                                        <v-text-field
+                                            v-model="macrofile"
+                                            label="File"
+                                            ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                                <v-row v-show="workingItem.macroType || macrofile " >
+                                    <v-col cols="12" sm="8" md="12">
+                                        <v-card class="mb-12 pa-4" color="text-h2 text-center">
                                             <v-tabs fixed-tabs>
                                                 <v-tab>Description</v-tab>
                                                 <v-tab>Inputs</v-tab>
-                                                <v-tab>Code <v-btn class="ms-15" icon @click="openGIT(url)">
+                                                <v-tab>Code <v-btn v-show="workingItem.macroSource =='1'" class="ms-15" icon @click="openGIT(url)">
                                                         <v-icon>mdi-github-circle</v-icon>
                                                     </v-btn></v-tab>
 
 
                                                 <v-tab-item>
-                                                    <v-card class="macro-info-card">
+                                                    <v-card class="macro-info-card" style="height:300px">
                                                         <v-card-text class=" text-body-1 ">
                                                             <v-list>
-                                                                <v-list-item v-for="i in workingItem.description" :key="i + '-span'">
+                                                                <v-list-item v-for="(item, index) in workingItem.description" :key="index">
 
-                                                                    <v-list-item-content>{{ i }}</v-list-item-content>
+                                                                    <v-list-item-content>{{ item }}</v-list-item-content>
                                                                 </v-list-item>
                                                             </v-list></v-card-text>
                                                     </v-card>
                                                 </v-tab-item>
                                                 <v-tab-item>
-                                                    <v-card class="macro-info-card">
+                                                    <v-card class="macro-info-card" style="height:300px">
                                                         <v-card-text>
                                                             <v-row class="mt-3 text-h6 " style="justify-content:center">This
                                                                 macro requires {{ inputArr.length }} inputs :</v-row>
@@ -166,9 +196,9 @@
                                                     <v-card class="macro-info-card" style="height:300px">
                                                         <v-card-text>
                                                             <v-list>
-                                                                <v-list-item v-for="i in code" :key="i + '-span'">
+                                                                <v-list-item v-for="(item, index) in code" :key="index">
 
-                                                                    <v-list-item-content>{{ i }}</v-list-item-content>
+                                                                    <v-list-item-content>{{ item }}</v-list-item-content>
                                                                 </v-list-item>
                                                             </v-list>
 
@@ -456,6 +486,11 @@ export default {
                 },
             visitedSteps: [],
             dateTime:"",
+            source:[
+                {label:'Github', value:1},
+                {label:'Local File System', value:2}
+            ],
+            macrofile:'',
 
 
 
@@ -527,8 +562,7 @@ export default {
             
 
             if (this.curr === 1) {
-                
-                if (!this.workingItem.macroType) {
+                if ((this.workingItem.macroSource=='1' && !this.workingItem.macroType) || (this.workingItem.macroSource=='2' && this.macrofile=='') ||(!this.workingItem.macroSource)) {
                     Vue.notify({
                                     group: 'errornotif',
                                     type: 'error',
@@ -635,11 +669,17 @@ export default {
            
 
         },
+
+        reset() {
+            this.workingItem.macroType =''
+            this.macrofile=''
+        },
+
         
 
         async getMacro() {
-            let scriptLines = []
-            let input_params = []
+            //let scriptLines = []
+            //let input_params = []
             for (let i = 0; i < this.macros.length; i++) {
                 if (this.workingItem.macroType === this.macros[i].id) {
                     this.workingItem.description = this.macros[i].description.split("\n")
@@ -652,10 +692,10 @@ export default {
                 this.url = response.data.html_url
                 this.download_url = response.data.download_url
                 const lines = atob(response.data.content).split("\n")
-               
+                this.readMacroScript(lines)
 
 
-                for (let i = 0; i < lines.length; i++) {
+                /* for (let i = 0; i < lines.length; i++) {
                     
                     if(lines[i].startsWith("#@") && lines[i].indexOf('(') > 0){
                         let substring1 = lines[i].substring(2, lines[i].indexOf('(')).trim()
@@ -719,75 +759,76 @@ export default {
                 }
                 console.log(scriptLines)
                 this.code = scriptLines
-                this.inputArr = input_params
+                this.inputArr = input_params */
             });
 
 
         },
         async copyMacroFile(outputFolder) {
-
-           /*  if (this.code && outputFolder) {
-                try {
-                    
-                    let sourceCode =""
-                    for (let i=0; i< this.code.length; i++) {
-                        sourceCode = sourceCode +this.code[i]+ "\n"
-                    }
-                    
-
-                    await MacroAPI.saveFile(btoa(sourceCode), outputFolder, this.workingItem.fileName)
-                    Vue.notify({
-                        group: 'sysnotif',
-                        type: 'info',
-                        title: 'Save Macro File',
-                        text: this.workingItem.fileName + ' saved!'
-                    });
-                    this.$emit("file saved", this.workingItem.fileName);
-                    
-                }
-                catch(err){
-                    Vue.notify({
-                        group: 'sysnotif',
-                        type: 'error',
-                        title: 'Save Macro File',
-                        text: 'Fail to save ' + this.workingItem.fileName  + ' .Error:' + String(err)
-                    });
-                    
-                }   
-
-                
-            }  */
+            let islocal
             let commitId
-            const response = await this.github.get("repos/UQ-RCC/ipp-repo/commits/main")
-            if(response.data){
-                commitId = response.data.sha.substring(0,7)
-            }
-            console.log(commitId)
-
-            if (this.workingItem.fileName && outputFolder ) {
-                try{
-                    console.log(outputFolder)
-                    console.log(this.workingItem.fileName)
-                    await MacroAPI.saveFile(this.workingItem.fileName, outputFolder, commitId)
-                    Vue.notify({
-                        group: 'sysnotif',
-                        type: 'info',
-                        title: 'Save Macro File',
-                        text: this.workingItem.fileName + ' saved!'
-                    });
-                    this.$emit("file saved", this.workingItem.fileName);
+            if(this.workingItem.macroSource == '1') {
+                islocal = false
+                
+                const response = await this.github.get("repos/UQ-RCC/ipp-repo/commits/main")
+                if(response.data){
+                    commitId = response.data.sha.substring(0,7)
                 }
-                catch(err){
-                    Vue.notify({
-                        group: 'sysnotif',
-                        type: 'error',
-                        title: 'Save Macro File',
-                        text: 'Fail to save ' + this.workingItem.fileName  + ' .Error:' + String(err)
-                    });
-                    console.log(String(err))
+                console.log(commitId)
+    
+                if (this.workingItem.fileName && outputFolder ) {
+                    try{
+                        console.log(outputFolder)
+                        console.log(this.workingItem.fileName)
+                        await MacroAPI.saveFile(this.workingItem.fileName, outputFolder, commitId, islocal)
+                        Vue.notify({
+                            group: 'sysnotif',
+                            type: 'info',
+                            title: 'Save Macro File',
+                            text: this.workingItem.fileName + ' saved!'
+                        });
+                        this.$emit("file saved", this.workingItem.fileName);
+                    }
+                    catch(err){
+                        Vue.notify({
+                            group: 'sysnotif',
+                            type: 'error',
+                            title: 'Save Macro File',
+                            text: 'Fail to save ' + this.workingItem.fileName  + ' .Error:' + String(err)
+                        });
+                        console.log(String(err))
+                    } 
+    
                 } 
+            }else if(this.workingItem.macroSource == '2') {
+                islocal = true
+                commitId = ''
+                if (this.macrofile && outputFolder) {
+                    try {
+                        console.log(outputFolder)
+                        console.log(this.macrofile)
+                        await MacroAPI.saveFile(this.macrofile, outputFolder, commitId, islocal)
+                        Vue.notify({
+                            group: 'sysnotif',
+                            type: 'info',
+                            title: 'Save Macro File',
+                            text: this.workingItem.fileName + ' saved!'
+                        });
+                        this.$emit("file saved", this.workingItem.fileName);
+                    }
+                    catch(err){
+                        Vue.notify({
+                            group: 'sysnotif',
+                            type: 'error',
+                            title: 'Save Macro File',
+                            text: 'Fail to save ' + this.workingItem.fileName  + ' .Error:' + String(err)
+                        });
+                        console.log(String(err))
+                    } 
+                }
 
-            } 
+            }
+
 
 
         },
@@ -892,6 +933,131 @@ export default {
             this.outputBasePath = ""
             //this.dbinfo.maxsize = 0
             this.saveToDb()
+        },
+
+        async selectMacroFile(){
+            let options = null
+            options = await this.$refs.filedialog.open('selectfiles', 'Preprocessing', '/')
+            let paths =[]
+            if(!options.cancelled) {
+                console.log(options)
+                console.log(options.selectedItems)
+                for(let i =0; i < options.selectedItems.length; i++){
+                    let itemSize = miscs.convertFormattedStrToBytes(options.selectedItems[i].size)
+                    if (itemSize * 2.2 > miscs.maxMemSize()) {
+                        Vue.notify({
+                            group: 'sysnotif',
+                            type: 'warning',
+                            title: 'Unable to add file',
+                            text: 'This macro require too much memory to run! This macro cannot be added'
+                        })
+                        return
+                    }
+                    paths.push({ 'path': options.selectedItems[i].path, 'size': itemSize })
+                    console.log(paths)
+                }
+                if (paths.length === 0) {
+                    Vue.$log.debug("Paths is empty. Return.")
+                    return
+                }
+                if(paths[0].path) {
+                    this.macrofile = paths[0].path
+                    let macrofilename = paths[0].path.split("/").slice(-1)
+                    this.workingItem.fileName = macrofilename[0]
+                    let extension = macrofilename[0].split(".").pop()
+                    if(extension == "ijm") {
+                        let _readMacroResponse = await MacroAPI.readMacroFile(this.macrofile)
+                        if(_readMacroResponse.commandResult.length > 0) {
+                            let notice = "Description is not available for the macros selected from the file system"
+                            this.workingItem.description = notice.split("\n")
+                            let content= atob(_readMacroResponse.commandResult[0].output)
+                            let lines = content.split("\n")
+                            this.readMacroScript(lines)
+                            
+                        }
+                    }
+                    else{
+                        Vue.notify({
+                            group: 'sysnotif',
+                            type: 'warning',
+                            title: 'Incorrect file type',
+                            text: 'Please select a valid macro file!'
+                        })
+                        return
+
+                    }
+                }
+                
+            }
+        },
+
+        readMacroScript(lines){
+            let input_params = []
+            let scriptLines = []
+            for (let i = 0; i < lines.length; i++) {
+                    
+                if(lines[i].startsWith("#@") && lines[i].indexOf('(') > 0){
+                    let substring1 = lines[i].substring(2, lines[i].indexOf('(')).trim()
+                    let substring2 = lines[i].substring(lines[i].indexOf('('), lines[i].lastIndexOf(')')+1).trim()
+                    let substring3 = lines[i].substring(lines[i].indexOf(')')+1).trim()
+                    let params = []
+                    params.dataType = substring1
+                    console.log(substring2)
+
+                    substring2 = substring2.replace('{', '[').replace('}',']').replaceAll('=',':')
+
+                    String.prototype.replaceAt = function(index, replacement) {
+                        return this.substring(0, index) + replacement + this.substring(index + replacement.length);
+                    }
+
+                    substring2 = substring2.replaceAt(substring2.indexOf('('),'{').replaceAt(substring2.lastIndexOf(')'),'}')
+                    console.log(substring2);
+
+
+                    if(substring2.includes("choices")){
+                        substring2 = substring2.replace("choices",JSON.stringify("choices"))
+                    }if(substring2.includes("style")) {
+                        substring2 = substring2.replace("style",JSON.stringify("style"))
+                    }if(substring2.includes("value")) {
+                        substring2 = substring2.replace("value",JSON.stringify("value"))
+                    }
+                    substring2 = JSON.parse(substring2)
+                    
+                    if(substring2.style){
+                        params.inputType = substring2.style
+                    }
+                    else{
+                        params.inputType = "text"
+                        }
+                    if(substring2.choices) {
+                        params.options = substring2.choices
+                    }
+                    if(substring2.value)
+                        params.default = substring2.value
+                    
+                    params.inputName = substring3
+                
+                    input_params.push(params)
+                    console.log(input_params)
+
+                }else if (lines[i].startsWith("#@")) {
+                    let arr = lines[i].replace("#@", "").trim().split(" ")
+                    let params = []
+                    params.dataType = arr[0]
+                    params.inputName = arr[1]
+                    params.inputType = "text"
+                    console.log(params)
+                    input_params.push(params)
+                }
+                if (lines[i] !== "" || lines[i] !== "\t") {
+                    scriptLines.push(lines[i])
+                }
+
+
+            }
+            console.log(scriptLines)
+            this.code = scriptLines
+            this.inputArr = input_params
         },
 
         /**

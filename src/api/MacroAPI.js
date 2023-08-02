@@ -27,30 +27,38 @@ export default {
         return data 
       },
 
-      //save file
-      /* async saveFile(code, folder,filename) {
-        
-        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/savemacrobase64`, {
-            params: {
-                folder: folder,
-                filename : filename,
-                code: code
-            }
-        })
-        return data
+     
+     async saveFile(filename, folder, commitId, islocal) {
+        if(islocal) {
+            const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/copymacrobase64`, {
+                params: {
+                    folder: folder,
+                    filename : filename
+                }
+            })
+            return data
 
-      },  */
-     async saveFile(filename, folder, commitId) {
-        
-        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/savemacrobase64`, {
-            params: {
-                folder: folder,
-                filename : filename,
-                commitId : commitId
+        }else {
 
-            }
-        })
-        return data
-
+            const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/savemacrobase64`, {
+                params: {
+                    folder: folder,
+                    filename : filename,
+                    commitId : commitId
+    
+                }
+            })
+            return data
+        }
       }, 
+
+      //read text file
+    async readMacroFile(filepath) {
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/readTextFile`, {
+            params: {
+                filepath: filepath
+            }
+        })
+        return data
+    },
 }

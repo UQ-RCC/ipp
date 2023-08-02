@@ -639,7 +639,7 @@ export default {
                     }
                 } 
             })
-            console.log(this.filteredItems)
+            
             // emit maxsize changed
             console.log("maxsize:" + this.maxSize + " filteredItem size:" + this.filteredItems.length)
             this.$emit("maxsize-changed", this.maxSize)
@@ -648,7 +648,7 @@ export default {
             this.pagelength = Math.ceil(this.filteredItems.length / this.itemsperpage)        
             this.displayItems = this.filteredItems.slice((this.pageindex - 1) * this.itemsperpage, 
                                                 this.pageindex * this.itemsperpage)
-            console.log(this.displayItems)
+            
         },
 
         pageIndexChanged(num){
@@ -675,8 +675,10 @@ export default {
         },
         async viewItem(item){
             console.log("reading:" + item.path)
+            console.log("reading:" + item.path)
             try{
                 let _readFileResponse = await FilesAPI.readTextFile(item.path)
+                console.log(_readFileResponse)
                 if(_readFileResponse.commandResult.length > 0){
                     await this.$refs.fileviewer.open(
                         item.path,
