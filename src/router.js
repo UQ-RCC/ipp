@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Filesmanager from './views/Filesmanager.vue'
-import Preprocessing from './views/Preprocessing.vue'
+import Processing from './views/Processing.vue'
 import Converter from './views/Converter.vue'
 import Deconvolution from './views/Deconvolution.vue'
 import Jobshistory from './views/Jobshistory.vue'
@@ -42,9 +42,9 @@ export default new Router({
             component: Converter
         },
         {
-            path: '/preprocessing',
-            name: 'Preprocessing',
-            component: Preprocessing
+            path: '/processing',
+            name: 'Processing',
+            component: Processing
         },
         {
             path: '/deconvolution',

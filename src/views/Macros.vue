@@ -534,7 +534,7 @@ export default {
     methods: {
         
         async chooseOutputFolder() {
-            let options = await this.$refs.filedialog.open('selectfolder', 'Preprocessing', '/')
+            let options = await this.$refs.filedialog.open('selectfolder', 'Processing', '/')
             if (!options.cancelled && options.path) {
                 var selectedFolder = options.path
                 Vue.$log.debug("selected folder:" + selectedFolder)
@@ -937,7 +937,7 @@ export default {
 
         async selectMacroFile(){
             let options = null
-            options = await this.$refs.filedialog.open('selectfiles', 'Preprocessing', '/')
+            options = await this.$refs.filedialog.open('selectfiles', 'Processing', '/')
             let paths =[]
             if(!options.cancelled) {
                 console.log(options)
@@ -1049,7 +1049,7 @@ export default {
                     console.log(params)
                     input_params.push(params)
                 }
-                if (lines[i] !== "" || lines[i] !== "\t") {
+                if (lines[i] !== "" && lines[i] !== "\t") {
                     scriptLines.push(lines[i])
                 }
 
@@ -1066,9 +1066,9 @@ export default {
         async selectFilesOrFolders(isfolder) {
             let options = null
             if (isfolder)
-                options = await this.$refs.filedialog.open('selectfilesinfolder', 'Preprocessing', '/')
+                options = await this.$refs.filedialog.open('selectfilesinfolder', 'Processing', '/')
             else
-                options = await this.$refs.filedialog.open('selectfiles', 'Preprocessing', '/')
+                options = await this.$refs.filedialog.open('selectfiles', 'Processing', '/')
             if (!options.cancelled) {
                 let paths = []
                 if (isfolder) {

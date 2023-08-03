@@ -86,12 +86,12 @@
                         </v-list-item-icon>
                         <v-list-item-title class="ml-n5">Converter</v-list-item-title>
                     </v-list-item>
-                    <v-list-item to="/preprocessing" >
+                    <!-- <v-list-item to="/preprocessing" >
                         <v-list-item-icon>
                             <v-icon>mdi-scissors-cutting</v-icon>
                         </v-list-item-icon>
                         <v-list-item-title class="ml-n5">Processing</v-list-item-title>
-                    </v-list-item>
+                    </v-list-item> -->
 
                     <v-list-item to="/deconvolution">
                         <v-list-item-icon>
@@ -99,10 +99,31 @@
                         </v-list-item-icon>
                         <v-list-item-title class="ml-n5">Deconvolution</v-list-item-title>
                     </v-list-item>
+                    <v-list-group no-action sub-group :value="true">
+                        <template v-slot:activator>
+                            
+                                <v-list-item-icon>
+                                    <v-icon class="mr-10">mdi-scissors-cutting</v-icon>
+                                </v-list-item-icon>
+                                <v-list-item-title >Processing</v-list-item-title>
+                            
+                        </template>
+                        <v-list-item to="/macros">
+                            <v-list-item-icon>
+                                <v-icon class="mr-15">mdi-arrow-left-right</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title class="ml-n5">Macros</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item to="/processing" >
+                            <v-list-item-icon>
+                                <v-icon class="mr-15">mdi-scissors-cutting</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title class="ml-n5">Processing</v-list-item-title>
+                        </v-list-item>
 
-                   
+                    </v-list-group>
                 </v-list-group>
-                <v-list-group :value="true" no-action>
+                <!-- <v-list-group :value="true" no-action>
                         <template v-slot:activator>
                             
                                 <v-list-item-icon>
@@ -118,7 +139,7 @@
                             <v-list-item-title class="ml-n5">Macros</v-list-item-title>
                         </v-list-item>
 
-                    </v-list-group>
+                    </v-list-group> -->
 
 
                 <v-list-group
