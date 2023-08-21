@@ -1,7 +1,6 @@
 <template>
     <div>
-        <v-progress-linear color="primary accent-4" indeterminate rounded height="4" :active="loading"></v-progress-linear>
-        <br />
+        
         <file-browser-dialog ref="filedialog" />
         <v-row>
             <v-col cols="12" sm="12" md="4" lg="4" xl="4">
@@ -106,8 +105,12 @@
                         <v-stepper-content step="1">
                             <div>
                                 <v-row class="pa-4" color="text-h2 text-center">
+                                    <h4 class="pb-4">Select your macro script from the github repository or the file system.</h4>
+                                    <a :href="`${readmeURL}`" target="_blank">Click here to find more information on macro script parameter definition. </a>
+                                            
                                     <v-col cols="6">
                                         <v-radio-group  v-model="workingItem.macroSource" @change="reset()" row> 
+                                           
                                             <v-radio
                                                 label="Github"
                                                 value="1"
@@ -303,6 +306,22 @@
                                                     <span>The number of GPUs to be used for each instance</span>
                                                 </v-tooltip>
                                             </v-col>
+                                            <v-col
+                                                class="text-subtitle-1 text-center"
+                                                cols="12"
+                                            >
+                                           <p v-if="loading">Validating devices</p> 
+                                            </v-col>
+                                            <v-col cols="6">
+
+                                                <v-progress-linear
+                                                    color="primary accent-4"
+                                                    indeterminate
+                                                    rounded
+                                                    height="4"
+                                                    :active="loading"
+                                                ></v-progress-linear>
+                                            </v-col>
                                         </v-col>
                                     </v-row>
 
@@ -475,6 +494,7 @@ export default {
             description: '',
             code: '',
             url: '',
+            readmeURL:'',
             github: '',
             inputArr: [],
             params: {},
@@ -512,7 +532,11 @@ export default {
             const macrodef = JSON.parse(atob(response.data.content))
             this.macros = macrodef
         }
-        
+        const readmeResponse =  await this.github.get("repos/UQ-RCC/ipp-repo/contents/macros/README.md?ref=main")
+        if(readmeResponse.data) {
+            this.readmeURL = readmeResponse.data.html_url
+            console.log(this.readmeURL)
+        }
     },
     computed: {
         username: function () {
@@ -626,7 +650,9 @@ export default {
                 let mem = this.workingItem.mem
                 let gpus = this.workingItem.gpus
                 let settings=[]
+                this.loading =true
                 let response = await DeconvolutionAPI.validate_devices(jobs,mem,gpus,settings)
+                this.loading = false
                 let output = response.commandResult
                 if (output.length > 0) {
                     let json_output =  JSON.parse(output[0].out)
@@ -693,73 +719,6 @@ export default {
                 this.download_url = response.data.download_url
                 const lines = atob(response.data.content).split("\n")
                 this.readMacroScript(lines)
-
-
-                /* for (let i = 0; i < lines.length; i++) {
-                    
-                    if(lines[i].startsWith("#@") && lines[i].indexOf('(') > 0){
-                        let substring1 = lines[i].substring(2, lines[i].indexOf('(')).trim()
-                        let substring2 = lines[i].substring(lines[i].indexOf('('), lines[i].lastIndexOf(')')+1).trim()
-                        let substring3 = lines[i].substring(lines[i].indexOf(')')+1).trim()
-                        let params = []
-                        params.dataType = substring1
-                        console.log(substring2)
-
-                        substring2 = substring2.replace('{', '[').replace('}',']').replaceAll('=',':')
-
-                        String.prototype.replaceAt = function(index, replacement) {
-                            return this.substring(0, index) + replacement + this.substring(index + replacement.length);
-                        }
-
-                        substring2 = substring2.replaceAt(substring2.indexOf('('),'{').replaceAt(substring2.lastIndexOf(')'),'}')
-                        console.log(substring2);
-
-
-                        if(substring2.includes("choices")){
-                            substring2 = substring2.replace("choices",JSON.stringify("choices"))
-                        }if(substring2.includes("style")) {
-                            substring2 = substring2.replace("style",JSON.stringify("style"))
-                        }if(substring2.includes("value")) {
-                            substring2 = substring2.replace("value",JSON.stringify("value"))
-                        }
-                        substring2 = JSON.parse(substring2)
-                        
-                        if(substring2.style){
-                            params.inputType = substring2.style
-                        }
-                        else{
-                            params.inputType = "text"
-                            }
-                        if(substring2.choices) {
-                            params.options = substring2.choices
-                        }
-                        if(substring2.value)
-                            params.default = substring2.value
-                        
-                        params.inputName = substring3
-                    
-                        input_params.push(params)
-                        console.log(input_params)
-
-                    }else if (lines[i].startsWith("#@")) {
-                        let arr = lines[i].replace("#@", "").trim().split(" ")
-                        let params = []
-                        params.dataType = arr[0]
-                        params.inputName = arr[1]
-                        params.inputType = "text"
-                        console.log(params)
-                        input_params.push(params)
-                    }
-                    if (lines[i] !== "") {
-                        
-                        scriptLines.push(lines[i])
-                    }
-
-
-                }
-                console.log(scriptLines)
-                this.code = scriptLines
-                this.inputArr = input_params */
             });
 
 
