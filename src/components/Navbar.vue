@@ -110,7 +110,7 @@
                         </template>
                         <v-list-item to="/macros">
                             <v-list-item-icon>
-                                <v-icon class="mr-15">mdi-arrow-left-right</v-icon>
+                                <v-icon class="mr-15">mdi-script</v-icon>
                             </v-list-item-icon>
                             <v-list-item-title class="ml-n5">Macros</v-list-item-title>
                         </v-list-item>
