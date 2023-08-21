@@ -116,9 +116,11 @@
                         </v-list-item>
                         <v-list-item to="/processing" >
                             <v-list-item-icon>
-                                <v-icon class="mr-15">mdi-scissors-cutting</v-icon>
+                                <v-icon class="mr-15">mdi-format-rotate-90</v-icon>
                             </v-list-item-icon>
-                            <v-list-item-title class="ml-n5">Processing</v-list-item-title>
+                            <v-list-item-title class="ml-n5">PSF Dist. & <br/>
+                                Deskew
+                            </v-list-item-title>
                         </v-list-item>
 
                     </v-list-group>
