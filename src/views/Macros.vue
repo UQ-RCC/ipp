@@ -105,8 +105,8 @@
                         <v-stepper-content step="1">
                             <div>
                                 <v-row class="pa-4" color="text-h2 text-center">
-                                    <h4 class="pb-4">Select your macro script from the github repository or the file system.</h4>
-                                    <a :href="`${readmeURL}`" target="_blank">Click here to find more information on macro script parameter definition. </a>
+                                    <v-col cols="12"><h4 >Select your macro script from the github repository or the file system.</h4></v-col>
+                                    <v-col cols="12"><a href="https://uq-rcc.github.io/ipp-docs/#/guide?id=macros" target="_blank">Click here to find more information on macro script parameter definition. </a></v-col>
                                             
                                     <v-col cols="6">
                                         <v-radio-group  v-model="workingItem.macroSource" @change="reset()" row> 
@@ -1197,7 +1197,7 @@ export default {
     mounted: async function () {
         let today = new Date();
         let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-        let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        let time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
         this.dateTime = date+'_'+time;
                     
         // load from db
