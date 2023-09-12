@@ -46,22 +46,41 @@ export default {
   })
   return data
 
-  },
+  },  
+
+  /* async estimate_devices(deconinfo) {
+    const { data } =  await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/estimateDevices`, {
+      params : {
+        deconinfo: btoa(JSON.stringify(deconinfo)) 
+      }
+    })
+    return data
+  }, */
 
   // execute
-  async execute_microvolution(output, instances, mem, devices, executioninfo, jobs, is_test=false) {
+  async execute_microvolution(output, instances, mem, devices, executioninfo, jobs, is_test=false, is_estimate) {
     let _requestUrl = ""
     if (is_test) {
       _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/testexecutebase64`      
+    } if(is_estimate){
+      _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/estimateDevices`  
     } else {
       _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/executemicrovolutionbase64`
     }
     let arrayMax = parseInt(instances) - 1
     // modify executioninfo 
-    let execinfo = Object.assign({}, executioninfo.setting)
-    execinfo.files = executioninfo.series.path
+    let execinfo 
+    
+    if(is_estimate) {
+      execinfo = Object.assign({}, executioninfo)
+      execinfo.files = executioninfo.filepath
+    }else{
+      execinfo = Object.assign({}, executioninfo.setting)
+      execinfo.files = executioninfo.series.path
+    }
     execinfo.jobs = jobs
     execinfo.endpoint = `${Vue.prototype.$Config.endpoints.pref}`
+    execinfo.is_estimate = is_estimate
     // remove unneeded fields
     // delete execinfo.id //refers to settingid
     // delete execinfo.decon_id

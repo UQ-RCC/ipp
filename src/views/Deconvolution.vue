@@ -7,7 +7,15 @@
             height="4"
             :active="loading"
         ></v-progress-linear>
-        <v-overlay v-model="overlay"></v-overlay>
+        <v-overlay v-model="overlay">
+            <v-row align="center" justify="center"><label >Validating devices, Please wait..</label> </v-row>
+            <v-row align="center" justify="center"><v-progress-circular
+                color="primary"
+                indeterminate
+                size="64"
+            ></v-progress-circular></v-row>
+            
+        </v-overlay>
         <br />
         <file-browser-dialog ref="filedialog" />
         <template-dialog ref="templatedialog" />
@@ -272,7 +280,7 @@
                                 <v-stepper-content step=6>
                                     <deconvolution-advanced ref="deconadvanced"/>
                                 </v-stepper-content>
-
+                                
                                 <v-stepper-content step=7>
                                     <deconvolution-devices ref="decondevices"/>
                                 </v-stepper-content>
@@ -511,6 +519,7 @@
                     this.display_decon(item)    
                 }
             })
+            this.workingItem.setting.filepath = this.selected[0].series.path
             console.log(this.loaded)
             console.log(this.selected)
             
@@ -875,9 +884,13 @@
                 
                 console.log("item in submitsingle")
                 console.log(item)
+                if(item.setting.psfType !== 3) {
+                    item.setting.deskew = false
+                }
+                console.log(item)
                 try{
                     await DeconvolutionAPI.execute_microvolution(item.setting.outputPath, _numberOfJobs, 
-                                    item.setting.mem, item.setting.gpus, item, _jobIds, false)
+                                    item.setting.mem, item.setting.gpus, item, _jobIds, false, false)
                     Vue.notify({
                         group: 'datanotif',
                         type: 'success',
@@ -1228,16 +1241,22 @@
                         }
                     } 
                 }
+               
                 if(this.workingItem.step === 7) { /* validate devices in device tab */
                     let msg 
                     let jobs = this.workingItem.setting.instances
                     let mem = this.workingItem.setting.mem
                     let gpus = this.workingItem.setting.gpus
-                    
-                    
+                    console.log(jobs)
+                    console.log(mem)
+                    console.log(gpus)
 
+                    
+                    this.overlay =true
                     let response = await DeconvolutionAPI.validate_devices(jobs,mem,gpus,this.workingItem.setting)
+                    this.overlay =false
                     let output = response.commandResult
+                    console.log(output)
                     if (output.length > 0) {
                         let json_output =  JSON.parse(output[0].out)
                         if(!json_output.results.success){
@@ -1316,8 +1335,15 @@
                 }
                 // and load
                 let _component = this.getStepComponent(nextSt)
-                if (_component)
+                if (_component) {
+                    console.log(this.selected[0])
+                    this.workingItem.setting.filepath = this.selected[0].series.path
                     _component.load_serie(this.workingItem.setting)
+                }
+               
+
+
+                  
             },
 
             /**

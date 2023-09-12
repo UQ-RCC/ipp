@@ -2,6 +2,15 @@
     <div>
         
         <file-browser-dialog ref="filedialog" />
+        <v-overlay v-model="overlay">
+            <v-row align="center" justify="center"><label >Validating devices, Please wait..</label> </v-row>
+            <v-row align="center" justify="center"><v-progress-circular
+                color="primary"
+                indeterminate
+                size="64"
+            ></v-progress-circular></v-row>
+            
+        </v-overlay>
         <v-row>
             <v-col cols="12" sm="12" md="4" lg="4" xl="4">
                 <v-row>
@@ -306,7 +315,7 @@
                                                     <span>The number of GPUs to be used for each instance</span>
                                                 </v-tooltip>
                                             </v-col>
-                                            <v-col
+                                            <!-- <v-col
                                                 class="text-subtitle-1 text-center"
                                                 cols="12"
                                             >
@@ -321,7 +330,7 @@
                                                     height="4"
                                                     :active="loading"
                                                 ></v-progress-linear>
-                                            </v-col>
+                                            </v-col> -->
                                         </v-col>
                                     </v-row>
 
@@ -494,7 +503,6 @@ export default {
             description: '',
             code: '',
             url: '',
-            readmeURL:'',
             github: '',
             inputArr: [],
             params: {},
@@ -511,6 +519,7 @@ export default {
                 {label:'Local File System', value:2}
             ],
             macrofile:'',
+            overlay: false,
 
 
 
@@ -532,11 +541,11 @@ export default {
             const macrodef = JSON.parse(atob(response.data.content))
             this.macros = macrodef
         }
-        const readmeResponse =  await this.github.get("repos/UQ-RCC/ipp-repo/contents/macros/README.md?ref=main")
+       /*  const readmeResponse =  await this.github.get("repos/UQ-RCC/ipp-repo/contents/macros/README.md?ref=main")
         if(readmeResponse.data) {
             this.readmeURL = readmeResponse.data.html_url
             console.log(this.readmeURL)
-        }
+        } */
     },
     computed: {
         username: function () {
@@ -650,10 +659,11 @@ export default {
                 let mem = this.workingItem.mem
                 let gpus = this.workingItem.gpus
                 let settings=[]
-                this.loading =true
+                this.overlay =true
                 let response = await DeconvolutionAPI.validate_devices(jobs,mem,gpus,settings)
-                this.loading = false
+                this.overlay = false
                 let output = response.commandResult
+                console.log(output)
                 if (output.length > 0) {
                     let json_output =  JSON.parse(output[0].out)
                     if(!json_output.results.success){
