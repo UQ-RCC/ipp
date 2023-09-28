@@ -307,7 +307,18 @@ export default {
     const { data } = await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/macro/jobs?macro_id=${macro_id}&sendemail=${sendemail}`)
     return data
   },
- 
+
+  //configuration
+
+  async save_api_option(api) {
+    const { data }= await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/configuration?api=${api}`)
+    return data
+  },
+  
+  async get_api_option() {
+    const { data }= await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/configuration`)
+    return data
+  },
  
   
 }

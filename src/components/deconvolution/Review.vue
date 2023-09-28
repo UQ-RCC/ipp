@@ -48,7 +48,7 @@
             </v-expansion-panel>
 
 
-            <v-expansion-panel @click="change(4)">
+            <v-expansion-panel v-if="api=='Microvolution'" @click="change(4)">
                 <v-expansion-panel-header>Noise Suppression</v-expansion-panel-header>
                 <v-expansion-panel-content>
                 <!--  <deconvolution-noise ref="revdeconnoise" :readonly="true"/> -->
@@ -56,7 +56,7 @@
                 </v-expansion-panel-content>
             </v-expansion-panel>
 
-            <v-expansion-panel @click="change(5)">
+            <v-expansion-panel v-if="api=='Microvolution'" @click="change(5)">
                 <v-expansion-panel-header>Advanced</v-expansion-panel-header>
                 <v-expansion-panel-content>
                     <!-- <deconvolution-advanced ref="revdeconadvanced" :readonly="true"/> -->
@@ -90,6 +90,7 @@
     import DeconvolutionDevices from '@/components/deconvolution/Devices.vue'
 
     import series from "@/utils/series.js";
+    import PreferenceAPI from "@/api/PreferenceAPI"
 
     export default {
         name: 'DeconvolutionReview',
@@ -106,7 +107,8 @@
             return {
                 panelId: 0,
                 serie: series.formatSeries(null),
-                panel: this.$refs.revdeconmetadata
+                panel: this.$refs.revdeconmetadata,
+                api:''
             }
         }, 
         methods: {
@@ -156,7 +158,9 @@
             }
 
         },
-        mounted: function() {
+        mounted: async function() {
+            let _current_api = await PreferenceAPI.get_api_option()
+            this.api=_current_api.apiname
             for (let i=0; i<7 ; i++){
                 this.panel = this.getPanel(i)
                 if(this.panel ) {

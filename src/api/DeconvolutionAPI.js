@@ -58,13 +58,15 @@ export default {
   }, */
 
   // execute
-  async execute_microvolution(output, instances, mem, devices, executioninfo, jobs, is_test=false, is_estimate) {
+  async execute_microvolution(output, instances, mem, devices, executioninfo, jobs, is_test=false, is_estimate, is_cudaDecon) {
     let _requestUrl = ""
-    if (is_test) {
+    if (is_test && !is_estimate && !is_cudaDecon) {
       _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/testexecutebase64`      
-    } if(is_estimate){
+    } else if(is_estimate && !is_test && !is_cudaDecon){
       _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/estimateDevices`  
-    } else {
+    } else if (is_cudaDecon && !is_test && !is_test){
+      _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/CudaDeconbase64`
+    } else if ((!is_cudaDecon && !is_test && !is_test)) {
       _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/executemicrovolutionbase64`
     }
     let arrayMax = parseInt(instances) - 1
@@ -88,6 +90,7 @@ export default {
     // delete execinfo.isfolder
     // delete execinfo.name
     delete execinfo.decon
+    console.log(_requestUrl)
     console.log(execinfo)
 
     let endpoint = `${Vue.prototype.$Config.endpoints.pref}`
@@ -105,4 +108,6 @@ export default {
     })
     return data
   },
+
+  
 }

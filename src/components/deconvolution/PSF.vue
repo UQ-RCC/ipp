@@ -2,11 +2,11 @@
     <v-card :disabled="readonly">
         <file-browser-dialog ref="filedialog" />
 
-        <v-row align="center" justify="center">
+        <v-row align="center" justify="center" >
             <v-switch
                 v-model="serie.generatePsf"
                 label="Generate PSF"
-                >
+                v-show="api=='Microvolution'">
             </v-switch>
         </v-row>
         
@@ -134,7 +134,7 @@
         </v-col>
 
 
-        <v-col v-if="!serie.generatePsf">
+        <v-col v-if="!serie.generatePsf" :class="{space:api=='CudaDecon'}">
             <v-row align="center" justify="center">
                 <v-progress-circular indeterminate color="primary" v-if="loading"></v-progress-circular>
                 <v-col cols="30" sm="6" md="7">
@@ -235,6 +235,7 @@
                 serie: series.formatSeries(null),
                 psfSerie: {},
                 loading: false,
+                api:"",
                 psfModels: [
                     {label: 'Scalar', value: 0},
                     {label: 'Vectorial', value: 1},
@@ -283,7 +284,11 @@
             },
             async load_serie(serie){
                 console.log("inside psf load serie")
+                
                 this.serie = serie
+                let _current_api = await PreferenceAPI.get_api_option()
+                this.api=_current_api.apiname
+
                 if(this.serie.psfFile){
                     let _storedSeries = await PreferenceAPI.get_serie(this.serie.psfFile)
                     if ( _storedSeries && _storedSeries.length > 0 ) {
@@ -393,3 +398,8 @@
         
     };
 </script>
+<style>
+.space {
+    margin-top: 20px;
+}
+</style>

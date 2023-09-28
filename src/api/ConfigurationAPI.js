@@ -12,5 +12,7 @@ export default {
             }
         })
         return data 
-    }
+    },
+
+    
 }

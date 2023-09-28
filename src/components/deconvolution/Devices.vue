@@ -11,15 +11,31 @@
             ></v-progress-circular></v-row>
             
         </v-overlay>
-        <v-row align="center" justify="center">
-            <v-switch
+        <v-col align="center" justify="center">
+            <!-- <v-switch
                 v-model="estimateDevice"
                 label="Estimate memory & number of GPUs for processing"
                 >
-            </v-switch> 
-           
-        </v-row>
-        <v-row align="center" justify="center"><label class="messageText"> {{message}} </label></v-row>
+            </v-switch> --> 
+            <v-col cols="15" sm="3" md="4" v-if="api=='Microvolution'" >
+                <v-tooltip bottom >
+                    <template v-slot:activator="{ on, attrs }" >
+                        <v-btn 
+                            rounded dark default  
+                            color="primary" 
+                            v-bind="attrs" 
+                            v-on="on"
+                            @click.stop="estimateMemory()">
+                            Estimate 
+                        </v-btn>
+                    </template>
+                    <span>Click to estimate memory and number of GPUs for processing</span>
+                </v-tooltip>
+                <label class="messageText"> {{message}} </label>
+            </v-col>
+            
+        </v-col>
+        
         <v-col align="center" justify="center">
             
             <v-col cols="15" sm="3" md="4" style="padding-top:30px">
@@ -91,6 +107,7 @@
     import series from '@/utils/series.js'
     // api
     import DeconvolutionAPI from "@/api/DeconvolutionAPI.js"
+    import PreferenceAPI from "@/api/PreferenceAPI"
 
     export default {
         name: 'DeconvolutionDevices',
@@ -109,10 +126,12 @@
                 memError: null,
                 gpuError: null,
                 message: null,
+                inimem : 0,
                 rules: {
                     positiveInteger: value => value && value > 0 && Number.isInteger(parseFloat(value)) || 'Must be a positive integer',
                     positiveNumber: value => value && value > 0 || 'Must be a positive number',
-                }
+                },
+                api:"",
                 /* positiveInteger: [
                     value => value && value > 0 && Number.isInteger(parseFloat(value)) || 'Must be a positive integer'
                 ], 
@@ -121,7 +140,7 @@
                 ],  */
             }
         },
-        watch: {
+        /* watch: {
             estimateDevice: function (val) {
                 if (val) {
                     this.estimateMemory()
@@ -129,15 +148,19 @@
              }
                
             
-        },
+        }, */
         methods: {
             // return the data
             get_serie(){
                 return this.serie
             },
-            load_serie(serie_devices){
+            async load_serie(serie_devices){
                 console.log(serie_devices)
                 this.serie = serie_devices
+                this.inimem = this.serie.mem
+                this.message = null
+                let _current_api = await PreferenceAPI.get_api_option()
+                this.api=_current_api.apiname
                 
             },
             is_valid(){
@@ -152,6 +175,9 @@
                 if (this.cpu && this.serie.mem &&  this.cpu > 0 && this.serie.mem > 0 && this.cpu > Math.max(15,this.serie.mem)) {
                     this.memError = " Need "+ this.cpu + "GB memory: " + this.serie.mem + "GB is below estimate"
                 } else {
+                    if (this.cpu < Math.max(15,this.serie.mem) && this.serie.mem < Math.max(15,this.inimem)) {
+                        this.serie.mem = Math.max(15,this.inimem)
+                    } 
                     this.memError = null 
                 }
 
@@ -166,23 +192,27 @@
             async estimateMemory() {
                 let jobs = []
                 console.log(this.serie)
+                if (!this.serie.filepath) {
+                    this.serie.filepath = this.$cookies.isKey('filepath') ? this.$cookies.get('filepath') : 'none'
+                }
+                console.log(this.serie)
                 this.overlay =true
                 this.loading=true
                 let response = await DeconvolutionAPI.execute_microvolution(this.serie.outputPath, parseInt(this.serie.instances), 
-                this.serie.mem, this.serie.gpus, this.serie, jobs, false, true)
+                this.serie.mem, this.serie.gpus, this.serie, jobs, false, true, false)
                 this.overlay =false
                 this.loading=false
                 this.message = 'Estimate complete'
                 let output = response.commandResult
-                console.log(output)
+                console.log(response)
                 if (output.length > 0) {
                     for (let i=0; i < output.length ; i++) {
                         if(output[i].out.startsWith("{\"estimates\":")){
                             let json_output =  JSON.parse(output[i].out)
                             this.estimates = json_output
                             console.log(this.estimates)
-                            let cpuMem = this.estimates.estimates.cpuEstimate == 0 ? 1: this.estimates.estimates.cpuEstimate
-                            let gpuMem = this.estimates.estimates.gpuEstimate == 0 ? 1 : this.estimates.estimates.gpuEstimate
+                            let cpuMem = this.estimates.estimates.cpuEstimateGB == 0 ? 1: this.estimates.estimates.cpuEstimateGB
+                            let gpuMem = this.estimates.estimates.gpuEstimateGB == 0 ? 1 : this.estimates.estimates.gpuEstimateGB
                             this.cpu =  cpuMem + 5
                             this.gpu = gpuMem
                             console.log(cpuMem)

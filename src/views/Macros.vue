@@ -918,7 +918,7 @@ export default {
                             group: 'sysnotif',
                             type: 'warning',
                             title: 'Unable to add file',
-                            text: 'This macro require too much memory to run! This macro cannot be added'
+                            text: 'This file require too much memory to run! This file cannot be added'
                         })
                         return
                     }

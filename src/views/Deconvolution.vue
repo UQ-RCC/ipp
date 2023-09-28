@@ -130,7 +130,8 @@
                 
                     <v-row>
                         <v-col>
-                            <p class="version-text">Microvolution Version 2022.10</p>
+                            <p class="version-text" v-if="api=='Microvolution'">Microvolution Version 2022.10</p>
+                            <p class="version-text" v-if="api=='CudaDecon'">CudaDecon</p>
 
                         </v-col>
                     </v-row>
@@ -155,7 +156,7 @@
                         </v-col>
                         
                         <v-spacer></v-spacer>
-                        <v-col class="d-flex" cols="10" sm="8">
+                        <v-col class="d-flex" cols="10" sm="8" >
                             <v-select
                                 :items="psfTypes"
                                 v-model="workingItem.setting.psfType"
@@ -164,6 +165,7 @@
                                 label="Illumination Type"
                                 @change="psfChanged"
                                 outlined dense
+                                v-show="api=='Microvolution'"
                             ></v-select>
                         </v-col>
                         <v-spacer></v-spacer> 
@@ -198,7 +200,6 @@
                                 <v-stepper-step :editable="checkStepVisibility(2)" 
                                     step="2"
                                     :complete="workingItem.step!==2 && workingItem.visitedSteps.indexOf(2) >= 0"
-                                    :rules="[rules.psfstepvalid]" 
                                     @click="stepClicked">
                                     <small>PSF</small>
                                 </v-stepper-step>
@@ -206,7 +207,6 @@
                                 <v-stepper-step :editable="checkStepVisibility(3)"
                                                 step="3" 
                                                 :complete="workingItem.step!==3 && workingItem.visitedSteps.indexOf(3) >= 0"
-                                                :rules="[rules.deskewstepvalid]"  
                                                 v-show="workingItem.setting.psfType===3" 
                                     @click="stepClicked">
                                     <small>Deskew</small>
@@ -222,6 +222,7 @@
                                 <v-divider></v-divider>
                                 <v-stepper-step :editable="checkStepVisibility(5)"
                                                 :complete="workingItem.step!==5 && workingItem.visitedSteps.indexOf(5) >= 0"
+                                                v-show="api==='Microvolution'" 
                                                 step="5"
                                     @click="stepClicked">
                                     <small>Noise Suppression</small>
@@ -230,6 +231,7 @@
                                 <v-stepper-step :editable="checkStepVisibility(6)"
                                                 :complete="workingItem.step!==6 && workingItem.visitedSteps.indexOf(6) >= 0"
                                                 :rules="[rules.advancedstepvalid]"  
+                                                v-show="api==='Microvolution'"
                                                 step="6"
                                     @click="stepClicked">
                                     <small>Advanced</small>
@@ -273,8 +275,8 @@
                                     <deconvolution-iterations ref="deconiterations"/>
                                 </v-stepper-content>
 
-                                <v-stepper-content step=5>
-                                    <deconvolution-noise ref="deconnoise"/>
+                                <v-stepper-content step=5 >
+                                    <deconvolution-noise ref="deconnoise" />
                                 </v-stepper-content>
 
                                 <v-stepper-content step=6>
@@ -401,10 +403,13 @@
     
     // api
     import DeconvolutionAPI from "@/api/DeconvolutionAPI.js"
-    import MetadataAPI from "@/api/MetadataAPI.js"
+    import ConfigurationAPI from "@/api/ConfigurationAPI.js"
     import PreferenceAPI from "@/api/PreferenceAPI"
     import series from '@/utils/series.js'
-    
+    import miscs from '@/utils/miscs.js'
+
+    import VueCookies from 'vue-cookies'
+    Vue.use(VueCookies)
 
     export default {
         name: 'Deconvolution',
@@ -436,6 +441,7 @@
                 tempID: null,
                 outputpath:[],
                 path:[],
+                api:"",
                 
                 
                 // -- selected files table
@@ -499,29 +505,41 @@
             }
         },
         mounted: async function() {
-            let initialItems = []
-            let _decons = await PreferenceAPI.get_decons(null)
-            for (let _index =0; _index < _decons.length; _index++){
-                let _decon = _decons[_index]
-                _decon.series = await PreferenceAPI.get_serie_by_id(_decon.series_id)
-                _decon.setting = await PreferenceAPI.get_setting_by_id(_decon.setting_id)
-                _decon.setting = series.formatSeries(_decon.setting)
-                initialItems.push(_decon)
-                //initialItems[_index].tempID = new Date().getMilliseconds()
-                initialItems[_index].tempID = this.uuid()
-            }
-            this.loaded = this.loaded.concat(initialItems)
+            let _current_api = await PreferenceAPI.get_api_option()
+            this.api=_current_api.apiname
+            console.log(this.api)
+            if(this.api == 'Microvolution') {
             
-            // for though loaded, add to selected if needeed
-            this.loaded.forEach(item => {
-                if(item.selected) {
-                    this.selected.push(item)            
-                    this.display_decon(item)    
+                let initialItems = []
+                let _decons = await PreferenceAPI.get_decons(null)
+                for (let _index =0; _index < _decons.length; _index++){
+                    let _decon = _decons[_index]
+                    _decon.series = await PreferenceAPI.get_serie_by_id(_decon.series_id)
+                    _decon.setting = await PreferenceAPI.get_setting_by_id(_decon.setting_id)
+                    _decon.setting = series.formatSeries(_decon.setting)
+                    initialItems.push(_decon)
+                    //initialItems[_index].tempID = new Date().getMilliseconds()
+                    initialItems[_index].tempID = this.uuid()
                 }
-            })
-            this.workingItem.setting.filepath = this.selected[0].series.path
-            console.log(this.loaded)
-            console.log(this.selected)
+                this.loaded = this.loaded.concat(initialItems)
+                
+                // for though loaded, add to selected if needeed
+                this.loaded.forEach(item => {
+                    if(item.selected) {
+                        this.selected.push(item)           
+                        this.display_decon(item)    
+                    }
+                })
+                console.log(this.selected)
+                console.log(this.loaded)
+                if(this.selected.length > 0) {
+                    this.workingItem.setting.filepath = this.selected[0].series.path
+                    this.$cookies.set('filepath',this.selected[0].series.path, new Date(9999, 0o1, 0o1).toUTCString())
+                }
+            }
+            if(this.api == 'CudaDecon') {
+                this.workingItem.setting.psfType = 3
+            }
             
         },
         methods: {
@@ -562,6 +580,7 @@
                 let items = []
                 try{
                     let _decons = []
+                    console.log(btoa(pathToBeLoaded))
                     if(!this.isSame) {
                         _decons = await PreferenceAPI.get_decons(pathToBeLoaded)
                         // found
@@ -605,18 +624,21 @@
                                 } else {
                                         Vue.$log.debug("Not found in database- a new decon and path")
                                         let response = null
+                                        console.log(btoa(pathToBeLoaded))
                                         if (isfolder)
                                             response = await DeconvolutionAPI.get_folder_info(pathToBeLoaded)
                                         else 
                                             response = await DeconvolutionAPI.get_file_info(pathToBeLoaded)
-                                        
+                                       
                                         Vue.$log.debug("Response :")
                                         Vue.$log.debug(response)
                                         Vue.$log.debug(JSON.parse(JSON.stringify(response)))
                                         // add to database
                                         for(let _index = 0; _index < response.commandResult.length; _index++){
+                                            console.log("adding new docn to db")
                                             let _responseItem  = response.commandResult[_index]
                                             _responseItem.isfolder = isfolder
+                                            console.log(_responseItem)
                                             let _serie = series.fixSeriesUnit(_responseItem)
                                             Vue.$log.debug("Series after fixing unit :")
                                             Vue.$log.debug(_serie)
@@ -668,6 +690,7 @@
                     }
                 Vue.$log.debug("items :")
                 Vue.$log.debug(items)
+                console.log(items)
                 }
                 catch(err){
                     Vue.$log.error(err)
@@ -690,14 +713,14 @@
                 
                 if (isfolder)
                     options = await this.$refs.filedialog.open('selectfilesinfolder', 'Deconvolution', '/')
+
                 else 
                     options = await this.$refs.filedialog.open('selectfiles', 'Deconvolution', '/')
                 if (!options.cancelled) {
                     let paths = []
                     if(isfolder){
-                        console.log(options)
                         let _pathToBeLoaded = options.path + options.filter
-                        Vue.$log.debug("selecting series:" + _pathToBeLoaded)
+                        Vue.$log.debug("selecting series:" + _pathToBeLoaded + "max size" + options.maxsize)
                         //let _exist = false
                         this.loaded.map(file => {
                             if (file.series.path === _pathToBeLoaded){
@@ -709,10 +732,21 @@
                             }
                                
                         })
+                        console.log(miscs.maxMemSize())
+                        if(options.maxsize * 2.2 > miscs.maxMemSize()){
+                            Vue.notify({
+                                group: 'sysnotif',
+                                type: 'warning',
+                                title: 'Unable to add file',
+                                text: 'This series require too much memory to run! This series cannot be added'
+                            })
+                            return
+                        }
                         paths.push(_pathToBeLoaded)
                     } else {
                         Vue.$log.debug("selecting files:")
                         Vue.$log.debug(options.selectedItems)
+                        
                         for(let i = 0; i< options.selectedItems.length; i++){
                             //let _exists = false
                             this.loaded.map(file => {
@@ -725,6 +759,19 @@
                                 
                             })
                             //if (!_exists)
+                            let itemSize = miscs.convertFormattedStrToBytes(options.selectedItems[i].size)
+                            console.log(miscs.maxMemSize())
+                            console.log(itemSize* 2.2)
+                            if(itemSize * 2.2 > miscs.maxMemSize()){
+                                Vue.notify({
+                                    group: 'sysnotif',
+                                    type: 'warning',
+                                    title: 'Unable to add file',
+                                    text: 'This series require too much memory to run! This series cannot be added'
+                                })
+                                return
+                            }
+                            
                             paths.push(options.selectedItems[i].path)
                         }
                     }
@@ -750,7 +797,7 @@
                         this.loaded = this.loaded.concat(items)
                         
                     }
-                    console.log(this.loaded)
+                    console.log(this.loaded[0])
                     
 
                     if ((!this.selected || this.selected.length ==0) && this.loaded.length > 0){
@@ -768,6 +815,7 @@
              */
             async selectFiles(){
                 await this.selectFilesOrFolders(false)
+                this.workingItem.setting.isfolder=false
                 /* let filepath = this.loaded[0].series.path
                 this.loading =true
                 this.overlay = true
@@ -787,7 +835,8 @@
              */
             async selectFilesInFolder(){
                 await this.selectFilesOrFolders(true)
-                console.log(this.loaded)
+                this.workingItem.setting.isfolder=true
+                
             },
 
             /**
@@ -806,7 +855,7 @@
                     fileslistbase64 = btoa(fileslistbase64.substring(0,fileslistbase64.length-1))
                 }
                 try{
-                    const response= await MetadataAPI.execute_metedata_script(fileslistbase64, '', false)
+                    const response= await ConfigurationAPI.execute_metedata_script(fileslistbase64, '', false)
                     let output = response.commandResult
                     if (output.length > 0) {
                         let json_output =  JSON.parse(output[0].out)
@@ -866,6 +915,7 @@
                 this.selected = []
                 this.outputpath = []
                 this.workingItem = series.defaultDecon()
+                console.log( this.workingItem)
                 this.display_decon(this.workingItem, false)
             },
             /* end part dealing with load */
@@ -876,21 +926,28 @@
             /****************************************************************************** */
             /** submit job */
             async submitSingleJob(item){
+
+                let _current_api = await PreferenceAPI.get_api_option()
+                
+                
                 let _numberOfJobs = parseInt(item.setting.instances)
                 let _jobs = await PreferenceAPI.create_decon_jobs(item.id, _numberOfJobs)
                 let _jobIds = _jobs.map(_job => {
                     return _job.id
                 })
                 
-                console.log("item in submitsingle")
-                console.log(item)
                 if(item.setting.psfType !== 3) {
                     item.setting.deskew = false
                 }
-                console.log(item)
+                
+                console.log(_jobIds)
                 try{
-                    await DeconvolutionAPI.execute_microvolution(item.setting.outputPath, _numberOfJobs, 
-                                    item.setting.mem, item.setting.gpus, item, _jobIds, false, false)
+                    if (_current_api &&  _current_api.apiname=="Microvolution") {
+                        await DeconvolutionAPI.execute_microvolution(item.setting.outputPath, _numberOfJobs, 
+                                        item.setting.mem, item.setting.gpus, item, _jobIds, false, false, false)
+                    } else if(_current_api &&  _current_api.apiname=="CudaDecon") {
+                        await DeconvolutionAPI.execute_microvolution(item.setting.outputPath,_numberOfJobs, item.setting.mem, item.setting.gpus, item, _jobIds, false, false, true)
+                    }
                     Vue.notify({
                         group: 'datanotif',
                         type: 'success',
@@ -1015,17 +1072,25 @@
                     if(_acomponent){
                         
                         if(!decon.series.padding) {
+                            console.log("not padding in display decon")
+                            console.log(decon)
+                            if (!decon.setting.filepath){
+                                console.log("not padding in display decon not file path")
+                                decon.setting.filepath = decon.series.path
+                            }
                             _acomponent.load_serie(decon.setting)
                             //_acomponent.get_serie()
 
                         } else {
+                            console.log(" padding in display decon")
+                            console.log(decon.series)
                             _acomponent.load_serie(decon.series) //previous decon.setting
                         }
                         if(!_acomponent.is_valid())
                             _anyInvalidStep = true
                     }
                 })
-                if(this.workingItem.setting.psfType !== 3){
+                if(this.workingItem.setting.psfType !== 3 ){
                     if(this.workingItem.visitedSteps.length < 7)
                         this.workingItem.setting.valid = false
                     else
@@ -1053,7 +1118,7 @@
                     if ( this.singleSelect ) {
                         this.selected = [ anItem.item ]
                         this.display_decon(anItem.item)
-
+                        this.$cookies.set('filepath',anItem.item.series.path, new Date(9999, 0o1, 0o1).toUTCString())
                         //save
                     }
                     else {
@@ -1287,10 +1352,24 @@
                 // add to visited
                 if (this.workingItem.step !== 8){
                     // only access to 3 if psfType = 3
-                    if(this.workingItem.setting.psfType === 3 || this.workingItem.step !== 2)
+                    /* if(this.workingItem.setting.psfType === 3 || this.workingItem.step !== 2)
                         this.workingItem.step = this.workingItem.step + 1
+                    if(this.api==='CudaDecon' && this.workingItem.step ===4)
+                        this.workingItem.step = 7
                     else
-                        this.workingItem.step = 4
+                        this.workingItem.step = 4 */
+
+                    if (this.api === 'Microvolution') {
+                        if(this.workingItem.setting.psfType === 3 || this.workingItem.step !== 2)
+                            this.workingItem.step = this.workingItem.step + 1
+                        else
+                            this.workingItem.step = 4
+                    } else {
+                        if (this.workingItem.step === 4) 
+                            this.workingItem.step = 7
+                        else
+                            this.workingItem.step = this.workingItem.step + 1
+                    }   
                     let nextStep = this.workingItem.step
                     this.savePreviousAndLoadNextStep(previousStep, nextStep)
                 }

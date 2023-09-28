@@ -91,7 +91,7 @@
         
         </v-data-table>
         <p />
-        <v-row align="center" justify="center">
+        <v-row align="center" justify="center" v-if="api=='Microvolution'">
             <v-col cols="20" sm="4" md="5">
                 <v-select
                     :items="backgroundTypes"
@@ -126,7 +126,7 @@
     import series from "@/utils/series.js";
     import PsCalculatorDialog from '@/components/PsCalculatorDialog.vue';
     import SdcCalculatorDialog from '@/components/SdcCalculatorDialog.vue';
-    
+    import PreferenceAPI from "@/api/PreferenceAPI"
    
     
     export default {
@@ -218,6 +218,7 @@
                     positiveInteger: value => value && value >= 0 && Number.isInteger(parseFloat(value)) || 'Must be a positive integer',
                    
                 },
+                api:"",
 
             }
         },
@@ -226,9 +227,11 @@
             get_serie(){
                 return this.serie
             },
-            load_serie(serie){
+            async load_serie(serie){
                 this.serie = serie
                 this.psfTypeChanged()
+                let _current_api = await PreferenceAPI.get_api_option()
+                this.api=_current_api.apiname
             },
 
             // psf type changed --> called from load serie

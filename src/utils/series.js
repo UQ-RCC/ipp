@@ -116,7 +116,7 @@ var series = {
         if (!series['padding'])
             series['padding'] = {x: 0, y: 0, z: 0}
         if (!series['tiling'])
-            series['tiling'] =  {x: 0, y: 0, z: 0}
+            series['tiling'] =  {x: 1, y: 1, z: 1}
         if (!series['scaling'])
             series['scaling'] =  1
         if (!series['fileformat'])
@@ -131,7 +131,7 @@ var series = {
         if (!series['instances'])
             series['instances']= 1
         if (!series['mem']) {
-            if(series['maxFileSizeInMb']) { 
+            /* if(series['maxFileSizeInMb']) { 
                 let totalMemSuggestedGbs = (series['maxFileSizeInMb'] * 2 * 2 * 4 * 5)/1024
                 // round up
                 totalMemSuggestedGbs = Math.ceil(totalMemSuggestedGbs/10) * 10 + 5
@@ -140,7 +140,8 @@ var series = {
                 series['mem']= totalMemSuggestedGbs
             } else {
                 series['mem'] = 100
-            }
+            } */
+            series['mem'] = 15
         }
         // gpus
         if (!series['gpus'])
