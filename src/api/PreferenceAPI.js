@@ -95,17 +95,22 @@ export default {
   },
 
   // get decons in deconpage
-  async get_decons(seriepath){
+  async get_decons(seriepath, api){
     if(seriepath){
       const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/deconpage/decons`,{
         params: {
-          path: btoa(seriepath)
+          path: btoa(seriepath),
+          api: btoa(api)
         }
       })
       return data  
     }
     else {
-      const { data } =  await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/deconpage/decons`)
+      const { data } =  await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/deconpage/decons`, {
+        params: {
+          api: btoa(api)
+        }
+      })
       return data
     }
   },

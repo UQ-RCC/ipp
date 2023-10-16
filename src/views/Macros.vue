@@ -23,7 +23,7 @@
                         <div>
                             <v-tooltip bottom>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-btn class="my-3" color="primary" fab dark large @click.stop="selectFiles()"
+                                    <v-btn class="my-3" color="primary" style="margin: 5px;" fab dark default @click.stop="selectFiles()"
                                         v-bind="attrs" v-on="on">
                                         <v-icon>mdi-file-multiple</v-icon>
                                     </v-btn>
@@ -34,7 +34,7 @@
 
                             <v-tooltip bottom>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-btn class="my-3" color="primary" fab dark large v-bind="attrs" v-on="on"
+                                    <v-btn class="my-3" color="primary" style="margin: 5px;" fab dark default v-bind="attrs" v-on="on"
                                         @click.stop="selectFilesInFolder()">
                                         <v-icon>mdi-folder-plus</v-icon>
                                     </v-btn>
@@ -44,8 +44,8 @@
 
                             <v-tooltip bottom>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-btn class="my-3" color="warning" @click.stop="removeCurrentlySelected()" fab dark
-                                        large v-bind="attrs" v-on="on">
+                                    <v-btn class="my-3" color="warning" style="margin: 5px;" @click.stop="removeCurrentlySelected()" fab dark
+                                    default v-bind="attrs" v-on="on">
                                         <v-icon>mdi-close</v-icon>
                                     </v-btn>
                                 </template>
@@ -54,7 +54,7 @@
 
                             <v-tooltip bottom>
                                 <template v-slot:activator="{ on, attrs }">
-                                    <v-btn class="my-3" color="error" @click.stop="removeAll()" fab dark large
+                                    <v-btn class="my-3" color="error" style="margin: 5px;" @click.stop="removeAll()" fab dark default
                                         v-bind="attrs" v-on="on">
                                         <v-icon>mdi-close-octagon</v-icon>
                                     </v-btn>

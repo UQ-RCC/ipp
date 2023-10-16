@@ -58,7 +58,7 @@
                         item-key="tempID"
                         show-select
                         class="elevation-1"
-                        height="575px" width="100%"
+                        height="250px" width="100%"
                         @item-selected="selectedChanged"
                     >
                     </v-data-table>
@@ -69,6 +69,7 @@
                                 <v-btn 
                                     class="my-3" 
                                     color="primary" 
+                                    style="margin: 5px;"
                                     fab dark default 
                                     @click.stop="selectFiles()"
                                     v-bind="attrs" 
@@ -78,6 +79,7 @@
                             </template>
                             <span>Add single files</span>
                         </v-tooltip>
+                        
 
 
                         <v-tooltip bottom>
@@ -85,6 +87,7 @@
                                 <v-btn 
                                     class="my-3" 
                                     color="primary" 
+                                    style="margin: 5px;"
                                     fab dark default 
                                     v-bind="attrs" 
                                     v-on="on"
@@ -99,6 +102,7 @@
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn  class="my-3" 
                                         color="warning"
+                                        style="margin: 5px;"
                                         @click.stop="removeCurrentlySelected()" 
                                         fab dark default 
                                         v-bind="attrs" 
@@ -113,6 +117,7 @@
                             <template v-slot:activator="{ on, attrs }">
                                 <v-btn  class="my-3" 
                                         color="error"
+                                        style="margin: 5px;"
                                         @click.stop="removeAll()"  
                                         fab dark default 
                                         v-bind="attrs" 
@@ -123,10 +128,66 @@
                             <span>Remove all</span>
                         </v-tooltip>
                     </div>
+                    <div>
+                        <v-col >
+                            <h4 v-if="mloading">Loading metadata</h4>
+                            <h4 v-if="!mloading">Metadata</h4>
+                            <v-progress-linear
+                                color="primary"
+                                indeterminate
+                                rounded
+                                height="5"
+                                :active="mloading"
+                        ></v-progress-linear>
+                        </v-col>
+                        <v-col>
+                        <v-card class="metdata-card" >
+                            <div>
+                                    <v-expansion-panels accordion>
+                                        <v-expansion-panel v-for="item in metedataResults" :key="item.file">
+                                                <v-expansion-panel-header  >{{ item.file }} </v-expansion-panel-header>
+                                                <v-expansion-panel-content >
+
+                                                    <v-row >
+                                                        <v-col >
+                                                            
+                                                                <!-- <v-card-text> -->
+                                                                    <v-table fixed-header >
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th class="text-left">Paramater</th>
+                                                                                <th class="text-left">Value</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            <tr v-for="(value, key) in item"
+                                                                                v-bind:key="key">
+                                                                                <td class="text-left">{{ key }} </td>
+                                                                                <td class="text-left">{{ value }}</td>
+                                                
+                                                                            </tr>
+                                                                        </tbody>
+                                                
+                                                                    </v-table>
+                                                                <!-- </v-card-text> -->    
+                                                            
+                                                        </v-col>
+                                                    </v-row>
+
+                                                </v-expansion-panel-content>
+                                            </v-expansion-panel>
+
+                                    </v-expansion-panels>
+                                
+
+                            </div>
+                        </v-card></v-col>
+                    </div>
                 </div>
+
             </v-col>
             <v-divider vertical></v-divider>
-            <v-col cols="12" sm="12" md="8" lg="8" xl="8" style="height:700px">
+            <v-col cols="12" sm="12" md="8" lg="8" xl="8" style="height:850px">
                 
                     <v-row>
                         <v-col>
@@ -407,6 +468,7 @@
     import PreferenceAPI from "@/api/PreferenceAPI"
     import series from '@/utils/series.js'
     import miscs from '@/utils/miscs.js'
+    import FilesAPI from "@/api/FilesAPI"
 
     import VueCookies from 'vue-cookies'
     Vue.use(VueCookies)
@@ -442,6 +504,9 @@
                 outputpath:[],
                 path:[],
                 api:"",
+                metedataResults:[],
+                mloading:false,
+                dateTime:"",
                 
                 
                 // -- selected files table
@@ -508,38 +573,61 @@
             let _current_api = await PreferenceAPI.get_api_option()
             this.api=_current_api.apiname
             console.log(this.api)
-            if(this.api == 'Microvolution') {
-            
-                let initialItems = []
-                let _decons = await PreferenceAPI.get_decons(null)
-                for (let _index =0; _index < _decons.length; _index++){
-                    let _decon = _decons[_index]
-                    _decon.series = await PreferenceAPI.get_serie_by_id(_decon.series_id)
-                    _decon.setting = await PreferenceAPI.get_setting_by_id(_decon.setting_id)
-                    _decon.setting = series.formatSeries(_decon.setting)
-                    initialItems.push(_decon)
-                    //initialItems[_index].tempID = new Date().getMilliseconds()
-                    initialItems[_index].tempID = this.uuid()
-                }
-                this.loaded = this.loaded.concat(initialItems)
-                
-                // for though loaded, add to selected if needeed
-                this.loaded.forEach(item => {
-                    if(item.selected) {
-                        this.selected.push(item)           
-                        this.display_decon(item)    
-                    }
-                })
-                console.log(this.selected)
-                console.log(this.loaded)
-                if(this.selected.length > 0) {
-                    this.workingItem.setting.filepath = this.selected[0].series.path
-                    this.$cookies.set('filepath',this.selected[0].series.path, new Date(9999, 0o1, 0o1).toUTCString())
-                }
+            let initialItems = []
+            let _decons = await PreferenceAPI.get_decons(null,this.api)
+            for (let _index =0; _index < _decons.length; _index++){
+                let _decon = _decons[_index]
+                _decon.series = await PreferenceAPI.get_serie_by_id(_decon.series_id)
+                _decon.setting = await PreferenceAPI.get_setting_by_id(_decon.setting_id)
+                _decon.setting = series.formatSeries(_decon.setting)
+                initialItems.push(_decon)
+                //initialItems[_index].tempID = new Date().getMilliseconds()
+                initialItems[_index].tempID = this.uuid()
             }
+            this.loaded = this.loaded.concat(initialItems)
+            
+            let filepath = []
+            
+            // for though loaded, add to selected if needeed
+            this.loaded.forEach(async item => {
+                if(item.selected) {
+                    this.selected.push(item)           
+                    this.display_decon(item)    
+                }
+                
+                if (!filepath.includes(item.series.path)) {
+                    filepath.push(item.series.path)
+                }
+                
+            })
+            filepath.forEach (async item => {
+                let _pathParts = item.split("/")
+                let basename = _pathParts.slice(-1)[0]
+                if (basename.includes('*')) {
+                    let path = _pathParts.slice(0,-1).join("/")+ "/"
+                    this.mloading = true
+                    await this.loadMetadaFolder(path,basename)
+                    this.mloading = false
+                }else {
+                    this.mloading = true
+                    let results = await this.getMetadata(item, false)
+                    if(results) {
+                        this.metedataResults.push(results[0])
+                    }
+                    this.mloading = false
+                }
+            })
+            
+            if(this.selected.length > 0) {
+                this.workingItem.setting.filepath = this.selected[0].series.path
+                this.$cookies.set('filepath',this.selected[0].series.path, new Date(9999, 0o1, 0o1).toUTCString())
+            }
+           
             if(this.api == 'CudaDecon') {
                 this.workingItem.setting.psfType = 3
             }
+            console.log("this.selected")
+            console.log(this.selected)
             
         },
         methods: {
@@ -565,6 +653,7 @@
                     decon.setting = Object.assign({}, this.workingItem.setting)
                     decon.step = this.workingItem.step
                     decon.visitedSteps = this.workingItem.visitedSteps
+                    decon.api = this.api
                     // save it
                     PreferenceAPI.update_decon(decon.id, decon)
                 })
@@ -582,7 +671,7 @@
                     let _decons = []
                     console.log(btoa(pathToBeLoaded))
                     if(!this.isSame) {
-                        _decons = await PreferenceAPI.get_decons(pathToBeLoaded)
+                        _decons = await PreferenceAPI.get_decons(pathToBeLoaded,this.api)
                         // found
                         Vue.$log.info(_decons)
 
@@ -704,10 +793,14 @@
                 
                 return items
             },
+
+          
+
             /**
              * a common function; to be called by selectFiles, selectFilesInFolders
              */
             async selectFilesOrFolders(isfolder){
+                
                 
                 let options = null
                 
@@ -743,6 +836,9 @@
                             return
                         }
                         paths.push(_pathToBeLoaded)
+                        console.log("folder paths")
+                        console.log(paths)
+            
                     } else {
                         Vue.$log.debug("selecting files:")
                         Vue.$log.debug(options.selectedItems)
@@ -793,20 +889,81 @@
                         Vue.$log.debug("Results:")
                         Vue.$log.debug(items)
                         //this.tempID = new Date().getMilliseconds()
-                        items[i].tempID = this.uuid()
+                        if(items[i]) {
+                            items[i].tempID = this.uuid()
+                        }
+                        //items[i].tempID = this.uuid()
                         this.loaded = this.loaded.concat(items)
                         
                     }
-                    console.log(this.loaded[0])
                     
-
                     if ((!this.selected || this.selected.length ==0) && this.loaded.length > 0){
                         this.selected = [ this.loaded[0] ]
                         this.display_decon(this.loaded[0])
                     }
-                    this.loading = false                    
+                    this.loading = false     
+                    if (isfolder) {
+                        this.mloading = true
+                        await this.loadMetadaFolder(options.path,options.filter)
+                        this.mloading = false
+                    }else {
+                        console.log(this.metedataResults)
+                        const found =  this.metedataResults.some(el => el.file === paths[0])
+                        if(!found) {
+                            this.mloading = true
+                            let results = await this.getMetadata(paths, true)
+                            if(results.length > 0) {
+                                results.forEach(item => {
+                                    this.metedataResults.push(item)
+                                }) 
+                            }
+                            this.mloading = false
+                        }
+                        
+                    }
+
                 }
                 
+            },
+            async loadMetadaFolder(path, filter){
+                let files = []
+                let response = await FilesAPI.list(path);
+                console.log(response)
+                if(response.commandResult) {
+                    response.commandResult.forEach(item =>{
+                        if(!(['d', 'l'].includes(item.permission.charAt(0)))){
+                            if(filter.startsWith('*') && filter.endsWith('*')){
+                                if(item.name.includes(filter.replaceAll('*','').trim())){
+                                    files.push(path+item.name)
+                                }
+                            }
+                            else if(filter.endsWith('*') && !filter.startsWith('*')){
+                                if(item.name.startsWith(filter.replace('*','').trim())){
+                                    files.push(path+item.name)
+                                }
+                            }else{
+                                if(item.name.endsWith(filter.replace('*','').trim())){
+                                    files.push(path+item.name)
+                                }
+                            }
+                        }
+
+                    })
+                    if (files.length > 0) {
+                        const found =  this.metedataResults.some(el => el.file === files)
+                        if(!found) {
+
+                            let results = await this.getMetadata(files, true)
+                            console.log(results)
+                            if(results.length > 0) {
+                                results.forEach(item => {
+                                    this.metedataResults.push(item)
+                                }) 
+                            }
+                        }
+                        
+                    }
+                }
             },
 
 
@@ -817,18 +974,17 @@
                 await this.selectFilesOrFolders(false)
                 this.workingItem.setting.isfolder=false
                 /* let filepath = this.loaded[0].series.path
-                this.loading =true
-                this.overlay = true
-                let metedataResults = await this.getMetadata(filepath, false)
-                this.loading = false
-                this.overlay = false
-                let options = await this.$refs.metadatadialog.open(metedataResults[0])
+                
+                let results = await this.getMetadata(filepath, false)
+                this.metedataResults.push(results[0])
+                console.log( this.metedataResults ) */
+                /* let options = await this.$refs.metadatadialog.open(metedataResults[0])
                 if (!options.cancelled) {
                     Vue.$log.info("Metadata loaded")
                     Vue.$log.info(options.settings)
                    
                     
-                } */
+                }  */
             },
             /**
              * select series
@@ -877,7 +1033,6 @@
              */
             removeCurrentlySelected(){
                 Vue.$log.info("Removing currently seleced item")
-                console.log(this.selected)
                 this.selected.forEach(item => {
                     for(let i = 0; i < this.loaded.length; i++){
                         if(this.loaded[i].series.path === item.series.path){
@@ -889,14 +1044,17 @@
                     if(this.outputpath) {
                         for(let i = 0; i < this.outputpath.length; i++){
                             if(this.outputpath[i].id === item.id) {
-                                console.log(this.outputpath[i].id)
                                 this.outputpath.splice(i,1)
-                                console.log(this.outputpath)
                             }
                         }
                     } 
+                    for(let i=0; i< this.metedataResults.length ; i++) {
+                        if(this.selected[0].series.path === this.metedataResults[i].file) {
+                            this.metedataResults.splice(i, 1)
+                        }
+                    }
+                    
                 })
-                
                 this.selected = []
                 // load an empty one
                 this.workingItem = series.defaultDecon()
@@ -917,6 +1075,7 @@
                 this.workingItem = series.defaultDecon()
                 console.log( this.workingItem)
                 this.display_decon(this.workingItem, false)
+                this.metedataResults = []
             },
             /* end part dealing with load */
             /****************************************************************************** */
@@ -1056,6 +1215,7 @@
             display_decon(decon, duplicate=true){
                 // update tab
                 //duplicate = this.duplicate
+                
                 if(duplicate)
                     this.workingItem = Object.assign({}, decon)
                 else
@@ -1072,18 +1232,13 @@
                     if(_acomponent){
                         
                         if(!decon.series.padding) {
-                            console.log("not padding in display decon")
-                            console.log(decon)
                             if (!decon.setting.filepath){
-                                console.log("not padding in display decon not file path")
                                 decon.setting.filepath = decon.series.path
                             }
                             _acomponent.load_serie(decon.setting)
                             //_acomponent.get_serie()
 
                         } else {
-                            console.log(" padding in display decon")
-                            console.log(decon.series)
                             _acomponent.load_serie(decon.series) //previous decon.setting
                         }
                         if(!_acomponent.is_valid())
@@ -1509,6 +1664,13 @@
         font-size: 12px;
         float: right;
     }
+    .metdata-card {
+    max-height: 350px;
+    font-size: 14px;
+    overflow-y: auto;
+    width: 100%;
+
+}
 
     
 
