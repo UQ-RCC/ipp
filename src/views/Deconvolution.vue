@@ -1665,7 +1665,7 @@
         float: right;
     }
     .metdata-card {
-    max-height: 350px;
+    max-height: 400px;
     font-size: 14px;
     overflow-y: auto;
     width: 100%;
