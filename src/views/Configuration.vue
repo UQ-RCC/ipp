@@ -86,7 +86,7 @@
                             </v-col>
                            
                             <v-col cols="4" sm="3" md="4" lg="4">
-                                <v-btn class="my-1" color="success" rounded dark large @click="saveOption" > 
+                                <v-btn class="my-1" color="success" rounded dark large @click="saveOption(true,false, api)" > 
                                         Save
                                 </v-btn>
                             </v-col>
@@ -122,13 +122,14 @@
                 loading: false,
                 
                 tags: [],
-                selectedtag: null,
+                selectedtag: "meta_23_002",
                 message: null,
                 error: null,
                 isError: false,
                 api:"Microvolution",
                 messageSave: null,
                 errorSave:null,
+                
                 
                 }
         },
@@ -152,8 +153,11 @@
         },
 
         mounted: async function () {
-            let _current_api = await PreferenceAPI.get_api_option()
+            let _current_api = await PreferenceAPI.get_config()
             this.api=_current_api.apiname
+            this.selectedtag = _current_api.metadatatag
+            console.log(this.api)
+            console.log(this.selectedtag)
         },
 
         methods: {
@@ -163,7 +167,7 @@
                 let files =""
                 console.log(confid)
                 try{
-                    const response= await ConfigurationAPI.execute_metedata_script(files, confid, validate)
+                    const response= await ConfigurationAPI.execute_metedata_script(files, confid, validate, false)
                     console.log(response)
                     Vue.notify({
                         group: 'datanotif',
@@ -185,6 +189,7 @@
                         } else {
                             this.isError = false
                             this.message = "Validation Succeeded!"
+                            this.saveOption(false, true, confid)
                         }
                     }
                     
@@ -203,13 +208,23 @@
                 } 
             },
             
-            async saveOption() {
+            async saveOption(api, metadata, value) {
                 try{
-                    console.log(this.api)
-                    const response= await PreferenceAPI.save_api_option(this.api)
-                    this.messageSave = "The API updated successfully!"
-                    this.isError = false
-                    console.log(response)
+                    if (api) {
+
+                        console.log(this.api)
+                        console.log(this.selectedtag)
+                        console.log("inside api update")
+                        const response= await PreferenceAPI.save_config_data(value, this.selectedtag)
+                        this.messageSave = "The API updated successfully!"
+                        this.isError = false
+                        console.log(response)
+                    } else if (metadata){
+                        console.log(value)
+                        console.log(this.api)
+                        const response= await PreferenceAPI.save_config_data(this.api, value)
+                        console.log(response)
+                    }
                 }
                 catch(err) {
                     this.errorSave = "The API update was unsuccessful"

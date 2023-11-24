@@ -315,12 +315,13 @@ export default {
 
   //configuration
 
-  async save_api_option(api) {
-    const { data }= await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/configuration?api=${api}`)
-    return data
+  async save_config_data(api, metadata) {
+      const { data }= await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/configuration?api=${api}&metadata=${metadata}`)
+      return data
   },
+
   
-  async get_api_option() {
+  async get_config() {
     const { data }= await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/configuration`)
     return data
   },

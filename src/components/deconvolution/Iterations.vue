@@ -219,6 +219,7 @@
                    
                 },
                 api:"",
+                selectedtag: null,
 
             }
         },
@@ -230,8 +231,9 @@
             async load_serie(serie){
                 this.serie = serie
                 this.psfTypeChanged()
-                let _current_api = await PreferenceAPI.get_api_option()
+                let _current_api = await PreferenceAPI.get_config()
                 this.api=_current_api.apiname
+                this.selectedtag = _current_api.metadatatag
             },
 
             // psf type changed --> called from load serie

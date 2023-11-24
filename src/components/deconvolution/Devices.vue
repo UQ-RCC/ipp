@@ -132,6 +132,7 @@
                     positiveNumber: value => value && value > 0 || 'Must be a positive number',
                 },
                 api:"",
+                selectedtag: null,
                 /* positiveInteger: [
                     value => value && value > 0 && Number.isInteger(parseFloat(value)) || 'Must be a positive integer'
                 ], 
@@ -159,8 +160,9 @@
                 this.serie = serie_devices
                 this.inimem = this.serie.mem
                 this.message = null
-                let _current_api = await PreferenceAPI.get_api_option()
+                let _current_api = await PreferenceAPI.get_config()
                 this.api=_current_api.apiname
+                this.selectedtag = _current_api.metadatatag
                 
             },
             is_valid(){

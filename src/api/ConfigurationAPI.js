@@ -2,13 +2,14 @@ import request from '@/utils/request'
 import Vue from 'vue'
 
 export default {
-    async execute_metedata_script(fileslist, confid, validate) {
+    async execute_metedata_script(fileslist, confid, validate, savecsv) {
         let _requestUrl =`${Vue.prototype.$Config.endpoints.wiener}/api/execute/imageMetadataBase64`
         const { data } = await request.get(_requestUrl, {
             params: {
                 fileslist  : fileslist, 
                 confid    : confid,
-                validate : validate
+                validate : validate,
+                savecsv: savecsv
             }
         })
         return data 

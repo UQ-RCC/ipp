@@ -108,7 +108,8 @@
                 panelId: 0,
                 serie: series.formatSeries(null),
                 panel: this.$refs.revdeconmetadata,
-                api:''
+                api:'',
+                selectedtag: null
             }
         }, 
         methods: {
@@ -159,8 +160,9 @@
 
         },
         mounted: async function() {
-            let _current_api = await PreferenceAPI.get_api_option()
+            let _current_api = await PreferenceAPI.get_config()
             this.api=_current_api.apiname
+            this.selectedtag = _current_api.metadatatag
             for (let i=0; i<7 ; i++){
                 this.panel = this.getPanel(i)
                 if(this.panel ) {

@@ -132,6 +132,7 @@
                         <v-col >
                             <h4 v-if="mloading">Loading metadata</h4>
                             <h4 v-if="!mloading">Metadata</h4>
+                            <h5 v-if="csvloading">Exporting to a CSV file</h5> 
                             <v-progress-linear
                                 color="primary"
                                 indeterminate
@@ -139,13 +140,42 @@
                                 height="5"
                                 :active="mloading"
                         ></v-progress-linear>
+                            <v-progress-linear
+                                color="primary"
+                                indeterminate
+                                rounded
+                                height="3"
+                                :active="csvloading"
+                        ></v-progress-linear>
+                        
                         </v-col>
                         <v-col>
                         <v-card class="metdata-card" >
                             <div>
                                     <v-expansion-panels accordion>
                                         <v-expansion-panel v-for="item in metedataResults" :key="item.file">
-                                                <v-expansion-panel-header  >{{ item.file }} </v-expansion-panel-header>
+                                                <v-expansion-panel-header  >
+                                                    <v-row align="center" justify="center">
+
+                                                        <v-col class="d-flex"  cols="1"  >
+                                                            <v-tooltip bottom>
+                                                                <template v-slot:activator="{ on, attrs }">
+                                                                    <v-btn  
+                                                                        class="my-3" 
+                                                                        style="min-width:1px !important;width:2px"
+                                                                        color="primary"
+                                                                        @click.stop="downloadToCSV(item)"   
+                                                                        v-bind="attrs" 
+                                                                        v-on="on">
+                                                                        <v-icon>mdi-download</v-icon>
+                                                                    </v-btn>
+                                                                </template>
+                                                                <span>Download CSV</span>
+                                                            </v-tooltip>
+                                                        </v-col>
+                                                        <v-col   cols="11" >{{ item.file }}</v-col> 
+                                                    </v-row>
+                                                </v-expansion-panel-header>
                                                 <v-expansion-panel-content >
 
                                                     <v-row >
@@ -155,8 +185,11 @@
                                                                     <v-table fixed-header >
                                                                         <thead>
                                                                             <tr>
-                                                                                <th class="text-left">Paramater</th>
-                                                                                <th class="text-left">Value</th>
+                                                                                <th class="text-left">
+                                                                                    Parameter</th>
+                                                                                <th class="text-left">Value 
+                                                                                    
+                                                                                </th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
@@ -507,6 +540,8 @@
                 metedataResults:[],
                 mloading:false,
                 dateTime:"",
+                selectedtag: null,
+                csvloading:false,
                 
                 
                 // -- selected files table
@@ -570,8 +605,10 @@
             }
         },
         mounted: async function() {
-            let _current_api = await PreferenceAPI.get_api_option()
+            
+            let _current_api = await PreferenceAPI.get_config()
             this.api=_current_api.apiname
+            this.selectedtag = _current_api.metadatatag
             console.log(this.api)
             let initialItems = []
             let _decons = await PreferenceAPI.get_decons(null,this.api)
@@ -658,6 +695,39 @@
                     PreferenceAPI.update_decon(decon.id, decon)
                 })
                
+            },
+
+            async downloadToCSV(metadataResult){
+                //let json_data = JSON.stringify(metadataResult)
+               
+                let file_name = metadataResult.file.split("/").slice(-1)[0].split(".")[0]
+                console.log(file_name)
+                console.log(metadataResult.file)
+                
+                try{
+                    this.csvloading = true
+                    const response= await ConfigurationAPI.execute_metedata_script(btoa(metadataResult.file), this.selectedtag, false, true)
+                    this.csvloading = false
+                    console.log(response)
+                    //if(response)
+                    Vue.notify({
+                            group: 'sysnotif',
+                            type: 'info',
+                            title: 'Save Metadata to CSV File',
+                            text: this.workingItem.setting.outputPath+"/"+file_name+".csv" + ' saved!'
+                        });
+
+                }
+                catch(err){
+                        Vue.notify({
+                            group: 'sysnotif',
+                            type: 'error',
+                            title: 'Save Metadata to CSV File',
+                            text: 'Fail to save ' + this.workingItem.setting.outputPath+"/"+file_name+".csv"  + ' .Error:' + String(err)
+                        });
+                        console.log(String(err))
+                    } 
+                console.log(this.workingItem.setting.outputPath)
             },
 
 
@@ -1010,8 +1080,13 @@
                     }
                     fileslistbase64 = btoa(fileslistbase64.substring(0,fileslistbase64.length-1))
                 }
+                console.log("file list base")
+                console.log(fileslistbase64)
+
                 try{
-                    const response= await ConfigurationAPI.execute_metedata_script(fileslistbase64, '', false)
+                    console.log(this.selectedtag)
+                    const response= await ConfigurationAPI.execute_metedata_script(fileslistbase64, this.selectedtag, false, false)
+                    console.log(response)
                     let output = response.commandResult
                     if (output.length > 0) {
                         let json_output =  JSON.parse(output[0].out)
@@ -1086,7 +1161,7 @@
             /** submit job */
             async submitSingleJob(item){
 
-                let _current_api = await PreferenceAPI.get_api_option()
+                let _current_api = await PreferenceAPI.get_config()
                 
                 
                 let _numberOfJobs = parseInt(item.setting.instances)

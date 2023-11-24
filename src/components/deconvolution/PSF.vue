@@ -236,6 +236,7 @@
                 psfSerie: {},
                 loading: false,
                 api:"",
+                selectedtag: null,
                 psfModels: [
                     {label: 'Scalar', value: 0},
                     {label: 'Vectorial', value: 1},
@@ -286,8 +287,9 @@
                 console.log("inside psf load serie")
                 
                 this.serie = serie
-                let _current_api = await PreferenceAPI.get_api_option()
+                let _current_api = await PreferenceAPI.get_config()
                 this.api=_current_api.apiname
+                this.selectedtag = _current_api.metadatatag
 
                 if(this.serie.psfFile){
                     let _storedSeries = await PreferenceAPI.get_serie(this.serie.psfFile)
