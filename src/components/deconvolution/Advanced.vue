@@ -157,6 +157,9 @@
                 ],
                 fileFormatTypes: [
                     {'label': 'TIFF', 'value': 0},
+                    {'label': 'OME-TIFF', 'value': 1},
+                    {'label': 'IMS', 'value': 2}
+
                    /* {'label': 'OME-TIFF', 'value': 1}, 
                     {'label': 'IMS', 'value': 3},
                     {'label': 'IMS', 'value': 6} 
