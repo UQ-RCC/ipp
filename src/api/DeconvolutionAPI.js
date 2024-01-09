@@ -64,9 +64,9 @@ export default {
       _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/testexecutebase64`      
     } else if(is_estimate && !is_test && !is_cudaDecon){
       _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/estimateDevices`  
-    } else if (is_cudaDecon && !is_test && !is_test){
+    } else if (is_cudaDecon && !is_test && !is_estimate){
       _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/CudaDeconbase64`
-    } else if ((!is_cudaDecon && !is_test && !is_test)) {
+    } else if ((!is_cudaDecon && !is_test && !is_estimate)) {
       _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/executemicrovolutionbase64`
     }
     let arrayMax = parseInt(instances) - 1
