@@ -133,6 +133,7 @@
                             <h4 v-if="mloading">Loading metadata</h4>
                             <h4 v-if="!mloading">Metadata</h4>
                             <h5 v-if="csvloading">Exporting to a CSV file</h5> 
+                            <h5 v-if="csvlocation &&  !csvloading && !mloading ">File saved in {{ csvlocation }}</h5> 
                             <v-progress-linear
                                 color="primary"
                                 indeterminate
@@ -542,6 +543,7 @@
                 dateTime:"",
                 selectedtag: null,
                 csvloading:false,
+                csvlocation:null,
                 
                 
                 // -- selected files table
@@ -708,6 +710,8 @@
                     this.csvloading = true
                     const response= await ConfigurationAPI.execute_metedata_script(btoa(metadataResult.file), this.selectedtag, false, true)
                     this.csvloading = false
+                    this.csvlocation = this.workingItem.setting.outputPath+"/"+file_name+".csv"
+                    console.log(this.workingItem.setting.outputPath+"/"+file_name+".csv")
                     console.log(response)
                     //if(response)
                     Vue.notify({
@@ -871,7 +875,7 @@
              */
             async selectFilesOrFolders(isfolder){
                 
-                
+                this.csvlocation = null
                 let options = null
                 
                 if (isfolder)
@@ -1134,6 +1138,7 @@
                 // load an empty one
                 this.workingItem = series.defaultDecon()
                 this.display_decon(this.workingItem, false)
+                this.csvlocation = null
             },
             /**
              * delete all series
@@ -1151,6 +1156,7 @@
                 console.log( this.workingItem)
                 this.display_decon(this.workingItem, false)
                 this.metedataResults = []
+                this.csvlocation = null
             },
             /* end part dealing with load */
             /****************************************************************************** */
