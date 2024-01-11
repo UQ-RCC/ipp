@@ -703,12 +703,11 @@
                 //let json_data = JSON.stringify(metadataResult)
                
                 let file_name = metadataResult.file.split("/").slice(-1)[0].split(".")[0]
-                console.log(file_name)
-                console.log(metadataResult.file)
+                let saveFolder = this.workingItem.setting.outputPath
                 
                 try{
                     this.csvloading = true
-                    const response= await ConfigurationAPI.execute_metedata_script(btoa(metadataResult.file), this.selectedtag, false, true)
+                    const response= await ConfigurationAPI.execute_metedata_script(btoa(metadataResult.file), this.selectedtag, false, true, btoa(saveFolder))
                     this.csvloading = false
                     this.csvlocation = this.workingItem.setting.outputPath+"/"+file_name+"_metadata.csv"
                     console.log(this.workingItem.setting.outputPath+"/"+file_name+".csv")
@@ -1075,6 +1074,7 @@
 
             async getMetadata(fileslist, folder) {
                 let fileslistbase64 = ''
+                let saveFolder=''
                 
                 if (!folder) {
                     fileslistbase64 = btoa(fileslist)
@@ -1089,7 +1089,7 @@
 
                 try{
                     console.log(this.selectedtag)
-                    const response= await ConfigurationAPI.execute_metedata_script(fileslistbase64, this.selectedtag, false, false)
+                    const response= await ConfigurationAPI.execute_metedata_script(fileslistbase64, this.selectedtag, false, false, saveFolder)
                     console.log(response)
                     let output = response.commandResult
                     if (output.length > 0) {

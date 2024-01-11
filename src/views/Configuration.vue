@@ -165,9 +165,10 @@
                 let validate =true
                 let confid =  this.selectedtag
                 let files =""
+                let saveFolder =""
                 console.log(confid)
                 try{
-                    const response= await ConfigurationAPI.execute_metedata_script(files, confid, validate, false)
+                    const response= await ConfigurationAPI.execute_metedata_script(files, confid, validate, false, saveFolder)
                     console.log(response)
                     Vue.notify({
                         group: 'datanotif',
