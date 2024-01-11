@@ -710,7 +710,7 @@
                     this.csvloading = true
                     const response= await ConfigurationAPI.execute_metedata_script(btoa(metadataResult.file), this.selectedtag, false, true)
                     this.csvloading = false
-                    this.csvlocation = this.workingItem.setting.outputPath+"/"+file_name+".csv"
+                    this.csvlocation = this.workingItem.setting.outputPath+"/"+file_name+"_metadata.csv"
                     console.log(this.workingItem.setting.outputPath+"/"+file_name+".csv")
                     console.log(response)
                     //if(response)
@@ -718,7 +718,7 @@
                             group: 'sysnotif',
                             type: 'info',
                             title: 'Save Metadata to CSV File',
-                            text: this.workingItem.setting.outputPath+"/"+file_name+".csv" + ' saved!'
+                            text: this.workingItem.setting.outputPath+"/"+file_name+"_metadata.csv" + ' saved!'
                         });
 
                 }
@@ -727,7 +727,7 @@
                             group: 'sysnotif',
                             type: 'error',
                             title: 'Save Metadata to CSV File',
-                            text: 'Fail to save ' + this.workingItem.setting.outputPath+"/"+file_name+".csv"  + ' .Error:' + String(err)
+                            text: 'Fail to save ' + this.workingItem.setting.outputPath+"/"+file_name+"_metadata.csv"  + ' .Error:' + String(err)
                         });
                         console.log(String(err))
                     } 
