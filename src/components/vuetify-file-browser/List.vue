@@ -671,7 +671,7 @@ export default {
         },
         canView(item){
             let extension = item.basename.split(".").pop()
-            return (item.type === "file" && ["txt", "out", "err", "json", "xml", "pref"].includes(extension) )
+            return (item.type === "file" && ["txt", "out", "err", "json", "xml", "pref", "csv"].includes(extension) )
         },
         async viewItem(item){
             console.log("reading:" + item.path)
