@@ -1,5 +1,14 @@
 <template>
     <v-card flat tile class="d-flex flex-column">
+        <v-overlay v-model="overlay">
+            <v-row align="center" justify="center"><label >Loading metedata...</label> </v-row>
+            <v-row align="center" justify="center"><v-progress-circular
+                color="primary"
+                indeterminate
+                size="64"
+            ></v-progress-circular></v-row>
+            
+        </v-overlay>
         <confirm ref="confirm"></confirm>
         <file-viewer-dialog ref="fileviewer"></file-viewer-dialog>
         <name-modify-dialog ref="namemodify"></name-modify-dialog>
@@ -203,6 +212,15 @@
                                 <span>View file</span>
                             </v-tooltip>
 
+                            <v-tooltip bottom v-if="canMetadata(item)">
+                                <template v-slot:activator="{ on }">
+                                    <v-btn icon @click.stop="viewMetadata(item)" v-on="on">
+                                        <v-icon >mdi-tag</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>View Metadata</span>
+                            </v-tooltip>
+
                             <v-tooltip bottom>
                                 <template v-slot:activator="{ on }">
                                     <v-btn icon @click.stop="copyItemPathToClipboard(item)" v-on="on">
@@ -285,6 +303,9 @@ import FilesAPI from "@/api/FilesAPI"
 import Vue from 'vue'
 import * as minimatch from 'minimatch'
 import miscs from '@/utils/miscs.js'
+import ConfigurationAPI from "@/api/ConfigurationAPI.js"
+import PreferenceAPI from "@/api/PreferenceAPI"
+    
 
 export default {
     name: 'List',
@@ -324,7 +345,9 @@ export default {
                           {'type':'contains', 'label': 'Contains'},
                           {'type':'custom', 'label': 'Custom'}],
             caseSentive: false, 
-            maxSize: 0 // in bytes
+            maxSize: 0, // in bytes
+            selectedtag: null,
+            overlay: false
         };
     },
     computed: {
@@ -673,6 +696,39 @@ export default {
             let extension = item.basename.split(".").pop()
             return (item.type === "file" && ["txt", "out", "err", "json", "xml", "pref", "csv","rtx","rtf"].includes(extension) )
         },
+        canMetadata(item){
+            let extension = item.basename.split(".").pop()
+            return (item.type === "file" && ["tif", "tiff", "ome-tiff", "nd2", "czi", "ims", "lif","oib"].includes(extension) )
+        },
+       
+        async viewMetadata(item){
+            console.log("reading:" + item.path)
+            console.log("reading:" + item.path)
+            try{
+                this.overlay =true
+                const response= await ConfigurationAPI.execute_metedata_script(btoa(item.path), this.selectedtag, false, false, false)
+                this.overlay =false    
+                console.log(response)
+                if(response.commandResult.length > 0){
+                    let json_out = JSON.parse(response.commandResult[0].out)
+                    if (json_out.results.success) {
+                        await this.$refs.fileviewer.open(
+                            item.path,
+                            JSON.stringify(json_out.results.metadata, null, 2)
+                        )
+
+                    }
+                }
+            }
+            catch(err){
+                Vue.notify({
+                    group: 'sysnotif',
+                    type: 'error',
+                    title: 'View Metadata',
+                    text: 'Problem reading metadata:' + String(err)
+                })
+            } 
+        },
         async viewItem(item){
             console.log("reading:" + item.path)
             console.log("reading:" + item.path)
@@ -711,9 +767,12 @@ export default {
             }
         }, 
     },
-    mounted() {
+    async mounted() {
         this.filter = "";
         this.filterChanged();
+        let _current_api = await PreferenceAPI.get_config()
+        this.selectedtag = _current_api.metadatatag
+        
     }
 };
 </script>
