@@ -116,7 +116,8 @@
                 return this.$keycloak && this.$keycloak.idTokenParsed ? this.$keycloak.idTokenParsed.preferred_username  : ''
             },
             is_admin: function() {
-                return this.$keycloak.hasRealmRole("admin")
+                let admin = Vue.prototype.$Config.keycloak.admin
+                return this.$keycloak.hasRealmRole(admin)
             },
         },
         methods: {
@@ -154,7 +155,7 @@
                     }
                     // save
                     if(this.isglobal) {
-                        this.dbrecord.username = "admin" 
+                        this.dbrecord.username = Vue.prototype.$Config.keycloak.admin 
                     } else {
                         this.dbrecord.username = this.username 
                     }

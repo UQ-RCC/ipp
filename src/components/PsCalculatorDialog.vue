@@ -307,7 +307,8 @@
                 return resultArray
             },
             is_admin: function() {
-                return this.$keycloak.hasRealmRole("admin")
+                let admin = Vue.prototype.$Config.keycloak.admin
+                return this.$keycloak.hasRealmRole(admin)
             },
            
            

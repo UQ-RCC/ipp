@@ -242,7 +242,9 @@
                 return this.$keycloak && this.$keycloak.idTokenParsed ? this.$keycloak.idTokenParsed.email  : ''
             },
             is_admin: function() {
-                return this.$keycloak.hasRealmRole("admin")
+                let admin = Vue.prototype.$Config.keycloak.admin
+                console.log(admin)
+                return this.$keycloak.hasRealmRole(admin)
             }
         },
         methods: {
