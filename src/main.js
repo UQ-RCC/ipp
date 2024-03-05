@@ -4,7 +4,7 @@ import router from './router'
 import vuetify from './plugins/vuetify'
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@mdi/font/css/materialdesignicons.css'
-import * as Keycloak from 'keycloak-js'
+import Keycloak from 'keycloak-js'
 import VueLogger from 'vuejs-logger'
 import Notifications from 'vue-notification'
 import VueCookies from 'vue-cookies'
@@ -79,7 +79,7 @@ const loadConfigAndStart = async () => {
           title: 'Authentication',
           text: 'Problem with authentication! move back to home!'
         })
-        // window.location.href = Config.signoutUrl
+        //window.location.href = Config.signoutUrl
       
       });
       
