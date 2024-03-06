@@ -34,7 +34,7 @@ const loadConfigAndStart = async () => {
       Vue.prototype.$Config = Config
 
       /*keycloak init*/
-      let keycloak = Keycloak({
+      let keycloak = new Keycloak({
           url: Config.keycloak.url, 
           realm: Config.keycloak.realm, 
           clientId: Config.keycloak.clientId, 
