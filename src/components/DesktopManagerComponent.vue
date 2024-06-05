@@ -16,10 +16,17 @@
                         Selected files
                     </v-card-title>
                 </template>
+                <div align="center" justify="center" style="overflow: auto; height:300px;">
+                    <v-list-item v-for="(afile,index) in files" :key="index">
+                        <v-list-item-title>{{ afile }}</v-list-item-title>
+                        <v-list-item-action>
+                            <v-btn icon @click="removeItem(index)">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </v-list-item-action>
+                    </v-list-item>
+                </div>
 
-                <v-list-item v-for="afile in files" :key="afile">
-                    <v-list-item-title>{{ afile }}</v-list-item-title>
-                </v-list-item>
             </v-list-group>
         </div>
 
@@ -263,6 +270,12 @@
                     title: this.selectedApp,
                     text: filesList + ' are being loaded to ' + this.selectedApp
                 })
+                console.log("parameters for launch app")
+                console.log(this.currentDesktop.node)
+                console.log(this.selectedApp)
+                console.log(displayNumber)
+                console.log(btoa(filesList))
+                console.log(this.copyFilesToScratch)
                 await DesktopAPI.launchapp(this.currentDesktop.node, this.selectedApp, displayNumber, filesList, this.copyFilesToScratch)
                 this.loading = false
             },
@@ -280,7 +293,24 @@
 
             // set files
             setFiles(filelist) {
-                this.files = filelist
+                 console.log("setFiles ")
+                console.log(filelist)
+                if(filelist.length>0){
+                    filelist.map(item => {
+                    if(!item.endsWith("/") && !this.files.includes(item)){
+                        this.files.push(item)
+                        console.log("a file")
+                    } else {
+                        console.log("a folder")
+                    }
+                })
+                    
+                } 
+                //this.files = filelist
+            },
+            removeItem(index) {
+                this.files.splice(index,1)
+
             },
 
             // start timer

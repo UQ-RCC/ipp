@@ -786,15 +786,20 @@
                                 } else {
                                         Vue.$log.debug("Not found in database- a new decon and path")
                                         let response = null
-                                        console.log(btoa(pathToBeLoaded))
+                                        console.log(pathToBeLoaded)
                                         if (isfolder)
                                             response = await DeconvolutionAPI.get_folder_info(pathToBeLoaded)
                                         else 
                                             response = await DeconvolutionAPI.get_file_info(pathToBeLoaded)
+
+                                        console.log("after response call")
+                                        console.log(response)
+                                        console.log(JSON.parse(JSON.stringify(response)))
                                        
                                         Vue.$log.debug("Response :")
                                         Vue.$log.debug(response)
                                         Vue.$log.debug(JSON.parse(JSON.stringify(response)))
+
                                         // add to database
                                         for(let _index = 0; _index < response.commandResult.length; _index++){
                                             console.log("adding new docn to db")
@@ -1542,8 +1547,8 @@
                         }
                     } 
                 }
-               
-                if(this.workingItem.step === 7) { /* validate devices in device tab */
+               /* validate devices in device tab */
+                if(this.workingItem.step === 7) { 
                     let msg 
                     let jobs = this.workingItem.setting.instances
                     let mem = this.workingItem.setting.mem
@@ -1554,7 +1559,7 @@
 
                     
                     this.overlay =true
-                    let response = await DeconvolutionAPI.validate_devices(jobs,mem,gpus,this.workingItem.setting)
+                    let response = await DeconvolutionAPI.validate_devices(jobs,mem,gpus)
                     this.overlay =false
                     let output = response.commandResult
                     console.log(output)
@@ -1578,7 +1583,7 @@
                             return 
                         }
                     }
-                }
+                } 
                 if(this.workingItem.step === 8)
                     return
                 //even if current step is invalid, next will allow it to go if it has been visited

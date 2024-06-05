@@ -15,6 +15,7 @@ export default {
   // get files info
   async get_files_info(filespath) {
     let fileslist = filespath.map( file => {
+      console.log(btoa(file))
       return btoa(file);
     }); 
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/filesinfobase64`, {
@@ -35,13 +36,12 @@ export default {
     return data
   },
 
-  async validate_devices(jobs,mem,gpus,deconinfo){
+  async validate_devices(jobs,mem,gpus){
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/validateDevices`, {
       params: {
         jobs: jobs,
         mem: mem,
-        gpus: gpus,
-        deconinfo: btoa(JSON.stringify(deconinfo)) 
+        gpus: gpus
       }
   })
   return data

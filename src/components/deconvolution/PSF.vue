@@ -44,6 +44,8 @@
                             regular 
                             label="Sample medium refractive index" 
                             type="number"
+                            step="0.1"
+                            min="1.33"
                             :rules="[rules.positive]">
                         </v-text-field>
                     </v-col>
@@ -52,12 +54,12 @@
             </v-row>
             <v-row>
                 <v-col cols="10" sm="3" md="4">
-                    <v-text-field regular label="Objective NA" type="number" 
+                    <v-text-field regular label="Objective NA" type="number" step="0.1" min="0.1"
                         :rules="[rules.positive, rules.na_NARI]" v-model="serie.NA">
                     </v-text-field>
                 </v-col>
                 <v-col cols="10" sm="3" md="4" v-if="serie.psfType === 3">
-                    <v-text-field regular label="Light sheet illumination NA" type="number"  
+                    <v-text-field regular label="Light sheet illumination NA" type="number"  step="0.1" min="0.1"
                         :rules="[rules.positive]" v-model="serie.lightSheetIlluminationNA">
                     </v-text-field>
                 </v-col>
@@ -69,6 +71,8 @@
                         regular 
                         label="Objective immersion refractive index"
                         :rules="[rules.positive, rules.ri_NARI]" 
+                        step="0.1"
+                        min="0.1"
                         type="number">
                     </v-text-field>
                 </v-col>
@@ -302,6 +306,13 @@
                     this.psfSerie = {}
                     
                 }
+                if (this.serie.psfType === 3) {
+                    this.serie.NA = 1.1
+                    this.serie.RI = 1.33
+                    this.serie.objectiveRIOption = 1.33
+
+                }
+                console.log(this.serie)
             },
             // psfModelChanged
             psfModelChanged() {
@@ -395,6 +406,8 @@
             /* valueChange(){
                 PreferenceAPI.update_setting(this.serie.id, this.serie)
             } */
+
+            
         },
         
         

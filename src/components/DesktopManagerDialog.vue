@@ -39,13 +39,14 @@
                 this.dialog = true
                 let count = 0
                 while(!this.$refs.desktopmanager && count < 10){
+                    console.log("inside")
                     await new Promise(r => setTimeout(r, 5000))
                     count = count + 1
                 }
                 if(this.$refs.desktopmanager) {
                     this.$refs.desktopmanager.setFiles(files)
                     // start timer
-                    this.$refs.desktopmanager.startTimer(15000)
+                    //this.$refs.desktopmanager.startTimer(15000)
                 }
             },
             agree() {

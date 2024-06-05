@@ -57,7 +57,7 @@ var series = {
             series['slitDirection'] = 1
         
         if (!series['generatePsf'])
-            series['generatePsf'] = false
+            series['generatePsf'] = true
         if (!series['readSpacing'])
             series['readSpacing'] = true
         if (!series['psfModel'])
