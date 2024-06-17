@@ -120,6 +120,7 @@
                     { text: 'Slurm Jobid', value: 'jobid' },
                     { text: 'Jobname', value: 'jobname' },
                     { text: 'Status', value: 'status' },
+                    { text: 'Submitted', value: 'submitted' },
                     { text: 'Start', value: 'start' },
                     { text: 'End', value: 'end' },
                     { text: 'Total', value: 'total' },
@@ -152,13 +153,22 @@
                     let job = this.jobs[i]
                     if(job.start) {
                         // convert to local timezone
+                        console.log("job.start")
+                        console.log(job.start)
                         job.start = new Date(Date.parse(job.start) + new Date().getTimezoneOffset())
+                        
+                        console.log(job.start)
                         // ot string
                         job.start = job.start.toLocaleString()
+                        console.log(job.start)
                     }
                     if(job.end){
+                        console.log("job.end")
+                        console.log(job.end)
                         job.end = new Date(Date.parse(job.end) + new Date().getTimezoneOffset())
+                        console.log(job.end)
                         job.end = job.end.toLocaleString()
+                        console.log(job.end)
                     }
                 }
                 this.loading = false

@@ -8,10 +8,10 @@
     pre-process and deconvolve datasets on the <a href="https://rcc.uq.edu.au/wiener">Wiener High Performance Cluster</a>. 
     <p/>
 
-    <h3>Notices</h3>
+   <!--  <h3>Notices</h3>
     Scheduled maintenance occurs on the first Tuesday of the second month of each quarter (i know, confusing right!!!)<br />
     Last reported downtime: 31st August 2021 <br /> <p/>
-    <p/>
+    <p/> -->
 
 
 

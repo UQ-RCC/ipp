@@ -82,6 +82,7 @@
                     { text: 'Slurm Jobid', value: 'jobid' },
                     { text: 'Jobname', value: 'jobname' },
                     { text: 'Status', value: 'status' },
+                    { text: 'Submitted', value: 'submitted' },
                     { text: 'Start', value: 'start' },
                     { text: 'End', value: 'end' },
                     { text: 'Total', value: 'total' },
