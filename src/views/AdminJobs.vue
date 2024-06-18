@@ -149,7 +149,7 @@
                     return
                 this.loading = true
                 this.jobs = await PreferenceAPI.filter_jobs(this.filters.status, this.filters.username, this.filters.start, this.filters.jobname)
-                const options = {
+                /* const options = {
                     timeZone: 'Australia/Brisbane',
                     year: 'numeric',
                     month: '2-digit',
@@ -167,7 +167,7 @@
                         this.jobs[i].submitted = utctime.toLocaleString('en-AU', options)
                     }
                     
-                } 
+                }  */
                 this.loading = false
             },
             async applyFilter(){
