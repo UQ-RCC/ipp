@@ -124,25 +124,30 @@
                     minute: '2-digit',
                     second: '2-digit',
                     fractionalSecondDigits: 3, // to include milliseconds
-                    }; 
+                    }; */
 
                 for(let i=0; i<this.jobs.length; i++) {
                     let job = this.jobs[i]
-                    console.log("a job")
-                    console.log(job)
                     if(job.submitted) {
-                        console.log(job.submitted)
-                        let utctime = new Date(job.submitted)
+                        
+                        let utcdate = new Date(job.submitted)
+                        const offsetMinutes = utcdate.getTimezoneOffset();
+                        let localtime = new Date(utcdate.getTime() - offsetMinutes * 60 * 1000)
+                        const localTimeString = localtime.toLocaleString()
+                        this.jobs[i].submitted = localTimeString
+                        console.log("job submitted "+ this.jobs[i].submitted)
+
+
+                        /* console.log(job.submitted)
+                        let utctime = new Date(Date.parse(job.submitted))
                         console.log(utctime)
-                        this.jobs[i].submitted = utctime.toLocaleString('en-AU', options)
-                        console.log(this.jobs[i].submitted)
+                        this.jobs[i].submitted = utctime.toLocaleString('en-GB', {timeZone:'UTC'})
+                        console.log(this.jobs[i].submitted) */
                     }
                     
                    
-                }  */
+                }  
 
-                console.log("this.jobs")
-                console.log(this.jobs)
                 let response = await RemoteJobAPI.list_jobs()
                 Vue.$log.debug("Remote jobs response :")
                 Vue.$log.debug(response)
