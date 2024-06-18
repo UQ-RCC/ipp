@@ -149,28 +149,25 @@
                     return
                 this.loading = true
                 this.jobs = await PreferenceAPI.filter_jobs(this.filters.status, this.filters.username, this.filters.start, this.filters.jobname)
+                const options = {
+                    timeZone: 'Australia/Brisbane',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    fractionalSecondDigits: 3, // to include milliseconds
+                    }; 
                 for(let i = 0; i< this.jobs.length; i++){
                     let job = this.jobs[i]
-                    if(job.start) {
+                    if(job.submitted) {
                         // convert to local timezone
-                        console.log("job.start")
-                        console.log(job.start)
-                        job.start = new Date(Date.parse(job.start) + new Date().getTimezoneOffset())
-                        
-                        console.log(job.start)
-                        // ot string
-                        job.start = job.start.toLocaleString()
-                        console.log(job.start)
+                        let utctime = new Date(job.submitted)
+                        this.jobs[i].submitted = utctime.toLocaleString('en-AU', options)
                     }
-                    if(job.end){
-                        console.log("job.end")
-                        console.log(job.end)
-                        job.end = new Date(Date.parse(job.end) + new Date().getTimezoneOffset())
-                        console.log(job.end)
-                        job.end = job.end.toLocaleString()
-                        console.log(job.end)
-                    }
-                }
+                    
+                } 
                 this.loading = false
             },
             async applyFilter(){

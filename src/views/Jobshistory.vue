@@ -113,7 +113,29 @@
                 this.loading = true
                 // only list running and submitted jobs
                 this.jobs = await PreferenceAPI.list_jobs(false)
-                // console.log(this.jobs)
+                const options = {
+                    timeZone: 'Australia/Brisbane',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    fractionalSecondDigits: 3, // to include milliseconds
+                    }; 
+
+                for(let i=0; i<this.jobs.length; i++) {
+                    let job = this.jobs[i]
+                    if(job.submitted) {
+                        let utctime = new Date(job.submitted)
+                        this.jobs[i].submitted = utctime.toLocaleString('en-AU', options)
+                    }
+                    
+                   
+                } 
+
+                console.log("this.jobs")
+                console.log(this.jobs)
                 let response = await RemoteJobAPI.list_jobs()
                 Vue.$log.debug("Remote jobs response :")
                 Vue.$log.debug(response)
