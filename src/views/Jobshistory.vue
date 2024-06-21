@@ -137,12 +137,18 @@
                         this.jobs[i].submitted = localTimeString
                         console.log("job submitted "+ this.jobs[i].submitted)
 
-
-                        /* console.log(job.submitted)
-                        let utctime = new Date(Date.parse(job.submitted))
-                        console.log(utctime)
-                        this.jobs[i].submitted = utctime.toLocaleString('en-GB', {timeZone:'UTC'})
-                        console.log(this.jobs[i].submitted) */
+                    }
+                    if(job.start) {
+                        let utcdate = new Date(job.start);
+                        let localTimeString = utcdate.toLocaleString();
+                        this.jobs[i].start = localTimeString
+                        console.log(localTimeString);
+                    }
+                    if(job.end) {
+                        let utcdate = new Date(job.end);
+                        let localTimeString = utcdate.toLocaleString();
+                        this.jobs[i].end = localTimeString
+                        console.log(localTimeString);
                     }
                     
                    

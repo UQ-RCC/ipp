@@ -257,9 +257,21 @@ export default {
                 this.selectedItems.map( item => {
                     _copiedItems.push(item.path)
                 })
+                
                 let destination = options.path
+                console.log("Destination outside if")
+                console.log(destination)
+                
                 if ( options.selectedItems.length > 0 ) {
                     destination = destination + options.selectedItems[0].name
+                    console.log("Destination in if")
+                    console.log(destination)
+                }
+                let copiedItemPath = _copiedItems.lastIndexOf('/');
+                let directoryPath2 = _copiedItems.substring(0, copiedItemPath + 1);
+                console.log(directoryPath2)
+                if (directoryPath2 == destination ) {
+                    _copiedItems = _copiedItems.replace(/(\.[^.]+)$/, '_copy$1')
                 }
                 Vue.$log.info("Copying" + _copiedItems + " to "+ destination)
                 let confirmOptions = await this.$refs.copyconfirm.open(_copiedItems, destination)

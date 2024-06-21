@@ -1,62 +1,67 @@
 <template>
-    <v-dialog v-model="dialog" persistent scrollable max-height="60%" max-width="50%">
-        <v-card>
-            <v-toolbar dark color="#49075e">
-                <v-btn icon dark @click="cancel">
-                    <v-icon>mdi-close</v-icon>
-                </v-btn>
-                <v-card-title class="headline" v-if="!isnew">
-                    Load an existing template
-                </v-card-title>
-                <v-card-title class="headline" v-if="isnew">
-                    Save current template
-                </v-card-title>    
-            </v-toolbar>
+    <div>
 
-            <v-row >
-                <v-col>
-                    <v-data-table
-                        v-model="selectedTemplate"
-                        :headers="templateTableHeaders"
-                        :items="templates"
-                        :single-select="true"
-                        :disable-pagination="true"
-                        item-key="id"
-                        show-select
-                        class="elevation-1"
-                        height="250px" width="30%"
-                        @item-selected="templateChanged"
-                        v-if="!isnew"
-                        >
-                    </v-data-table>
-                    <v-text-field regular 
-                        label="Template name" 
-                        v-model="name"
-                        v-if="isnew"
-                        >
-                    </v-text-field>
-                </v-col>
+    
+        <TemplateOverrideDialog ref="templateoverridedialog" />
+        <v-dialog v-model="dialog" persistent scrollable max-height="60%" max-width="50%">
+            <v-card>
+                <v-toolbar dark color="#49075e">
+                    <v-btn icon dark @click="cancel">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    <v-card-title class="headline" v-if="!isnew">
+                        Load an existing template
+                    </v-card-title>
+                    <v-card-title class="headline" v-if="isnew">
+                        Save current template
+                    </v-card-title>    
+                </v-toolbar>
 
-                <v-col height="300px" width="70%">
-                    <json-viewer :value="options.settings" boxed></json-viewer>
-                </v-col>
-            </v-row>
+                <v-row >
+                    <v-col>
+                        <v-data-table
+                            v-model="selectedTemplate"
+                            :headers="templateTableHeaders"
+                            :items="templates"
+                            :single-select="true"
+                            :disable-pagination="true"
+                            item-key="id"
+                            show-select
+                            class="elevation-1"
+                            height="250px" width="30%"
+                            @item-selected="templateChanged"
+                            v-if="!isnew"
+                            >
+                        </v-data-table>
+                        <v-text-field regular 
+                            label="Template name" 
+                            v-model="name"
+                            v-if="isnew"
+                            >
+                        </v-text-field>
+                    </v-col>
 
-            <v-card-actions>
-                <v-row align="center" justify="center">    
-                <v-btn class="my-1" color="success" rounded dark large @click="agree"> 
-                    Ok
-                </v-btn>
-                <v-btn class="my-1" color="warning" rounded dark large @click="cancel"> 
-                    Cancel
-                </v-btn>
-                <v-btn class="my-1" color="error" rounded dark large @click="deleteTemplate"> 
-                    Delete
-                </v-btn>
+                    <v-col height="300px" width="70%">
+                        <json-viewer :value="options.settings" boxed></json-viewer>
+                    </v-col>
                 </v-row>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+
+                <v-card-actions>
+                    <v-row align="center" justify="center">    
+                    <v-btn class="my-1" color="success" rounded dark large @click="agree"> 
+                        Ok
+                    </v-btn>
+                    <v-btn class="my-1" color="warning" rounded dark large @click="cancel"> 
+                        Cancel
+                    </v-btn>
+                    <v-btn class="my-1" color="error" rounded dark large @click="deleteTemplate"> 
+                        Delete
+                    </v-btn>
+                    </v-row>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+    </div>
 </template>
 
 <script>
@@ -65,11 +70,13 @@
     import TemplateAPI from "@/api/TemplateAPI.js"
     import JsonViewer from 'vue-json-viewer'
     import 'vue-json-viewer/style.css'
+    import TemplateOverrideDialog from '@/components/TemplateOverrideDialog.vue'
 
     export default {
         name: 'TemplateDialog',
         components: {
             JsonViewer,
+            TemplateOverrideDialog
         },
         data() {
             return {
@@ -97,8 +104,13 @@
                 this.isnew = isnew
                 this.options.settings = settings
                 this.options.success = false
+                this.templates = await TemplateAPI.list_templates()
                 if(!isnew) {
-                    this.templates = await TemplateAPI.list_templates()
+                    console.log("selectedTemplate")
+                    console.log(this.selectedTemplate)
+                    this.selectedTemplate=[]
+                    //this.templates = await TemplateAPI.list_templates()
+                    console.log("this.templates")
                     console.log(this.templates)
                 }
                 return new Promise((resolve, reject) => {
@@ -117,11 +129,36 @@
                                 text: 'Name cannot be empty'
                             })
                         return
+                    } 
+                    if(this.name) {
+                        let same =false
+                        console.log(this.name)
+                        
+                        for(let i=0; i<this.templates.length;i++){
+                            if(this.name == this.templates[i].name) {
+                                console.log(this.name)
+                                same=true
+                                let options =  await this.$refs.templateoverridedialog.open(this.name)  
+                                console.log(options)
+                                if(!options.cancelled) {
+                                    if(options.success) {
+                                        await TemplateAPI.delete_template(this.templates[i].id)
+                                        await TemplateAPI.create_template(this.name, this.options.settings.setting)
+                                    }
+
+                                }
+                            }else {
+                                same = false
+                            }
+                        }
+                        if(!same) {
+                            console.log(same)
+                            await TemplateAPI.create_template(this.name, this.options.settings.setting)
+
+                        }
+                        this.options.success = true
+                            
                     }
-                    // save
-                    // console.log(this.options.settings.setting)
-                    await TemplateAPI.create_template(this.name, this.options.settings.setting)
-                    this.options.success = true
                 }
                 this.resolve(this.options)
                 this.dialog = false

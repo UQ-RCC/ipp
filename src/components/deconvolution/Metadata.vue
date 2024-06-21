@@ -172,6 +172,8 @@
                     this.serie.outputPath = ''
                 else
                     this.serie.outputPath = this.outputBasePath + "/" + this.outputFolderName
+                    console.log("output folder changed "+this.serie.outputPath)
+                    console.log(this.serie.outputPath)
             },
             /**
              * choose output folder: saved to all selected series

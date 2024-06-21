@@ -1282,10 +1282,15 @@
              */
             async loadTemplate(){
                 let options = await this.$refs.templatedialog.open(false, '')
+                console.log("load template options")
+                console.log(options)
                 if (!options.cancelled) {
                     Vue.$log.info("Template loaded")
                     Vue.$log.info(options.settings)
+                    let outputpath = this.workingItem.setting.outputPath
+                    console.log("output path previous - "+outputpath)
                     this.workingItem.setting = Object.assign({}, options.settings)
+                    this.workingItem.setting.outputPath = outputpath
                     this.saveSettings()
                     // update the current display
                     this.display_decon(this.workingItem, false)
@@ -1462,6 +1467,7 @@
                         let flag = false
                         let tempID = -1
                         for(let i=0; i<this.outputpath.length; i++){
+                            console.log(this.outputpath.length)
                             if((this.outputpath[i].id !== this.workingItem.id) && (this.outputpath[i].outputpath === this.workingItem.setting.outputPath)){
                                 Vue.notify({
                                     group: 'errornotif',
@@ -1497,7 +1503,7 @@
                         }
                         
                     }
-                   
+                    console.log(this.outputpath)
 
                 }
                 if(this.workingItem.step === 4) {
@@ -1548,7 +1554,7 @@
                     } 
                 }
                /* validate devices in device tab */
-                if(this.workingItem.step === 7) { 
+                /* if(this.workingItem.step === 7) { 
                     let msg 
                     let jobs = this.workingItem.setting.instances
                     let mem = this.workingItem.setting.mem
@@ -1583,7 +1589,7 @@
                             return 
                         }
                     }
-                } 
+                }  */
                 if(this.workingItem.step === 8)
                     return
                 //even if current step is invalid, next will allow it to go if it has been visited
