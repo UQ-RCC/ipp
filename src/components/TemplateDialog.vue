@@ -99,6 +99,9 @@
             }
         },
         methods: {
+            findIndexByName(array,name){
+                return array.findIndex(item => item.name === name);
+            },
             async open(isnew, settings) {
                 this.dialog = true
                 this.isnew = isnew
@@ -131,31 +134,23 @@
                         return
                     } 
                     if(this.name) {
-                        let same =false
                         console.log(this.name)
-                        
-                        for(let i=0; i<this.templates.length;i++){
-                            if(this.name == this.templates[i].name) {
-                                console.log(this.name)
-                                same=true
-                                let options =  await this.$refs.templateoverridedialog.open(this.name)  
-                                console.log(options)
-                                if(!options.cancelled) {
+                        let index = this.findIndexByName(this.templates, this.name)
+                        console.log(index)
+
+                        if(index !== -1) {
+                            let options =  await this.$refs.templateoverridedialog.open(this.name) 
+                            if(!options.cancelled) {
                                     if(options.success) {
-                                        await TemplateAPI.delete_template(this.templates[i].id)
+                                        await TemplateAPI.delete_template(this.templates[index].id)
                                         await TemplateAPI.create_template(this.name, this.options.settings.setting)
                                     }
 
                                 }
-                            }else {
-                                same = false
-                            }
-                        }
-                        if(!same) {
-                            console.log(same)
+                        } else {
                             await TemplateAPI.create_template(this.name, this.options.settings.setting)
-
                         }
+                        
                         this.options.success = true
                             
                     }

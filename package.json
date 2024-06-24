@@ -13,7 +13,7 @@
     "core-js": "^3.6.5",
     "html-screen-capture-js": "^1.0.52",
     "html2canvas": "^1.3.0",
-    "keycloak-js": "^20.0.5",
+    "keycloak-js": "^22.0.5",
     "minimatch": "^3.0.4",
     "platform": "^1.3.6",
     "roboto-fontface": "*",

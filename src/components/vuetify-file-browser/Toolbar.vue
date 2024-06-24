@@ -267,13 +267,28 @@ export default {
                     console.log("Destination in if")
                     console.log(destination)
                 }
-                let copiedItemPath = _copiedItems.lastIndexOf('/');
-                let directoryPath2 = _copiedItems.substring(0, copiedItemPath + 1);
-                console.log(directoryPath2)
-                if (directoryPath2 == destination ) {
-                    _copiedItems = _copiedItems.replace(/(\.[^.]+)$/, '_copy$1')
+                if(_copiedItems.length > 0) {
+                    _copiedItems.forEach((item,index) => {
+                        let lastindex = item.lastIndexOf('/');
+                        console.log("index ", lastindex)
+                        console.log("current item ", item)
+                        let directoryPath2 = item.substring(0, (lastindex + 1));
+                        console.log("directoryPath2 ", directoryPath2)
+                        if (directoryPath2 === destination ) {
+                            let dotindex =  item.indexOf('.')
+                            let pathtoextenstion = item.substring(0,dotindex)
+                            let newpath = pathtoextenstion+"_copy"
+                            let extention = item.substring(dotindex)
+                            _copiedItems[index] = newpath+extention
+                            console.log(_copiedItems[index])
+                            //item.replace(/(\.[^.]+)$/, '_copy$1')
+                        }
+                        
+                    })
                 }
-                Vue.$log.info("Copying" + _copiedItems + " to "+ destination)
+                //let index = _copiedItems[0].lastIndexOf('/');
+                console.log(_copiedItems)
+                Vue.$log.info("Copying " + _copiedItems + " to "+ destination)
                 let confirmOptions = await this.$refs.copyconfirm.open(_copiedItems, destination)
                 if (!confirmOptions.cancelled) {
                     try{
