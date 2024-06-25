@@ -259,6 +259,7 @@ export default {
                 })
                 
                 let destination = options.path
+                let copy = false
                 console.log("Destination outside if")
                 console.log(destination)
                 
@@ -268,19 +269,20 @@ export default {
                     console.log(destination)
                 }
                 if(_copiedItems.length > 0) {
-                    _copiedItems.forEach((item,index) => {
+                    _copiedItems.forEach((item) => {
                         let lastindex = item.lastIndexOf('/');
                         console.log("index ", lastindex)
                         console.log("current item ", item)
                         let directoryPath2 = item.substring(0, (lastindex + 1));
                         console.log("directoryPath2 ", directoryPath2)
                         if (directoryPath2 === destination ) {
-                            let dotindex =  item.indexOf('.')
+                            /* let dotindex =  item.indexOf('.')
                             let pathtoextenstion = item.substring(0,dotindex)
                             let newpath = pathtoextenstion+"_copy"
                             let extention = item.substring(dotindex)
                             _copiedItems[index] = newpath+extention
-                            console.log(_copiedItems[index])
+                            console.log(_copiedItems[index])  */
+                            copy=true
                             //item.replace(/(\.[^.]+)$/, '_copy$1')
                         }
                         
@@ -288,12 +290,15 @@ export default {
                 }
                 //let index = _copiedItems[0].lastIndexOf('/');
                 console.log(_copiedItems)
+                console.log(btoa(_copiedItems.join(";")))
+                console.log(btoa(destination))
+                console.log(copy)
                 Vue.$log.info("Copying " + _copiedItems + " to "+ destination)
                 let confirmOptions = await this.$refs.copyconfirm.open(_copiedItems, destination)
                 if (!confirmOptions.cancelled) {
                     try{
                         let usermail = Vue.prototype.$keycloak && Vue.prototype.$keycloak.idTokenParsed ? Vue.prototype.$keycloak.idTokenParsed.email  : ''
-                        await FilesAPI.copy(usermail, _copiedItems.join(";"), destination, 6, confirmOptions.deleteSource)
+                        await FilesAPI.copy(usermail, _copiedItems.join(";"), destination, 6, confirmOptions.deleteSource, copy)
                         Vue.notify({
                             group: 'sysnotif',
                             type: 'info',
