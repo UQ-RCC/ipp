@@ -1554,7 +1554,7 @@
                     } 
                 }
                /* validate devices in device tab */
-                /* if(this.workingItem.step === 7) { 
+                if(this.workingItem.step === 7) { 
                     let msg 
                     let jobs = this.workingItem.setting.instances
                     let mem = this.workingItem.setting.mem
@@ -1589,7 +1589,7 @@
                             return 
                         }
                     }
-                }  */
+                }  
                 if(this.workingItem.step === 8)
                     return
                 //even if current step is invalid, next will allow it to go if it has been visited
