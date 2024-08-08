@@ -72,7 +72,7 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.HARBOR_REGISTRY }}/rcc-portals-a/apps-ipp:latest
-          cache-from: type=registry,ref=${{ secrets.HARBOR_REGISTRY }}/rcc-portals-a/apps-ipp:cache
+          #cache-from: type=registry,ref=${{ secrets.HARBOR_REGISTRY }}/rcc-portals-a/apps-ipp:cache
           cache-to: type=registry,ref=${{ secrets.HARBOR_REGISTRY }}/rcc-portals-a/apps-ipp:cache,mode=max
 #end
 
