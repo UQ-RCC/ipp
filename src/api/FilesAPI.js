@@ -66,5 +66,9 @@ export default {
         })
         return data
     },
+    async createActionFile(){
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/createactionfile`);
+        return data
+      }
 }
   

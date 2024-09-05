@@ -141,7 +141,7 @@ var series = {
             } else {
                 series['mem'] = 100
             } */
-            series['mem'] = 15
+            series['mem'] = 30
         }
         // gpus
         if (!series['gpus'])

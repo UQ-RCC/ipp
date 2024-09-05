@@ -10,7 +10,7 @@
             </v-switch>
         </v-row>
         
-        <v-col v-if="serie.generatePsf">
+        <v-col v-if="serie.generatePsf && api!='CudaDecon'">
             <v-row>
                 <v-col cols="10" sm="3" md="4">
                     <v-select
@@ -138,7 +138,7 @@
         </v-col>
 
 
-        <v-col v-if="!serie.generatePsf" :class="{space:api=='CudaDecon'}">
+        <v-col v-if="!serie.generatePsf || api=='CudaDecon'" :class="{space:api=='CudaDecon'}">
             <v-row align="center" justify="center">
                 <v-progress-circular indeterminate color="primary" v-if="loading"></v-progress-circular>
                 <v-col cols="30" sm="6" md="7">
@@ -294,6 +294,9 @@
                 let _current_api = await PreferenceAPI.get_config()
                 this.api=_current_api.apiname
                 this.selectedtag = _current_api.metadatatag
+                console.log("this.api")
+                console.log(this.api)
+                console.log(serie.generatePsf)
 
                 if(this.serie.psfFile){
                     let _storedSeries = await PreferenceAPI.get_serie(this.serie.psfFile)

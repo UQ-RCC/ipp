@@ -30,12 +30,42 @@
             </v-list-group>
         </div>
 
-        <div v-if="desktops.length === 0">
+        <div v-if="desktopManagerOnly===false">
+            <v-card-title align="start" justify="center">
+                Select a program to open selected files
+            </v-card-title>
+            <v-row v-if="!isInScratch" align="center" justify="center">
+                <v-checkbox
+                    v-model="copyFilesToScratch"
+                    label="Copy files to scratch"
+                ></v-checkbox>
+            </v-row>
+            <v-row align="center" justify="center">
+                <v-col cols="6" sm="4" md="4">
+                    <v-select
+                        :items="apps"
+                        v-model="selectedApp"
+                        item-text="displayText"
+                        item-value="id"
+                        label="App"
+                        
+                    >
+                    </v-select>
+                </v-col>
+                <v-btn class="my-1" color="success" rounded dark large 
+                        @click="launchProgram" 
+                        > 
+                        Open Program
+                </v-btn>
+            </v-row>
+        </div>
+
+        <div >
             <v-card-title align="start" justify="center">
                 Launch a desktop
             </v-card-title>
-            <v-row align="center" justify="center" class="mx-3">
-                <v-col cols="2" sm="1" md="2" lg="2">
+            <v-row v-if="desktopManagerOnly===true" align="center" justify="center" class="mx-3">
+                <!-- <v-col cols="2" sm="1" md="2" lg="2">
                     <v-select
                         :items="flavours"
                         v-model="selectedFlavour"
@@ -53,9 +83,35 @@
                         :rules="numberRules" 
                         label="Time (hours)">
                     </v-text-field>
+                </v-col> -->
+
+                <v-col cols="6" sm="3" md="4" lg="4">
+                                
+                    <div>
+                        <v-tooltip bottom>
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-select v-on="on" v-bind="attrs"
+                                    :items="OODdesktops"
+                                    v-model="selectedDesktop"
+                                    item-text="label"
+                                    label="Desktop"
+                                    return-object
+                                >
+                                </v-select>
+                            
+                            </template>
+                            <span>Select a desktop to launch</span>
+                        </v-tooltip>
+                    </div>
+                </v-col>
+                        
+                <v-col cols="4" sm="3" md="4" lg="4">
+                    <v-btn class="my-1" color="success" rounded dark large @click="launchDesktop"> 
+                        Launch Desktop
+                </v-btn>
                 </v-col>
             </v-row>
-            <v-row align="center" justify="center" class="mx-3">
+            <!-- <v-row v-if="desktopManagerOnly===true" align="center" justify="center" class="mx-3">
                 <v-col cols="8" sm="4" md="8" lg="8">
                     <v-data-table
                         :headers="desktopConfigHeader"
@@ -65,16 +121,16 @@
                         >
                     </v-data-table>
                 </v-col>                    
-            </v-row>
-            <v-row align="center" justify="center" class="mx-5">
-                <v-btn class="my-1" color="success" rounded dark large @click="launchDesktop"> 
-                        Launch Desktop
+            </v-row> -->
+            <v-row v-if="desktopManagerOnly===false" align="center" justify="center" class="mx-5">
+                <v-btn class="my-1" color="success" rounded dark large @click="launchIPPDesktop"> 
+                        Launch IPP Desktop
                 </v-btn>
-            </v-row>
+            </v-row> 
 
-        </div>            
+        </div>         
 
-        <div v-if="desktops.length > 0">
+        <!-- <div v-if="desktops.length > 0">
             <v-card-title align="start" justify="center">
                 Running Desktops
             </v-card-title>
@@ -100,38 +156,9 @@
                     </v-data-table>
                 </v-col>
             </v-row>
-        </div>
+        </div> -->
 
-        <div v-if="currentDesktop !== null && desktopManagerOnly===false">
-            <v-card-title align="start" justify="center">
-                Select a program to open selected files
-            </v-card-title>
-            <v-row align="center" justify="center">
-                <v-checkbox
-                    v-model="copyFilesToScratch"
-                    label="Copy files to scratch"
-                    :readonly="currentDesktop === null"
-                ></v-checkbox>
-            </v-row>
-            <v-row align="center" justify="center">
-                <v-col cols="6" sm="4" md="4">
-                    <v-select
-                        :items="apps"
-                        v-model="selectedApp"
-                        item-text="displayText"
-                        item-value="id"
-                        label="App"
-                        :readonly="currentDesktop === null"
-                    >
-                    </v-select>
-                </v-col>
-                <v-btn class="my-1" color="success" rounded dark large 
-                        @click="launchProgram" 
-                        :disabled="currentDesktop === null"> 
-                        Open Program
-                </v-btn>
-            </v-row>
-        </div>
+        
         <v-card-actions>
             <v-row align="center" justify="center"> 
                 <v-btn class="my-1" color="success" rounded dark large 
@@ -163,9 +190,11 @@
                 apps: [],
                 flavours: [],
                 selectedApp: "",
+                selectedDesktop:"",
                 selectedFlavour: {},
                 walltime: 4, 
                 copyFilesToScratch: true,
+                isInScratch: false,
                 runningDesktopsTableHeaders: [
                     {text: 'Job ID', align: 'center', sortable: false, value: 'jobid'},
                     {text: 'State', align: 'center', sortable: false, value: 'status'},
@@ -180,8 +209,18 @@
                 ],
                 numberRules: [
                     value => value && value > 0 && Number.isInteger(Number(value)) || 'Must be an positive integer'
-                ]            }
+                ],
+                OODdesktops: [
+                    {label:'GPU-Accelerated Desktop', value:'viz_desktop'},
+                    {label:'Standard Desktop', value:'std_desktop'},
+                    {label:'Expert Desktop', value:'adv_desktop'},
+                    {label:'IPP Accelerated Desktop', value:'ipp_desktop'},
+
+                ]           
+             }
         },
+       
+        
 
         methods: {
             ///////////////////////////////////////
@@ -208,6 +247,7 @@
                     this.apps.push(element)
                     this.selectedApp = this.apps[0].id
                 });
+                console.log( this.apps)
             },
             async getFlavours(){
                 let response = await DesktopAPI.listdesktopflavours()
@@ -239,16 +279,16 @@
             },
             // open a program in the selected desktop
             async launchProgram(){
-                if(this.currentDesktop === null) {
+                /* if(this.currentDesktop === null) {
                     Vue.$log.info("No desktop running. exit!!!")
                     return
-                }
+                } */
                 Vue.$log.info(this.selectedApp)
                 this.loading = true
                 // get display number
-                let vncDisplayRes = await DesktopAPI.vncdisplay()
-                Vue.$log.info("vnc display:" + Number(vncDisplayRes.commandResult[0].vncDisplay))
-                let displayNumber = Number(vncDisplayRes.commandResult[0].vncDisplay)
+                //let vncDisplayRes = await DesktopAPI.vncdisplay()
+               // Vue.$log.info("vnc display:" + Number(vncDisplayRes.commandResult[0].vncDisplay))
+               // let displayNumber = Number(vncDisplayRes.commandResult[0].vncDisplay)
                 //
                 let filesToBeLoaded = []
                 this.files.map(item => {
@@ -271,29 +311,44 @@
                     text: filesList + ' are being loaded to ' + this.selectedApp
                 })
                 console.log("parameters for launch app")
-                console.log(this.currentDesktop.node)
+                //this.currentDesktop.node='gpunode-2-0'
                 console.log(this.selectedApp)
-                console.log(displayNumber)
+               // console.log(displayNumber)
                 console.log(btoa(filesList))
-                console.log(this.copyFilesToScratch)
-                await DesktopAPI.launchapp(this.currentDesktop.node, this.selectedApp, displayNumber, filesList, this.copyFilesToScratch)
+                //console.log(this.copyFilesToScratch)
+                await DesktopAPI.launchapp(this.selectedApp, filesList, this.copyFilesToScratch)
                 this.loading = false
             },
             
 
             // create a new desktop
-            async launchDesktop(){
+            async launchIPPDesktop(){
+                
                 this.loading = true
-                await DesktopAPI.start_desktop(this.selectedFlavour.ram, this.selectedFlavour.cpu, this.walltime)
+                window.open('https://bunya-ondemand.rcc.uq.edu.au/pun/sys/dashboard/batch_connect/sys/ipp_desktop/session_contexts/new', '_blank');
+                //await DesktopAPI.start_desktop(this.selectedFlavour.ram, this.selectedFlavour.cpu, this.walltime)
                 // sleep for 5 seconds
-                await new Promise(r => setTimeout(r, 5000))
-                await this.getDesktops()
+                //await new Promise(r => setTimeout(r, 5000))
+                //await this.getDesktops()
                 this.loading = false
+            },
+
+            async launchDesktop(){
+                console.log("selectedDesktop")
+                console.log(this.selectedDesktop.value)
+                this.loading = true
+                window.open('https://bunya-ondemand.rcc.uq.edu.au/pun/sys/dashboard/batch_connect/sys/'+this.selectedDesktop.value+'/session_contexts/new', '_blank');
+                //await DesktopAPI.start_desktop(this.selectedFlavour.ram, this.selectedFlavour.cpu, this.walltime)
+                // sleep for 5 seconds
+                //await new Promise(r => setTimeout(r, 5000))
+                //await this.getDesktops()
+                this.loading = false
+
             },
 
             // set files
             setFiles(filelist) {
-                 console.log("setFiles ")
+                console.log("setFiles ")
                 console.log(filelist)
                 if(filelist.length>0){
                     filelist.map(item => {
@@ -306,12 +361,23 @@
                 })
                     
                 } 
+                console.log("before this.isInScratch")
+                console.log(this.isInScratch)
+                if (filelist.every(file => file.startsWith('/scratch'))){
+                    this.isInScratch = true
+                }else {
+                    this.isInScratch = false
+                } 
+                console.log("after this.isInScratch")
+                console.log(this.isInScratch)
+            
                 //this.files = filelist
             },
             removeItem(index) {
                 this.files.splice(index,1)
 
             },
+            
 
             // start timer
             startTimer(interval) {
@@ -331,12 +397,15 @@
         mounted: async function(){
             // get the current desktops
             this.loading = true
-            this.getDesktops()
+           // this.getDesktops()
             this.getApps()
             this.getFlavours()
-            this.startTimer(20000)
+            //this.startTimer(20000)
             this.loading = false
+            console.log("this.desktopManagerOnly")
+            console.log(this.desktopManagerOnly)
         },
+        
         destroyed() {
             this.stopTimer()
         },

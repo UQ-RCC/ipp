@@ -139,6 +139,7 @@ import FileBrowserDialog from '../FileBrowserDialog.vue'
 import CopyConfirmDialog from './CopyConfirmDialog.vue'
 import DesktopManagerDialog from '../DesktopManagerDialog.vue'
 
+
 export default {
     name: 'Toolbar',
     components: {
@@ -401,6 +402,8 @@ export default {
             }
             else if(this.filter.trim() !== '')
                 itemsToBeOpen = [this.path + this.filter]
+            await FilesAPI.createActionFile()
+            
             await this.$refs.desktopdialog.open(itemsToBeOpen)
         }
     },

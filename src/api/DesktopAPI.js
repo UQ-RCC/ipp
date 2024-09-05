@@ -47,12 +47,10 @@ export default {
     return data
   },
   // launch app
-  async launchapp(execHost, appid, displayNumber, filespath, copytoscratch) {
+  async launchapp(appid, filespath, copytoscratch) {
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/launchapp`, {
         params: {
-          execHost: execHost,
           appid: appid,
-          dnum: displayNumber, 
           filespath: btoa(filespath),
           copytoscratch: copytoscratch
         }
@@ -93,5 +91,7 @@ export default {
   });
     return data
   },
+
+ 
 
 }

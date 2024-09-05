@@ -388,14 +388,14 @@ export default {
             }else if (size.endsWith("T")){
                 size = (size.split("T")[0])*2**40
             }
-            console.log(size)
+            
             return size
         },
 
         iconColor(item){
             let color
             
-            if (item.path.startsWith("/afm03") || item.path.startsWith("/afm03")) {
+            if (item.path.startsWith("/QRISdata") ) {
                 let blocks = this.parse_size(item.blocks)
                 let size = this.parse_size(item.size)
                 if (blocks > 0 && blocks < this.parse_size("16K")) {
