@@ -477,6 +477,7 @@ export default {
                     this.total_files = 0
                     this.total_folders = 0
                     this.items = response.commandResult.map(responseItem => {
+                        //console.log(responseItem.name)
                         responseItem.type = "file"
                         responseItem.basename = responseItem.name
                         responseItem.extension = ""

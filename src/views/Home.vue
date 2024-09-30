@@ -21,7 +21,39 @@
 
     <br />
 
+    <h3>HPC quota limit</h3>
+    <v-row >
+        <v-col >
+            
+                <!-- <v-card-text> -->
+                    <v-table fixed-header >
+                        <thead>
+                            <tr>
+                                <th class="text-left pa-4">File System</th>
+                                <th class="text-left pa-4">Used (GB)</th>
+                                <th class="text-left pa-4">Limit </th>
+                                <th class="text-left pa-4">Files </th>
+                                <th class="text-left pa-4">File Limit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in current_quota" v-bind:key="item.fileSystem">
+                                <td class="text-left pa-4">{{ item.fileSystem }} </td>
+                                <td class="text-left pa-4">{{ item.used }} </td>
+                                <td class="text-left pa-4">{{ item.usedLimit }}</td>
+                                <td class="text-left pa-4">{{ item.files }}</td>
+                                <td class="text-left pa-4">{{ item.fileLimit }}</td>
 
+                            </tr>
+                        </tbody>
+
+                    </v-table>
+                    <h4 style="color:orange">If the usage of /scratch or /home is close to the limit, please ensure you delete some files from your scratch or home folder to free up space </h4>
+                <!-- </v-card-text> -->    
+            
+        </v-col>
+    </v-row>
+   <br />
     <h3>Firefox is the recommended browser for the Image Processing Portal</h3> 
 
 </div>
@@ -29,16 +61,19 @@
 
 <script>
     // import * as api from '@/api'
+    import RemoteJobAPI from "@/api/RemoteJobAPI.js"
 
     export default {
         name: 'Home',
         components: {
         },
         data() {
-            var data = {}
-            return data
+            return {
+                current_quota:[]
+                
+            }
         },
-        mounted: function() {
+        mounted: async function() {
             console.log(this.$route.query.component)
             if(this.$route.query.component && this.$route.query.component=='filesmanager'){
                 let forwardedPath = '/filesmanager'
@@ -50,6 +85,22 @@
                     path: forwardedPath
                 })
             }
+             let response = await RemoteJobAPI.scratch_quota()
+             if (response.commandResult) {
+                response.commandResult.forEach(item => {
+                    this.current_quota.push(item)
+                    console.log(this.current_quota)
+                    
+                        /* this.current_quota.used = item.used
+                        this.current_quota.useLimit = item.usedLimit
+                        this.current_quota.files = item.files
+                        this.current_quota.fileLimit = item.fileLimit */
+                    
+                })
+             }
+
+             console.log(this.current_quota)
+
         },
         methods: {
         }

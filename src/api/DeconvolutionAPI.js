@@ -48,14 +48,27 @@ export default {
 
   },  
 
-  /* async estimate_devices(deconinfo) {
-    const { data } =  await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/estimateDevices`, {
-      params : {
-        deconinfo: btoa(JSON.stringify(deconinfo)) 
-      }
-    })
+ async cancel_estimate() {
+    const { data } =  await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/estimateCancel`);
     return data
-  }, */
+  }, 
+
+  async queue_time(nodes, mem, gpus, partition) {
+    const { data } =  await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/queueTime`,{
+      params: {
+        nodes: nodes,
+        mem: mem,
+        gpus: gpus,
+        partition: partition
+      }
+    });
+    return data
+  },
+
+  async user_limits() {
+    const { data } =  await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/userLimits`);
+    return data
+  },
 
   // execute
   async execute_microvolution(output, instances, mem, devices, executioninfo, jobs, is_test=false, is_estimate, is_cudaDecon) {
@@ -96,6 +109,11 @@ export default {
     let endpoint = `${Vue.prototype.$Config.endpoints.pref}`
     // let apihost = /^(?:\w+\:\/\/)?([^\/]+)(.*)$/.exec(endpoint)[1]
     let apihost = /^(?:\w+:\/\/)?([^/]+)(.*)$/.exec(endpoint)[1]
+    console.log("----run estimate api API call---")
+    let today = new Date();
+    let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    let time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
+    console.log(date+'_'+time)
     const { data } = await request.get(_requestUrl, {
         params: {
           output: output, 

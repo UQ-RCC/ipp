@@ -62,23 +62,44 @@ service.interceptors.response.use(
     error => {
       Vue.$log.error("response error here >>>>>>>>>>>>>>>>>>>>>>>>>>");
       Vue.$log.error(error)
-      // if token expired, refresh the whole page
-      if(error.response.status === 401) {
-        Vue.notify({
-          group: 'sysnotif',
-          type: 'warning',
-          title: 'Token expired',
-          text: 'Token expired! reload the window!'
-        })
-        window.location.reload()
-      } else {
-        // no need to tell the problem
-        /*Vue.notify({
-          group: 'sysnotif',
-          type: 'error',
-          title: 'Error',
-          text: 'There has been a problem:' + String(error)
-        })*/
+      if (error.response) {
+        Vue.$log.error("Status Code:", error.response.status);
+      
+        // Log the request URL
+        Vue.$log.error("Request URL:", error.response.config.url);
+
+        // Log the response data
+        Vue.$log.error("Response Data:", error.response.data);
+
+        // Log the request headers
+        Vue.$log.error("Request Headers:", error.response.config.headers);
+
+        // Log the response headers
+        Vue.$log.error("Response Headers:", error.response.headers);
+
+        // if token expired, refresh the whole page
+        if(error.response.status === 401) {
+          Vue.notify({
+            group: 'sysnotif',
+            type: 'warning',
+            title: 'Token expired',
+            text: 'Token expired! reload the window!'
+          })
+          window.location.reload()
+        } else {
+          console.log(error.response.status)
+          // no need to tell the problem
+          /*Vue.notify({
+            group: 'sysnotif',
+            type: 'error',
+            title: 'Error',
+            text: 'There has been a problem:' + String(error)
+          })*/
+        }
+      }else {
+        // If no response was received, it could be a network error
+        Vue.$log.error("No response received from server.");
+        Vue.$log.error("Error Message:", error.message);
       }
       return Promise.reject(error)
     }

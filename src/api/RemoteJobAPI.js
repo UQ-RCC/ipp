@@ -16,4 +16,10 @@ export default {
     });
     return data
   },
+
+  async scratch_quota() {
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/quota`);
+    return data
+  },
+
 }

@@ -12,7 +12,8 @@
         </div>
 
 
-    
+        <h4> {{ estimatedTime }}</h4>
+        <br/>
         <v-expansion-panels accordion >
             <v-expansion-panel @click="change(0)"  >
                 <v-expansion-panel-header>Metadata</v-expansion-panel-header>
@@ -91,6 +92,7 @@
 
     import series from "@/utils/series.js";
     import PreferenceAPI from "@/api/PreferenceAPI"
+    import DeconvolutionAPI from "@/api/DeconvolutionAPI.js"
 
     export default {
         name: 'DeconvolutionReview',
@@ -109,13 +111,15 @@
                 serie: series.formatSeries(null),
                 panel: this.$refs.revdeconmetadata,
                 api:'',
-                selectedtag: null
+                selectedtag: null,
+                estimatedTime:null
             }
         }, 
         methods: {
             load_serie(serie){
                 this.serie = serie
                 this.change(this.panelId)
+                this.getQueueTime()
             },
             change(panelId){
                 
@@ -153,6 +157,32 @@
                 return _panel
             },
 
+            async getQueueTime (){
+                let response = await DeconvolutionAPI.queue_time(this.serie.instances,this.serie.mem,this.serie.gpus,'gpu_cuda')
+    
+                //let output = response.commandResult
+            
+                const responseString = response.commandResult[0].output
+                const regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/
+                const timeStampMatch = responseString.match(regex) 
+                const startTime = timeStampMatch ? timeStampMatch[0]:null
+                const queueTime = new Date(startTime)
+                const timediffinms = queueTime - (new Date)
+                const timediffinSec = Math.floor(timediffinms/1000)
+                const timediffinmins = Math.floor(timediffinSec/60)
+                console.log(timediffinSec)
+                
+                    
+                if (timediffinSec < 60 ) {
+                    this.estimatedTime = "This job is expected to start in less than 1 minute"
+                }else if (timediffinSec > 60 &&  timediffinmins < 60){
+                    this.estimatedTime = "This job is expected to start in about "+Math.ceil(timediffinmins)+" mins"
+                }else if (timediffinmins > 60 ){
+                    this.estimatedTime = "This job is expected to start in about "+Math.ceil((timediffinmins/60))+" hours"
+                }
+                    
+            },
+
             // doing nothing anyway
             is_valid(){
                 return true
@@ -169,6 +199,8 @@
                     this.panel.load_serie(this.serie)
                 }
             }
+            this.getQueueTime()
+
         }
 
     }

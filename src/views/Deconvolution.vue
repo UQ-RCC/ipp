@@ -665,8 +665,7 @@
             if(this.api == 'CudaDecon') {
                 this.workingItem.setting.psfType = 3
             }
-            console.log("this.selected")
-            console.log(this.selected)
+           
             
         },
         methods: {
@@ -707,11 +706,10 @@
                 
                 try{
                     this.csvloading = true
-                    const response= await ConfigurationAPI.execute_metedata_script(btoa(metadataResult.file), this.selectedtag, false, true, btoa(saveFolder))
+                    await ConfigurationAPI.execute_metedata_script(btoa(metadataResult.file), this.selectedtag, false, true, btoa(saveFolder))
                     this.csvloading = false
                     this.csvlocation = this.workingItem.setting.outputPath+"/"+file_name+"_metadata.csv"
-                    console.log(this.workingItem.setting.outputPath+"/"+file_name+".csv")
-                    console.log(response)
+                    
                     //if(response)
                     Vue.notify({
                             group: 'sysnotif',
@@ -728,9 +726,9 @@
                             title: 'Save Metadata to CSV File',
                             text: 'Fail to save ' + this.workingItem.setting.outputPath+"/"+file_name+"_metadata.csv"  + ' .Error:' + String(err)
                         });
-                        console.log(String(err))
+                        
                     } 
-                console.log(this.workingItem.setting.outputPath)
+                
             },
 
 
@@ -786,15 +784,13 @@
                                 } else {
                                         Vue.$log.debug("Not found in database- a new decon and path")
                                         let response = null
-                                        console.log(pathToBeLoaded)
+                                        
                                         if (isfolder)
                                             response = await DeconvolutionAPI.get_folder_info(pathToBeLoaded)
                                         else 
                                             response = await DeconvolutionAPI.get_file_info(pathToBeLoaded)
 
-                                        console.log("after response call")
-                                        console.log(response)
-                                        console.log(JSON.parse(JSON.stringify(response)))
+                                        
                                        
                                         Vue.$log.debug("Response :")
                                         Vue.$log.debug(response)
@@ -856,7 +852,7 @@
                         }
                     }
                 Vue.$log.debug("items :")
-                Vue.$log.debug(items)
+                
                 console.log(items)
                 }
                 catch(err){
@@ -903,7 +899,7 @@
                             }
                                
                         })
-                        console.log(miscs.maxMemSize())
+                        
                         if(options.maxsize * 2.2 > miscs.maxMemSize()){
                             Vue.notify({
                                 group: 'sysnotif',
@@ -934,8 +930,7 @@
                             })
                             //if (!_exists)
                             let itemSize = miscs.convertFormattedStrToBytes(options.selectedItems[i].size)
-                            console.log(miscs.maxMemSize())
-                            console.log(itemSize* 2.2)
+                            
                             if(itemSize * 2.2 > miscs.maxMemSize()){
                                 Vue.notify({
                                     group: 'sysnotif',
@@ -1093,7 +1088,7 @@
                 console.log(fileslistbase64)
 
                 try{
-                    console.log(this.selectedtag)
+                    
                     const response= await ConfigurationAPI.execute_metedata_script(fileslistbase64, this.selectedtag, false, false, saveFolder)
                     console.log(response)
                     let output = response.commandResult
@@ -1553,8 +1548,9 @@
                         }
                     } 
                 }
+             
                /* validate devices in device tab */
-                if(this.workingItem.step === 7) { 
+               /*  if(this.workingItem.step === 7) { 
                     let msg 
                     let jobs = this.workingItem.setting.instances
                     let mem = this.workingItem.setting.mem
@@ -1589,7 +1585,7 @@
                             return 
                         }
                     }
-                }  
+                } */  
                 if(this.workingItem.step === 8)
                     return
                 //even if current step is invalid, next will allow it to go if it has been visited

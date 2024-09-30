@@ -190,7 +190,7 @@
                 apps: [],
                 flavours: [],
                 selectedApp: "",
-                selectedDesktop:"",
+                selectedDesktop:{label:'IPP Accelerated Desktop', value:'ipp_desktop'},
                 selectedFlavour: {},
                 walltime: 4, 
                 copyFilesToScratch: true,
