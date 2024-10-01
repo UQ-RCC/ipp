@@ -52,11 +52,20 @@
                     >
                     </v-select>
                 </v-col>
-                <v-btn class="my-1" color="success" rounded dark large 
-                        @click="launchProgram" 
-                        > 
-                        Open Program
-                </v-btn>
+                <v-tooltip bottom >
+
+                    <template v-slot:activator="{ on, attrs }" >
+                        <v-btn class="my-1" color="success" rounded dark large v-bind="attrs" 
+                            v-on="on"
+                                @click="launchProgram" 
+                                > 
+                                Open Program
+                        </v-btn>
+    
+                    </template>
+                    <span>Click to open a program on the current desktop or on a new one</span>
+                   
+                </v-tooltip>
             </v-row>
         </div>
 
@@ -123,9 +132,17 @@
                 </v-col>                    
             </v-row> -->
             <v-row v-if="desktopManagerOnly===false" align="center" justify="center" class="mx-5">
-                <v-btn class="my-1" color="success" rounded dark large @click="launchIPPDesktop"> 
-                        Launch IPP Desktop
-                </v-btn>
+                <v-tooltip bottom >
+                    <template v-slot:activator="{ on, attrs }" >
+
+                        <v-btn class="my-1" color="success" rounded dark large v-bind="attrs" 
+                        v-on="on" @click="launchIPPDesktop"> 
+                                Launch IPP Desktop
+                        </v-btn>
+                    </template>
+                    <span>Click to launch a new desktop</span>
+
+                </v-tooltip>
             </v-row> 
 
         </div>         
