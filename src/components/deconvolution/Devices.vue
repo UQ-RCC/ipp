@@ -92,7 +92,7 @@
                                 v-on="on"
                                 type=number
                                 :rules="[rules.positiveInteger, rules.memdefault]"  
-                                label="Memory per instance[node](in Gbs)" 
+                                label="Memory per instance[node](in GB)" 
                                 v-model="serie.mem"
                                 @change="is_mem_valid()"
                             >

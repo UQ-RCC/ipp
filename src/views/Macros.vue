@@ -259,7 +259,7 @@
                                 <div>
                                     <v-row align="center" justify="center">
                                         <v-col align="center" justify="center">
-                                            <v-col cols="15" sm="3" md="4" style="padding-top:30px">
+                                            <v-col cols="8" sm="4" md="6" style="padding-top:30px">
                                                 <v-tooltip right>
                                                     <template v-slot:activator="{ on, attrs }">
                                                         <v-text-field 
@@ -272,13 +272,14 @@
                                                             label="Number of instances [nodes]" 
                                                             v-model="workingItem.instances"
                                                             readonly
+                                                            @change="is_cpu_valid()"
                                                         >
                                                         </v-text-field>
                                                     </template>
-                                                    <span>The number of instances of Microvolution to be executed</span>
+                                                    <span v-if="userLimits.user_limits">Your CPU cores quota limit is {{userLimits.user_limits.max_user_cpu}}</span>
                                                 </v-tooltip>
                                             </v-col>
-                                            <v-col cols="15" sm="3" md="4">
+                                            <v-col cols="8" sm="4" md="6">
                                                 <v-tooltip right>
                                                     <template v-slot:activator="{ on, attrs }">
                                                         <v-text-field 
@@ -287,16 +288,17 @@
                                                             v-bind="attrs"
                                                             v-on="on"
                                                             type=number
-                                                            :rules="[rules.positiveInteger]"  
-                                                            label="Memory per instance[node]" 
+                                                            :rules="[rules.positiveInteger, rules.memLimit]"  
+                                                            label="Memory per instance[node](in GB)" 
                                                             v-model="workingItem.mem"
+                                                            @change="is_mem_valid()"
                                                         >
                                                         </v-text-field>
                                                     </template>
-                                                    <span>The amount of memory (in Gbs) for each instance</span>
+                                                    <span v-if="userLimits.user_limits">Your memory quota limit is {{ userLimits.user_limits.max_user_mem}} GB</span>
                                                 </v-tooltip>
                                             </v-col>
-                                            <v-col cols="15" sm="3" md="4">
+                                            <v-col cols="8" sm="4" md="6">
                                                 <v-tooltip right>
                                                     <template v-slot:activator="{ on, attrs }">
                                                         <v-text-field 
@@ -309,28 +311,14 @@
                                                             label="Number of GPUs per instance[node]" 
                                                             v-model="workingItem.gpus"
                                                             readonly
+                                                            @change="is_gpu_valid()"
                                                         >
                                                         </v-text-field>
                                                     </template>
-                                                    <span>The number of GPUs to be used for each instance</span>
+                                                    <span v-if="userLimits.user_limits">Your GPU quota limit is {{ userLimits.user_limits.max_user_gpu }}</span>
                                                 </v-tooltip>
                                             </v-col>
-                                            <!-- <v-col
-                                                class="text-subtitle-1 text-center"
-                                                cols="12"
-                                            >
-                                           <p v-if="loading">Validating devices</p> 
-                                            </v-col>
-                                            <v-col cols="6">
-
-                                                <v-progress-linear
-                                                    color="primary accent-4"
-                                                    indeterminate
-                                                    rounded
-                                                    height="4"
-                                                    :active="loading"
-                                                ></v-progress-linear>
-                                            </v-col> -->
+                                            
                                         </v-col>
                                     </v-row>
 
@@ -377,9 +365,13 @@
                                                         <v-row align="center" justify="center">
                                                             <v-col cols="30" sm="6" md="7" class="mt-4">
                                                                 <v-row>
-                                                                    <v-text-field :value="`${workingItem.instances}`" label="Number of instances [nodes]"
-                                                                    dense 
-                                                                    outlined readonly></v-text-field>
+                                                                    <v-text-field 
+                                                                        :value="`${workingItem.instances}`" 
+                                                                        label="Number of instances [nodes]"
+                                                                        dense 
+                                                                        outlined readonly>
+                                                                    </v-text-field>
+                                                                        
                                                                 </v-row> 
                                                                 <v-row>
                                                                     <v-text-field :value="`${workingItem.mem}`" label="Memory per instance[node]"
@@ -511,6 +503,7 @@ export default {
                     required : value => !!value || "The input is required",
                     positiveNumber: value => value > 0 || 'Must be zero or greater',
                     positiveInteger: value => value && value >= 0 && Number.isInteger(parseFloat(value)) || 'Must be a positive integer',
+                    memLimit: value => value && this.userLimits.user_limits && value <= this.userLimits.user_limits.max_user_mem ||  value +" GB exceeds the user's allocated memory limit. Setting it to the default"
                 },
             visitedSteps: [],
             dateTime:"",
@@ -520,6 +513,10 @@ export default {
             ],
             macrofile:'',
             overlay: false,
+            userLimits:[],
+            memError: null,
+            gpuError: null,
+            cpuError:null,
 
 
 
@@ -547,6 +544,9 @@ export default {
             console.log(this.readmeURL)
         } */
     },
+   
+        
+   
     computed: {
         username: function () {
             return this.$keycloak && this.$keycloak.idTokenParsed ? this.$keycloak.idTokenParsed.preferred_username : ''
@@ -565,6 +565,33 @@ export default {
 
     },
     methods: {
+        is_cpu_valid() {
+            if(this.workingItem.instances > this.userLimits.user_limits.max_user_cpu) {
+                this.cpuError= this.workingItem.instances +" exceeds the user's maximum allowed CPU cores. Setting it to the default."
+                this.workingItem.instances = 1
+            }else {
+                this.cpuError =null
+            }
+        },
+        is_mem_valid() {
+            if (this.workingItem.mem > this.userLimits.user_limits.max_user_mem ) {
+                this.memError = this.workingItem.mem+ " GB exceeds the user's allocated memory limit. Setting it to the default"
+                this.workingItem.mem = 100
+            }
+                else {
+                    this.memError = null
+            }
+
+        },
+        is_gpu_valid(){
+            if (this.workingItem.gpus > this.userLimits.user_limits.max_user_gpu ) {
+                    this.gpuError = this.workingItem.gpus+ " exceeds the user's maximum allowable GPU allocation.Setting it to the default"
+                    this.workingItem.gpus = 1
+                }else {
+                    this.gpuError = null
+                }
+        },
+
         
         async chooseOutputFolder() {
             let options = await this.$refs.filedialog.open('selectfolder', 'Processing', '/')
@@ -653,7 +680,7 @@ export default {
                 }
 
             }
-            if (this.curr === 3) {
+            /* if (this.curr === 3) {
                 let msg 
                 let jobs = this.workingItem.instances
                 let mem = this.workingItem.mem
@@ -686,7 +713,7 @@ export default {
                 }
                 
 
-            } 
+            }  */
             if(this.visitedSteps.indexOf(this.curr) < 0)
                 this.visitedSteps.push(this.curr)
             this.curr = this.curr + 1
@@ -709,6 +736,15 @@ export default {
         reset() {
             this.workingItem.macroType =''
             this.macrofile=''
+        },
+
+        async getUserLimits(){
+                let userLimitResponse =  await DeconvolutionAPI.user_limits()
+                let json_output =  JSON.parse(userLimitResponse.commandResult[0].out)
+                this.userLimits = json_output
+                console.log("this.userLimits")
+                console.log(this.userLimits)
+                console.log(this.userLimits.user_limits.max_user_cpu)
         },
 
         
@@ -1243,6 +1279,8 @@ export default {
         this.outputBasePath = _pathParts.slice(0, -1).join("/")
         this.outputFolderName = "Macro_Output_"+ this.dateTime
         
+        this.getUserLimits()
+        console.log(this.userLimits)
 
        
 
@@ -1285,4 +1323,12 @@ export default {
         overflow-y: auto;
     }
 }
+.errorText {
+        margin-top: -20px;
+        margin-left: 20px;
+        font-family: Roboto,sans-serif;
+        text-align: left;
+        font-size: 14px;
+        color: red;
+    }
 </style>
