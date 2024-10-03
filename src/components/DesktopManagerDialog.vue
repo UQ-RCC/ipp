@@ -26,7 +26,7 @@
         components: { DesktopManagerComponent },
         data() {
             return {
-                dialog: false,
+                dialog: false
             }
         },
 
@@ -38,13 +38,17 @@
                 Vue.$log.info(files)
                 this.dialog = true
                 let count = 0
-                while(!this.$refs.desktopmanager && count < 10){
+                while(!this.$refs.desktopmanager && count < 20){
                     console.log("inside")
-                    await new Promise(r => setTimeout(r, 5000))
+                    await new Promise(r => setTimeout(r, 1000))
                     count = count + 1
+                    console.log(count)
                 }
+                
                 if(this.$refs.desktopmanager) {
+                    
                     this.$refs.desktopmanager.setFiles(files)
+                    
                     // start timer
                     //this.$refs.desktopmanager.startTimer(15000)
                 }

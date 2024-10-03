@@ -6,7 +6,7 @@
             rounded
             height="4"
             :active="loading"
-        ></v-progress-linear>
+        ></v-progress-linear> 
         <v-overlay v-model="overlay">
             <v-row align="center" justify="center"><label >Validating devices, Please wait..</label> </v-row>
             <v-row align="center" justify="center"><v-progress-circular
@@ -15,7 +15,7 @@
                 size="64"
             ></v-progress-circular></v-row>
             
-        </v-overlay>
+        </v-overlay> 
         <br />
         <file-browser-dialog ref="filedialog" />
         <template-dialog ref="templatedialog" />
@@ -149,6 +149,7 @@
                                 :active="csvloading"
                         ></v-progress-linear>
                         
+                        
                         </v-col>
                         <v-col>
                         <v-card class="metdata-card" >
@@ -158,7 +159,7 @@
                                                 <v-expansion-panel-header  >
                                                     <v-row align="center" justify="center">
 
-                                                        <v-col class="d-flex"  cols="1"  >
+                                                        <v-col class="d-flex"  cols="1" v-if="item.success" >
                                                             <v-tooltip bottom>
                                                                 <template v-slot:activator="{ on, attrs }">
                                                                     <v-btn  
@@ -174,6 +175,9 @@
                                                                 <span>Download CSV</span>
                                                             </v-tooltip>
                                                         </v-col>
+                                                        <v-col class="d-flex"  cols="1" v-if="!item.success" >
+                                                            <v-icon style="color:red">mdi-alert</v-icon>
+                                                        </v-col>
                                                         <v-col   cols="11" >{{ item.file }}</v-col> 
                                                     </v-row>
                                                 </v-expansion-panel-header>
@@ -181,6 +185,8 @@
 
                                                     <v-row >
                                                         <v-col >
+                                                            <p v-if="!item.success" style="text-align:left;color:orangered"> {{ metadataerror  }}</p>
+                                                            
                                                             
                                                                 <!-- <v-card-text> -->
                                                                     <v-table fixed-header >
@@ -544,7 +550,7 @@
                 selectedtag: null,
                 csvloading:false,
                 csvlocation:null,
-                
+                metadataerror:null,
                 
                 // -- selected files table
                 selectedFilesTable: {
@@ -650,8 +656,12 @@
                 }else {
                     this.mloading = true
                     let results = await this.getMetadata(item, false)
-                    if(results) {
-                        this.metedataResults.push(results[0])
+                    
+                    if(results && results.metadata.length > 0) {
+                        this.metedataResults.push(results.metadata[0])
+                    }if (!results.success) {
+                        this.metadataerror = results.msg
+                        
                     }
                     this.mloading = false
                 }
@@ -798,10 +808,10 @@
 
                                         // add to database
                                         for(let _index = 0; _index < response.commandResult.length; _index++){
-                                            console.log("adding new docn to db")
+                                            console.log("adding new deconn to db")
                                             let _responseItem  = response.commandResult[_index]
                                             _responseItem.isfolder = isfolder
-                                            console.log(_responseItem)
+                                            
                                             let _serie = series.fixSeriesUnit(_responseItem)
                                             Vue.$log.debug("Series after fixing unit :")
                                             Vue.$log.debug(_serie)
@@ -853,7 +863,7 @@
                     }
                 Vue.$log.debug("items :")
                 
-                console.log(items)
+                
                 }
                 catch(err){
                     Vue.$log.error(err)
@@ -910,8 +920,7 @@
                             return
                         }
                         paths.push(_pathToBeLoaded)
-                        console.log("folder paths")
-                        console.log(paths)
+                        
             
                     } else {
                         Vue.$log.debug("selecting files:")
@@ -980,15 +989,18 @@
                         await this.loadMetadaFolder(options.path,options.filter)
                         this.mloading = false
                     }else {
-                        console.log(this.metedataResults)
+                        
                         const found =  this.metedataResults.some(el => el.file === paths[0])
                         if(!found) {
                             this.mloading = true
                             let results = await this.getMetadata(paths, true)
-                            if(results.length > 0) {
-                                results.forEach(item => {
+                            
+                            if(results != null && results.metadata.length > 0) {
+                                results.metadata.forEach(item => {
                                     this.metedataResults.push(item)
                                 }) 
+                            }if (!results.success) {
+                                this.metadataerror = results.msg
                             }
                             this.mloading = false
                         }
@@ -1001,7 +1013,7 @@
             async loadMetadaFolder(path, filter){
                 let files = []
                 let response = await FilesAPI.list(path);
-                console.log(response)
+                
                 if(response.commandResult) {
                     response.commandResult.forEach(item =>{
                         if(!(['d', 'l'].includes(item.permission.charAt(0)))){
@@ -1027,11 +1039,14 @@
                         if(!found) {
 
                             let results = await this.getMetadata(files, true)
-                            console.log(results)
-                            if(results.length > 0) {
-                                results.forEach(item => {
+                            
+                            if(results != null && results.metadata.length > 0) {
+                                results.metadata.forEach(item => {
                                     this.metedataResults.push(item)
                                 }) 
+                            }if (!results.success) {
+                                this.metadataerror = results.msg
+                               
                             }
                         }
                         
@@ -1046,18 +1061,6 @@
             async selectFiles(){
                 await this.selectFilesOrFolders(false)
                 this.workingItem.setting.isfolder=false
-                /* let filepath = this.loaded[0].series.path
-                
-                let results = await this.getMetadata(filepath, false)
-                this.metedataResults.push(results[0])
-                console.log( this.metedataResults ) */
-                /* let options = await this.$refs.metadatadialog.open(metedataResults[0])
-                if (!options.cancelled) {
-                    Vue.$log.info("Metadata loaded")
-                    Vue.$log.info(options.settings)
-                   
-                    
-                }  */
             },
             /**
              * select series
@@ -1084,20 +1087,16 @@
                     }
                     fileslistbase64 = btoa(fileslistbase64.substring(0,fileslistbase64.length-1))
                 }
-                console.log("file list base")
-                console.log(fileslistbase64)
-
+                
                 try{
                     
                     const response= await ConfigurationAPI.execute_metedata_script(fileslistbase64, this.selectedtag, false, false, saveFolder)
-                    console.log(response)
+                    
                     let output = response.commandResult
                     if (output.length > 0) {
                         let json_output =  JSON.parse(output[0].out)
-                        console.log(json_output)
-                        if(json_output.results.success){
-                            return json_output.results.metadata
-                        }
+                        return json_output.results
+                       
                     }
                     
                 }
@@ -1139,6 +1138,7 @@
                 this.workingItem = series.defaultDecon()
                 this.display_decon(this.workingItem, false)
                 this.csvlocation = null
+                
             },
             /**
              * delete all series
@@ -1153,10 +1153,11 @@
                 this.selected = []
                 this.outputpath = []
                 this.workingItem = series.defaultDecon()
-                console.log( this.workingItem)
+                
                 this.display_decon(this.workingItem, false)
                 this.metedataResults = []
                 this.csvlocation = null
+                
             },
             /* end part dealing with load */
             /****************************************************************************** */
@@ -1277,13 +1278,12 @@
              */
             async loadTemplate(){
                 let options = await this.$refs.templatedialog.open(false, '')
-                console.log("load template options")
-                console.log(options)
+                
                 if (!options.cancelled) {
                     Vue.$log.info("Template loaded")
                     Vue.$log.info(options.settings)
                     let outputpath = this.workingItem.setting.outputPath
-                    console.log("output path previous - "+outputpath)
+                    
                     this.workingItem.setting = Object.assign({}, options.settings)
                     this.workingItem.setting.outputPath = outputpath
                     this.saveSettings()
@@ -1416,8 +1416,7 @@
                     return
                 if(this.workingItem.visitedSteps.indexOf(this.workingItem.step) < 0)
                     this.workingItem.visitedSteps.push(this.workingItem.step)
-                console.log("this.workingItem.step")
-                console.log(this.workingItem.step)
+                
                 // save from current step - review step is ignored
                 // if(this.selected && this.selected[0] && this.step !== 8){
                 if(this.workingItem.step !== 8){
@@ -1449,20 +1448,18 @@
                 this.workingItem.step = parseInt(this.workingItem.step)
                 
                 if(this.workingItem.step === 1) {
-                    console.log("this working item wen series")
-                    console.log(this.workingItem)
-                    console.log(this.outputpath)
+                    
                     let item ={}
                     item.id = this.workingItem.id
                     item.outputpath = this.workingItem.setting.outputPath
                     if(this.outputpath.length === 0) {
                         this.outputpath.push(item)
-                        console.log(this.outputpath)
+                        
                     }else{
                         let flag = false
                         let tempID = -1
                         for(let i=0; i<this.outputpath.length; i++){
-                            console.log(this.outputpath.length)
+                            
                             if((this.outputpath[i].id !== this.workingItem.id) && (this.outputpath[i].outputpath === this.workingItem.setting.outputPath)){
                                 Vue.notify({
                                     group: 'errornotif',
@@ -1472,33 +1469,32 @@
                                     closeOnClick: true
                                 })
                                 flag = true
-                                console.log(this.outputpath)
+                                
                                 return
                             }else {
                                 if(this.outputpath[i].id === this.workingItem.id){
                                     tempID = i
-                                    console.log(this.outputpath)
+                                    
                                 }
                                
                                 
                             }
                         }
                         if(!flag){
-                            console.log(flag)
-                            console.log(this.outputpath)
+                            
 
                             if(tempID === -1){
-                                console.log(this.outputpath)
+                                
                                 this.outputpath.push(item)
                             } else {
-                                console.log(this.outputpath)
+                                
                                 this.outputpath[tempID].outputpath = this.workingItem.setting.outputPath
                                
                             }
                         }
                         
                     }
-                    console.log(this.outputpath)
+                    
 
                 }
                 if(this.workingItem.step === 4) {

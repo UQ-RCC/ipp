@@ -16,7 +16,7 @@
                         Selected files
                     </v-card-title>
                 </template>
-                <div align="center" justify="center" style="overflow: auto; height:300px;">
+                <div align="center" justify="center" style="overflow: auto; max-height: 250px;">
                     <v-list-item v-for="(afile,index) in files" :key="index">
                         <v-list-item-title>{{ afile }}</v-list-item-title>
                         <v-list-item-action>
@@ -242,7 +242,7 @@
         methods: {
             ///////////////////////////////////////
             // list of running desktops
-            async getDesktops(){
+            /* async getDesktops(){
                 let response = await DesktopAPI.list_desktop()
                 Vue.$log.debug("Open desktops :")
                 Vue.$log.debug(response)
@@ -252,7 +252,7 @@
                 } else {
                     this.currentDesktop = null
                 }
-            },
+            }, */
             // list of supported apps
             async getApps(){
                 let response = await DesktopAPI.listapps()
@@ -327,12 +327,7 @@
                     title: this.selectedApp,
                     text: filesList + ' are being loaded to ' + this.selectedApp
                 })
-                console.log("parameters for launch app")
-                //this.currentDesktop.node='gpunode-2-0'
-                console.log(this.selectedApp)
-               // console.log(displayNumber)
-                console.log(btoa(filesList))
-                //console.log(this.copyFilesToScratch)
+                
                 await DesktopAPI.launchapp(this.selectedApp, filesList, this.copyFilesToScratch)
                 this.loading = false
             },
@@ -368,6 +363,7 @@
             setFiles(filelist) {
                 console.log("setFiles ")
                 console.log(filelist)
+                
                 if(filelist.length>0){
                     filelist.map(item => {
                     if(!item.endsWith("/") && !this.files.includes(item)){
@@ -379,15 +375,14 @@
                 })
                     
                 } 
-                console.log("before this.isInScratch")
-                console.log(this.isInScratch)
+                
+                
                 if (filelist.every(file => file.startsWith('/scratch'))){
                     this.isInScratch = true
                 }else {
                     this.isInScratch = false
                 } 
-                console.log("after this.isInScratch")
-                console.log(this.isInScratch)
+                
             
                 //this.files = filelist
             },
@@ -398,13 +393,13 @@
             
 
             // start timer
-            startTimer(interval) {
+            /* startTimer(interval) {
                 if(!this.timer){
                     this.timer = setInterval(() => {
                         this.getDesktops()
                     }, interval)
                 }
-            },
+            }, */
             // stop timer
             stopTimer() {
                 if(this.timer){
@@ -417,7 +412,7 @@
             this.loading = true
            // this.getDesktops()
             this.getApps()
-            this.getFlavours()
+            //this.getFlavours()
             //this.startTimer(20000)
             this.loading = false
             console.log("this.desktopManagerOnly")
