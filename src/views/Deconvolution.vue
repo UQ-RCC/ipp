@@ -750,6 +750,7 @@
                 let items = []
                 try{
                     let _decons = []
+                    
                     console.log(btoa(pathToBeLoaded))
                     if(!this.isSame) {
                         _decons = await PreferenceAPI.get_decons(pathToBeLoaded,this.api)
@@ -801,7 +802,6 @@
                                             response = await DeconvolutionAPI.get_file_info(pathToBeLoaded)
 
                                         
-                                       
                                         Vue.$log.debug("Response :")
                                         Vue.$log.debug(response)
                                         Vue.$log.debug(JSON.parse(JSON.stringify(response)))
@@ -1077,7 +1077,7 @@
 
             async getMetadata(fileslist, folder) {
                 let fileslistbase64 = ''
-                let saveFolder=''
+                let saveFolder=""
                 
                 if (!folder) {
                     fileslistbase64 = btoa(fileslist)
@@ -1091,13 +1091,13 @@
                 try{
                     
                     const response= await ConfigurationAPI.execute_metedata_script(fileslistbase64, this.selectedtag, false, false, saveFolder)
-                    
                     let output = response.commandResult
-                    if (output.length > 0) {
-                        let json_output =  JSON.parse(output[0].out)
-                        return json_output.results
-                       
-                    }
+                    const mdata = output.find(entry => entry.out.startsWith('{"params"'))
+        
+                    let json_output =  JSON.parse(mdata.out)
+                    
+                    return json_output.results
+                   
                     
                 }
                 catch(err){

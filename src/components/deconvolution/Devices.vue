@@ -72,13 +72,13 @@
                                 v-on="on"
                                 type=number
                                 :rules="[rules.positiveInteger, rules.cpudefault]"  
-                                label="Number of instances [nodes]" 
+                                label="Number of instances" 
                                 v-model="serie.instances"
-                                @change="is_cpu_valid()"
+                               
                             >
                             </v-text-field>
                         </template>
-                        <span v-if="userLimits.user_limits">Your CPU cores quota limit is {{userLimits.user_limits.max_user_cpu}}</span>
+                        <span v-if="userLimits">Instance count needing more than {{nodeLimits.max_node_cpu_mem}} GB or {{ nodeLimits.max_node_gpus }} GPUs will not run in parallel</span>
                     </v-tooltip>
                     <label class="errorText"> {{cpuError}} </label>
                 </v-col>
@@ -92,13 +92,13 @@
                                 v-on="on"
                                 type=number
                                 :rules="[rules.positiveInteger, rules.memdefault]"  
-                                label="Memory per instance[node](in GB)" 
+                                label="Memory per instance(in GB)" 
                                 v-model="serie.mem"
                                 @change="is_mem_valid()"
                             >
                             </v-text-field>
                         </template>
-                        <span v-if="userLimits.user_limits">Your memory quota limit is {{ userLimits.user_limits.max_user_mem}} GB</span>
+                        <span v-if="userLimits">Your memory quota limit is {{ Math.min(nodeLimits.max_node_cpu_mem,userLimits.max_user_mem)}} GB</span>
                     </v-tooltip>
                     <label class="errorText"> {{memError}} </label>
                 </v-col>
@@ -112,13 +112,13 @@
                                 v-on="on"
                                 type=number
                                 :rules="[rules.positiveInteger, rules.gpudefault]"  
-                                label="Number of GPUs per instance[node]" 
+                                label="Number of GPUs per instance" 
                                 v-model="serie.gpus"
                                 @change="is_gpu_valid()"
                             >
                             </v-text-field>
                         </template>
-                        <span v-if="userLimits.user_limits">Your GPU quota limit is {{ userLimits.user_limits.max_user_gpu }}</span>
+                        <span v-if="userLimits">Your GPU quota limit is {{ Math.min(this.nodeLimits.max_node_gpus,this.userLimits.max_user_gpu)  }}</span>
                     </v-tooltip>
                     <label class="errorText"> {{gpuError}} </label>
                 </v-col>
@@ -149,6 +149,7 @@
                 loading: false,
                 estimates: [],
                 userLimits:[],
+                nodeLimits:[],
                 cpu: 0,
                 gpu: 0,
                 memError: null,
@@ -204,15 +205,15 @@
                 else
                     return false
             }, 
-            is_cpu_valid(){
-                if(this.serie.instances > this.userLimits.user_limits.max_user_cpu) {
+            /* is_cpu_valid(){
+                if(this.serie.instances > Math.min(this.userLimits.max_user_cpu)) {
                     this.cpuError= this.serie.instances +" exceeds the user's maximum allowed CPU cores. Setting it to the default."
                     this.serie.instances = 1
                 }else {
                     this.cpuError =null
                 }
 
-            },
+            }, */
             is_mem_valid(){
                 console.log("in change")
                 console.log(this.inimem)
@@ -221,7 +222,7 @@
                 if (this.cpu && this.serie.mem &&  this.cpu > 0 && this.serie.mem > 0 && this.cpu > Math.max(30,this.serie.mem)) {
                     this.memError = " Need "+ this.cpu + "GB memory: " + this.serie.mem + "GB is below estimate"
                     console.log("1st if")
-                    if (this.cpu <= this.userLimits.user_limits.max_user_mem) {
+                    if (this.cpu <= Math.min(this.nodeLimits.max_node_cpu_mem,this.userLimits.max_user_mem)) {
                         this.serie.mem = this.cpu
                         console.log("1st if inside")
                     }else {
@@ -236,7 +237,7 @@
                     } 
                     this.memError = null 
                 }
-                if (this.serie.mem  > this.userLimits.user_limits.max_user_mem ) {
+                if (this.serie.mem  > Math.min(this.nodeLimits.max_node_cpu_mem,this.userLimits.max_user_mem) ) {
                     console.log("2nd if ")
                     this.memError = this.serie.mem+ " GB exceeds the user's allocated memory limit. Setting it to the default"
                     this.serie.mem = 30
@@ -247,7 +248,7 @@
             is_gpu_valid(){
                 if (this.gpu && this.gpu > 0 && this.gpu > 16 && this.serie.gpus < Math.ceil(this.gpu/16)) {
                     this.gpuError =  'Need '+ Math.ceil(this.gpu/16)+ ' GPUs: add more GPUs or enable tiling'
-                    if(Math.ceil(this.gpu/16) <= this.userLimits.user_limits.max_user_gpu ){
+                    if(Math.ceil(this.gpu/16) <= Math.min(this.nodeLimits.max_node_gpus,this.userLimits.max_user_gpu) ){
                         this.serie.gpus = Math.ceil(this.gpu/16)
                     }else {
                         this.gpuError = Math.ceil(this.gpu/16)+ " exceeds the user's maximum allowable GPU allocation."
@@ -255,7 +256,7 @@
                 }else {
                     this.gpuError = null
                 }
-                if (this.serie.gpus > this.userLimits.user_limits.max_user_gpu ) {
+                if (this.serie.gpus > Math.min(this.nodeLimits.max_node_gpus,this.userLimits.max_user_gpu) ) {
                     this.gpuError = this.serie.gpus+ " exceeds the user's maximum allowable GPU allocation.Setting it to the default"
                     this.serie.gpus = 1
                 }
@@ -337,10 +338,13 @@
             async getUserLimits(){
                 let userLimitResponse =  await DeconvolutionAPI.user_limits()
                 let json_output =  JSON.parse(userLimitResponse.commandResult[0].out)
-                this.userLimits = json_output
+                this.userLimits = json_output.user_limits
+                this.nodeLimits = json_output.node_limits
                 console.log("this.userLimits")
                 console.log(this.userLimits)
-                console.log(this.userLimits.user_limits.max_user_cpu)
+                console.log("this.nodeLimits")
+                console.log(this.nodeLimits)
+                console.log(this.userLimits.max_user_cpu)
             }
 
         },
