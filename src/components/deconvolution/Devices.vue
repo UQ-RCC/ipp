@@ -78,7 +78,7 @@
                             >
                             </v-text-field>
                         </template>
-                        <span v-if="userLimits">Instance count needing more than {{nodeLimits.max_node_cpu_mem}} GB or {{ nodeLimits.max_node_gpus }} GPUs will not run in parallel</span>
+                        <span v-if="userLimits">Instance counts needing more than {{nodeLimits.max_node_cpu_mem}} GB or {{ nodeLimits.max_node_gpus }} GPUs will not run in parallel</span>
                     </v-tooltip>
                     <label class="errorText"> {{cpuError}} </label>
                 </v-col>
