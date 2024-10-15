@@ -272,11 +272,11 @@
                                                             label="Number of instances [nodes]" 
                                                             v-model="workingItem.instances"
                                                             readonly
-                                                            @change="is_cpu_valid()"
+                                                            
                                                         >
                                                         </v-text-field>
                                                     </template>
-                                                    <span v-if="userLimits.user_limits">Your CPU cores quota limit is {{userLimits.user_limits.max_user_cpu}}</span>
+                                                    <span>The number of instances required to execute the macro job</span>
                                                 </v-tooltip>
                                             </v-col>
                                             <v-col cols="8" sm="4" md="6">
@@ -295,7 +295,7 @@
                                                         >
                                                         </v-text-field>
                                                     </template>
-                                                    <span v-if="userLimits.user_limits">Your memory quota limit is {{ userLimits.user_limits.max_user_mem}} GB</span>
+                                                    <span v-if="userLimits.max_user_mem">Your memory quota limit is {{ Math.min(nodeLimits.max_node_cpu_mem,userLimits.max_user_mem)}} GB</span>
                                                 </v-tooltip>
                                             </v-col>
                                             <v-col cols="8" sm="4" md="6">
@@ -311,11 +311,11 @@
                                                             label="Number of GPUs per instance[node]" 
                                                             v-model="workingItem.gpus"
                                                             readonly
-                                                            @change="is_gpu_valid()"
+                                                            
                                                         >
                                                         </v-text-field>
                                                     </template>
-                                                    <span v-if="userLimits.user_limits">Your GPU quota limit is {{ userLimits.user_limits.max_user_gpu }}</span>
+                                                    <span>Number of GPUs required to run the macro job</span>
                                                 </v-tooltip>
                                             </v-col>
                                             
@@ -503,7 +503,8 @@ export default {
                     required : value => !!value || "The input is required",
                     positiveNumber: value => value > 0 || 'Must be zero or greater',
                     positiveInteger: value => value && value >= 0 && Number.isInteger(parseFloat(value)) || 'Must be a positive integer',
-                    memLimit: value => value && this.userLimits.user_limits && value <= this.userLimits.user_limits.max_user_mem ||  value +" GB exceeds the user's allocated memory limit. Setting it to the default"
+                    memLimit: value => value && this.userLimits && value <= Math.min(this.nodeLimits.max_node_cpu_mem,this.userLimits.max_user_mem) ||  value +" GB exceeds the user's allocated memory limit. Setting it to the default"
+                    
                 },
             visitedSteps: [],
             dateTime:"",
@@ -514,9 +515,8 @@ export default {
             macrofile:'',
             overlay: false,
             userLimits:[],
-            memError: null,
-            gpuError: null,
-            cpuError:null,
+            nodeLimits:[],
+            
 
 
 
@@ -565,32 +565,14 @@ export default {
 
     },
     methods: {
-        is_cpu_valid() {
-            if(this.workingItem.instances > this.userLimits.user_limits.max_user_cpu) {
-                this.cpuError= this.workingItem.instances +" exceeds the user's maximum allowed CPU cores. Setting it to the default."
-                this.workingItem.instances = 1
-            }else {
-                this.cpuError =null
-            }
-        },
+      
         is_mem_valid() {
-            if (this.workingItem.mem > this.userLimits.user_limits.max_user_mem ) {
-                this.memError = this.workingItem.mem+ " GB exceeds the user's allocated memory limit. Setting it to the default"
+            if (this.workingItem.mem > Math.min(this.nodeLimits.max_node_cpu_mem,this.userLimits.max_user_mem)) {
                 this.workingItem.mem = 100
-            }
-                else {
-                    this.memError = null
             }
 
         },
-        is_gpu_valid(){
-            if (this.workingItem.gpus > this.userLimits.user_limits.max_user_gpu ) {
-                    this.gpuError = this.workingItem.gpus+ " exceeds the user's maximum allowable GPU allocation.Setting it to the default"
-                    this.workingItem.gpus = 1
-                }else {
-                    this.gpuError = null
-                }
-        },
+        
 
         
         async chooseOutputFolder() {
@@ -740,11 +722,15 @@ export default {
 
         async getUserLimits(){
                 let userLimitResponse =  await DeconvolutionAPI.user_limits()
-                let json_output =  JSON.parse(userLimitResponse.commandResult[0].out)
-                this.userLimits = json_output
-                console.log("this.userLimits")
-                console.log(this.userLimits)
-                console.log(this.userLimits.user_limits.max_user_cpu)
+                let output = userLimitResponse.commandResult
+                const userlimits =  output.find(entry => entry.out.startsWith('{"user_limits"'))
+                console.log("user Limits")
+                console.log(userlimits)
+                let json_output =  JSON.parse(userlimits.out)
+                this.userLimits = json_output.user_limits
+                this.nodeLimits = json_output.node_limits
+                
+                
         },
 
         
@@ -784,6 +770,7 @@ export default {
                 if (this.workingItem.fileName && outputFolder ) {
                     try{
                         console.log(outputFolder)
+                        console.log(this.workingItem.fileName)
                         console.log(this.workingItem.fileName)
                         await MacroAPI.saveFile(this.workingItem.fileName, outputFolder, commitId, islocal)
                         Vue.notify({

@@ -78,7 +78,7 @@
                             >
                             </v-text-field>
                         </template>
-                        <span v-if="userLimits">Instance counts needing more than {{nodeLimits.max_node_cpu_mem}} GB or {{ nodeLimits.max_node_gpus }} GPUs will not run in parallel</span>
+                        <span v-if="nodeLimits.max_node_cpu_mem">Instance counts needing more than {{nodeLimits.max_node_cpu_mem}} GB or {{ nodeLimits.max_node_gpus }} GPUs will not run in parallel</span>
                     </v-tooltip>
                     <label class="errorText"> {{cpuError}} </label>
                 </v-col>
@@ -98,7 +98,7 @@
                             >
                             </v-text-field>
                         </template>
-                        <span v-if="userLimits">Your memory quota limit is {{ Math.min(nodeLimits.max_node_cpu_mem,userLimits.max_user_mem)}} GB</span>
+                        <span v-if="userLimits.max_user_mem">Your memory quota limit is {{ Math.min(nodeLimits.max_node_cpu_mem,userLimits.max_user_mem)}} GB</span>
                     </v-tooltip>
                     <label class="errorText"> {{memError}} </label>
                 </v-col>
@@ -118,7 +118,7 @@
                             >
                             </v-text-field>
                         </template>
-                        <span v-if="userLimits">Your GPU quota limit is {{ Math.min(this.nodeLimits.max_node_gpus,this.userLimits.max_user_gpu)  }}</span>
+                        <span v-if="nodeLimits.max_node_gpus">Your GPU quota limit is {{ Math.min(this.nodeLimits.max_node_gpus,this.userLimits.max_user_gpu)  }}</span>
                     </v-tooltip>
                     <label class="errorText"> {{gpuError}} </label>
                 </v-col>
@@ -192,6 +192,7 @@
                 this.selectedtag = _current_api.metadatatag
                 this.getQueueTime()
                 this.getUserLimits()
+                
 
                 
                
@@ -215,30 +216,27 @@
 
             }, */
             is_mem_valid(){
-                console.log("in change")
-                console.log(this.inimem)
-                console.log(this.serie.mem)
-                console.log(this.cpu)
+                
                 if (this.cpu && this.serie.mem &&  this.cpu > 0 && this.serie.mem > 0 && this.cpu > Math.max(30,this.serie.mem)) {
                     this.memError = " Need "+ this.cpu + "GB memory: " + this.serie.mem + "GB is below estimate"
-                    console.log("1st if")
+                    
                     if (this.cpu <= Math.min(this.nodeLimits.max_node_cpu_mem,this.userLimits.max_user_mem)) {
                         this.serie.mem = this.cpu
-                        console.log("1st if inside")
+                        
                     }else {
                         this.memError = this.cpu+ " GB exceeds the user's allocated memory limit."
-                        console.log("1st if inside else")
+                       
                     }
                     
                 } else {
                     if (this.cpu > 0 && this.cpu < Math.max(30,this.serie.mem) && this.serie.mem < Math.max(30,this.inimem)) {
                         this.serie.mem = Math.max(30,this.inimem)
-                        console.log("1st if else if")
+                        
                     } 
                     this.memError = null 
                 }
                 if (this.serie.mem  > Math.min(this.nodeLimits.max_node_cpu_mem,this.userLimits.max_user_mem) ) {
-                    console.log("2nd if ")
+                    
                     this.memError = this.serie.mem+ " GB exceeds the user's allocated memory limit. Setting it to the default"
                     this.serie.mem = 30
                 }
@@ -337,14 +335,14 @@
             },
             async getUserLimits(){
                 let userLimitResponse =  await DeconvolutionAPI.user_limits()
-                let json_output =  JSON.parse(userLimitResponse.commandResult[0].out)
+                let output = userLimitResponse.commandResult
+                const userlimits =  output.find(entry => entry.out.startsWith('{"user_limits"'))
+                console.log("user Limits")
+                console.log(userlimits)
+                let json_output =  JSON.parse(userlimits.out)
                 this.userLimits = json_output.user_limits
                 this.nodeLimits = json_output.node_limits
-                console.log("this.userLimits")
-                console.log(this.userLimits)
-                console.log("this.nodeLimits")
-                console.log(this.nodeLimits)
-                console.log(this.userLimits.max_user_cpu)
+                
             }
 
         },
