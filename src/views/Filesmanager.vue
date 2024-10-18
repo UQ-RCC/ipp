@@ -40,16 +40,19 @@
                     let _collectionResponse = await CollectionsAPI.list()
                     _collectionResponse.commandResult.map(_collectionItem => {
                         let _collectionPath = _collectionItem.output
-                        if(!_collectionPath.endsWith("/")) {
-                            _collectionPath = _collectionPath + '/'
-                        }
-                        if(_collectionPath.includes(_collectionName)){
-                            let _fullPath = _collectionPath + _relPatWithoutCollection
-                            if(!_fullPath.endsWith("/")) {
-                                _fullPath = _fullPath + '/'
+                        if(_collectionPath.startsWith("/")) {
+
+                            if(!_collectionPath.endsWith("/")) {
+                                _collectionPath = _collectionPath + '/'
                             }
-                            console.log("@Filemanager chapge path to:" + _fullPath)
-                            this.$refs.filebrowser.pathChanged(decodeURIComponent(_fullPath))
+                            if(_collectionPath.includes(_collectionName)){
+                                let _fullPath = _collectionPath + _relPatWithoutCollection
+                                if(!_fullPath.endsWith("/")) {
+                                    _fullPath = _fullPath + '/'
+                                }
+                                console.log("@Filemanager chapge path to:" + _fullPath)
+                                this.$refs.filebrowser.pathChanged(decodeURIComponent(_fullPath))
+                            }
                         }
                     })
                 }

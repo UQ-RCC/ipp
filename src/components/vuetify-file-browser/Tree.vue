@@ -340,10 +340,13 @@ export default {
             let _collectionResponse = await CollectionsAPI.list()
             _collectionResponse.commandResult.map(_collectionItem => {
                 let _collectionPath = _collectionItem.output
-                if(!_collectionPath.endsWith("/")) {
-                    _collectionPath = _collectionPath + '/'
+                if(_collectionPath.startsWith("/")) {
+
+                    if(!_collectionPath.endsWith("/")) {
+                        _collectionPath = _collectionPath + '/'
+                    }
+                    this.collections.push({"name": _collectionPath, "path": _collectionPath})
                 }
-                this.collections.push({"name": _collectionPath, "path": _collectionPath})
             })
         }
         catch(err){
