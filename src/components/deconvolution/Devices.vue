@@ -23,7 +23,7 @@
                             Stop estimate
                         </v-btn>
                     </template>
-                    <span>Click to stop the estimatejob</span>
+                    <span>Click to stop the estimate job</span>
                 </v-tooltip></v-row>
             
         </v-overlay>
@@ -36,21 +36,29 @@
             <!-- <v-col cols="15" sm="3" md="4">
                 <h5>{{ queueTime }} </h5>
             </v-col> -->
-            <v-col cols="1" v-if="api=='Microvolution'" >
-                <v-tooltip bottom >
-                    <template v-slot:activator="{ on, attrs }" >
-                        <v-btn 
-                            rounded dark default  
-                            color="primary" 
-                            v-bind="attrs" 
-                            v-on="on"
-                            @click.stop="estimateMemory()">
-                            Estimate 
-                        </v-btn>
-                    </template>
-                    <span>Estimate memory and number of GPUs for processing. {{ queueTime }} </span>
-                </v-tooltip>
-                <label class="messageText"> {{message}} </label>
+            <v-col align="center" justify="center">
+
+                <v-col v-if="api=='Microvolution'"   >
+                    
+    
+                        <v-tooltip bottom >
+                            <template v-slot:activator="{ on, attrs }" >
+                                <v-btn 
+                                    rounded dark default  
+                                    color="primary" 
+                                    v-bind="attrs" 
+                                    v-on="on"
+                                    @click.stop="estimateMemory()">
+                                    Estimate 
+                                </v-btn>
+                                
+                            </template>
+                            <span>Estimate memory and number of GPUs for processing. {{ queueTime }} </span>
+                        </v-tooltip>
+                    
+                    <label class="messageText"> {{message}} </label>
+                   
+                </v-col>
             </v-col>
             
         </v-row>
@@ -255,35 +263,27 @@
                     this.gpuError = null
                 }
                 if (this.serie.gpus > Math.min(this.nodeLimits.max_node_gpus,this.userLimits.max_user_gpu) ) {
-                    this.gpuError = this.serie.gpus+ " exceeds the user's maximum allowable GPU allocation.Setting it to the default"
+                    this.gpuError = this.serie.gpus+ " exceeds the user's maximum allowable GPU allocation. Setting it to the default"
                     this.serie.gpus = 1
                 }
             },
           
             async estimateMemory() {
                 let jobs = []
-                console.log(this.serie)
+                
                 if (!this.serie.filepath) {
                     this.serie.filepath = this.$cookies.isKey('filepath') ? this.$cookies.get('filepath') : 'none'
                 }
-                console.log(this.serie)
+                
                 this.overlay =true
                 this.loading=true
-                console.log("----run estimate api---")
-                let today = new Date();
-                let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-                let time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
-                console.log(date+'_'+time)
+                
                 let response = await DeconvolutionAPI.execute_microvolution(this.serie.outputPath, parseInt(this.serie.instances), 
                 this.serie.mem, this.serie.gpus, this.serie, jobs, false, true, false)
-                console.log("----run estimate api after---")
-                today = new Date();
-                date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-                time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
-                console.log(date+'_'+time)
+                
                 this.overlay =false
                 this.loading=false
-                this.message = 'Estimate complete'
+                this.message = ' Estimate complete'
                 let output = response.commandResult
                 console.log(response)
                 if (output.length > 0) {
@@ -303,7 +303,7 @@
                 }
                 this.is_mem_valid()
                 this.is_gpu_valid()
-                this.is_cpu_valid()
+               
             },
             async stopEstimate(){
                 let response = await DeconvolutionAPI.cancel_estimate()
@@ -329,8 +329,7 @@
                         this.queueTime = "The resource estimate will take more than 1 minute to generate."
                 }
                 console.log(this.queueTime)
-                console.log("in device ")
-                console.log(timediffinSec)
+                
 
             },
             async getUserLimits(){
