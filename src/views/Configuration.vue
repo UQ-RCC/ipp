@@ -180,6 +180,7 @@
                 console.log(confid)
                 try{
                     const response= await ConfigurationAPI.execute_metedata_script(files, confid, validate, false, saveFolder)
+                    console.log("metadata response")
                     console.log(response)
                     Vue.notify({
                         group: 'datanotif',
@@ -190,8 +191,11 @@
                         duration: 5000,
                     })
                     let output = response.commandResult
+                    console.log("metadata output")
+                    console.log(output)
                     if (output.length > 0) {
-                        let json_output =  JSON.parse(output[0].out)
+                        const mdata = output.find(entry => entry.out.startsWith('{"params"'))
+                        let json_output =  JSON.parse(mdata.out)
                         console.log(json_output)
                         if(!json_output.results.success){
                            this.message = "Validation failed! " 
@@ -207,6 +211,7 @@
                     
                 }
                 catch(err) {
+                    console.log("catch err")
                     console.log(err)
                     Vue.notify({
                         group: 'datanotif',

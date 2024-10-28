@@ -169,16 +169,20 @@
                 const queueTime = new Date(startTime)
                 const timediffinms = queueTime - (new Date)
                 const timediffinSec = Math.floor(timediffinms/1000)
-                const timediffinmins = Math.floor(timediffinSec/60)
-                console.log(timediffinSec)
+                //const timediffinmins = Math.floor(timediffinSec/60)
+               
+               
                 
                     
                 if (timediffinSec < 60 ) {
                     this.estimatedTime = "This job is expected to start in less than 1 minute"
-                }else if (timediffinSec > 60 &&  timediffinmins < 60){
-                    this.estimatedTime = "This job is expected to start in about "+Math.ceil(timediffinmins)+" mins"
-                }else if (timediffinmins > 60 ){
-                    this.estimatedTime = "This job is expected to start in about "+Math.ceil((timediffinmins/60))+" hours"
+                }else if (timediffinSec >= 60 &&  timediffinSec < 3600){
+                    this.estimatedTime = "This job is expected to start in about "+Math.ceil(timediffinSec/60)+" mins"
+                }else if (timediffinSec >= 3600 && timediffinSec < 86400){
+                    this.estimatedTime = "This job is expected to start in about "+Math.ceil((timediffinSec/3600))+" hours"
+                }else if (timediffinSec >= 86400) {
+                    this.estimatedTime = "This job is expected to start in about "+Math.ceil((timediffinSec/86400))+" days"
+
                 }
                     
             },
