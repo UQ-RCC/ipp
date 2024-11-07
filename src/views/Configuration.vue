@@ -159,9 +159,7 @@
             this.selectedtag = _current_api.metadatatag
             this.updated = _current_api.updatedon
 
-            console.log(this.api)
-            console.log(this.selectedtag)
-            console.log(this.updated)
+            
             let utcdate= new Date(this.updated)
             const offsetMinutes = utcdate.getTimezoneOffset();
             let localtime = new Date(utcdate.getTime() - offsetMinutes * 60 * 1000)

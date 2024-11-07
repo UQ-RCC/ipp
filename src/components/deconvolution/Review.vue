@@ -158,11 +158,13 @@
             },
 
             async getQueueTime (){
-                let response = await DeconvolutionAPI.queue_time(this.serie.instances,this.serie.mem,this.serie.gpus,'gpu_cuda')
-    
+                let response = await DeconvolutionAPI.queue_time(this.serie.instances,this.serie.mem,this.serie.gpus,'gpu_cuda','gpu')
+                console.log("review response queueTime")
+                
                 //let output = response.commandResult
-            
+                
                 const responseString = response.commandResult[0].output
+                console.log(responseString)
                 const regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/
                 const timeStampMatch = responseString.match(regex) 
                 const startTime = timeStampMatch ? timeStampMatch[0]:null

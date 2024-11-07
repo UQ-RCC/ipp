@@ -31,7 +31,7 @@
                             <tr>
                                 <th class="text-left pa-4">File System</th>
                                 <th class="text-left pa-4">Used (GB)</th>
-                                <th class="text-left pa-4">Limit </th>
+                                <th class="text-left pa-4">Limit (GB) </th>
                                 <th class="text-left pa-4">Files </th>
                                 <th class="text-left pa-4">File Limit</th>
                             </tr>

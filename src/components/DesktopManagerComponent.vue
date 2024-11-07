@@ -349,6 +349,9 @@
             async launchDesktop(){
                 console.log("selectedDesktop")
                 console.log(this.selectedDesktop.value)
+                if (this.selectedDesktop.value === 'ipp_desktop') {
+                    await DesktopAPI.launchfile()
+                }
                 this.loading = true
                 window.open('https://bunya-ondemand.rcc.uq.edu.au/pun/sys/dashboard/batch_connect/sys/'+this.selectedDesktop.value+'/session_contexts/new', '_blank');
                 //await DesktopAPI.start_desktop(this.selectedFlavour.ram, this.selectedFlavour.cpu, this.walltime)

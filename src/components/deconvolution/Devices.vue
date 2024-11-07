@@ -312,7 +312,7 @@
                 this.loading=false
             },
             async getQueueTime() {
-                let response = await DeconvolutionAPI.queue_time(1, 30, 1, 'gpu_cuda_debug' )
+                let response = await DeconvolutionAPI.queue_time(1, 30, 1, 'gpu_cuda' , 'debug' )
                 const responseString = response.commandResult[0].output
                 console.log("device response queueTime")
                 console.log(responseString)

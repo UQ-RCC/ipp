@@ -53,13 +53,14 @@ export default {
     return data
   }, 
 
-  async queue_time(nodes, mem, gpus, partition) {
+  async queue_time(nodes, mem, gpus, partition, qos) {
     const { data } =  await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/queueTime`,{
       params: {
         nodes: nodes,
         mem: mem,
         gpus: gpus,
-        partition: partition
+        partition: partition,
+        qos:qos
       }
     });
     return data
