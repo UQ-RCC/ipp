@@ -189,11 +189,8 @@
                 return this.serie
             },
             async load_serie(serie_devices){
-                console.log(serie_devices)
                 this.serie = serie_devices
                 this.inimem = this.serie.mem
-                console.log("this.inimem" )
-                console.log(this.inimem )
                 this.message = null
                 let _current_api = await PreferenceAPI.get_config()
                 this.api=_current_api.apiname
@@ -280,24 +277,27 @@
                 
                 let response = await DeconvolutionAPI.execute_microvolution(this.serie.outputPath, parseInt(this.serie.instances), 
                 this.serie.mem, this.serie.gpus, this.serie, jobs, false, true, false)
+
+                console.log("Estimate response")
+                console.log(response)
                 
                 this.overlay =false
                 this.loading=false
                 this.message = ' Estimate complete'
                 let output = response.commandResult
-                console.log(response)
+                console.log(output)
+                
                 if (output.length > 0) {
                     for (let i=0; i < output.length ; i++) {
                         if(output[i].out.startsWith("{\"estimates\":")){
                             let json_output =  JSON.parse(output[i].out)
                             this.estimates = json_output
-                            console.log(this.estimates)
+                            
                             let cpuMem = this.estimates.estimates.cpuEstimateGB == 0 ? 1: this.estimates.estimates.cpuEstimateGB
                             let gpuMem = this.estimates.estimates.gpuEstimateGB == 0 ? 1 : this.estimates.estimates.gpuEstimateGB
                             this.cpu =  cpuMem + 5
                             this.gpu = gpuMem 
-                            console.log(cpuMem)
-                            console.log(gpuMem)
+                            
                         }
                     }
                 }
@@ -306,16 +306,13 @@
                
             },
             async stopEstimate(){
-                let response = await DeconvolutionAPI.cancel_estimate()
-                console.log(response)
+                await DeconvolutionAPI.cancel_estimate()
                 this.overlay =false
                 this.loading=false
             },
             async getQueueTime() {
                 let response = await DeconvolutionAPI.queue_time(1, 30, 1, 'gpu_cuda' , 'debug' )
                 const responseString = response.commandResult[0].output
-                console.log("device response queueTime")
-                console.log(responseString)
                 const regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/
                 const timeStampMatch = responseString.match(regex) 
                 const startTime = timeStampMatch ? timeStampMatch[0]:null
@@ -328,7 +325,7 @@
                 }else if (timediffinSec > 60 ){
                         this.queueTime = "The resource estimate will take more than 1 minute to generate."
                 }
-                console.log(this.queueTime)
+               
                 
 
             },
@@ -336,8 +333,6 @@
                 let userLimitResponse =  await DeconvolutionAPI.user_limits()
                 let output = userLimitResponse.commandResult
                 const userlimits =  output.find(entry => entry.out.startsWith('{"user_limits"'))
-                console.log("user Limits")
-                console.log(userlimits)
                 let json_output =  JSON.parse(userlimits.out)
                 this.userLimits = json_output.user_limits
                 this.nodeLimits = json_output.node_limits

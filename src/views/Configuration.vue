@@ -175,11 +175,10 @@
                 let confid =  this.selectedtag
                 let files =""
                 let saveFolder =""
-                console.log(confid)
+                
                 try{
                     const response= await ConfigurationAPI.execute_metedata_script(files, confid, validate, false, saveFolder)
-                    console.log("metadata response")
-                    console.log(response)
+                    
                     Vue.notify({
                         group: 'datanotif',
                         type: 'success',
@@ -189,12 +188,11 @@
                         duration: 5000,
                     })
                     let output = response.commandResult
-                    console.log("metadata output")
-                    console.log(output)
+                    
                     if (output.length > 0) {
                         const mdata = output.find(entry => entry.out.startsWith('{"params"'))
                         let json_output =  JSON.parse(mdata.out)
-                        console.log(json_output)
+                        
                         if(!json_output.results.success){
                            this.message = "Validation failed! " 
                            this.error = "Error details : "+ json_output.results.msg
@@ -209,8 +207,7 @@
                     
                 }
                 catch(err) {
-                    console.log("catch err")
-                    console.log(err)
+                    
                     Vue.notify({
                         group: 'datanotif',
                         type: 'error',
@@ -227,18 +224,15 @@
                 try{
                     if (api) {
 
-                        console.log(this.api)
-                        console.log(this.selectedtag)
-                        console.log("inside api update")
-                        const response= await PreferenceAPI.save_config_data(value, this.selectedtag)
+                        
+                        await PreferenceAPI.save_config_data(value, this.selectedtag)
                         this.messageSave = "The API updated successfully!"
                         this.isError = false
-                        console.log(response)
+                        
                     } else if (metadata){
-                        console.log(value)
-                        console.log(this.api)
-                        const response= await PreferenceAPI.save_config_data(this.api, value)
-                        console.log(response)
+                        
+                        await PreferenceAPI.save_config_data(this.api, value)
+                        
                     }
                 }
                 catch(err) {

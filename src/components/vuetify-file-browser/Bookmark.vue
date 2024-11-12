@@ -95,8 +95,7 @@
             this.collections = []
             try{
                 let _collectionResponse = await CollectionsAPI.list()
-                console.log("Bookmark -- collection")
-                console.log(_collectionResponse)
+                
                 _collectionResponse.commandResult.map(_collectionItem => {
                     let _collectionPath = _collectionItem.output
                     if(_collectionPath.startsWith("/")) {

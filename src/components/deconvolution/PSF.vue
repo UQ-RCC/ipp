@@ -288,15 +288,13 @@
                 return this.serie
             },
             async load_serie(serie){
-                console.log("inside psf load serie")
+               
                 
                 this.serie = serie
                 let _current_api = await PreferenceAPI.get_config()
                 this.api=_current_api.apiname
                 this.selectedtag = _current_api.metadatatag
-                console.log("this.api")
-                console.log(this.api)
-                console.log(serie.generatePsf)
+                
 
                 if(this.serie.psfFile){
                     let _storedSeries = await PreferenceAPI.get_serie(this.serie.psfFile)
@@ -315,11 +313,11 @@
                     this.serie.objectiveRIOption = 1.33
 
                 }
-                console.log(this.serie)
+                
             },
             // psfModelChanged
             psfModelChanged() {
-                console.log(this.serie.psfModel)
+                
             },
             // ns === sample medium : mediumRIOptions
             // ns changed --

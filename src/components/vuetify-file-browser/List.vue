@@ -665,7 +665,7 @@ export default {
             })
             
             // emit maxsize changed
-            console.log("maxsize:" + this.maxSize + " filteredItem size:" + this.filteredItems.length)
+            
             this.$emit("maxsize-changed", this.maxSize)
             //calculate total pages
             this.pageindex = 1
@@ -688,7 +688,7 @@ export default {
                 this.itemsperpage = this.itemsPerPageOption
             }
             this.pagelength = Math.ceil(this.filteredItems.length / this.itemsperpage)
-            console.log(this.pagelength)        
+                 
             this.displayItems = this.filteredItems.slice((this.pageindex - 1) * this.itemsperpage, 
                                                 this.pageindex * this.itemsperpage)
             console.log(this.displayItems)
@@ -703,23 +703,32 @@ export default {
         },
        
         async viewMetadata(item){
-            console.log("reading:" + item.path)
-            console.log("reading:" + item.path)
+            
             try{
                 this.overlay =true
                 const response= await ConfigurationAPI.execute_metedata_script(btoa(item.path), this.selectedtag, false, false, false)
                 this.overlay =false    
-                console.log(response)
-                if(response.commandResult.length > 0){
-                    let json_out = JSON.parse(response.commandResult[0].out)
-                    if (json_out.results.success) {
+                let output = response.commandResult
+                const mdata = output.find(entry => entry.out.startsWith('{"params"'))
+                let json_output =  JSON.parse(mdata.out)
+                
+                if (json_output.results !=null && json_output.results.metadata.length >0){
+                    if (json_output.results.success) {
                         await this.$refs.fileviewer.open(
                             item.path,
-                            JSON.stringify(json_out.results.metadata, null, 2)
+                            JSON.stringify(json_output.results.metadata, null, 2)
+                        )
+
+                    } else if(!json_output.results.success) {
+                        await this.$refs.fileviewer.open(
+                            item.path,
+                            JSON.stringify(json_output.results.msg, null, 2)
                         )
 
                     }
+
                 }
+              
             }
             catch(err){
                 Vue.notify({

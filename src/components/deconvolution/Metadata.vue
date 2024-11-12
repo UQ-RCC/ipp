@@ -143,8 +143,7 @@
                 // } else
                 //     this.origionalSerie = {}
                 this.origionalSerie = Object.assign({}, this.serie)
-                console.log("serie.outputPath in metadata load")
-                console.log(serie.outputPath)
+                
                 // update outputpath
                 if(serie.outputPath) {
                     var _pathParts = serie.outputPath.split("/")
@@ -172,8 +171,7 @@
                     this.serie.outputPath = ''
                 else
                     this.serie.outputPath = this.outputBasePath + "/" + this.outputFolderName
-                    console.log("output folder changed "+this.serie.outputPath)
-                    console.log(this.serie.outputPath)
+                    
             },
             /**
              * choose output folder: saved to all selected series

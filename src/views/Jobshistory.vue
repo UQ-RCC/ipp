@@ -129,6 +129,8 @@
                 for(let i=0; i<this.jobs.length; i++) {
                     let job = this.jobs[i]
                     if(job.submitted) {
+                        console.log("submitted time")
+                        console.log(job.submitted)
                         
                         let utcdate = new Date(job.submitted)
                         const offsetMinutes = utcdate.getTimezoneOffset();

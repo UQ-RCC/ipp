@@ -74,7 +74,7 @@
             }
         },
         mounted: async function() {
-            console.log(this.$route.query.component)
+            
             if(this.$route.query.component && this.$route.query.component=='filesmanager'){
                 let forwardedPath = '/filesmanager'
                 if(this.$route.query.path)
@@ -89,7 +89,7 @@
              if (response.commandResult) {
                 response.commandResult.forEach(item => {
                     this.current_quota.push(item)
-                    console.log(this.current_quota)
+                    
                     
                         /* this.current_quota.used = item.used
                         this.current_quota.useLimit = item.usedLimit
@@ -99,7 +99,7 @@
                 })
              }
 
-             console.log(this.current_quota)
+             
 
         },
         methods: {

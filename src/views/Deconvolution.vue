@@ -152,76 +152,77 @@
                         
                         </v-col>
                         <v-col>
-                        <v-card class="metdata-card" >
-                            <div>
-                                    <v-expansion-panels accordion>
-                                        <v-expansion-panel v-for="item in metedataResults" :key="item.file">
-                                                <v-expansion-panel-header  >
-                                                    <v-row align="center" justify="center">
-
-                                                        <v-col class="d-flex"  cols="1" v-if="item.success" >
-                                                            <v-tooltip bottom>
-                                                                <template v-slot:activator="{ on, attrs }">
-                                                                    <v-btn  
-                                                                        class="my-3" 
-                                                                        style="min-width:1px !important;width:2px"
-                                                                        color="primary"
-                                                                        @click.stop="downloadToCSV(item)"   
-                                                                        v-bind="attrs" 
-                                                                        v-on="on">
-                                                                        <v-icon>mdi-download</v-icon>
-                                                                    </v-btn>
-                                                                </template>
-                                                                <span>Download CSV</span>
-                                                            </v-tooltip>
-                                                        </v-col>
-                                                        <v-col class="d-flex"  cols="1" v-if="!item.success" >
-                                                            <v-icon style="color:red">mdi-alert</v-icon>
-                                                        </v-col>
-                                                        <v-col   cols="11" >{{ item.file }}</v-col> 
-                                                    </v-row>
-                                                </v-expansion-panel-header>
-                                                <v-expansion-panel-content >
-
-                                                    <v-row >
-                                                        <v-col >
-                                                            <p v-if="!item.success" style="text-align:left;color:orangered"> {{ metadataerror  }}</p>
-                                                            
-                                                            
-                                                                <!-- <v-card-text> -->
-                                                                    <v-table fixed-header >
-                                                                        <thead>
-                                                                            <tr>
-                                                                                <th class="text-left">
-                                                                                    Parameter</th>
-                                                                                <th class="text-left">Value 
-                                                                                    
-                                                                                </th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            <tr v-for="(value, key) in item"
-                                                                                v-bind:key="key">
-                                                                                <td class="text-left">{{ key }} </td>
-                                                                                <td class="text-left">{{ value }}</td>
-                                                
-                                                                            </tr>
-                                                                        </tbody>
-                                                
-                                                                    </v-table>
-                                                                <!-- </v-card-text> -->    
-                                                            
-                                                        </v-col>
-                                                    </v-row>
-
-                                                </v-expansion-panel-content>
-                                            </v-expansion-panel>
-
-                                    </v-expansion-panels>
-                                
-
-                            </div>
-                        </v-card></v-col>
+                            <v-card class="metdata-card" >
+                                <div>
+                                        <v-expansion-panels accordion>
+                                            <v-expansion-panel v-for="item in metedataResults" :key="item.file">
+                                                    <v-expansion-panel-header  >
+                                                        <v-row align="center" justify="center">
+    
+                                                            <v-col class="d-flex"  cols="1" v-if="item.success" >
+                                                                <v-tooltip bottom>
+                                                                    <template v-slot:activator="{ on, attrs }">
+                                                                        <v-btn  
+                                                                            class="my-3" 
+                                                                            style="min-width:1px !important;width:2px"
+                                                                            color="primary"
+                                                                            @click.stop="downloadToCSV(item)"   
+                                                                            v-bind="attrs" 
+                                                                            v-on="on">
+                                                                            <v-icon>mdi-download</v-icon>
+                                                                        </v-btn>
+                                                                    </template>
+                                                                    <span>Download CSV</span>
+                                                                </v-tooltip>
+                                                            </v-col>
+                                                            <v-col class="d-flex"  cols="1" v-if="!item.success" >
+                                                                <v-icon style="color:red">mdi-alert</v-icon>
+                                                            </v-col>
+                                                            <v-col   cols="11" >{{ item.file }}</v-col> 
+                                                        </v-row>
+                                                    </v-expansion-panel-header>
+                                                    <v-expansion-panel-content >
+    
+                                                        <v-row >
+                                                            <v-col >
+                                                                <p v-if="!item.success" style="text-align:left;color:orangered"> {{ metadataerror  }}</p>
+                                                                
+                                                                
+                                                                    <!-- <v-card-text> -->
+                                                                        <v-table fixed-header >
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th class="text-left">
+                                                                                        Parameter</th>
+                                                                                    <th class="text-left">Value 
+                                                                                        
+                                                                                    </th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                <tr v-for="(value, key) in item"
+                                                                                    v-bind:key="key">
+                                                                                    <td class="text-left">{{ key }} </td>
+                                                                                    <td class="text-left">{{ value }}</td>
+                                                    
+                                                                                </tr>
+                                                                            </tbody>
+                                                    
+                                                                        </v-table>
+                                                                    <!-- </v-card-text> -->    
+                                                                
+                                                            </v-col>
+                                                        </v-row>
+    
+                                                    </v-expansion-panel-content>
+                                                </v-expansion-panel>
+    
+                                        </v-expansion-panels>
+                                    
+    
+                                </div>
+                            </v-card>
+                    </v-col>
                     </div>
                 </div>
 
@@ -544,13 +545,15 @@
                 outputpath:[],
                 path:[],
                 api:"",
-                metedataResults:[],
+                metedataResults:JSON.parse(sessionStorage.getItem("metadataResults")) || [],
                 mloading:false,
                 dateTime:"",
                 selectedtag: null,
                 csvloading:false,
                 csvlocation:null,
                 metadataerror:null,
+                filepath: [],
+                metadataLoaded:false,
                 
                 // -- selected files table
                 selectedFilesTable: {
@@ -613,11 +616,10 @@
             }
         },
         mounted: async function() {
-            
             let _current_api = await PreferenceAPI.get_config()
             this.api=_current_api.apiname
             this.selectedtag = _current_api.metadatatag
-            console.log(this.api)
+            
             let initialItems = []
             let _decons = await PreferenceAPI.get_decons(null,this.api)
             for (let _index =0; _index < _decons.length; _index++){
@@ -629,10 +631,10 @@
                 //initialItems[_index].tempID = new Date().getMilliseconds()
                 initialItems[_index].tempID = this.uuid()
             }
+            
             this.loaded = this.loaded.concat(initialItems)
-            
-            let filepath = []
-            
+
+           
             // for though loaded, add to selected if needeed
             this.loaded.forEach(async item => {
                 if(item.selected) {
@@ -640,33 +642,13 @@
                     this.display_decon(item)    
                 }
                 
-                if (!filepath.includes(item.series.path)) {
-                    filepath.push(item.series.path)
+                if (!this.filepath.includes(item.series.path)) {
+                    this.filepath.push(item.series.path)
                 }
-                
+               
             })
-            filepath.forEach (async item => {
-                let _pathParts = item.split("/")
-                let basename = _pathParts.slice(-1)[0]
-                if (basename.includes('*')) {
-                    let path = _pathParts.slice(0,-1).join("/")+ "/"
-                    this.mloading = true
-                    await this.loadMetadaFolder(path,basename)
-                    this.mloading = false
-                }else {
-                    this.mloading = true
-                    let results = await this.getMetadata(item, false)
-                    
-                    if(results && results.metadata.length > 0) {
-                        this.metedataResults.push(results.metadata[0])
-                    }if (!results.success) {
-                        this.metadataerror = results.msg
-                        
-                    }
-                    this.mloading = false
-                }
-            })
-            
+            await this.loadMetaDataDialog()
+             
             if(this.selected.length > 0) {
                 this.workingItem.setting.filepath = this.selected[0].series.path
                 this.$cookies.set('filepath',this.selected[0].series.path, new Date(9999, 0o1, 0o1).toUTCString())
@@ -679,6 +661,61 @@
             
         },
         methods: {
+            
+            async saveMetaToSession() {
+                sessionStorage.setItem("metadataResults", JSON.stringify(this.metedataResults));
+
+            },
+            
+
+            async loadMetaDataDialog() {
+                
+                this.filepath.forEach (async item => {
+                    let _pathParts = item.split("/")
+                    let basename = _pathParts.slice(-1)[0]
+                    if (basename.includes('*')) {
+                        let path = _pathParts.slice(0,-1).join("/")+ "/"
+                        await this.loadMetadaFolder(path,basename)
+                        
+                    }else {
+                        
+                        
+                        if(this.metedataResults && this.metedataResults.length > 0) {
+                            const found =  this.metedataResults.some(el => el.file === item)
+                            if (!found) {
+                                this.mloading = true
+                                    let results = await this.getMetadata(item, false)
+                        
+                                    if(results && results.metadata.length > 0) {
+                                        this.metedataResults.push(results.metadata[0])
+                                    
+                                    }if (!results.success) {
+                                        this.metadataerror = results.msg
+                            
+                                    }
+                                    this.mloading = false
+                            }
+
+                        }else {
+                            this.mloading = true
+                            let results = await this.getMetadata(item, false)
+                        
+                            if(results && results.metadata.length > 0) {
+                                this.metedataResults.push(results.metadata[0])
+                            
+                            }if (!results.success) {
+                                this.metadataerror = results.msg
+                    
+                            }
+                            this.mloading = false
+
+                        }
+                        
+                        await this.saveMetaToSession()
+                    }
+                })               
+                
+            },
 
             uuid(){
                 let uuidValue = "",k, randomValue;
@@ -751,7 +788,7 @@
                 try{
                     let _decons = []
                     
-                    console.log(btoa(pathToBeLoaded))
+                    
                     if(!this.isSame) {
                         _decons = await PreferenceAPI.get_decons(pathToBeLoaded,this.api)
                         // found
@@ -808,7 +845,7 @@
 
                                         // add to database
                                         for(let _index = 0; _index < response.commandResult.length; _index++){
-                                            console.log("adding new deconn to db")
+                                            
                                             let _responseItem  = response.commandResult[_index]
                                             _responseItem.isfolder = isfolder
                                             
@@ -1003,6 +1040,7 @@
                                 this.metadataerror = results.msg
                             }
                             this.mloading = false
+                            
                         }
                         
                     }
@@ -1035,22 +1073,48 @@
 
                     })
                     if (files.length > 0) {
-                        const found =  this.metedataResults.some(el => el.file === files)
-                        if(!found) {
-
-                            let results = await this.getMetadata(files, true)
+                        if(this.metedataResults && this.metedataResults.length > 0) {
+                            files.forEach (async item => {
+                                const found =  this.metedataResults.some(el => el.file === item)
+                                if(!found) {
+                                    this.mloading = true
+                                    let results = await this.getMetadata(item, false)
+                                    
+                                    if(results != null && results.metadata.length > 0) {
+                                        this.metedataResults.push(results.metadata[0]) 
+                                    }if (!results.success) {
+                                        this.metadataerror = results.msg
+                                       
+                                    }
+                                    this.mloading = false
+                                    
+                                }
+                                
+                            })
                             
-                            if(results != null && results.metadata.length > 0) {
-                                results.metadata.forEach(item => {
-                                    this.metedataResults.push(item)
-                                }) 
-                            }if (!results.success) {
-                                this.metadataerror = results.msg
-                               
-                            }
+                            
+                        }else {
+                            const found =  this.metedataResults.some(el => el.file === files)
+                                if(!found) {
+                                    this.mloading = true
+                                    let results = await this.getMetadata(files, true)
+                                    
+                                    if(results != null && results.metadata.length > 0) {
+                                        results.metadata.forEach(item =>{
+                                            this.metedataResults.push(item) 
+
+                                        })
+                                    }if (!results.success) {
+                                        this.metadataerror = results.msg
+                                       
+                                    }
+                                    this.mloading = false
+                                    
+                                }
+
                         }
                         
-                    }
+                    }await this.saveMetaToSession()
                 }
             },
 
@@ -1131,6 +1195,8 @@
                             this.metedataResults.splice(i, 1)
                         }
                     }
+                    this.saveMetaToSession()
+                    
                     
                 })
                 this.selected = []
@@ -1157,6 +1223,8 @@
                 this.display_decon(this.workingItem, false)
                 this.metedataResults = []
                 this.csvlocation = null
+                this.saveMetaToSession()
+                
                 
             },
             /* end part dealing with load */
@@ -1181,7 +1249,7 @@
                     item.setting.deskew = false
                 }
                 
-                console.log(_jobIds)
+                
                 try{
                     if (_current_api &&  _current_api.apiname=="Microvolution") {
                         await DeconvolutionAPI.execute_microvolution(item.setting.outputPath, _numberOfJobs, 
@@ -1395,7 +1463,6 @@
              * when psfChanged
              */
             psfChanged(){
-                // console.log('psftype=' + this.workingItem.setting.psfType)
                 this.errors = []
                 if (this.workingItem.setting.psfType !== 3 ) {
                     this.workingItem.setting.deskew = false
@@ -1654,7 +1721,7 @@
                 // and load
                 let _component = this.getStepComponent(nextSt)
                 if (_component) {
-                    console.log(this.selected[0])
+                    
                     this.workingItem.setting.filepath = this.selected[0].series.path
                     _component.load_serie(this.workingItem.setting)
                 }
