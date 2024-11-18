@@ -4,7 +4,7 @@ import Vue from 'vue'
 export default {
   // get folder info
   async get_folder_info(path) {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/folderinfobase64`, {
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/folderinfobase64`, {
         params: {
           folderpath: btoa(path)
         }
@@ -18,7 +18,7 @@ export default {
       console.log(btoa(file))
       return btoa(file);
     }); 
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/filesinfobase64`, {
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/filesinfobase64`, {
         params: {
           fileslist: fileslist
         }
@@ -28,7 +28,7 @@ export default {
 
   // get file info
   async get_file_info(filepath) {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/fileinfobase64`, {
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/fileinfobase64`, {
         params: {
           filepath: btoa(filepath)
         }
@@ -37,7 +37,7 @@ export default {
   },
 
   async validate_devices(jobs,mem,gpus){
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/validateDevices`, {
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/validateDevices`, {
       params: {
         jobs: jobs,
         mem: mem,
@@ -49,12 +49,12 @@ export default {
   },  
 
  async cancel_estimate() {
-    const { data } =  await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/estimateCancel`);
+    const { data } =  await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/estimateCancel`);
     return data
   }, 
 
   async queue_time(nodes, mem, gpus, partition, qos) {
-    const { data } =  await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/queueTime`,{
+    const { data } =  await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/queueTime`,{
       params: {
         nodes: nodes,
         mem: mem,
@@ -67,7 +67,7 @@ export default {
   },
 
   async user_limits() {
-    const { data } =  await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/userLimits`);
+    const { data } =  await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/userLimits`);
     return data
   },
 
@@ -75,13 +75,13 @@ export default {
   async execute_microvolution(output, instances, mem, devices, executioninfo, jobs, is_test=false, is_estimate, is_cudaDecon) {
     let _requestUrl = ""
     if (is_test && !is_estimate && !is_cudaDecon) {
-      _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/testexecutebase64`      
+      _requestUrl = `${Vue.prototype.$Config.endpoints.bunya}/api/execute/testexecutebase64`      
     } else if(is_estimate && !is_test && !is_cudaDecon){
-      _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/estimateDevices`  
+      _requestUrl = `${Vue.prototype.$Config.endpoints.bunya}/api/execute/estimateDevices`  
     } else if (is_cudaDecon && !is_test && !is_estimate){
-      _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/CudaDeconbase64`
+      _requestUrl = `${Vue.prototype.$Config.endpoints.bunya}/api/execute/CudaDeconbase64`
     } else if ((!is_cudaDecon && !is_test && !is_estimate)) {
-      _requestUrl = `${Vue.prototype.$Config.endpoints.wiener}/api/execute/executemicrovolutionbase64`
+      _requestUrl = `${Vue.prototype.$Config.endpoints.bunya}/api/execute/executemicrovolutionbase64`
     }
     let arrayMax = parseInt(instances) - 1
     // modify executioninfo 

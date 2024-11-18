@@ -758,6 +758,10 @@ export default {
         async copyMacroFile(outputFolder) {
             let islocal
             let commitId
+            let token = Vue.prototype.$Config.github.AuthToken
+            let gitPAT = token.replace('Bearer ', '')
+            let gitUser = Vue.prototype.$Config.github.gituser
+
             if(this.workingItem.macroSource == '1') {
                 islocal = false
                 
@@ -772,7 +776,7 @@ export default {
                         console.log(outputFolder)
                         console.log(this.workingItem.fileName)
                         console.log(this.workingItem.fileName)
-                        await MacroAPI.saveFile(this.workingItem.fileName, outputFolder, commitId, islocal)
+                        await MacroAPI.saveFile(this.workingItem.fileName, outputFolder, commitId, gitUser, gitPAT, islocal)
                         Vue.notify({
                             group: 'sysnotif',
                             type: 'info',
@@ -799,7 +803,7 @@ export default {
                     try {
                         console.log(outputFolder)
                         console.log(this.macrofile)
-                        await MacroAPI.saveFile(this.macrofile, outputFolder, commitId, islocal)
+                        await MacroAPI.saveFile(this.macrofile, outputFolder, commitId, gitUser, gitPAT, islocal)
                         Vue.notify({
                             group: 'sysnotif',
                             type: 'info',

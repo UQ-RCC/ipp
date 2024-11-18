@@ -4,7 +4,7 @@ import Vue from 'vue'
 const service = axios.create({
     // baseURL: '', // url = base url + request url
     // withCredentials: true, // send cookies when cross-domain requests
-    timeout: 300000 // request timeout
+    timeout: 600000 // request timeout
   })
   
   // request interceptor
@@ -100,6 +100,7 @@ service.interceptors.response.use(
         // If no response was received, it could be a network error
         Vue.$log.error("No response received from server.");
         Vue.$log.error("Error Message:", error.message);
+        Vue.$log.error("Error Message:", error);
       }
       return Promise.reject(error)
     }

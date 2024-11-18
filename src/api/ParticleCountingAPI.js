@@ -13,7 +13,7 @@ export default {
     if(mem > 384)
       mem = 384
     pcinfo.mem = mem
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/particlecountingbase64`, {
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/particlecountingbase64`, {
         params: {
             output: pcinfo.output,
             pcinfo: btoa(JSON.stringify(pcinfo)),

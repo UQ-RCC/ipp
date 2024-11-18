@@ -4,7 +4,7 @@ import Vue from 'vue'
 export default {
     // list path
     async list(path) {
-      const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/listfolderbase64`, {
+      const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/listfolderbase64`, {
         params: {
             folderpath: btoa(path)
         }
@@ -14,7 +14,7 @@ export default {
       
     // make dir
     async mkdir(path) {
-        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/makedirbase64`, {
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/makedirbase64`, {
             params: {
                 folderpath: btoa(path)
             }
@@ -24,7 +24,7 @@ export default {
 
     // use this one for files/folder in the same place
     async simplemove(source, dest) {
-        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/simplemovebase64`, {
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/simplemovebase64`, {
             params: {
                 source: btoa(source),
                 dest: btoa(dest)
@@ -35,7 +35,7 @@ export default {
 
     //delete a path
     async delete(path) {
-        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/deletebase64`, {
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/deletebase64`, {
             params: {
                 fileslist: btoa(path)
             }
@@ -45,7 +45,7 @@ export default {
 
     // copy folder
     async copy(usermail, sources, dest, parallel, deleteSource, copy) {
-        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/copybase64`, {
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/copybase64`, {
             params: {
                 usermail: usermail,
                 sources: btoa(sources),
@@ -59,7 +59,7 @@ export default {
     },
     //read text file
     async readTextFile(filepath) {
-        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/readtextfile`, {
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/readtextfile`, {
             params: {
                 filepath: filepath
             }
@@ -67,7 +67,7 @@ export default {
         return data
     },
     async createActionFile(){
-        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/createactionfile`);
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/createactionfile`);
         return data
       }
 }

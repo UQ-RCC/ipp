@@ -4,12 +4,12 @@ import Vue from 'vue'
 export default {
   // list desktop
   async list_desktop() {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/listdesktop`)
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/listdesktop`)
     return data
   },
   // start desktop
   async start_desktop(mem, ppn, hours) {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/startdesktop`, {
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/startdesktop`, {
         params: {
           mem: mem, 
           ppn: ppn, 
@@ -20,7 +20,7 @@ export default {
   },
   // stop desktop
   async stop_desktop(jobid) {
-    await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/stopdesktop`, {
+    await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/stopdesktop`, {
         params: {
           jobidNumber: jobid
         }
@@ -28,27 +28,27 @@ export default {
   },
   // vnc display
   async vncdisplay() {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/vncdisplay`);
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/vncdisplay`);
     return data
   },
   // otp
   async otp() {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/otp`);
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/otp`);
     return data
   },
   //list apps
   async listapps() {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/listapps`);
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/listapps`);
     return data
   },
   //list flavours
   async listdesktopflavours() {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/listflavours`);
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/listflavours`);
     return data
   },
   // launch app
   async launchapp(appid, filespath, copytoscratch) {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/launchapp`, {
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/launchapp`, {
         params: {
           appid: appid,
           filespath: btoa(filespath),
@@ -59,7 +59,7 @@ export default {
   },
 
   async launchfile() {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/launchfile`);
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/launchfile`);
     return data
 
   },
@@ -68,16 +68,16 @@ export default {
   // the results here are different as it is not using remote job execution
   // configurations
   async listconfigurations() {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/configurations`);
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/configurations`);
     return data
   },
   // tunnels
   async listvnctunnels() {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/listvnctunnels`);
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/listvnctunnels`);
     return data
   },
   async startvnctunnel(desktopname, vncpassword, remotehost, display, via_gateway, configuration) {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/startvnctunnel`, {
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/startvnctunnel`, {
       params: {
         desktopname: desktopname,
         vncpassword: vncpassword,
@@ -90,7 +90,7 @@ export default {
     return data
   },
   async stopvnctunnel(id) {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/stopvnctunnel`, {
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/stopvnctunnel`, {
       params: {
         id: id
       }

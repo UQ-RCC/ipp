@@ -7,7 +7,7 @@ export default {
     let endpoint = `${Vue.prototype.$Config.endpoints.pref}`
     // let apihost = /^(?:\w+\:\/\/)?([^\/]+)(.*)$/.exec(endpoint)[1]
     let apihost = /^(?:\w+:\/\/)?([^/]+)(.*)$/.exec(endpoint)[1]
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/preprocessing`, {
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/preprocessing`, {
       params: {
         output: preprocessingjobinfo.outputPath,
         prepinfo: btoa(JSON.stringify(preprocessingjobinfo)),

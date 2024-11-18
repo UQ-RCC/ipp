@@ -132,10 +132,11 @@
                         console.log("submitted time")
                         console.log(job.submitted)
                         
-                        let utcdate = new Date(job.submitted)
+                        let utcdate = new Date(Date.parse(job.submitted))
+                        //const localTime = utcdate.toLocaleString()
                         const offsetMinutes = utcdate.getTimezoneOffset();
                         let localtime = new Date(utcdate.getTime() - offsetMinutes * 60 * 1000)
-                        const localTimeString = localtime.toLocaleString()
+                        let localTimeString = localtime.toLocaleString()
                         this.jobs[i].submitted = localTimeString
                         console.log("job submitted "+ this.jobs[i].submitted)
 

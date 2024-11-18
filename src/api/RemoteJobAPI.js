@@ -4,12 +4,12 @@ import Vue from 'vue'
 export default {
   // list jobs
   async list_jobs() {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/listall`)
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/listall`)
     return data
   },
   // stop job
   async stop_job(jobid) {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/stop`, {
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/stop`, {
         params: {
           jobidNumber: jobid
         }
@@ -18,7 +18,7 @@ export default {
   },
 
   async scratch_quota() {
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/quota`);
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/quota`);
     return data
   },
 

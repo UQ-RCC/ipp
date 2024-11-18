@@ -5,7 +5,7 @@ export default {
 
     // execute
     async execute_macro_script(output, instances, mem, devices,macroinfo ) {
-        let _requestUrl =`${Vue.prototype.$Config.endpoints.wiener}/api/execute/executeMacroBase64`
+        let _requestUrl =`${Vue.prototype.$Config.endpoints.bunya}/api/execute/executeMacroBase64`
         console.log(_requestUrl)
         let arrayMax = parseInt(instances) - 1
         let endpoint = `${Vue.prototype.$Config.endpoints.pref}`
@@ -28,9 +28,9 @@ export default {
       },
 
      
-     async saveFile(filename, folder, commitId, islocal) {
+     async saveFile(filename, folder, commitId, gituser, gitpat, islocal) {
         if(islocal) {
-            const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/copymacrobase64`, {
+            const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/copymacrobase64`, {
                 params: {
                     folder: folder,
                     filename : filename
@@ -40,11 +40,13 @@ export default {
 
         }else {
 
-            const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/savemacrobase64`, {
+            const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/savemacrobase64`, {
                 params: {
                     folder: folder,
                     filename : filename,
-                    commitId : commitId
+                    commitId : commitId,
+                    gituser: gituser,
+                    gitpat: gitpat
     
                 }
             })
@@ -54,7 +56,7 @@ export default {
 
       //read text file
     async readMacroFile(filepath) {
-        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/readTextFile`, {
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/readTextFile`, {
             params: {
                 filepath: filepath
             }

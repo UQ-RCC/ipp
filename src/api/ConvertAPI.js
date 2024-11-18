@@ -13,7 +13,7 @@ export default {
     if(mem > 384)
       mem = 384
     convertinfo.mem = mem
-    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.wiener}/api/execute/convertfilebase64`, {
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/convertfilebase64`, {
         params: {
             output: convertinfo.output,
             convertinfo: btoa(JSON.stringify(convertinfo)),
