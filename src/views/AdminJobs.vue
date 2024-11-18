@@ -154,10 +154,15 @@
                     let job = this.jobs[i]
                     if(job.submitted) {
                         // convert to local timezone
-                        let utcdate = new Date(job.submitted)
-                        const offsetMinutes = utcdate.getTimezoneOffset();
-                        let localtime = new Date(utcdate.getTime() - offsetMinutes * 60 * 1000)
-                        const localTimeString = localtime.toLocaleString()
+                        let ms = Date.parse(job.submitted)
+                        let utcdate = new Date()
+                        utcdate.setTime(ms)
+                        const localTimeString = utcdate.toLocaleString()
+
+                        //let utcdate = new Date(job.submitted)
+                        //const offsetMinutes = utcdate.getTimezoneOffset();
+                        //let localtime = new Date(utcdate.getTime() - offsetMinutes * 60 * 1000)
+                        //const localTimeString = localtime.toLocaleString()
                         this.jobs[i].submitted = localTimeString
                         console.log("job submitted "+ this.jobs[i].submitted)
                     }
