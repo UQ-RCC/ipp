@@ -517,6 +517,7 @@ export default {
             userLimits:[],
             nodeLimits:[],
             
+            
 
 
 
@@ -621,7 +622,18 @@ export default {
                                 console.log(this.inputArr[i])
                                 if (this.inputArr[i].inputName === "input") {
                                // this.params.input = this.selected[0].path
-                                    this.params.input = this.outputBasePath
+                                    if(this.selected[0].path) {
+                                        const fileName = this.selected[0].path.split('/').pop();
+                                        if (fileName.startsWith('*') && fileName.endsWith('*')) {
+                                            
+                                            this.params.input = this.selected[0].path.split("/").slice(0, -1).join("/")
+                                        } else {
+                                            
+                                            this.params.input = this.selected[0].path
+                                        }
+                                    }
+                                    
+                                    //this.params.input = this.outputBasePath
                                 }
                                 if (this.inputArr[i].inputName === "output") {
                                     if (this.outputBasePath && !this.outputBasePath.endsWith("/"))
@@ -766,6 +778,7 @@ export default {
                 islocal = false
                 
                 const response = await this.github.get("repos/UQ-RCC/ipp-repo/commits/main")
+                
                 if(response.data){
                     commitId = response.data.sha.substring(0,7)
                 }
@@ -1061,6 +1074,7 @@ export default {
          */
         async selectFilesOrFolders(isfolder) {
             let options = null
+            
             if (isfolder)
                 options = await this.$refs.filedialog.open('selectfilesinfolder', 'Processing', '/')
             else
@@ -1088,6 +1102,7 @@ export default {
                     }
                     paths.push({ 'path': _pathToBeLoaded, 'size': options.maxsize })
                     
+                    
                 } else {
                     Vue.$log.debug("selecting files:")
                     Vue.$log.debug(options.selectedItems)
@@ -1110,6 +1125,7 @@ export default {
                             }
                             
                             paths.push({ 'path': options.selectedItems[i].path, 'size': itemSize })
+                            
                         }
                     }
                 }

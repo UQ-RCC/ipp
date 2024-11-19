@@ -39,14 +39,13 @@ export default {
             return data
 
         }else {
-
             const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/savemacrobase64`, {
                 params: {
                     folder: folder,
                     filename : filename,
                     commitId : commitId,
                     gituser: gituser,
-                    gitpat: gitpat
+                    gitpat: btoa(gitpat)
     
                 }
             })
