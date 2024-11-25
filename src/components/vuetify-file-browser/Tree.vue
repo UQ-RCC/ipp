@@ -170,14 +170,13 @@ export default {
             }
         },
         findItem(path) {
-            // console.log("[findItem@Tree] path=" + path)
+            
             let stack = [];
             stack.push(this.items[0]);
-            // console.log(stack)
+            
             while (stack.length > 0) {
                 let node = stack.pop();
-                // console.log("[findItem@Tree] node= ")
-                // console.log(node)
+                
                 if(!node)
                     break;
                 if (node.path == path) {
@@ -191,11 +190,10 @@ export default {
             return null;
         },
         async openPath(path) {
-            // console.log("[openPath@Tree] path = " + path)
-            // console.log("[openPath@Tree] item0 = " + this.items[0])
+            
             this.$emit("loading", true);
             let pathsegments = path.replace(/^\//, "").replace(/\/$/, "").split("/");
-            console.log(pathsegments)
+            
             // now we have pathSegments = ["a", "b", "c"] root folder is ignored
             let stack = [];
             stack.push(this.items[0]);

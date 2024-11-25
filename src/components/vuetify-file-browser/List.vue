@@ -477,7 +477,6 @@ export default {
                     this.total_files = 0
                     this.total_folders = 0
                     this.items = response.commandResult.map(responseItem => {
-                        //console.log(responseItem.name)
                         responseItem.type = "file"
                         responseItem.basename = responseItem.name
                         responseItem.extension = ""
@@ -691,7 +690,7 @@ export default {
                  
             this.displayItems = this.filteredItems.slice((this.pageindex - 1) * this.itemsperpage, 
                                                 this.pageindex * this.itemsperpage)
-            console.log(this.displayItems)
+            
         },
         canView(item){
             let extension = item.basename.split(".").pop()
@@ -740,7 +739,7 @@ export default {
             } 
         },
         async viewItem(item){
-            console.log("reading:" + item.path)
+            
             console.log("reading:" + item.path)
             try{
                 let _readFileResponse = await FilesAPI.readTextFile(item.path)

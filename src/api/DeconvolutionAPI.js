@@ -110,11 +110,6 @@ export default {
     let endpoint = `${Vue.prototype.$Config.endpoints.pref}`
     // let apihost = /^(?:\w+\:\/\/)?([^\/]+)(.*)$/.exec(endpoint)[1]
     let apihost = /^(?:\w+:\/\/)?([^/]+)(.*)$/.exec(endpoint)[1]
-    console.log("----run estimate api API call---")
-    let today = new Date();
-    let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-    let time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
-    console.log(date+'_'+time)
     const { data } = await request.get(_requestUrl, {
         params: {
           output: output, 

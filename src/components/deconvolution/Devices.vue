@@ -38,7 +38,7 @@
             </v-col> -->
             <v-col align="center" justify="center">
 
-                <v-col v-if="api=='Microvolution'"   >
+                <v-col v-if="api=='Microvolution' && env!=='prod'"   >
                     
     
                         <v-tooltip bottom >
@@ -138,7 +138,7 @@
 </template>
 
 <script>
-    // import Vue from 'vue';
+    import Vue from 'vue';
     import series from '@/utils/series.js'
     // api
     import DeconvolutionAPI from "@/api/DeconvolutionAPI.js"
@@ -174,6 +174,7 @@
                 api:"",
                 selectedtag: null,
                 queueTime:"",
+                env:null,
                 /* positiveInteger: [
                     value => value && value > 0 && Number.isInteger(parseFloat(value)) || 'Must be a positive integer'
                 ], 
@@ -195,6 +196,7 @@
                 let _current_api = await PreferenceAPI.get_config()
                 this.api=_current_api.apiname
                 this.selectedtag = _current_api.metadatatag
+                this.env = Vue.prototype.$Config.env
                 this.getQueueTime()
                 this.getUserLimits()
                 
@@ -278,14 +280,11 @@
                 let response = await DeconvolutionAPI.execute_microvolution(this.serie.outputPath, parseInt(this.serie.instances), 
                 this.serie.mem, this.serie.gpus, this.serie, jobs, false, true, false)
 
-                console.log("Estimate response")
-                console.log(response)
-                
                 this.overlay =false
                 this.loading=false
                 this.message = ' Estimate complete'
                 let output = response.commandResult
-                console.log(output)
+                
                 
                 if (output.length > 0) {
                     for (let i=0; i < output.length ; i++) {

@@ -113,8 +113,7 @@
                 this.loading = true
                 // only list running and submitted jobs
                 this.jobs = await PreferenceAPI.list_jobs(false)
-                console.log("this.jobs")
-                console.log(this.jobs)
+                
                 /* const options = {
                     timeZone: 'Australia/Brisbane',
                     year: 'numeric',
@@ -129,9 +128,6 @@
                 for(let i=0; i<this.jobs.length; i++) {
                     let job = this.jobs[i]
                     if(job.submitted) {
-                        console.log("submitted time")
-                        console.log(job.submitted)
-                        
                         let ms = Date.parse(job.submitted)
                         let utcdate = new Date()
                         utcdate.setTime(ms)
@@ -140,20 +136,20 @@
                         //let localtime = new Date(utcdate.getTime() - offsetMinutes * 60 * 1000)
                         let localTimeString = utcdate.toLocaleString()
                         this.jobs[i].submitted = localTimeString
-                        console.log("job submitted "+ this.jobs[i].submitted)
+                        
 
                     }
                     if(job.start) {
                         let utcdate = new Date(job.start);
                         let localTimeString = utcdate.toLocaleString();
                         this.jobs[i].start = localTimeString
-                        console.log(localTimeString);
+                        
                     }
                     if(job.end) {
                         let utcdate = new Date(job.end);
                         let localTimeString = utcdate.toLocaleString();
                         this.jobs[i].end = localTimeString
-                        console.log(localTimeString);
+                        
                     }
                     
                    

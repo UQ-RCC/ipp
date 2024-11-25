@@ -264,7 +264,7 @@
                     this.apps.push(element)
                     this.selectedApp = this.apps[0].id
                 });
-                console.log( this.apps)
+                
             },
             async getFlavours(){
                 let response = await DesktopAPI.listdesktopflavours()
@@ -347,8 +347,7 @@
             },
 
             async launchDesktop(){
-                console.log("selectedDesktop")
-                console.log(this.selectedDesktop.value)
+                
                 if (this.selectedDesktop.value === 'ipp_desktop') {
                     await DesktopAPI.launchfile()
                 }
@@ -364,14 +363,13 @@
 
             // set files
             setFiles(filelist) {
-                console.log("setFiles ")
-                console.log(filelist)
+                
                 
                 if(filelist.length>0){
                     filelist.map(item => {
                     if(!item.endsWith("/") && !this.files.includes(item)){
                         this.files.push(item)
-                        console.log("a file")
+                        
                     } else {
                         console.log("a folder")
                     }
@@ -418,8 +416,7 @@
             //this.getFlavours()
             //this.startTimer(20000)
             this.loading = false
-            console.log("this.desktopManagerOnly")
-            console.log(this.desktopManagerOnly)
+            
         },
         
         destroyed() {

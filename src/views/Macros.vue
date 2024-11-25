@@ -310,7 +310,7 @@
                                                             :rules="[rules.positiveInteger]"  
                                                             label="Number of GPUs per instance[node]" 
                                                             v-model="workingItem.gpus"
-                                                            readonly
+                                                            
                                                             
                                                         >
                                                         </v-text-field>
@@ -539,11 +539,7 @@ export default {
             const macrodef = JSON.parse(atob(response.data.content))
             this.macros = macrodef
         }
-       /*  const readmeResponse =  await this.github.get("repos/UQ-RCC/ipp-repo/contents/macros/README.md?ref=main")
-        if(readmeResponse.data) {
-            this.readmeURL = readmeResponse.data.html_url
-            console.log(this.readmeURL)
-        } */
+       
     },
    
         
@@ -617,9 +613,7 @@ export default {
                 } else{
                         if (this.inputArr.length > 0) {
                             
-                            
                             for (let i = 0; i < this.inputArr.length; i++) {
-                                console.log(this.inputArr[i])
                                 if (this.inputArr[i].inputName === "input") {
                                // this.params.input = this.selected[0].path
                                     if(this.selected[0].path) {
@@ -633,7 +627,6 @@ export default {
                                         }
                                     }
                                     
-                                    //this.params.input = this.outputBasePath
                                 }
                                 if (this.inputArr[i].inputName === "output") {
                                     if (this.outputBasePath && !this.outputBasePath.endsWith("/"))
@@ -736,8 +729,6 @@ export default {
                 let userLimitResponse =  await DeconvolutionAPI.user_limits()
                 let output = userLimitResponse.commandResult
                 const userlimits =  output.find(entry => entry.out.startsWith('{"user_limits"'))
-                console.log("user Limits")
-                console.log(userlimits)
                 let json_output =  JSON.parse(userlimits.out)
                 this.userLimits = json_output.user_limits
                 this.nodeLimits = json_output.node_limits
@@ -786,9 +777,7 @@ export default {
     
                 if (this.workingItem.fileName && outputFolder ) {
                     try{
-                        console.log(outputFolder)
-                        console.log(this.workingItem.fileName)
-                        console.log(this.workingItem.fileName)
+                        
                         await MacroAPI.saveFile(this.workingItem.fileName, outputFolder, commitId, gitUser, gitPAT, islocal)
                         Vue.notify({
                             group: 'sysnotif',
@@ -814,8 +803,7 @@ export default {
                 commitId = ''
                 if (this.macrofile && outputFolder) {
                     try {
-                        console.log(outputFolder)
-                        console.log(this.macrofile)
+                        
                         await MacroAPI.saveFile(this.macrofile, outputFolder, commitId, gitUser, gitPAT, islocal)
                         Vue.notify({
                             group: 'sysnotif',
@@ -949,8 +937,7 @@ export default {
             options = await this.$refs.filedialog.open('selectfiles', 'Processing', '/')
             let paths =[]
             if(!options.cancelled) {
-                console.log(options)
-                console.log(options.selectedItems)
+                
                 for(let i =0; i < options.selectedItems.length; i++){
                     let itemSize = miscs.convertFormattedStrToBytes(options.selectedItems[i].size)
                     if (itemSize * 2.2 > miscs.maxMemSize()) {
@@ -963,7 +950,7 @@ export default {
                         return
                     }
                     paths.push({ 'path': options.selectedItems[i].path, 'size': itemSize })
-                    console.log(paths)
+                    
                 }
                 if (paths.length === 0) {
                     Vue.$log.debug("Paths is empty. Return.")
@@ -1011,7 +998,7 @@ export default {
                     let substring3 = lines[i].substring(lines[i].indexOf(')')+1).trim()
                     let params = []
                     params.dataType = substring1
-                    console.log(substring2)
+                    
 
                     substring2 = substring2.replace('{', '[').replace('}',']').replaceAll('=',':')
 
@@ -1020,7 +1007,7 @@ export default {
                     }
 
                     substring2 = substring2.replaceAt(substring2.indexOf('('),'{').replaceAt(substring2.lastIndexOf(')'),'}')
-                    console.log(substring2);
+                    
 
 
                     if(substring2.includes("choices")){
@@ -1047,7 +1034,7 @@ export default {
                     params.inputName = substring3
                 
                     input_params.push(params)
-                    console.log(input_params)
+                    
 
                 }else if (lines[i].startsWith("#@")) {
                     let arr = lines[i].replace("#@", "").trim().split(" ")
@@ -1055,7 +1042,7 @@ export default {
                     params.dataType = arr[0]
                     params.inputName = arr[1]
                     params.inputType = "text"
-                    console.log(params)
+                    
                     input_params.push(params)
                 }
                 if (lines[i] !== "" && lines[i] !== "\t") {
@@ -1064,7 +1051,7 @@ export default {
 
 
             }
-            console.log(scriptLines)
+            
             this.code = scriptLines
             this.inputArr = input_params
         },
@@ -1147,8 +1134,7 @@ export default {
                 if ((!this.selected || this.selected.length == 0) && this.loaded.length > 0) {
                     this.selected = [this.loaded[0]]
                 }
-                console.log(this.loaded)
-                console.log(this.selected)
+                
             }
             //this.saveToDb()
         },
@@ -1175,7 +1161,7 @@ export default {
             }
             if (this.username)
                 this.dbinfo.username = this.username
-            console.log(this.dbinfo)
+            
             //TODO here
             if (this.dbinfo.id) {
                 await PreferenceAPI.update_macro(this.dbinfo.id, this.dbinfo)
@@ -1276,8 +1262,7 @@ export default {
             })
             this.selected = [this.loaded[0]]
         }
-        console.log(this.loaded)
-        console.log(this.selected)
+        
 
         // output path
         if (!this.dbinfo.outputPath)
