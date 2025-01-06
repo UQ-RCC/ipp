@@ -335,6 +335,7 @@ export default {
     async mounted() {
         this.collections = []
         try{
+            this.$emit("loading", true);
             let _collectionResponse = await CollectionsAPI.list()
             _collectionResponse.commandResult.map(_collectionItem => {
                 let _collectionPath = _collectionItem.output
@@ -346,6 +347,7 @@ export default {
                     this.collections.push({"name": _collectionPath, "path": _collectionPath})
                 }
             })
+            this.$emit("loading", false);
         }
         catch(err){
             Vue.$log.error(err);

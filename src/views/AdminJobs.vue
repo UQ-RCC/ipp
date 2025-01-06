@@ -10,7 +10,43 @@
         <br />
 
         <v-row align="center" justify="center">
+            
             <v-col cols="6" sm="4" md="2">
+                <v-menu
+                    ref="submitmenu"
+                    v-model="submitmenu"
+                    :close-on-content-click="false"
+                    :return-value.sync="filters.sumbit"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                >
+                    <template v-slot:activator="{ on, attrs }">
+                    
+                        <v-text-field
+                            v-model="filters.submit"
+                            readonly
+                            label="Submitted Date" type="string"
+                            prepend-icon="mdi-calendar"
+                            v-bind="attrs"
+                            v-on="on"
+                        ></v-text-field>
+                    </template>
+                        <v-date-picker
+                            v-model="filters.submit"
+                            no-title
+                        >
+                        <v-spacer></v-spacer>
+                        <v-btn text color="primary" @click="submitmenu = false">
+                            Cancel
+                        </v-btn>
+                        <v-btn text color="primary" @click="$refs.submitmenu.save(filters.submit)">
+                            OK
+                        </v-btn>
+                    </v-date-picker>
+                </v-menu>
+            </v-col>
+            <!-- <v-col cols="6" sm="4" md="2">
                 <v-menu
                     ref="menu"
                     v-model="menu"
@@ -25,7 +61,7 @@
                         <v-text-field
                             v-model="filters.start"
                             readonly
-                            label="Start time" type="string"
+                            label="Start Date" type="string"
                             prepend-icon="mdi-calendar"
                             v-bind="attrs"
                             v-on="on"
@@ -44,8 +80,9 @@
                         </v-btn>
                     </v-date-picker>
                 </v-menu>
-            </v-col>
+            </v-col> -->
             <v-col cols="6" sm="4" md="2">
+                
                 <v-text-field
                     v-model="filters.username"
                     label="Username" type="string"
@@ -112,7 +149,8 @@
         data() {
             var data = {
                 loading: false,
-                menu: false,
+                //menu: false,
+                submitmenu: false,
                 jobs: [],
                 jobTableHeaders: [
                     { text: 'ID', value: 'id' },
@@ -127,20 +165,26 @@
                     { text: 'Success', value: 'success' },
                     { text: 'Fail', value: 'fail' }                    
                 ],
-                jobnames: ['', 'ipp_convert', 'ipp_preprocess', 'ipp_decon'],
+                jobnames: ['', 'ipp_convert', 'ipp_preprocess', 'ipp_decon', 'ipp_macro'],
                 statuses: ['', 'SUBMITTED', 'CANCELLED', 'FAILED', 'COMPLETE', 'RUNNING'],
                 filters: {
                     status: null,
                     username: null, 
-                    start: null,
-                    jobname: null
+                    //start: null,
+                    jobname: null,
+                    submit: null
                 }
             }
             return data
         },
         mounted: async function() {
             let currentDatetime = new Date()
-            this.filters.start = currentDatetime.getFullYear()  + "-01-01"
+            const year = currentDatetime.getFullYear();
+            const month = String(currentDatetime.getMonth() + 1).padStart(2, '0'); 
+            const day = String(currentDatetime.getDate()).padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
+            this.filters.submit = formattedDate
+           
             await this.getJobs()
         },
         methods: {
@@ -148,7 +192,7 @@
                 if(this.$route.path !== '/adminJobs')
                     return
                 this.loading = true
-                this.jobs = await PreferenceAPI.filter_jobs(this.filters.status, this.filters.username, this.filters.start, this.filters.jobname)
+                this.jobs = await PreferenceAPI.filter_jobs(this.filters.status, this.filters.username, this.filters.jobname, this.filters.submit)
                  
                 for(let i = 0; i< this.jobs.length; i++){
                     let job = this.jobs[i]
@@ -188,7 +232,8 @@
             async clearFilter(){
                 this.filters.status = null
                 this.filters.username = null
-                this.filters.start = null
+                //this.filters.start = null
+                this.filters.submit = null
                 this.filters.jobname = null
                 this.getJobs()
             },
