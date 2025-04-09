@@ -62,16 +62,20 @@
             </v-col>
             
         </v-row>
+        <v-row align="center" justify="center">    
+            <v-col align="center" justify="center">
+                <h5>Resource allocation for the decon job</h5>
+                    
+            </v-col> 
+        
+        </v-row>
 
         <v-row align="center" justify="center">        
-            <v-col align="center" justify="center">
-                <v-col cols="8" sm="4" md="6" >
-                    <h5>Resource allocation for the decon job</h5>
-                    
-                </v-col> 
+           <!--  <v-col align="center" justify="center"> -->
                 
-                <v-col cols="8" sm="4" md="6" style="padding-top:30px">
-                    <v-tooltip right>
+                
+                <v-col cols="8" sm="4" md="6" >
+                    <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
                             <v-text-field 
                                 dense 
@@ -88,10 +92,10 @@
                         </template>
                         <span v-if="nodeLimits.max_node_cpu_mem">Instance counts needing more than {{nodeLimits.max_node_cpu_mem}} GB or {{ nodeLimits.max_node_gpus }} GPUs will not run in parallel</span>
                     </v-tooltip>
-                    <label class="errorText"> {{cpuError}} </label>
+                    <!-- <label class="errorText"> {{cpuError}} </label> -->
                 </v-col>
                 <v-col cols="8" sm="4" md="6">
-                    <v-tooltip right>
+                    <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
                             <v-text-field 
                                 dense 
@@ -111,7 +115,7 @@
                     <label class="errorText"> {{memError}} </label>
                 </v-col>
                 <v-col cols="8" sm="4" md="6">
-                    <v-tooltip right>
+                    <v-tooltip bottom>
                         <template v-slot:activator="{ on, attrs }">
                             <v-text-field 
                                 dense 
@@ -130,7 +134,26 @@
                     </v-tooltip>
                     <label class="errorText"> {{gpuError}} </label>
                 </v-col>
-            </v-col>
+                <v-col cols="8" sm="4" md="6">
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-text-field 
+                                dense 
+                                outlined
+                                v-bind="attrs"
+                                v-on="on"
+                                type=number
+                                :rules="[rules.positiveInteger, rules.wtimedef]"  
+                                label="Walltime (hours)" 
+                                v-model="serie.walltime"
+                            >
+                            </v-text-field>
+                        </template>
+                        <span >The maximum allowed wall time is 168 hours</span>
+                    </v-tooltip>
+                    
+                </v-col>
+           <!--  </v-col> -->
         </v-row>
         
     </v-card>
@@ -170,6 +193,7 @@
                     memdefault: value => value && value >= 30 || 'Must be above or equal to the default value of 30 GB',
                     cpudefault: value => value && value >= 1 || 'Must be above or equal to the default value of 1 nodes',
                     gpudefault: value => value && value >= 1 || 'Must be above or equal to the default value of 1 gpu',
+                    wtimedef: value => value && value >=1 && value <=168 || 'Must be equal or below to the maximum value of 168 hours'
                 },
                 api:"",
                 selectedtag: null,

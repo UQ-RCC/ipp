@@ -72,7 +72,7 @@ export default {
   },
 
   // execute
-  async execute_microvolution(output, instances, mem, devices, executioninfo, jobs, is_test=false, is_estimate, is_cudaDecon) {
+  async execute_microvolution(output, instances, mem, devices, walltime, executioninfo, jobs, is_test=false, is_estimate, is_cudaDecon) {
     let _requestUrl = ""
     if (is_test && !is_estimate && !is_cudaDecon) {
       _requestUrl = `${Vue.prototype.$Config.endpoints.bunya}/api/execute/testexecutebase64`      
@@ -116,6 +116,7 @@ export default {
           arrayMax: arrayMax,
           mem: mem, 
           devices: devices,
+          walltime: walltime,
           apihost: apihost,
           executioninfo: btoa(JSON.stringify(execinfo))  
         }

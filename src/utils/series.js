@@ -146,6 +146,8 @@ var series = {
         // gpus
         if (!series['gpus'])
             series['gpus'] = 1
+        if (!series['walltime'])
+            series['walltime']= 1
         // outputPath
         if(!series['outputPath']){
             let seriesPath = series['path']
