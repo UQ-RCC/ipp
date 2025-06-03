@@ -142,7 +142,11 @@
                 //         this.origionalSerie = {}
                 // } else
                 //     this.origionalSerie = {}
+                this.serie.dz = Math.ceil(this.serie.dz)
+                this.serie.dr = Math.ceil(this.serie.dr)
+                
                 this.origionalSerie = Object.assign({}, this.serie)
+                
                 
                 // update outputpath
                 if(serie.outputPath) {
@@ -162,8 +166,8 @@
             },
             readSpacingChange(){
                 if(this.serie.readSpacing){
-                    this.serie.dr = this.origionalSerie.dr
-                    this.serie.dz = this.origionalSerie.dz
+                    this.serie.dr = Math.ceil(this.origionalSerie.dr)
+                    this.serie.dz = Math.ceil.apply(this.origionalSerie.dz)
                 }
             },
             outputPathChanged(){

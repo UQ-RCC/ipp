@@ -10,6 +10,23 @@
             hide-default-footer
             >
 
+            <template v-slot:header.iterations="{ header}" >
+                {{ header.text }}<v-icon
+                    small
+                    class="mr-2"
+                    @click="autoiterateup(serie.channels)"
+                    >
+                    mdi-arrow-up-bold
+                </v-icon> 
+                <v-icon
+                    small
+                    class="mr-2"
+                    @click="autoiteratedown(serie.channels)"
+                    >
+                    mdi-arrow-down-bold
+                </v-icon> 
+            </template>
+
             <template v-slot:header.pinhole="{ header}" v-if="showCalc==false" >
                 {{ header.text }}<v-icon
                     small
@@ -30,7 +47,10 @@
                     <v-text-field
                     v-model="props.item.iterations"
                     label="Edit"
-                    single-line
+                    regular
+                    type="number"
+                    step="1"
+                    min="10"
                     :rules="[rules.positiveNumber]"
                     @change="valueChange(props.item)" ></v-text-field>
                 </template>
@@ -375,6 +395,23 @@
                 else {
                     console.log("cancelled")
                 }
+            },
+
+            autoiterateup(channels){
+                console.log("channels")
+                console.log(channels)
+                for(let i=0;i<channels.length; i++) {
+                    channels[i].iterations = channels[i].iterations + 1
+                }
+
+            },
+            autoiteratedown(channels){
+                console.log("channels")
+                console.log(channels)
+                for(let i=0;i<channels.length; i++) {
+                    channels[i].iterations = channels[i].iterations - 1
+                }
+
             },
 
             valueChange(item) {

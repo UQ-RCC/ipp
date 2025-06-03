@@ -74,26 +74,7 @@
                 Launch a desktop
             </v-card-title>
             <v-row v-if="desktopManagerOnly===true" align="center" justify="center" class="mx-3">
-                <!-- <v-col cols="2" sm="1" md="2" lg="2">
-                    <v-select
-                        :items="flavours"
-                        v-model="selectedFlavour"
-                        item-text="type"
-                        label="Flavour"
-                        return-object
-                    >
-                    </v-select>
-                </v-col>
-                <v-col cols="2" sm="1" md="2" lg="2">
-                    <v-text-field 
-                        v-model="walltime"
-                        regular
-                        type="number"
-                        :rules="numberRules" 
-                        label="Time (hours)">
-                    </v-text-field>
-                </v-col> -->
-
+               
                 <v-col cols="6" sm="3" md="4" lg="4">
                                 
                     <div>
@@ -120,17 +101,7 @@
                 </v-btn>
                 </v-col>
             </v-row>
-            <!-- <v-row v-if="desktopManagerOnly===true" align="center" justify="center" class="mx-3">
-                <v-col cols="8" sm="4" md="8" lg="8">
-                    <v-data-table
-                        :headers="desktopConfigHeader"
-                        :items="[{nodes: 1, ppn: selectedFlavour.cpu, mem: selectedFlavour.ram, gpu: selectedFlavour.gpu, gpuram: selectedFlavour.gpuram}]"
-                        class="elevation-1"
-                        hide-default-footer
-                        >
-                    </v-data-table>
-                </v-col>                    
-            </v-row> -->
+            
             <v-row v-if="desktopManagerOnly===false" align="center" justify="center" class="mx-5">
                 <v-tooltip bottom >
                     <template v-slot:activator="{ on, attrs }" >
@@ -147,36 +118,7 @@
 
         </div>         
 
-        <!-- <div v-if="desktops.length > 0">
-            <v-card-title align="start" justify="center">
-                Running Desktops
-            </v-card-title>
-            <v-row align="center" justify="center" class="mx-3">
-                <v-col cols="45" sm="11" md="13">
-                    <v-data-table
-                        :headers="runningDesktopsTableHeaders"
-                        :items="[{jobid: currentDesktop.jobid, status: currentDesktop.status, usedTime: currentDesktop.usedTime, jobName: currentDesktop.jobName, username: currentDesktop.uname}]"
-                        class="elevation-1"
-                        hide-default-footer
-                        v-if="currentDesktop"
-                        >
-                            <template v-slot:item.actions="{ item }">
-                                <v-icon
-                                    class="mx-3"
-                                    color="warning" 
-                                    title="Stop desktop"
-                                    @click="deleteDesktop(item)"
-                                >
-                                    mdi-delete
-                                </v-icon>
-                            </template>
-                    </v-data-table>
-                </v-col>
-            </v-row>
-        </div> -->
-
-        
-        <v-card-actions>
+        <!-- <v-card-actions>
             <v-row align="center" justify="center"> 
                 <v-btn class="my-1" color="success" rounded dark large 
                     @click="openDesktop" 
@@ -184,7 +126,7 @@
                     Show Desktop
                 </v-btn>
             </v-row>
-        </v-card-actions>
+        </v-card-actions> -->
     </v-card>
 </template>
 
@@ -240,20 +182,7 @@
         
 
         methods: {
-            ///////////////////////////////////////
-            // list of running desktops
-            /* async getDesktops(){
-                let response = await DesktopAPI.list_desktop()
-                Vue.$log.debug("Open desktops :")
-                Vue.$log.debug(response)
-                this.desktops = response.commandResult
-                if(this.desktops.length > 0) {
-                    this.currentDesktop = this.desktops[0]
-                } else {
-                    this.currentDesktop = null
-                }
-            }, */
-            // list of supported apps
+            
             async getApps(){
                 let response = await DesktopAPI.listapps()
                 Vue.$log.debug("Supported apps :")
@@ -266,7 +195,7 @@
                 });
                 
             },
-            async getFlavours(){
+            /* async getFlavours(){
                 let response = await DesktopAPI.listdesktopflavours()
                 Vue.$log.debug("Supported flavours :")
                 Vue.$log.debug(response)
@@ -275,25 +204,25 @@
                     this.flavours.push(element)
                     this.selectedFlavour = this.flavours[0]
                 });
-            },
+            }, */
             // delete the desktop
-            async deleteDesktop(item){
+           /*  async deleteDesktop(item){
                 Vue.$log.info(item)
                 this.loading = true
                 await DesktopAPI.stop_desktop(item.jobid)
                 this.desktops = []
                 this.currentDesktop = null
                 this.loading = false
-            },
+            }, */
             // go to the desktop
-            openDesktop(){
+            /* openDesktop(){
                 Vue.$log.info("Opening dekstop")
                 Vue.$log.info(this.currentDesktop)
                 let route = this.$router.resolve({path: '/desktop'})
                 let url = route.href + "?desktopid="+ this.currentDesktop.jobid + "&exechost=" + this.currentDesktop.node
                 Vue.$log.info(url )
                 window.open(url, '_blank')
-            },
+            }, */
             // open a program in the selected desktop
             async launchProgram(){
                 /* if(this.currentDesktop === null) {

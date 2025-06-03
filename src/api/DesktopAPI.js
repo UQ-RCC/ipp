@@ -3,12 +3,12 @@ import Vue from 'vue'
 
 export default {
   // list desktop
-  async list_desktop() {
+ /*  async list_desktop() {
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/listdesktop`)
     return data
-  },
+  }, */
   // start desktop
-  async start_desktop(mem, ppn, hours) {
+ /*  async start_desktop(mem, ppn, hours) {
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/startdesktop`, {
         params: {
           mem: mem, 
@@ -17,15 +17,15 @@ export default {
         }
     });
     return data
-  },
+  }, */
   // stop desktop
-  async stop_desktop(jobid) {
+  /* async stop_desktop(jobid) {
     await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/stopdesktop`, {
         params: {
           jobidNumber: jobid
         }
     });
-  },
+  }, */
   // vnc display
   async vncdisplay() {
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/vncdisplay`);

@@ -258,7 +258,18 @@
                         </v-col>
                         
                         <v-spacer></v-spacer>
-                        <v-col class="d-flex" cols="10" sm="8" >
+                        <v-col class="d-flex" cols="5" sm="4" >
+                            <v-select
+                                :items="deconEngines"
+                                v-model="deconTool"
+                                item-text="label"
+                                item-value="value"
+                                label="Deconvolution Engine"
+                                @change="saveDeconTool"
+                                outlined dense
+                            ></v-select>
+                        </v-col>
+                        <v-col class="d-flex" cols="5" sm="4" >
                             <v-select
                                 :items="psfTypes"
                                 v-model="workingItem.setting.psfType"
@@ -554,6 +565,7 @@
                 metadataerror:null,
                 filepath: [],
                 metadataLoaded:false,
+                deconTool:'',
                 
                 // -- selected files table
                 selectedFilesTable: {
@@ -584,6 +596,12 @@
                     {'label': 'Mowiol(low RI)', 'value': 1.49},
                     {'label': '80% Glycerol', 'value': 1.45}
                 ],
+                deconEngines: [
+                    {'label': 'Microvolution', 'value':'Microvolution'},
+                    {'label': 'CudaDecon', 'value':'CudaDecon'}
+                    /* {'label': 'Huygens', 'value':'Huygens'} */
+
+                ],
 
                 rules: {
                     // TODO: some how simplify this
@@ -609,6 +627,7 @@
                 },
                 // item to be displayed at UI
                 workingItem: series.defaultDecon(),
+                
                 // selected items
                 selected: [],
                 // loadedItems
@@ -619,6 +638,8 @@
             let _current_api = await PreferenceAPI.get_config()
             this.api=_current_api.apiname
             this.selectedtag = _current_api.metadatatag
+            this.deconTool = this.api
+           
             
             let initialItems = []
             let _decons = await PreferenceAPI.get_decons(null,this.api)
@@ -657,13 +678,18 @@
             if(this.api == 'CudaDecon') {
                 this.workingItem.setting.psfType = 3
             }
-           
+          
             
         },
         methods: {
             
             async saveMetaToSession() {
                 sessionStorage.setItem("metadataResults", JSON.stringify(this.metedataResults));
+
+            },
+            async saveDeconTool(){
+                this.api=this.deconTool
+                await PreferenceAPI.save_config_data(this.api, this.selectedtag)
 
             },
             

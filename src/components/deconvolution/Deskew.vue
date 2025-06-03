@@ -40,7 +40,7 @@
                     Median Background: {{serie.background}}
                 </v-col>
                 <v-col cols="15" sm="5" md="6">
-                    Standard deviation: {{serie.stddev}}
+                    Standard deviation: {{serie.stddev != null ? serie.stddev.toFixed(2):0}}
                 </v-col>
             </v-col>
         </v-row>

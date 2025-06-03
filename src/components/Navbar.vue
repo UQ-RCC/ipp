@@ -80,12 +80,8 @@
                         <v-list-item-title>Light microscopy</v-list-item-title>
                     </template>
 
-                    <v-list-item to="/converter">
-                        <v-list-item-icon>
-                            <v-icon>mdi-arrow-left-right</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-title class="ml-n5">Converter</v-list-item-title>
-                    </v-list-item>
+                   
+                    
                     <!-- <v-list-item to="/preprocessing" >
                         <v-list-item-icon>
                             <v-icon>mdi-scissors-cutting</v-icon>
@@ -99,20 +95,32 @@
                         </v-list-item-icon>
                         <v-list-item-title class="ml-n5">Deconvolution</v-list-item-title>
                     </v-list-item>
+                    <v-list-item to="/macros">
+                        <v-list-item-icon>
+                            <v-icon >mdi-script</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title class="ml-n5">Macros</v-list-item-title>
+                    </v-list-item>
                     <v-list-group no-action sub-group :value="true">
                         <template v-slot:activator>
                             
                                 <v-list-item-icon>
                                     <v-icon class="mr-10">mdi-scissors-cutting</v-icon>
                                 </v-list-item-icon>
-                                <v-list-item-title >Processing</v-list-item-title>
+                                <v-list-item-title >Additional Tools</v-list-item-title>
                             
                         </template>
-                        <v-list-item to="/macros">
+                        <!-- <v-list-item to="/macros">
                             <v-list-item-icon>
                                 <v-icon class="mr-15">mdi-script</v-icon>
                             </v-list-item-icon>
                             <v-list-item-title class="ml-n5">Macros</v-list-item-title>
+                        </v-list-item> -->
+                        <v-list-item to="/converter">
+                            <v-list-item-icon>
+                                <v-icon class="mr-15">mdi-arrow-left-right</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title class="ml-n5">Converter</v-list-item-title>
                         </v-list-item>
                         <v-list-item to="/processing" >
                             <v-list-item-icon>
@@ -144,7 +152,7 @@
                     </v-list-group> -->
 
 
-                <v-list-group
+                <!-- <v-list-group
                     :value="true"
                     no-action
                     >
@@ -152,14 +160,14 @@
                         <v-list-item-title>Electron microscopy</v-list-item-title>
                     </template>
 
-                    <!-- <v-list-item to="/particlecounting">
+                    <v-list-item to="/particlecounting">
                         <v-list-item-icon>
                             <v-icon>mdi-google-circles-extended</v-icon>
                         </v-list-item-icon>
                         <v-list-item-title class="ml-n5">Particle Counting</v-list-item-title>
-                    </v-list-item> -->
+                    </v-list-item> 
 
-                </v-list-group>
+                </v-list-group> -->
 
                 <v-list-item to="/jobs">
                     <v-list-item-icon>

@@ -1,10 +1,10 @@
-## There are several things need to consider when migrating from one HPC to another.
+## There are several things to consider when migrating from one HPC to another.
 
 ### Backend Updates
 1. Update the `ipp-config` secrets.
-- The new Keyclock migration requires several checks. 
+- The new Keycloak migration requires several checks. 
     - Example: Following updates were made when migrating from https://auth.rcc.uq.edu.au to https://iam.rcc.uq.edu.au
-    - Keycloack realm configs are updated to match those used by Open On Demand
+    - Keycloak realm configs are updated to match those used by Open On Demand
     - New client IDs are assigned:
         * IPP - Updated from jsclient to bunyajsclient
         * IPP userinfo - Updated from userinfo-resource-server to bunya-userinfo-server
