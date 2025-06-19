@@ -15,7 +15,7 @@
                     small
                     class="mr-2"
                     @click="autoiterateup(serie.channels)"
-                    >
+                    style="padding-left:5px">
                     mdi-arrow-up-bold
                 </v-icon> 
                 <v-icon
@@ -401,6 +401,9 @@
                 console.log("channels")
                 console.log(channels)
                 for(let i=0;i<channels.length; i++) {
+                    if (typeof channels[i].iterations === "string") {
+                        channels[i].iterations = parseInt(channels[i].iterations, 10);
+                    }
                     channels[i].iterations = channels[i].iterations + 1
                 }
 
@@ -409,6 +412,9 @@
                 console.log("channels")
                 console.log(channels)
                 for(let i=0;i<channels.length; i++) {
+                    if (typeof channels[i].iterations === "string") {
+                        channels[i].iterations = parseInt(channels[i].iterations, 10);
+                    }
                     channels[i].iterations = channels[i].iterations - 1
                 }
 
