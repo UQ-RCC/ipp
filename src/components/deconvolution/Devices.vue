@@ -302,7 +302,7 @@
                 this.loading=true
                 
                 let response = await DeconvolutionAPI.execute_microvolution(this.serie.outputPath, parseInt(this.serie.instances), 
-                this.serie.mem, this.serie.gpus, this.serie, jobs, false, true, false)
+                this.serie.mem, this.serie.gpus, this.serie.walltime,this.serie, jobs, false, true, false)
 
                 this.overlay =false
                 this.loading=false
