@@ -14,6 +14,7 @@ import Macros from './views/Macros.vue'
 import Particlecounting from './views/Particlecounting.vue'
 import Desktop from './views/Desktop.vue'
 import Virtualdesktopmanager from './views/Virtualdesktopmanager.vue'
+import WebResources from './views/WebResources.vue'
 
 Vue.use(Router)
 
@@ -71,6 +72,12 @@ export default new Router({
             path: '/configuration',
             name: 'Configuration',
             component: Configuration
+
+        },
+        {
+            path: '/resources',
+            name: 'WebResources',
+            component: WebResources
 
         },
         // {

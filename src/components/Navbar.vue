@@ -213,11 +213,14 @@
                 </v-list-group>
 
                 
-                <v-list-item href="https://uq-rcc.github.io/ipp-docs" target="_blank">
+
+                
+               
+                <v-list-item to="/resources" >
                     <v-list-item-icon>
-                        <v-icon>mdi-help-circle-outline</v-icon>
+                        <v-icon>mdi-link</v-icon>
                     </v-list-item-icon>
-                    <v-list-item-title class="ml-n5">Documentation</v-list-item-title>
+                    <v-list-item-title class="ml-n5">Resources</v-list-item-title>
                 </v-list-item>
 
             </v-list>

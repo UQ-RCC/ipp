@@ -328,7 +328,24 @@ export default {
     const { data }= await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/configuration`)
     return data
   },
- 
+
+  // web resources page
+  async get_resources() {
+    const {data} =  await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/resources`)
+    return data
+  },
+  async create_resource(payload) {
+    const {data} =  await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/resources`, payload)
+    return data
+  },
+  async update_resource(record_id, payload){
+    const { data } = await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/resources/${record_id}`, payload)
+    return data
+  },
+  async delete_resource(record_id){
+    await request.delete(`${Vue.prototype.$Config.endpoints.pref}/preferences/resources/${record_id}`)
+  }
+  
   
 }
   
