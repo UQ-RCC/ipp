@@ -20,6 +20,7 @@
                     transition="scale-transition"
                     offset-y
                     min-width="auto"
+                    
                 >
                     <template v-slot:activator="{ on, attrs }">
                     
@@ -46,46 +47,11 @@
                     </v-date-picker>
                 </v-menu>
             </v-col>
-            <!-- <v-col cols="6" sm="4" md="2">
-                <v-menu
-                    ref="menu"
-                    v-model="menu"
-                    :close-on-content-click="false"
-                    :return-value.sync="filters.start"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                >
-                    <template v-slot:activator="{ on, attrs }">
-                    
-                        <v-text-field
-                            v-model="filters.start"
-                            readonly
-                            label="Start Date" type="string"
-                            prepend-icon="mdi-calendar"
-                            v-bind="attrs"
-                            v-on="on"
-                        ></v-text-field>
-                    </template>
-                        <v-date-picker
-                            v-model="filters.start"
-                            no-title
-                        >
-                        <v-spacer></v-spacer>
-                        <v-btn text color="primary" @click="menu = false">
-                            Cancel
-                        </v-btn>
-                        <v-btn text color="primary" @click="$refs.menu.save(filters.start)">
-                            OK
-                        </v-btn>
-                    </v-date-picker>
-                </v-menu>
-            </v-col> -->
             <v-col cols="6" sm="4" md="2">
                 
                 <v-text-field
                     v-model="filters.username"
-                    label="Username" type="string"
+                    label="Username" type="string" 
                 ></v-text-field>
             </v-col>
             <v-col cols="6" sm="4" md="2">
@@ -93,16 +59,16 @@
                     :items="jobnames"
                     v-model="filters.jobname"
                     label="Job name"
-                    dense
+                    
                     >
-                </v-select>
+                </v-select> 
             </v-col>
             <v-col cols="6" sm="4" md="2">
                 <v-select
                     :items="statuses"
                     v-model="filters.status"
                     label="Job status"
-                    dense
+                    
                     >
                 </v-select>
             </v-col>
@@ -202,16 +168,13 @@
                         let utcdate = new Date()
                         utcdate.setTime(ms)
                         const localTimeString = utcdate.toLocaleString()
-
-                        //let utcdate = new Date(job.submitted)
-                        //const offsetMinutes = utcdate.getTimezoneOffset();
-                        //let localtime = new Date(utcdate.getTime() - offsetMinutes * 60 * 1000)
-                        //const localTimeString = localtime.toLocaleString()
-                        this.jobs[i].submitted = localTimeString
-                        console.log("job submitted "+ this.jobs[i].submitted)
+                        this.jobs[i].submitted = localTimeString 
+                        
                     }
                     if(job.start) {
+                        
                         let utcdate = new Date(job.start);
+                       
                         let localTimeString = utcdate.toLocaleString();
                         this.jobs[i].start = localTimeString
                         console.log(localTimeString);
