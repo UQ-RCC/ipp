@@ -1,12 +1,12 @@
 FROM node:16-alpine AS builder
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm install
-
+RUN apk update
+RUN apk add --no-cache yarn git
 
 COPY . .
 
+RUN npm install
 RUN npm run build
 
 
