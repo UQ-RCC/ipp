@@ -1,13 +1,13 @@
-FROM alpine:3.14.10 as builder
+FROM node:16-alpine AS builder
 WORKDIR /app
 
-RUN apk update
-RUN apk add --no-cache yarn git
+COPY package.json package-lock.json ./
+RUN npm ci
+
 
 COPY . .
 
-RUN yarn install
-RUN yarn build
+RUN npm run build
 
 
 FROM nginx:1.21.1-alpine
@@ -16,7 +16,7 @@ COPY --from=builder /app/nginx/ipp.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
-CMD nginx -g "daemon off;"
+CMD ["nginx", "-g" ,"daemon off;"]
 
 
 
