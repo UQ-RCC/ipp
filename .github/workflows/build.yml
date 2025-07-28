@@ -34,7 +34,7 @@ jobs:
             ${{ runner.os }}-
 
       #Install the project's Node.js dependencies
-      - run: npm ci
+      - run: npm install
       - run: mkdir artifacts
       - name: create tarball #create .tar.gz containing project files,excluding artifacts folder and .git 
         run: |
