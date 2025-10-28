@@ -49,7 +49,7 @@
             </div>
         </v-app-bar>
         
-        <v-navigation-drawer v-model="drawer" fixed app :clipped="$vuetify.breakpoint.lgAndUp">
+        <v-navigation-drawer v-model="drawer" fixed app :clipped="$vuetify.breakpoint.lgAndUp" :width="$vuetify.breakpoint.smAndDown ? 200 : 300">
             <v-list>
                 <v-list-item to="/">
                     <v-list-item-icon>
@@ -126,8 +126,13 @@
                             <v-list-item-icon>
                                 <v-icon class="mr-15">mdi-format-rotate-90</v-icon>
                             </v-list-item-icon>
-                            <v-list-item-title class="ml-n5">PSF Dist. & <br/>
-                                Deskew
+                            <v-list-item-title class="ml-n5">PSF </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item to="/imagetransform" >
+                            <v-list-item-icon>
+                                <v-icon class="mr-15">mdi-image-filter</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title class="ml-n5">Image Transform
                             </v-list-item-title>
                         </v-list-item>
 

@@ -15,6 +15,7 @@ import Particlecounting from './views/Particlecounting.vue'
 import Desktop from './views/Desktop.vue'
 import Virtualdesktopmanager from './views/Virtualdesktopmanager.vue'
 import WebResources from './views/WebResources.vue'
+import Imagetransform from './views/Imagetransform.vue'
 
 Vue.use(Router)
 
@@ -46,6 +47,11 @@ export default new Router({
             path: '/processing',
             name: 'Processing',
             component: Processing
+        },
+        {
+            path: '/imagetransform',
+            name: 'Imagetransform',
+            component: Imagetransform
         },
         {
             path: '/deconvolution',

@@ -125,7 +125,7 @@
                 <v-row>
                     <v-col cols="12" sm="6" md="8">
                         
-                              <v-select
+                            <v-select
                             :items="tools"
                             v-model="selectedTool"
                             item-text="label"
@@ -145,15 +145,28 @@
                                 v-if="workingItem.deskew"
                                 >
                             </v-switch> -->
-                            
+                            <v-spacer></v-spacer>
+                        
+                        <!-- <v-row>
+                            <h4>Deskew</h4>
+                        </v-row> -->
+                        <v-row>
+                            <v-switch
+                                v-model="workingItem.keepDeskew"
+                                label="Keep Deskewed Files"
+                                v-if="workingItem.deskew"
+                                >
+                            </v-switch>
+                            <v-spacer></v-spacer>
+                        </v-row>
                     </v-col>
-                    <!-- <v-col cols="5" sm="3" md="3" dense justify="end" align="right" v-if="workingItem.deskew">
+                    <v-col cols="5" sm="3" md="3" dense justify="end" align="right" v-if="workingItem.deskew">
                         <div class="grey--text mx-0">
                         # input files: {{ workingItem.series ? workingItem.series.total : 0 }} <br />
                         # output files: {{ workingItem.series ? workingItem.series.total : 0 }}
                         </div>
-                    </v-col> -->
-                    <!-- <v-col v-if="workingItem.deskew" cols="40" sm="9" md="11"> 
+                    </v-col>
+                    <v-col v-if="workingItem.deskew" cols="40" sm="9" md="11"> 
                         <v-row> 
                         <v-col cols="5" sm="2" md="3">
                             <v-text-field 
@@ -179,8 +192,8 @@
                                 Standard deviation: {{workingItem.stddev}}
                         </v-col>
                         </v-row>
-                    </v-col> -->
-                   <!--  <v-col cols="40" sm="9" md="11">
+                    </v-col>
+                    <v-col cols="40" sm="9" md="11">
                         <v-data-table
                             :headers="deskewMetadataTableHeaders"
                             :items="[{unit: workingItem.unit, pixelWidth: workingItem.pixelWidth, pixelHeight: workingItem.pixelHeight, pixelDepth: workingItem.pixelDepth }]"
@@ -278,63 +291,56 @@
                                     </v-icon>
                                 </template>
                         </v-data-table>
-                    </v-col> -->
+                    </v-col>
                     
-                    <v-col cols="40" sm="9" md="11">
+                    <!-- <v-col cols="40" sm="9" md="11">
                         <v-divider></v-divider>
                     </v-col>
                     
-                    <!-- <v-col cols="25" sm="5" md="6" >
+                    <v-col cols="25" sm="5" md="6">
                         <v-switch
                             v-model="workingItem.centerAndAverage"
                             label="Centre & Average"
                             @change="centerChanged"
                             >
-                        </v-switch> 
-                    </v-col> -->
+                        </v-switch>
+                    </v-col>
                     <v-col cols="10" sm="5" md="5" dense justify="end" align="right" v-if="workingItem.centerAndAverage">
                         <div class="grey--text mx-0">
                         # input files: {{ workingItem.series ? workingItem.series.total : 0  }}<br />
                         # output files: {{ workingItem.series ? workingItem.series.total : 0 }}
                         </div>
-                    </v-col>
-                    
-
-                    <v-col cols="12" sm="6" md="8" v-if="preprocessing.combine">
-  
-                        <v-row>
-                            <v-col cols="8">
-                            <h5>
-                                The order of the files in the table to the left will be the order in the combined stack
-                            </h5>
-                            </v-col>
-                            <v-col cols="4">
-                            <div class="grey--text mx-0">
-                                # input files: {{ loaded.length }}<br />
-                                # output files: {{ loaded.length == 0 ? 0 : 1 }}
-                            </div>
-                            </v-col>
-                        </v-row>
-
-
-                        <v-row>
-                            <v-col cols="12">
-                            <v-text-field
-                                label="Combined file name"
-                                hide-details="auto"
-                                v-model="combinedFileName"
-                                v-if="preprocessing.combine"
-                            ></v-text-field>
-                            </v-col>
-                        </v-row>
-                    </v-col>
+                    </v-col> -->
                 </v-row>    
             </v-col>
             
         </v-row>        
         <v-divider></v-divider>
         <v-col>
-            
+           <!--  <v-row align="center" justify="start">   
+                 <v-switch
+                    v-model="preprocessing.combine"
+                    @change="combineChanged"
+                    label="Combine"
+                    hint="The order in the table will be the order in the combined stack"
+                    :persistent-hint="true"
+                    >
+                </v-switch>
+                <v-col cols="10" sm="4" md="4">
+                    <v-text-field
+                        label="Combined file name"
+                        hide-details="auto"
+                        v-model="combinedFileName"
+                        v-if="preprocessing.combine"
+                    ></v-text-field>
+                </v-col>
+                <v-col cols="10" sm="5" md="5" dense align="right" v-if="preprocessing.combine">
+                    <div class="grey--text mx-0">
+                    # input files: {{ loaded.length }}<br />
+                    # output files: {{ loaded.length == 0 ? 0 : 1 }}
+                    </div>
+                </v-col>
+            </v-row> -->
             <v-row align="center" justify="start">    
                 <v-col cols="18" sm="5" md="7">
                     <v-text-field
@@ -464,11 +470,10 @@
                 numberRules: [
                     value => value && value >= 0 || 'Must be 0 or a positive number'
                 ],
-                emailNeeded: true,
-                 tools: [
-                    {label:'Center & Average', value:'center'},
-                    {label:'Combine', value:'combine'},
+                tools: [
+                    {label:'Deskew', value:'deskew'},
                 ], 
+                emailNeeded: true,
             }
             return data
         },
@@ -481,21 +486,13 @@
             saveDeskewDialog(){
                 this.deskewEditDialog = false
             },
-             gettool(){
+            gettool(){
                 console.log("selected tool")
                 console.log(this.selectedTool)
-                if(this.selectedTool == 'center') {
-                    this.workingItem.centerAndAverage =true
-                    this.centerChanged()
-                    this.preprocessing.combine = false
-                    this.combineChanged()
-                    //await this.saveToDb()
-                    //await PreferenceAPI.save_psetting(this.workingItem)
-                }else if(this.selectedTool == 'combine'){
-                    this.workingItem.centerAndAverage =false
-                    this.centerChanged()
-                    this.preprocessing.combine = true
-                    this.combineChanged()
+                if(this.selectedTool == 'deskew') {
+                    this.workingItem.deskew =true
+                }else {
+                    this.workingItem.deskew =false
                 }
             },
             
@@ -746,7 +743,7 @@
                     if ((!this.selected || this.selected.length ==0) && this.loaded.length > 0){
                         this.selected = [ this.loaded[0] ]
                         this.workingItem = this.selected[0]
-                        this.workingItem.deskew = false
+
                     }
                     // if outputpath
                     if (this.outputBasePath === '' && this.outputFolderName === '') {
@@ -801,17 +798,12 @@
                 Vue.$log.info(anItem)
                 // if selected, load it
                 anItem.item.selected = anItem.value
-                console.log("selected ")
-                console.log(anItem.item.selected)
                 if (anItem.value){
                     this.selected = [ anItem.item ]
                     this.workingItem = this.selected[0]
-                    Vue.$log.info(this.workingItem)
-                    this.workingItem.centerAndAverage =false
-                    this.preprocessing.combine = false
                     this.selectedTool=""
                     this.gettool()
-
+                    Vue.$log.info(this.workingItem)
                 } else {
                     // save this working item
                     await PreferenceAPI.save_psetting(this.workingItem)                
@@ -877,13 +869,10 @@
                     })
                     
                 }
-                this.workingItem.deskew =false
-                this.workingItem.centerAndAverage = false
-                this.$router.go(0)
             },
 
             // center changed
-            async centerChanged(){
+            /* async centerChanged(){
                 console.log("center changed:" + this.workingItem.centerAndAverage)
                 await this.saveToDb()
                 await PreferenceAPI.save_psetting(this.workingItem)
@@ -892,7 +881,7 @@
             async combineChanged(){
                 console.log("combne changed:" + this.preprocessing.combine)
                 await this.saveToDb()
-            },
+            }, */
 
 
             // open folder
@@ -924,9 +913,6 @@
             // load from db 
             let _preprocessingpage = await PreferenceAPI.get_preprocessingpage()
             this.preprocessing = _preprocessingpage.preprocessing
-            console.log(_preprocessingpage)
-            console.log(this.preprocessing)
-            this.preprocessing.combine= false
             Vue.$log.debug("Output path:" + this.preprocessing.outputPath)
             if(!this.preprocessing.outputPath) {
                 Vue.$log.debug("No output path specified")
@@ -961,15 +947,12 @@
                 }
                 this.selected = [this.loaded[0]]
                 this.workingItem = this.selected[0]
-                console.log("mount")
-                console.log(this.workingItem )
-                this.workingItem.centerAndAverage = false
-                this.workingItem.deskew =false
+                this.workingItem.deskew = false
+                
             } else {
                 this.selected = []
                 this.workingItem = {}
             }
-            
         }
     }
 </script>
