@@ -72,7 +72,7 @@ export default {
   },
 
   // execute
-  async execute_microvolution(output, instances, mem, devices, walltime, executioninfo, jobs, is_test=false, is_estimate, is_cudaDecon) {
+  async execute_microvolution(output, instances, mem, devices, walltime, executioninfo, jobs, is_test=false, is_estimate, is_cudaDecon, rims_tracking) {
     let _requestUrl = ""
     if (is_test && !is_estimate && !is_cudaDecon) {
       _requestUrl = `${Vue.prototype.$Config.endpoints.bunya}/api/execute/testexecutebase64`      
@@ -97,6 +97,7 @@ export default {
     execinfo.jobs = jobs
     execinfo.endpoint = `${Vue.prototype.$Config.endpoints.pref}`
     execinfo.is_estimate = is_estimate
+    execinfo.rims_tracking = rims_tracking
     // remove unneeded fields
     // delete execinfo.id //refers to settingid
     // delete execinfo.decon_id

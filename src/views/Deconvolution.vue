@@ -1279,9 +1279,9 @@
                 try{
                     if (_current_api &&  _current_api.apiname=="Microvolution") {
                         await DeconvolutionAPI.execute_microvolution(item.setting.outputPath, _numberOfJobs, 
-                                        item.setting.mem, item.setting.gpus, item.setting.walltime, item, _jobIds, false, false, false)
+                                        item.setting.mem, item.setting.gpus, item.setting.walltime, item, _jobIds, false, false, false, true)
                     } else if(_current_api &&  _current_api.apiname=="CudaDecon") {
-                        await DeconvolutionAPI.execute_microvolution(item.setting.outputPath,_numberOfJobs, item.setting.mem, item.setting.gpus, item.setting.walltime, item, _jobIds, false, false, true)
+                        await DeconvolutionAPI.execute_microvolution(item.setting.outputPath,_numberOfJobs, item.setting.mem, item.setting.gpus, item.setting.walltime, item, _jobIds, false, false, true, false)
                     }
                     Vue.notify({
                         group: 'datanotif',
