@@ -398,16 +398,26 @@ export default {
             if (item.path.startsWith("/QRISdata") ) {
                 let blocks = this.parse_size(item.blocks)
                 let size = this.parse_size(item.size)
-                if (blocks > 0 && blocks < this.parse_size("16K")) {
+                const MIN_BLOCK = 512
+                /* if (blocks > 0 && blocks < this.parse_size("16K")) {
                     blocks = this.parse_size("16K")
-                }
-                if(blocks >= size ) { //file on the disk
+                } */
+                /* if(blocks >= size ) { //file on the disk
                     color = "#000"
                 }else if (blocks > 0 && blocks < size) { // being recalled
                     color = "#fb8c00"
                 }else if (blocks == 0){ //not in cache
                     color = "#db0707e8"
+                } */
+
+                if(size > MIN_BLOCK && blocks <= MIN_BLOCK) { //not in cache
+                    color = "#db0707e8"
+                }else if (blocks < size ) { //being recalled
+                    color = "#fb8c00"
+                }else { //blocks >=size - file on the disk
+                     color = "#000"
                 }
+
             }else {
                 color = "grey"
             }
