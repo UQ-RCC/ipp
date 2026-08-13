@@ -135,6 +135,13 @@
                             <v-list-item-title class="ml-n5">Image Transform
                             </v-list-item-title>
                         </v-list-item>
+                        <v-list-item to="/terastitcher" >
+                            <v-list-item-icon>
+                                <v-icon class="mr-15">mdi-select-inverse</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title class="ml-n5">Terastitcher
+                            </v-list-item-title>
+                        </v-list-item>
 
                     </v-list-group>
                 </v-list-group>

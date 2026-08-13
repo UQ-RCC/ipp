@@ -5,10 +5,12 @@ export default {
     // list path
     async list(path) {
       const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/listfolderbase64`, {
+        
         params: {
             folderpath: btoa(path)
         }
       })
+      
       return data
     },
       

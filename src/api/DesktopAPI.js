@@ -42,10 +42,10 @@ export default {
     return data
   },
   //list flavours
-  async listdesktopflavours() {
+  /* async listdesktopflavours() {
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/listflavours`);
     return data
-  },
+  }, */
   // launch app
   async launchapp(appid, filespath, copytoscratch) {
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/launchapp`, {

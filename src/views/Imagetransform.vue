@@ -692,9 +692,9 @@
             async selectFilesOrFolders(isfolder){
                 let options = null
                 if (isfolder)
-                    options = await this.$refs.filedialog.open('selectfilesinfolder', 'Preprocessing', '/')
+                    options = await this.$refs.filedialog.open('selectfilesinfolder', 'Preprocessing', '/',true)
                 else 
-                    options = await this.$refs.filedialog.open('selectfiles', 'Preprocessing', '/')
+                    options = await this.$refs.filedialog.open('selectfiles', 'Preprocessing', '/',false)
                 if (!options.cancelled) {
                     let paths = []
                     if(isfolder){

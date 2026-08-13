@@ -4,7 +4,11 @@ import Vue from 'vue'
 const service = axios.create({
     // baseURL: '', // url = base url + request url
     // withCredentials: true, // send cookies when cross-domain requests
-    timeout: 600000 // request timeout
+    timeout: 1200000, // request timeout
+    validateStatus: function(status) {
+      // Treat 304 (Not Modified) as success, not an error
+      return status >= 200 && status < 300 || status === 304
+    }
   })
   
   // request interceptor
@@ -60,7 +64,7 @@ service.interceptors.response.use(
       return response
     },
     error => {
-      Vue.$log.error("response error here >>>>>>>>>>>>>>>>>>>>>>>>>>");
+      Vue.$log.error("response error here- error 2 >>>>>>>>>>>>>>>>>>>>>>>>>>");
       Vue.$log.error(error)
       if (error.response) {
         Vue.$log.error("Status Code:", error.response.status);

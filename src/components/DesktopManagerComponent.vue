@@ -267,7 +267,7 @@
                 
                 this.loading = true
                 await DesktopAPI.launchfile()
-                window.open('https://bunya-ondemand.rcc.uq.edu.au/pun/sys/dashboard/batch_connect/sys/ipp_desktop/session_contexts/new', '_blank');
+                window.open('https://bunya-ondemand.rcc.uq.edu.au/pun/sys/dashboard/batch_connect/sys/ipp_desktop/session_contexts/new', '_blank', 'noopener noreferrer');
                 //await DesktopAPI.start_desktop(this.selectedFlavour.ram, this.selectedFlavour.cpu, this.walltime)
                 // sleep for 5 seconds
                 //await new Promise(r => setTimeout(r, 5000))
@@ -281,7 +281,7 @@
                     await DesktopAPI.launchfile()
                 }
                 this.loading = true
-                window.open('https://bunya-ondemand.rcc.uq.edu.au/pun/sys/dashboard/batch_connect/sys/'+this.selectedDesktop.value+'/session_contexts/new', '_blank');
+                window.open('https://bunya-ondemand.rcc.uq.edu.au/pun/sys/dashboard/batch_connect/sys/'+this.selectedDesktop.value+'/session_contexts/new', '_blank', 'noopener noreferrer');
                 //await DesktopAPI.start_desktop(this.selectedFlavour.ram, this.selectedFlavour.cpu, this.walltime)
                 // sleep for 5 seconds
                 //await new Promise(r => setTimeout(r, 5000))

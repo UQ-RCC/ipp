@@ -36,7 +36,7 @@ export default {
     return data
   },
 
-  async validate_devices(jobs,mem,gpus){
+ /*  async validate_devices(jobs,mem,gpus){
     const { data } = await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/validateDevices`, {
       params: {
         jobs: jobs,
@@ -46,7 +46,7 @@ export default {
   })
   return data
 
-  },  
+  }, */  
 
  async cancel_estimate() {
     const { data } =  await request.get(`${Vue.prototype.$Config.endpoints.bunya}/api/execute/estimateCancel`);

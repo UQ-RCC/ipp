@@ -667,40 +667,7 @@ export default {
                 }
 
             }
-            /* if (this.curr === 3) {
-                let msg 
-                let jobs = this.workingItem.instances
-                let mem = this.workingItem.mem
-                let gpus = this.workingItem.gpus
-                let settings=[]
-                this.overlay =true
-                let response = await DeconvolutionAPI.validate_devices(jobs,mem,gpus,settings)
-                this.overlay = false
-                let output = response.commandResult
-                console.log(output)
-                if (output.length > 0) {
-                    let json_output =  JSON.parse(output[0].out)
-                    if(!json_output.results.success){
-                        let limit_test =  json_output.results.limits_test.success
-                        let slurm_test = json_output.results.slurm_test.success
-                        if (!limit_test && !slurm_test || !limit_test && slurm_test){
-                            msg = json_output.results.limits_test.msg
-                        }
-                        else if (limit_test && !slurm_test) {
-                            msg = json_output.results.slurm_test.msg
-                        }
-                        Vue.notify({
-                            group: 'errornotif',
-                            type: 'error',
-                            title: 'Device Selection Error',
-                            text: msg.charAt(0).toUpperCase() + msg.slice(1)
-                        })
-                        return 
-                    }
-                }
-                
-
-            }  */
+            
             if(this.visitedSteps.indexOf(this.curr) < 0)
                 this.visitedSteps.push(this.curr)
             this.curr = this.curr + 1
@@ -1063,9 +1030,9 @@ export default {
             let options = null
             
             if (isfolder)
-                options = await this.$refs.filedialog.open('selectfilesinfolder', 'Processing', '/')
+                options = await this.$refs.filedialog.open('selectfilesinfolder', 'Processing', '/',true)
             else
-                options = await this.$refs.filedialog.open('selectfiles', 'Processing', '/')
+                options = await this.$refs.filedialog.open('selectfiles', 'Processing', '/',false)
             if (!options.cancelled) {
                 let paths = []
                 if (isfolder) {

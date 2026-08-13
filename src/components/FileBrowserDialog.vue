@@ -83,7 +83,7 @@
         mounted: function() {
         },
         methods: {
-            open(mode, parentComponent, initPath) {
+            open(mode, parentComponent, initPath,filter) {
                 this.dialog = true
                 this.options.mode = mode
                 this.options.parentComponent = parentComponent
@@ -91,6 +91,7 @@
                 this.options.selectedItems = []
                 this.options.filter = ''
                 this.options.maxsize = 0
+                this.options.filterEnabled = filter
                 if(this.$refs.filebrowser1)
                     this.$refs.filebrowser1.clearSelectedItem()
                 return new Promise((resolve, reject) => {
@@ -99,7 +100,7 @@
                 });
             },
             agree() {
-                if(this.options.mode === 'selectfilesinfolder' && this.options.filter == ''){
+                if(this.options.mode === 'selectfilesinfolder' && this.options.filterEnabled && this.options.filter == ''){
                     Vue.notify({
                         group: 'datanotif',
                         type: 'warning',

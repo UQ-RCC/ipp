@@ -257,6 +257,12 @@ export default {
         async queryPath(path){
             try{
                 let response = await FilesAPI.list(path);
+                console.log("   queryPath response:")
+                console.log(response)
+                if (!response || !response.commandResult || !Array.isArray(response.commandResult)) {
+                    console.warn("Invalid response structure:", response);
+                    return [];
+                }
                 return response.commandResult.map(responseItem => {
                     responseItem.type = "file";
                     responseItem.basename = responseItem.name;

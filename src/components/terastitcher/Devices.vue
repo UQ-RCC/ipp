@@ -2,76 +2,16 @@
     <v-card :disabled="readonly">
         
         
-        <v-overlay v-model="overlay">
-            <v-row align="center" justify="center"><label >Estimating memory, Please wait..</label> </v-row>
-            <v-row align="center" justify="center">
-                <v-progress-circular
-                color="primary"
-                indeterminate
-                size="55"
-                ></v-progress-circular> 
-                
-            </v-row>
-            <v-row align="center" justify="center"><v-tooltip bottom >
-                    <template v-slot:activator="{ on, attrs }" >
-                        <v-btn 
-                            rounded dark default  
-                            color="primary" 
-                            v-bind="attrs" 
-                            v-on="on"
-                            @click.stop="stopEstimate()">
-                            Stop estimate
-                        </v-btn>
-                    </template>
-                    <span>Click to stop the estimate job</span>
-                </v-tooltip></v-row>
-            
-        </v-overlay>
-        <v-row align="center" justify="center">
-            <!-- <v-switch
-                v-model="estimateDevice"
-                label="Estimate memory & number of GPUs for processing"
-                >
-            </v-switch> --> 
-            <!-- <v-col cols="15" sm="3" md="4">
-                <h5>{{ queueTime }} </h5>
-            </v-col> -->
-            <v-col align="center" justify="center">
-
-                <v-col v-if="api=='Microvolution' && env!=='prod'"   >
-                    
-    
-                        <v-tooltip bottom >
-                            <template v-slot:activator="{ on, attrs }" >
-                                <v-btn 
-                                    rounded dark default  
-                                    color="primary" 
-                                    v-bind="attrs" 
-                                    v-on="on"
-                                    @click.stop="estimateMemory()">
-                                    Estimate 
-                                </v-btn>
-                                
-                            </template>
-                            <span>Estimate memory and number of GPUs for processing. {{ queueTime }} </span>
-                        </v-tooltip>
-                    
-                    <label class="messageText"> {{message}} </label>
-                   
-                </v-col>
-            </v-col>
-            
-        </v-row>
-        <v-row align="center" justify="center">    
+        <!-- <v-row align="center" justify="center">    
             <v-col align="center" justify="center">
                 <h5>Resource allocation for the decon job</h5>
                     
             </v-col> 
         
-        </v-row>
+        </v-row> -->
 
-        <v-row align="center" justify="center">        
-           <!--  <v-col align="center" justify="center"> -->
+        <v-row align="center" justify="center" style="margin-top: 10px;">        
+          <!--  <v-col align="center" justify="center">  -->
                 
                 
                 <v-col cols="8" sm="4" md="6" >
@@ -153,7 +93,7 @@
                     </v-tooltip>
                     
                 </v-col>
-           <!--  </v-col> -->
+           <!-- </v-col> -->
         </v-row>
         
     </v-card>
@@ -162,10 +102,10 @@
 
 <script>
     import Vue from 'vue';
-    import series from '@/utils/series.js'
+    //import series from '@/utils/series.js'
     // api
     import DeconvolutionAPI from "@/api/DeconvolutionAPI.js"
-    import PreferenceAPI from "@/api/PreferenceAPI"
+    //import PreferenceAPI from "@/api/PreferenceAPI"
 
     export default {
         name: 'DeconvolutionDevices',
@@ -174,7 +114,7 @@
         },
         data() {
             return {
-                serie: series.formatSeries(null),
+                serie: {},
                 estimateDevice: false,
                 overlay: false,
                 loading: false,
@@ -195,8 +135,6 @@
                     gpudefault: value => value && value >= 1 || 'Must be above or equal to the default value of 1 gpu',
                     wtimedef: value => value && value >=1 && value <=168 || 'Must be equal or below to the maximum value of 168 hours'
                 },
-                api:"",
-                selectedtag: null,
                 queueTime:"",
                 env:null,
                 /* positiveInteger: [
@@ -215,13 +153,15 @@
             },
             async load_serie(serie_devices){
                 this.serie = serie_devices
+                this.serie.instances = this.serie.instances || 1
+                this.serie.mem = this.serie.mem || 30
                 this.inimem = this.serie.mem
+                this.serie.gpus= this.serie.gpus || 1
+                this.serie.walltime = this.serie.walltime || 1
+
                 this.message = null
-                let _current_api = await PreferenceAPI.get_config()
-                this.api=_current_api.apiname
-                this.selectedtag = _current_api.metadatatag
                 this.env = Vue.prototype.$Config.env
-                this.getQueueTime()
+               // this.getQueueTime()
                 this.getUserLimits()
                 
 
@@ -306,36 +246,28 @@
 
                 this.overlay =false
                 this.loading=false
-
-                console.log("estimateMemory response:", response)
                 
                 let output = response.commandResult
-                console.log("estimateMemory output:", output)
-                let found = null
+                
                 
                 if (output.length > 0) {
                     for (let i=0; i < output.length ; i++) {
                         if(output[i].out.startsWith("{\"estimates\":")){
                             let json_output =  JSON.parse(output[i].out)
                             this.estimates = json_output
-                            console.log("estimates:", this.estimates)
                             
                             let cpuMem = this.estimates.estimates.cpuEstimateGB == 0 ? 1: this.estimates.estimates.cpuEstimateGB
                             let gpuMem = this.estimates.estimates.gpuEstimateGB == 0 ? 1 : this.estimates.estimates.gpuEstimateGB
                             this.cpu =  cpuMem + 5
                             this.gpu = gpuMem 
-                            this.message = 'Estimate complete'
-                            found = true
-                            break
+                            this.message = ' Estimate complete'
                             
                         }
-                        
-                    }
-                    if (!found) {
-                        this.message = 'Estimate failed.'
+                        else{
+                            this.message = 'Error occured'
+                        }
                     }
                 }
-               
                 this.is_mem_valid()
                 this.is_gpu_valid()
                
@@ -345,7 +277,7 @@
                 this.overlay =false
                 this.loading=false
             },
-            async getQueueTime() {
+            /* async getQueueTime() {
                 let response = await DeconvolutionAPI.queue_time(1, 30, 1, 'gpu_cuda' , 'debug' )
                 const responseString = response.commandResult[0].output
                 const regex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/
@@ -363,7 +295,7 @@
                
                 
 
-            },
+            }, */
             async getUserLimits(){
                 let userLimitResponse =  await DeconvolutionAPI.user_limits()
                 let output = userLimitResponse.commandResult

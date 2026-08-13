@@ -12,10 +12,11 @@ import Configuration from './views/Configuration.vue'
 import Macros from './views/Macros.vue'
 // import Release from './views/Release.vue'
 import Particlecounting from './views/Particlecounting.vue'
-import Desktop from './views/Desktop.vue'
+//import Desktop from './views/Desktop.vue'
 import Virtualdesktopmanager from './views/Virtualdesktopmanager.vue'
 import WebResources from './views/WebResources.vue'
 import Imagetransform from './views/Imagetransform.vue'
+import Terastitcher from './views/Terastitcher.vue'
 
 Vue.use(Router)
 
@@ -52,6 +53,11 @@ export default new Router({
             path: '/imagetransform',
             name: 'Imagetransform',
             component: Imagetransform
+        },
+        {
+            path: '/terastitcher',
+            name: 'Terastitcher',
+            component: Terastitcher
         },
         {
             path: '/deconvolution',
@@ -96,11 +102,11 @@ export default new Router({
             name: 'ParticleCounting',
             component: Particlecounting
         },
-        {
+       /*  {
             path: '/desktop',
             name: 'Desktop',
             component: Desktop
-        },
+        }, */
         {
             path: '/macros',
             name: 'Macros',

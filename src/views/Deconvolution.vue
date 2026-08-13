@@ -951,11 +951,12 @@
                 this.csvlocation = null
                 let options = null
                 
+                
                 if (isfolder)
-                    options = await this.$refs.filedialog.open('selectfilesinfolder', 'Deconvolution', '/')
+                    options = await this.$refs.filedialog.open('selectfilesinfolder', 'Deconvolution', '/', true)
 
                 else 
-                    options = await this.$refs.filedialog.open('selectfiles', 'Deconvolution', '/')
+                    options = await this.$refs.filedialog.open('selectfiles', 'Deconvolution', '/', false)
                 if (!options.cancelled) {
                     let paths = []
                     if(isfolder){
@@ -1183,8 +1184,11 @@
                     const response= await ConfigurationAPI.execute_metedata_script(fileslistbase64, this.selectedtag, false, false, saveFolder)
                     let output = response.commandResult
                     const mdata = output.find(entry => entry.out.startsWith('{"params"'))
+                    console.log("mdata")
+                    console.log(mdata)
         
                     let json_output =  JSON.parse(mdata.out)
+                    console.log(json_output)
                     
                     return json_output.results
                    

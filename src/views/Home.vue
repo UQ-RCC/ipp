@@ -1,11 +1,11 @@
 <template>
     <div class="mx-3">
     <h3>Welcome to the Image Processing Portal,</h3><br/>
-    Commissioned by <a href="https://imb.uq.edu.au/microscopy">IMB Microscopy</a> and jointly developed with <a href="https://rcc.uq.edu.au/">UQ RCC</a>.
+    Commissioned by <a href="https://imb.uq.edu.au/microscopy" target="_blank" rel="noopener noreferrer">IMB Microscopy</a> and jointly developed with <a href="https://rcc.uq.edu.au/" target="_blank" rel="noopener noreferrer">UQ RCC</a>.
     <p/> 
     
     The Portal is designed around the needs of optical microscopists to manage, convert, 
-    pre-process and deconvolve datasets on the <a href="https://rcc.uq.edu.au/bunya">Bunya High Performance Cluster</a>. 
+    pre-process and deconvolve datasets on the <a href="https://rcc.uq.edu.au/bunya" target="_blank" rel="noopener noreferrer">Bunya High Performance Cluster</a>. 
     <p/>
 
    <!--  <h3>Notices</h3>
@@ -16,7 +16,7 @@
 
 
     <h3>Feedback</h3>
-    The IPP is currently undergoing active development, any general feedback, comments, queries are welcome <a href="https://github.com/UQ-RCC/ipp/discussions">here</a> (You will need a Github account to submit new items for discussion).<br />
+    The IPP is currently undergoing active development, any general feedback, comments, queries are welcome <a href="https://github.com/UQ-RCC/ipp/discussions" target="_blank" rel="noopener noreferrer">here</a> (You will need a Github account to submit new items for discussion).<br />
     Any issues or bugs you encounter can be submitted directly from the page you experienced them on by clicking the feedback button <v-icon big>mdi-comment-processing-outline</v-icon>.<br />
 
     <br />

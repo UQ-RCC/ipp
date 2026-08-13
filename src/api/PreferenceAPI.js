@@ -316,6 +316,42 @@ export default {
     return data
   },
 
+  //terastitcher
+
+  /* async get_tera(){
+    const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/tera`)
+    return data
+  }, */
+
+  async get_tera(path){
+    if (path) {
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/tera`, {
+            params: { path: btoa(path) }
+        })
+        return data
+    } else {
+        const { data } = await request.get(`${Vue.prototype.$Config.endpoints.pref}/preferences/tera`)
+        return data
+    }
+},
+
+  async create_new_tera(payload){
+    const { data } = await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/tera`, payload)
+    return data
+  },
+
+  async update_tera(tera_id, payload){
+    const { data } = await request.put(`${Vue.prototype.$Config.endpoints.pref}/preferences/tera/${tera_id}`, payload)
+    return data
+  },
+
+  async create_tera_job(tera_id, sendemail){
+    const { data } = await request.post(`${Vue.prototype.$Config.endpoints.pref}/preferences/tera/jobs?tera_id=${tera_id}&sendemail=${sendemail}`)
+    return data
+  },
+
+
+
   //configuration
 
   async save_config_data(api, metadata) {

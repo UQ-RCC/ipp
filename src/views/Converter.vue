@@ -309,10 +309,15 @@
             //
             async selectFilesOrFolders(isfolder){
                 let options = null
-                if (isfolder)
-                    options = await this.$refs.filedialog.open('selectfilesinfolder', 'Deconvolution', '/')
-                else 
-                    options = await this.$refs.filedialog.open('selectfiles', 'Deconvolution', '/')
+                let filter = null
+                if (isfolder){
+                    filter = true
+                    options = await this.$refs.filedialog.open('selectfilesinfolder', 'Deconvolution', '/', filter)
+                }
+                else {
+                    filter = false
+                    options = await this.$refs.filedialog.open('selectfiles', 'Deconvolution', '/', filter)
+                }
                 if (!options.cancelled) {
                     let paths = []
                     if(isfolder){
