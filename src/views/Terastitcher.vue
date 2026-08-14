@@ -408,11 +408,11 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
             let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
             let time = today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
             this.dateTime = date+'_'+time;
+            this.loading =true
             try{
-                this.loading =true
+                
                 let teraRecord = await PreferenceAPI.get_tera(null)
-                console.log("teraRecord")
-                console.log(teraRecord)
+                console.log("teraRecord", teraRecord)
                 if(teraRecord) {
                     const record = {
 
@@ -424,17 +424,23 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                     this.selected = [record]
                     this.workingItem = { ...record }
                     this.workingItem.setting = teraRecord
+                }else {
+                    // fresh start - no existing record, nothing to load
+                    this.loaded = []
+                    this.selected = []
+                    this.workingItem = { setting: {} }
                 }
                 // output path
-                if (!teraRecord.outputPath)
-                    this.workingItem.outputPath = ""
+                // output path
+                const existingOutputPath = teraRecord && teraRecord.outputPath ? teraRecord.outputPath : ""
+                this.workingItem.outputPath = existingOutputPath
+                
                 var _pathParts = teraRecord.outputPath.split("/")
                 this.outputBasePath = _pathParts.slice(0, -1).join("/")
                 this.outputFolderName = "Stitch_Output_"+ this.dateTime
-                console.log("this.outputFolderName- tera")
-                console.log(this.outputFolderName)
+                console.log("this.outputFolderName- tera", this.outputFolderName)
                 this.outputPathChanged()
-                this.loading =false
+                
 
                 console.log(this.currentStep)
 
@@ -455,6 +461,14 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 console.log(this.workingItem)
             }catch(e) {
                 Vue.$log.warn("No existing tera records found:", e)
+                // still treat as fresh start on unexpected error
+                this.loaded = []
+                this.selected = []
+                this.workingItem = { setting: {}, outputPath: "" }
+                this.outputBasePath = ""
+                this.outputFolderName = "Stitch_Output_" + this.dateTime
+            } finally {
+                this.loading = false
             }
 
         },
