@@ -467,6 +467,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 this.workingItem = { setting: {}, outputPath: "" }
                 this.outputBasePath = ""
                 this.outputFolderName = "Stitch_Output_" + this.dateTime
+                //this.workingItem.outputPath = this.outputBasePath + "/" + this.outputFolderName
             } finally {
                 this.loading = false
             }
@@ -765,33 +766,36 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                     //save new record to db
 
                     for (const newPath of paths) {
+                        const match = this.loaded.find(f => f.path === newPath.path)
+                        let existingRecord = null
                         try{
-                            let existingRecord = await PreferenceAPI.get_tera(newPath.path)
-                            /* if (Array.isArray(existingRecord)) {
-                                existingRecord = existingRecord.length > 0 ? existingRecord[0] : null
-                            } */
+                             existingRecord = await PreferenceAPI.get_tera(newPath.path)
+                        } catch(e) {
+                            Vue.$log.error("No existing tera records found for path:", newPath.path, e)
+                            existingRecord = null
+                        }
+                            
+                        if (existingRecord && existingRecord.id) {
+                            // same user already has a record for this exact path -- reuse it
+                            Vue.$log.debug("Reusing existing tera record for path:", newPath.path, existingRecord)
+                            if (match) {
+                                match.setting = existingRecord
+                                match.setting.id = existingRecord.id
+                                this.loaded.id = existingRecord.id
+                            }
+                        }else {
 
-                            const match = this.loaded.find(f => f.path === newPath.path)
-                            if (existingRecord && existingRecord.id) {
-                                // same user already has a record for this exact path -- reuse it
-                                Vue.$log.debug("Reusing existing tera record for path:", newPath.path, existingRecord)
-                                if (match) {
-                                    match.setting = existingRecord
-                                    match.setting.id = existingRecord.id
-                                    this.loaded.id = existingRecord.id
-                                }
-                            }else {
-
-                                const payload = {
-                                    isfolder: isfolder,
-                                    xmlPath: isfolder ? null : newPath.path,
-                                    volumePath: isfolder ? newPath.path : null,
-                                    outputBasePath: this.outputBasePath,
-                                    outputFolderName: this.outputFolderName,
-                                    outputPath: this.outputBasePath + "/" + this.outputFolderName,
-                                    step: 1,
-                                    visitedSteps: []
-                                }
+                            const payload = {
+                                isfolder: isfolder,
+                                xmlPath: isfolder ? null : newPath.path,
+                                volumePath: isfolder ? newPath.path : null,
+                                outputBasePath: this.outputBasePath,
+                                outputFolderName: this.outputFolderName,
+                                outputPath: this.outputBasePath + "/" + this.outputFolderName,
+                                step: 1,
+                                visitedSteps: []
+                            }
+                            try{
                                 const created = await PreferenceAPI.create_new_tera(payload)
                                 if (match) {
                                     //match.id = created.id
@@ -799,10 +803,15 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                                     match.setting.id = created.id
                                     this.loaded.id = created.id
                                 }
+
+                            }catch(e) {
+                                Vue.$log.error("Failed to create new tera record for path:", newPath.path, e)
+                                if (match) {
+                                    match.setting = payload
+                                }
                             }
-                        } catch(e) {
-                            Vue.$log.error("Failed to create tera record:", e)
                         }
+                        
                     }
                     
                     if ((!this.selected || this.selected.length == 0) && this.loaded.length > 0) {
@@ -810,7 +819,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                     }
 
                     this.workingItem = {...this.selected[0]}
-                    this.workingItem.setting = this.selected[0].setting
+                    this.workingItem.setting = this.selected[0].setting || {}
                     this.workingItem.outputPath = this.outputBasePath + "/"+ this.outputFolderName
                     this.workingItem.setting.outputPath = this.workingItem.outputPath
                     console.log("inside folder load")
