@@ -97,7 +97,7 @@
             v-else-if="isFile"
             class="grow d-flex justify-center align-center"
         >File: {{ path }}</v-card-text>
-        <v-card-text v-else-if="total_folders || total_files" class="grow">
+        <v-card-text v-else-if="total_folders || total_files" class="grow" style="min-width: 0;">
             <v-card class="list-card" flat>
                 <v-list subheader v-if="dirs.length > 0">
                     <v-subheader>
@@ -803,20 +803,56 @@ export default {
 
 .v-card {
     height: 650px;
-    overflow-x: auto;
-    overflow-y: auto;
+    overflow: hidden;
+    min-width: 0;
+    width: 100%;
+    /* overflow-x: auto;
+    overflow-y: auto; */
+    
 }
 
 .list-card {
     height: 470px;
     width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+
+    ::v-deep .v-list {
+        width: max-content;
+        min-width: 100%;
+    }
+
+    ::v-deep .v-list-item {
+        flex-wrap: nowrap !important;
+        width: max-content;
+        min-width: 100%;
+    }
+
+    ::v-deep .v-list-item__content {
+        flex-wrap: nowrap !important;
+        min-width: max-content;
+        width: max-content;
+    }
+
+    ::v-deep .v-list-item__title,
+    ::v-deep .v-list-item__subtitle {
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        flex: none !important;
+    }
+
+     ::v-deep .v-list-item__avatar,
+    ::v-deep .v-list-item__action {
+        flex-shrink: 0 !important;
+    }
     
-    .scroll-x {
+    /* .scroll-x {
         overflow-x: auto;
     }
     .scroll-y {
         overflow-y: auto;
-    }
+    } */
 }
 
 

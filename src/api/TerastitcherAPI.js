@@ -4,7 +4,7 @@ import Vue from 'vue'
 export default {
 
     // execute
-    async execute_step(importData, outputPath ) {
+   /*  async execute_step(importData, outputPath ) {
         let _requestUrl =`${Vue.prototype.$Config.endpoints.bunya}/api/execute/teraImport`
         
             
@@ -18,9 +18,16 @@ export default {
             },
         })
         return data 
-    },
+    }, */
     async submit_step(payload, outputPath ) {
-      let _requestUrl =`${Vue.prototype.$Config.endpoints.bunya}/api/execute/teraExecute`
+      let _requestUrl =""
+      if(payload.teraStep === "merge"){
+         _requestUrl =`${Vue.prototype.$Config.endpoints.bunya}/api/execute/teraMerge`
+         
+      }
+      else {
+         _requestUrl =`${Vue.prototype.$Config.endpoints.bunya}/api/execute/teraExecute`
+      }
         
             
       console.log(payload)
@@ -31,13 +38,31 @@ export default {
       let apihost = /^(?:\w+:\/\/)?([^/]+)(.*)$/.exec(endpoint)[1]
       payload.API_HOST = apihost
 
-      const { data } = await request.get(_requestUrl, {
+      let response = null
+
+      if(payload.teraStep === "merge"){
+        response = await request.get(_requestUrl, {
+            params: {
+              payload : btoa(JSON.stringify(payload)),
+              output : outputPath,
+              mem: payload.mem, 
+              devices: payload.instances,
+              walltime: payload.walltime,
+              gpus: payload.gpus,
+                
+            },
+        })
+      } else {
+          response = await request.get(_requestUrl, {
             params: {
               payload : btoa(JSON.stringify(payload)),
               output : outputPath
                 
             },
-      })
+        })
+      }
+
+      const { data } = response
         return data 
     },
       

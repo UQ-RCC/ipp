@@ -797,6 +797,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                             }
                             try{
                                 const created = await PreferenceAPI.create_new_tera(payload)
+                                console.log("Created new tera record for path:", newPath.path, created, created.id)
                                 if (match) {
                                     //match.id = created.id
                                     match.setting = payload
@@ -1175,7 +1176,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 
                 this.workingItem.visitedSteps = this.visitedSteps
                 // save 
-                if(previousSt !== 8){
+                if(previousSt !== 6){
                     let _component = this.getStepComponent(previousSt)
                     if (_component) {
                         console.log(_component)

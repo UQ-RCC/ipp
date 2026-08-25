@@ -21,9 +21,9 @@
             </v-col>
         </v-row>
        
-        <v-row class="mb-2" style="margin-top: 5px;">
-            <v-col cols="6" sm="2" md="4" class="d-flex align-center">
-                <strong>Outputs</strong>
+        <!-- <v-row class="mb-2" style="margin-top: 5px;">
+            <v-col cols="12" class="d-flex align-center justify-center py-4">
+                <strong class="text-h6">Outputs</strong>
             </v-col>
             <v-col>
 
@@ -58,7 +58,42 @@
                 </v-table>
             </v-col>
 
-        </v-row>
+        </v-row> -->
+       
+<v-row class="mb-2" style="margin-top: 5px;" align="center">
+    <v-col cols="2" class="d-flex align-center justify-center">
+        <strong class="text-h6">Outputs</strong>
+    </v-col>
+    <v-col cols="10">
+        <v-table>
+            <thead>
+                <tr>
+                    <th style="padding-left: 20px;">Resolution (X × Y × Z)</th>
+                    <th style="padding-left: 20px;">Size (GVoxels)</th>
+                    <th style="padding-left: 20px;" class="text-center">Save to disk</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(o, i) in outputs" :key="i" style="vertical-align: middle;">
+                    <td style="padding-left: 20px; vertical-align: middle;">{{ o.resolution }}</td>
+                    <td style="padding-left: 20px; vertical-align: middle;">{{ o.size.toFixed(3) }}</td>
+                    <td class="text-center" style="vertical-align: middle;">
+                        <div class="d-flex justify-center align-center">
+                            <v-checkbox
+                                v-model="o.save"
+                                density="compact"
+                                hide-details
+                                style="margin: 0; padding: 0; flex: none;"
+                                @change="updateMemUsage()"
+                            />
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </v-table>
+    </v-col>
+</v-row>
+
         <v-row>
             <v-col cols="5" sm="2" md="3">
                 <v-select dense
@@ -655,6 +690,7 @@
                 try{
                     console.log("Submitting merge step with data:", mergeData)
                     const response =await TerastitcherAPI.submit_step(mergeData, mergeData.outputPath)
+                    await PreferenceAPI.update_tera(mergeData.id, mergeData)
                     const output = response.commandResult[0].output
                     console.log("Merger job response:", response.commandResult[0].output)
                     const match = output.match(/Submitted batch job (\d+)/)

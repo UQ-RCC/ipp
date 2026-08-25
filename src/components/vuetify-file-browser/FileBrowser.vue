@@ -21,7 +21,20 @@
             v-on:clear-all-selected = clearAllSelected
             ref="toolbar"
         ></toolbar>
-        <v-row>
+        <v-row no-gutters align="center" class="pl-2">
+            <!-- <v-btn icon small @click="showNavigator = !showNavigator" :title="showNavigator ? 'Hide navigator' : 'Show navigator'">
+                <v-icon>{{ showNavigator ? 'mdi-backburger' : 'mdi-forwardburger' }}</v-icon>
+            </v-btn> -->
+            <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn icon small @click="showNavigator = !showNavigator" v-bind="attrs" v-on="on">
+                        <v-icon>{{ showNavigator ? 'mdi-backburger' : 'mdi-forwardburger' }}</v-icon>
+                    </v-btn>
+                </template>
+                <span>{{ showNavigator ? 'Hide navigator' : 'Show navigator' }}</span>
+            </v-tooltip>
+        </v-row>
+        <v-row no-gutters style="flex-wrap: nowrap;">
             <v-col v-show="showNavigator" sm="auto">
                 <v-col>
                     <tree
@@ -39,8 +52,8 @@
                     ></tree>
                 </v-col>
             </v-col>
-            <v-divider v-if="tree" vertical></v-divider>
-            <v-col>
+            <v-divider v-if="tree && showNavigator" vertical></v-divider>
+            <v-col  style="min-width: 0;">
                 <list
                     :path = path
                     :icons = icons
@@ -128,7 +141,8 @@ export default {
             filter: "",
             prefid: -1,
             refreshPending: false,
-            pref: {}
+            pref: {},
+            //userToggledNavigator: false, 
         };
     },
     computed: {
@@ -204,14 +218,17 @@ export default {
             this.$refs.filelist.clearAllSelected()
         },
 
-        myEventHandler(e) {
-            if(e.type == "resize") {
+        /* myEventHandler(e) {
+            if(e.type == "resize" && !this.userToggledNavigator) {
                 this.showNavigator = this.tree && window.innerWidth >= 1446
             }
-        }
+        } */
     },
     async mounted() {
         // init
+        if (window.innerWidth < 1446) {
+            this.showNavigator = false
+        }
         if(this.initialPath && this.initialPath !== '/') {
             // console.log("change to initial path=" + this.initialPath)
             this.path = this.initialPath    
@@ -220,17 +237,18 @@ export default {
             // console.log("change to root")
             this.path = "/"
         }
+       
         await this.getPref()
         // this.$emit("change", this.path)
         this.pathChanged(this.path)
     },
-    created() {
+    /* created() {
         window.addEventListener("resize", this.myEventHandler);
     },
     destroyed() {
         window.removeEventListener("resize", this.myEventHandler);
     },
-
+ */
 };
 </script>
 

@@ -515,7 +515,7 @@ import TerastitcherAPI from '../../api/TerastitcherAPI';
                                 Vue.notify({
                                 group: 'datanotif', type: 'success',
                                 title: 'Import Complete',
-                                text: `Displacements: ${result.displacement_total} total`,
+                                text: `Import completed successfully.`,
                                 closeOnClick: true, duration: 5000,
                                 })
                             } else {
