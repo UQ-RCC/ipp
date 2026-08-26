@@ -191,7 +191,7 @@
 
          <v-row dense>
       <v-col cols="12" sm="8" md="12">
-        <v-text-field dense outlined label="Absolute path" v-model="serie.import_abspath" />
+        <v-text-field dense outlined label="Absolute path" v-model="serie.import_abspath" :readonly="true" />
       </v-col>
     </v-row>
 

@@ -73,6 +73,7 @@
                     outlined  
                     label="Reliable displacements" 
                     v-model="serie.thrs_rlbdisplacements"
+                    readonly
                 >
                 </v-text-field>
             </v-col>
@@ -82,6 +83,7 @@
                     outlined  
                     label="Stitchable stacks" 
                     v-model="serie.thrs_stichstacks"
+                    readonly
                 >
                 </v-text-field>
             </v-col>
@@ -91,6 +93,7 @@
                     outlined  
                     label="Per-pair displacement" 
                     v-model="serie.thrs_ppdisplacement"
+                    readonly
                 >
                 </v-text-field>
             </v-col>

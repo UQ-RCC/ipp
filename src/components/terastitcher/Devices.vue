@@ -130,7 +130,7 @@
                 inimem : 0,
                 rules: {
                     positiveInteger: value => value && value > 0 && Number.isInteger(parseFloat(value)) || 'Must be a positive number',
-                    memdefault: value => value && value >= 30 || 'Must be above or equal to the default value of 30 GB',
+                    memdefault: value => value && value >= 5 || 'Must be above or equal to the default value of 5 GB',
                     cpudefault: value => value && value >= 1 || 'Must be above or equal to the default value of 1 nodes',
                     gpudefault: value => value && value >= 1 || 'Must be above or equal to the default value of 1 gpu',
                     wtimedef: value => value && value >=1 && value <=168 || 'Must be equal or below to the maximum value of 168 hours'
@@ -154,7 +154,7 @@
             async load_serie(serie_devices){
                 this.serie = serie_devices
                 this.serie.instances = this.serie.instances || 1
-                this.serie.mem = this.serie.mem || 30
+                this.serie.mem = this.serie.mem || 5
                 this.inimem = this.serie.mem
                 this.serie.gpus= this.serie.gpus || 1
                 this.serie.walltime = this.serie.walltime || 1
@@ -188,7 +188,7 @@
             }, */
             is_mem_valid(){
                 
-                if (this.cpu && this.serie.mem &&  this.cpu > 0 && this.serie.mem > 0 && this.cpu > Math.max(30,this.serie.mem)) {
+                if (this.cpu && this.serie.mem &&  this.cpu > 0 && this.serie.mem > 0 && this.cpu > Math.max(5,this.serie.mem)) {
                     this.memError = " Need "+ this.cpu + "GB memory: " + this.serie.mem + "GB is below estimate"
                     
                     if (this.cpu <= Math.min(this.nodeLimits.max_node_cpu_mem,this.userLimits.max_user_mem)) {
@@ -200,8 +200,8 @@
                     }
                     
                 } else {
-                    if (this.cpu > 0 && this.cpu < Math.max(30,this.serie.mem) && this.serie.mem < Math.max(30,this.inimem)) {
-                        this.serie.mem = Math.max(30,this.inimem)
+                    if (this.cpu > 0 && this.cpu < Math.max(5,this.serie.mem) && this.serie.mem < Math.max(5,this.inimem)) {
+                        this.serie.mem = Math.max(5,this.inimem)
                         
                     } 
                     this.memError = null 
@@ -209,7 +209,7 @@
                 if (this.serie.mem  > Math.min(this.nodeLimits.max_node_cpu_mem,this.userLimits.max_user_mem) ) {
                     
                     this.memError = this.serie.mem+ " GB exceeds the user's allocated memory limit. Setting it to the default"
-                    this.serie.mem = 30
+                    this.serie.mem = 5
                 }
                 
 

@@ -61,6 +61,7 @@
                     outlined  
                     label="Per-pair displacements" 
                     v-model="serie.place_ppdisplacement"
+                    readonly
                 >
                 </v-text-field>
             </v-col>
