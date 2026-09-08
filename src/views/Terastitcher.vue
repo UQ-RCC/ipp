@@ -140,18 +140,7 @@
                             <p><bold> {{message}}</bold></p>
 
                         </v-row>
-                      <!--   <v-row>
-                             <v-card outlined tile class="pa-2" style="margin: 5px; width: 100%; height: 100px">
-                                <v-card-title>Saved xmls in the folder</v-card-title>
-                                <v-card-text>
-                                    <li v-for="(xml, index) in xmlFiles" :key="index">
-                                        {{xmlFiles[index]}}
-                                    </li>
-                                </v-card-text>
-
-                             </v-card>
-
-                        </v-row> -->
+                      
                     </div>
                     
                 </div>
@@ -160,51 +149,51 @@
             <v-divider vertical></v-divider>
             <v-col cols="12" sm="12" md="8" lg="8" xl="8" style="height:1400px">
                     <v-row class="d-flex" v-bind:style="{height: '70%',margin:'10px'}" v-on:keyup.right="nextStep">
-                        <v-stepper non-linear outlined v-model="currentStep"  v-bind:style="{width: '100%'}"  @change="stepChanged" >
+                       
+                            <v-stepper non-linear outlined v-model="currentStep"  v-bind:style="{width: '100%'}"  @change="stepChanged" >
                             <v-stepper-header>
-                                <v-stepper-step v-for="(step, n) in steps" :key="n" :complete="stepComplete(n + 1)" :step="n + 1"
-                                    :color="stepStatus(n + 1)" :editable="checkStepVisibility(n + 1)"  @click="stepClicked">
-                                    {{ step.name }}
-                                </v-stepper-step>
+                                
+                                    <v-stepper-step v-for="(step, n) in steps" :key="n" :complete="stepComplete(n + 1)" :step="n + 1"
+                                        :color="stepStatus(n + 1)" :editable="checkStepVisibility(n + 1)"  @click="stepClicked">
+                                        <small>{{ step.name }}</small>
+                                    </v-stepper-step>
+                                 
                             </v-stepper-header>
 
                             <v-stepper-items>
+
+                                <v-stepper-content v-if="isFolder" :step="stepNumber('format')">
+                                    <terastitcher-format ref="teraformat"/>
+                                </v-stepper-content>
+
                             
-                                <v-stepper-content step=1>
+                                <v-stepper-content :step="stepNumber('import')">
                                     <terastitcher-import ref="teraimport"/>
                                 </v-stepper-content>
 
-                                <v-stepper-content step=2>
+                                <v-stepper-content :step="stepNumber('align')">
                                     <terastitcher-align ref="teraalign"/>
                                 </v-stepper-content>
 
-                                <v-stepper-content step=3>
+                                <v-stepper-content :step="stepNumber('project')">
                                     <terastitcher-project ref="teraproject"/>
                                 </v-stepper-content>
 
-                                <v-stepper-content step=4>
+                                <v-stepper-content :step="stepNumber('threshold')">
                                     <terastitcher-threshold ref="terathreshold"/>
                                 </v-stepper-content>
 
-                                <v-stepper-content step=5 >
+                                <v-stepper-content :step="stepNumber('place')">
                                     <terastitcher-place ref="teraplace" />
                                 </v-stepper-content>
 
-                                <v-stepper-content step=6>
+                                <v-stepper-content :step="stepNumber('merge')">
                                     <terastitcher-merge ref="teramerge"/>
                                 </v-stepper-content>
                                 
-                                <!-- <v-stepper-content step=7>
-                                    <terastitcher-devices ref="teradevices"/>
-                                </v-stepper-content>
-
-                                <v-stepper-content step=8>
-                                    <terastitcher-review ref="terareview"/>
-                                </v-stepper-content> -->
-
-                                
                             </v-stepper-items>
-                        </v-stepper>
+                            </v-stepper>
+                        
                     </v-row>
                     <div class="buttons-margin"/>
                     <div class="buttons-extra-margin" v-if="workingItem && currentStep== 6"/>
@@ -223,40 +212,8 @@
                         
                         <v-spacer></v-spacer>
 
-                        
-                        
                         <v-spacer></v-spacer>
                         
-                      <!--   <v-spacer></v-spacer>
-                        <v-tooltip top>
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-btn 
-                                    color="primary" rounded dark default 
-                                    v-bind="attrs" v-on="on"
-                                    :disabled="selected.length === 0"
-                                    @click.stop="submitSelected()">
-                                        Submit Selected
-                                </v-btn>
-                            </template>
-                            <span>Submit the selected series/files</span>
-                        </v-tooltip>
-                        <v-spacer></v-spacer> -->
-
-                        <!-- <v-tooltip top>
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-btn 
-                                    color="primary" rounded dark default 
-                                    v-bind="attrs" v-on="on"
-                                    :disabled="selected.length === 0"
-                                    @click.stop="submitAll()">
-                                        Submit All
-                                </v-btn>
-                            </template>
-                            <span>Submit all the series/files</span>
-                        </v-tooltip>
- -->
-                
-                        <!-- <div class="flex-grow-1"></div> -->
                         <v-spacer></v-spacer>
                         <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
@@ -282,7 +239,7 @@
     import Vue from 'vue'
     // import * as api from '@/api'
     import FileBrowserDialog from '@/components/FileBrowserDialog.vue'
-    //import TerastitcherDevices from '@/components/terastitcher/Devices.vue'
+    import TerastitcherFormat from '@/components/terastitcher/Format.vue'
     //import TerastitcherReview from '@/components/terastitcher/Review.vue'
     //import TemplateDialog from '@/components/TemplateDialog.vue'
     //import MetadataDialog from '@/components/MetadataDialog.vue'
@@ -318,7 +275,8 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
             TerastitcherProject,
             TerastitcherThreshold,
             TerastitcherPlace,
-            TerastitcherMerge
+            TerastitcherMerge,
+            TerastitcherFormat
             
         },
        
@@ -359,26 +317,29 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
 
                 rules: {
                     // TODO: some how simplify this
+                    formatstepvalid: () => {
+                        return this.checkStepValidity(1, this.$refs.teraformat)
+                    },
                     importstepvalid: () => {
-                        return this.checkStepValidity(1, this.$refs.teraimport)
+                        return this.checkStepValidity(2, this.$refs.teraimport)
                     },
                     alignstepvalid: () => {
-                        return this.checkStepValidity(2, this.$refs.teraalign)
+                        return this.checkStepValidity(3, this.$refs.teraalign)
                     },
                     projectstepvalid: () => {
-                        return this.checkStepValidity(3, this.$refs.teraproject)
+                        return this.checkStepValidity(4, this.$refs.teraproject)
                     },
                     thresholdstepvalid: () => {
-                        return this.checkStepValidity(4, this.$refs.terathreshold)
+                        return this.checkStepValidity(5, this.$refs.terathreshold)
                     },
                     placestepvalid: () => {
-                        return this.checkStepValidity(5, this.$refs.teraplace)
+                        return this.checkStepValidity(6, this.$refs.teraplace)
                     },
                     mergestepvalid: () => {
-                        return this.checkStepValidity(6, this.$refs.teramerge)
+                        return this.checkStepValidity(7, this.$refs.teramerge)
                     },
                      devicesstepvalid: () => {
-                        return this.checkStepValidity(7, this.$refs.teradevices)
+                        return this.checkStepValidity(8, this.$refs.teradevices)
                     }
 
                 },
@@ -390,19 +351,44 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 selected: [],
                 // loadedItems
                 loaded: [],
-                steps: [
+                /* steps: [
+                { name: "Format", valid: true },
                 { name: "Import" , rules: [v => !!v || "Input file details"], valid: true},
                 { name: "Align", valid: true },
                 { name: "Project", valid: true },
                 { name: "Threshold", valid: true },
                 { name: "Place", valid: true },
                 { name: "Merge",  valid: true }
-               /*  { name: "Device",  valid: true },
-                { name: "Review" }, */
-
-            ],
+               
+                ], */
             }
         },
+        computed: {
+            isFolder() {
+                return !!(
+                    this.workingItem.isfolder ||
+                    (this.workingItem.setting && this.workingItem.setting.isfolder)
+                )
+            },
+
+            steps() {
+                const steps = [
+                    { name: 'Import', key: 'import' },
+                    { name: 'Align', key: 'align' },
+                    { name: 'Project', key: 'project' },
+                    { name: 'Threshold', key: 'threshold' },
+                    { name: 'Place', key: 'place' },
+                    { name: 'Merge', key: 'merge' }
+                ]
+
+                if (this.isFolder) {
+                    steps.unshift({ name: 'Format', key: 'format' })
+                }
+
+                return steps
+            }
+        },
+        
         mounted: async function() {
             let today = new Date();
             let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
@@ -475,6 +461,24 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
         },
         methods: {
 
+            stepNumber(stepName) {
+                const numbers = {
+                    format: 1,
+                    import: this.isFolder ? 2 : 1,
+                    align: this.isFolder ? 3 : 2,
+                    project: this.isFolder ? 4 : 3,
+                    threshold: this.isFolder ? 5 : 4,
+                    place: this.isFolder ? 6 : 5,
+                    merge: this.isFolder ? 7 : 6
+                }
+
+                return numbers[stepName]
+            },
+
+            getStepNumber(stepName) {
+                return this.stepNumber(stepName.toLowerCase())
+            },
+
             extractJson(lines) {
                 const outputs = lines.map(item => item.output);
 
@@ -544,7 +548,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
             }
         },
 
-        getStepNumber(stepName) {
+        /* getStepNumber(stepName) {
             const stepMap = {
             import: 1,
             align: 2,
@@ -555,7 +559,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
             }
 
             return stepMap[stepName?.toLowerCase()] || null
-        },
+        }, */
            
              
         async chooseOutputFolder() {
@@ -1086,7 +1090,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 console.log(this.workingItem.step)
                 // save from current step - review step is ignored
                 // if(this.selected && this.selected[0] && this.step !== 8){
-                if(this.workingItem.step !== 8){
+                if(this.workingItem.step !== 7){
                     let _component = this.getStepComponent(this.currentStep)
                     console.log("_component")
                     console.log(_component)
@@ -1121,17 +1125,18 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
 
             
             async nextStep(){
+                const lastStep = this.steps.length
                 this.workingItem.step = parseInt(this.currentStep)
                 console.log("this.workingItem.step")
                 console.log(this.workingItem.step)
-                 if(this.currentStep == 2 ){
+                /*  if(this.currentStep == 3 ){
                     console.log("next step")
                     console.log(this.workingItem)
-                }
-                if(this.workingItem.step === 6)
+                } */
+                if(this.workingItem.step === lastStep)
                     return
                 let previousStep = this.workingItem.step
-                if (this.workingItem.step !== 6){
+                if (this.workingItem.step !== lastStep){
                     this.currentStep = this.currentStep + 1
                 }
                 this.workingItem.step = this.currentStep
@@ -1154,7 +1159,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 let previousStep = this.workingItem.step
 
                 if (this.workingItem.step !== 1){
-                    // only access to 3 if psfType = 3
+                   
                     console.log("this.workingItem.step inside")
                     console.log(this.workingItem.step)
                     this.currentStep = this.currentStep - 1
@@ -1176,7 +1181,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 
                 this.workingItem.visitedSteps = this.visitedSteps
                 // save 
-                if(previousSt !== 6){
+                if(previousSt !== 7){
                     let _component = this.getStepComponent(previousSt)
                     if (_component) {
                         console.log(_component)
@@ -1268,36 +1273,56 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
              * get step component 
              */
             getStepComponent(stepId) {
+                const components = this.isFolder
+                    ? {
+                        1: this.$refs.teraformat,
+                        2: this.$refs.teraimport,
+                        3: this.$refs.teraalign,
+                        4: this.$refs.teraproject,
+                        5: this.$refs.terathreshold,
+                        6: this.$refs.teraplace,
+                        7: this.$refs.teramerge
+                    }
+                    : {
+                        1: this.$refs.teraimport,
+                        2: this.$refs.teraalign,
+                        3: this.$refs.teraproject,
+                        4: this.$refs.terathreshold,
+                        5: this.$refs.teraplace,
+                        6: this.$refs.teramerge
+                    }
+
+                return components[parseInt(stepId)]
+            }
+            /* getStepComponent(stepId) {
                 let _component = null
                 switch(parseInt(stepId)) {
                     case 1:
-                        _component = this.$refs.teraimport
+                        _component = this.$refs.teraformat
                         break
                     case 2:
-                        _component = this.$refs.teraalign
+                        _component = this.$refs.teraimport
                         break
                     case 3:
-                        _component = this.$refs.teraproject
+                        _component = this.$refs.teraalign
                         break
                     case 4:
-                        _component = this.$refs.terathreshold
+                        _component = this.$refs.teraproject
                         break
                     case 5:
-                        _component = this.$refs.teraplace
+                        _component = this.$refs.terathreshold
                         break
                     case 6:
-                        _component = this.$refs.teramerge
+                        _component = this.$refs.teraplace
                         break
                     case 7:
-                        _component = this.$refs.teradevices
+                        _component = this.$refs.teramerge
                         break
-                    case 8:
-                        _component = this.$refs.terareview
-                        break
+                    
                 }
                 
                 return _component
-            }
+            } */
 
         },
     }
@@ -1334,6 +1359,15 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
         font-size: 12px;
         float: right;
     }
+ /*    @media (max-width: 1200px) {
+        .v-stepper__header {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .v-stepper__header .v-stepper-step {
+            flex-shrink: 0;
+        }
+    } */
     .metdata-card {
     max-height: 400px;
     font-size: 14px;

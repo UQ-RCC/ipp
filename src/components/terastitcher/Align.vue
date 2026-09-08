@@ -295,6 +295,14 @@
                 </v-tooltip>
                
             </v-col>
+            <v-col cols="auto" class="align-self-center">
+                <v-checkbox
+                    v-model="serie.align_email" class="mt-0"
+                    label="Send email notification when alignment is complete"
+                    hide-details
+                    dense
+                ></v-checkbox>
+            </v-col>
         </v-row>
 
     </v-card>
