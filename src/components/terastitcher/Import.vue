@@ -1,188 +1,151 @@
 <template>
     
     <v-card :disabled="readonly" >
-        <!-- <v-overlay v-model="overlay">
-            <v-row align="center" justify="center"><label >Importing, Please wait..</label> </v-row>
-            <v-row align="center" justify="center">
-                <v-progress-circular
-                color="primary"
-                indeterminate
-                size="55"
-                ></v-progress-circular> 
-                
-            </v-row> 
-        </v-overlay> -->
+       
         <file-browser-dialog ref="filedialog" />
-       <!--  <v-card-title class="subtitle-1 font-weight-bold">
-      Import form
-    </v-card-title> -->
-
-        <v-row align="center" justify="center" dense> 
-
-            <v-col cols="8" sm="4" md="5">
-                <v-text-field dense outlined 
-                    label="Image name regex" 
-                    v-model="serie.import_regex"
-                    
-                    >
-                </v-text-field>
-            </v-col>
-            <v-col cols="4" sm="2" md="3">
-                <v-select dense
-                    :items="plugin"
-                    v-model="serie.import_io"
-                    label="I/O plugin"
-                    outlined
-                    
-                    >
-                </v-select>
-            </v-col>
-            <v-col cols="4" sm="2" md="2">
-                 <v-checkbox
-                    v-model="serie.import_scanAll"
-                    label="(Re-)scan all files"
-                    ></v-checkbox>
-
-            </v-col>
-             <v-col cols="4" sm="2" md="2">
-                 <v-checkbox
-                    v-model="serie.import_sparseData"
-                    label="Sparse data"
-                    
-                    ></v-checkbox>
-
-            </v-col>
-        </v-row>
-        <v-row dense v-if="serie.volumePath != null" >
-            <v-col cols="4" sm="2" md="3" >
-                <v-select dense
-                    :items="firstaxis"
-                    v-model="serie.import_firstaxis"
-                    label="First axis"
-                    outlined
-                    return-object
-                    >
-                </v-select>
-            </v-col>
-            <v-col cols="4" sm="2" md="3" >
-                <v-select dense
-                    :items="secondaxis"
-                    v-model="serie.import_secondaxis"
-                    label="Second axis"
-                    outlined
-                    return-object
-                                            >
-                </v-select>
-            </v-col>
-            <v-col cols="4" sm="2" md="3" >
-                <v-select dense
-                    :items="thirdaxis"
-                    v-model="serie.import_thirdaxis"
-                    label="Third axis"
-                    outlined
-                    return-object
-                                            >
-                </v-select>
-            </v-col>
-            <v-col cols="4" sm="2" md="3" >
-                <v-select dense
-                    :items="volumeFormat"
-                    v-model="serie.import_volFormat"
-                    label="Volume format"
-                    outlined
-                    return-object
-                >
-                </v-select>
-            </v-col>
-           
-            
-        </v-row>
-        <v-row dense>
-             
-            <v-col cols="5" sm="2" md="3" v-if="serie.volumePath != null">
-                 
-                <v-text-field 
-                    dense 
-                    outlined
-                    type=number
-                    label="voxel(microm):1,00" 
-                    step="0.1"
-                    min="0.1"
-                    v-model="serie.import_voxel1"
-                >
-                </v-text-field>
-               
-            </v-col>
-            <v-col cols="5" sm="2" md="3" v-if="serie.volumePath != null">
-                <v-text-field 
-                    dense 
-                    outlined
-                    type=number
-                    label="voxel(microm):1,00" 
-                    step="0.1"
-                    min="0.1"
-                    v-model="serie.import_voxel2"
-                >
-                </v-text-field>
-            </v-col>
-            <v-col cols="5" sm="2" md="3" v-if="serie.volumePath != null">
-                <v-text-field 
-                    dense 
-                    outlined
-                    type=number
-                    label="voxel(microm):1,00" 
-                    step="0.1"
-                    min="0.1"
-                    v-model="serie.import_voxel3"
-                >
-                </v-text-field>
-            </v-col>
-           
-            
-        </v-row>
-        <v-row dense>
-            <v-col cols="4" sm="2" md="2">
-                <v-tooltip top>
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-btn 
-                                    color="primary" rounded dark default 
-                                    v-bind="attrs" v-on="on" @click.stop="importFiles">
-                                        Import
-                                </v-btn>
-                            </template>
-                            <span>Import from directory</span>
-                        </v-tooltip>
-               
-            </v-col>
-
-            <v-col cols="8" sm="10" md="8">
-                    <v-alert 
-                        v-if="serie.importStatus === 'pending'" 
-                        type="info"
-                        text
-                    >
-                        Importing file... checking every 2s
-                    </v-alert>
-                    <v-alert 
-                        v-if="serie.importStatus === 'completed'" 
-                        type="success"
-                        text
-                    >
-                         Import complete
-                    </v-alert>
-                    <v-alert 
-                        v-if="serie.importStatus === 'failed'" 
-                        type="error"
-                        text
-                    >
-                         Import failed : {{ errorMessage  }}
-                    </v-alert>
-            </v-col>
-        </v-row>
-            
-           
        
 
+            <v-row align="center" no-gutters class="mb-2" v-if="!serie.isfolder">
+                <v-col cols="6" sm="4" md="4" lg="4">
+                    <span class="font-weight-medium">Dataset Size</span>
+                </v-col>
+                <v-col cols="6" sm="4" md="4" lg="4">
+                    <v-radio-group v-model="serie.qos" row> 
+                      
+                        <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-radio
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    label="Small"
+                                    value="debug"
+                                ></v-radio>
+                            </template>
+                            <span>Small datasets, quick runs — max 1 hour walltime, higher priority</span>
+                        </v-tooltip>
+
+                        <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-radio
+                                    v-bind="attrs"
+                                    v-on="on"
+                                    label="Large"
+                                    value="normal"
+                                ></v-radio>
+                            </template>
+                            <span>Larger datasets, standard runs — up to 2 weeks walltime</span>
+                        </v-tooltip>
+                    </v-radio-group> 
+                                        
+                </v-col>
+            
+            </v-row>
+            <v-row align="start" justify="start" dense>
+                <v-col cols="3" sm="2" md="3" v-if="showChannelSelect">
+                    <v-select dense outlined
+                        :items="serie.setup_channels"
+                        v-model="serie.import_channel"
+                        label="Channels"
+                        @change="onChannelSelect"
+                    />
+                </v-col>
+                <v-col cols="3" :sm="showChannelSelect ? 2 : 4" :md="showChannelSelect ? 3 : 6">
+                    <v-text-field dense outlined
+                        label="Image name regex"
+                        v-model="serie.import_regex"
+                    />
+                </v-col>
+                <v-col cols="3" sm="2" md="3">
+                    <v-select dense
+                        :items="plugin"
+                        v-model="serie.import_io"
+                        label="I/O plugin"
+                        outlined
+                    />
+                </v-col>
+
+                <v-col cols="3" sm="2" md="3" class="d-flex flex-column">
+                    <v-checkbox
+                        v-model="serie.import_scanAll"
+                        label="(Re-)scan all files"
+                        dense hide-details class="mt-0 pt-0"
+                    ></v-checkbox>
+                    <v-checkbox
+                        v-model="serie.import_sparseData"
+                        label="Sparse data"
+                        dense hide-details class="mt-1 pt-0"
+                    ></v-checkbox>
+                   <!--  <v-row>
+                        <v-checkbox v-model="serie.import_scanAll" label="(Re-)scan all files"></v-checkbox>
+                    </v-row>
+                    <v-row>
+                        <v-checkbox v-model="serie.import_sparseData" label="Sparse data"></v-checkbox>
+                    </v-row> -->
+                </v-col>
+                
+            </v-row>
+            <v-row dense v-if="serie.volumePath != null">
+                <v-col cols="4" sm="2" md="3">
+                    <v-select dense :items="firstaxis" v-model="serie.import_firstaxis" label="First axis" outlined return-object />
+                </v-col>
+                <v-col cols="4" sm="2" md="3">
+                    <v-select dense :items="secondaxis" v-model="serie.import_secondaxis" label="Second axis" outlined return-object />
+                </v-col>
+                <v-col cols="4" sm="2" md="3">
+                    <v-select dense :items="thirdaxis" v-model="serie.import_thirdaxis" label="Third axis" outlined return-object />
+                </v-col>
+                <v-col cols="4" sm="2" md="3">
+                    <v-select dense :items="volumeFormat" v-model="serie.import_volFormat" label="Volume format" outlined return-object />
+                </v-col>
+            </v-row>
+            <v-row dense align="center">
+                <v-col cols="5" sm="2" md="3" v-if="serie.volumePath != null">
+                    <v-text-field dense outlined type="number" label="voxel(microm):1,00" step="0.1" min="0.1" v-model="serie.import_voxel1" />
+                </v-col>
+                <v-col cols="5" sm="2" md="3" v-if="serie.volumePath != null">
+                    <v-text-field dense outlined type="number" label="voxel(microm):1,00" step="0.1" min="0.1" v-model="serie.import_voxel2" />
+                </v-col>
+                <v-col cols="5" sm="2" md="3" v-if="serie.volumePath != null">
+                    <v-text-field dense outlined type="number" label="voxel(microm):1,00" step="0.1" min="0.1" v-model="serie.import_voxel3" />
+                </v-col>
+                <v-col cols="4" sm="2" md="2" style="margin-top: -30px;">
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn color="primary" rounded dark v-bind="attrs" v-on="on" @click.stop="importFiles">
+                                Import
+                            </v-btn>
+                        </template>
+                        <span>Import from directory</span>
+                    </v-tooltip>
+                </v-col>
+            </v-row>
+           
+<!-- 
+            <v-row dense v-if="serie.setupStatus!=='hidden'">
+                <v-col cols="12">
+                    <v-alert v-if="serie.setupStatus === 'pending'" type="info" text>
+                            Moving to folder structure... checking every 60s
+                        </v-alert>
+                        <v-alert v-if="serie.setupStatus === 'completed'" type="success" text>
+                            Move complete
+                        </v-alert>
+                </v-col>
+            </v-row> -->
+            <v-row dense v-if="serie.importStatus!=='hidden'">
+                <v-col cols="12">
+                    <v-alert v-if="serie.importStatus === 'pending'" type="info" text>
+                            Importing file... checking every 2s
+                        </v-alert>
+                        <v-alert v-if="serie.importStatus === 'completed'" type="success" text>
+                            Import complete
+                        </v-alert>
+                        <v-alert v-if="serie.importStatus === 'failed'" type="error" text>
+                            Import failed : {{ errorMessage }}
+                        </v-alert>
+                </v-col>
+            </v-row>
+
+        
         <v-divider class="my-4" />
 
         <v-card-title class="subtitle-1 font-weight-bold">
@@ -262,23 +225,7 @@
             </template>
         </v-text-field>
       </v-col>
-      <v-col cols="4" sm="2" md="4">
-        <v-select dense outlined label="Channels" :items="channel" item-text="label"
-                        item-value="value" v-model="serie.import_channel"  />
-      </v-col>
-     <!--  <v-col cols="4" sm="2" md="4">
-        <v-tooltip top>
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-btn 
-                                    color="primary" rounded dark default 
-                                    v-bind="attrs" v-on="on">
-                                        Preview
-                                </v-btn>
-                            </template>
-                            <span>Preview</span>
-                        </v-tooltip>
-        
-      </v-col> -->
+     
     </v-row>
       
 
@@ -338,6 +285,11 @@ import TerastitcherAPI from '../../api/TerastitcherAPI';
             }
             },
         computed: {
+            showChannelSelect() {
+                return this.serie.setup_volformat === 'unstructured'
+                    && Array.isArray(this.serie.setup_channels)
+                    && this.serie.setup_channels.length > 0
+            },
             stitchTest: {
                 get() {
                     if(this.serie.import_tiledimZ) {
@@ -365,7 +317,7 @@ import TerastitcherAPI from '../../api/TerastitcherAPI';
             get_serie(){
                 return this.serie
             },
-            async load_serie(serie,isfolder){
+            async load_serie(serie){
                 console.log("at load serie import")
                 //this.serie = serie
                 const source = serie?.setting != null ? serie.setting : serie
@@ -373,7 +325,7 @@ import TerastitcherAPI from '../../api/TerastitcherAPI';
                 this.serie = Object.assign({}, source)
                 //this.serie = Object.assign({}, serie.setting)
                 //Vue.set(this.serie, 'importStatus', null)
-                Vue.set(this.serie, 'isfolder', isfolder)
+                //Vue.set(this.serie, 'isfolder', isfolder)
                 Vue.set(this.serie, 'import_tiledimZ', 0)
                 Vue.set(this.serie, 'import_channel', 1)
                 //this.serie.importStatus = null
@@ -395,11 +347,18 @@ import TerastitcherAPI from '../../api/TerastitcherAPI';
                 }
             },
 
+            onChannelSelect(channel) {
+                if (this.serie.setup_target && channel) {
+                    Vue.set(this.serie, 'volumePath', `${this.serie.setup_target}/${channel}/`)
+                }
+            },
+
             //import files here
             async importFiles(){
                 
                 let importData = {}
                 importData = this.serie
+                Vue.set(this.serie, "setupStatus", 'hidden')
                 Vue.set(this.serie, 'importStatus', 'pending')
                 //this.serie.importStatus = 'pending'
                 console.log("Importing with data:", this.serie)

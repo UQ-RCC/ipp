@@ -31,7 +31,7 @@
                     type="info"
                     text
                 >
-                        Project running on HPC... checking every 5s
+                        Project running on Bunya... checking every 5s
                 </v-alert>
 
                 <v-alert 
@@ -99,6 +99,7 @@
     import FileBrowserDialog from '@/components/FileBrowserDialog.vue'
     //import Align from './Align.vue';
     import TerastitcherAPI from '../../api/TerastitcherAPI';
+    import { updateThresholdContents } from '@/utils/terastitcher';
     
     export default {
         name: 'TerastitcherProject',
@@ -191,8 +192,9 @@
                     const slurmState = status.split('\n')[0].trim()  // PENDING, RUNNING, COMPLETED, FAILED, NOTFOUND
                     console.log("SLURM state:", slurmState)
 
-                    const isDone = !["RUNNING"].includes(slurmState)
-                    //const isDone = slurmState.startsWith("PROGRESS:") || ["COMPLETED", "FAILED", "NOTFOUND"].includes(slurmState)
+                    //const isDone = !["RUNNING","PENDING"].includes(slurmState)
+                    const isDone =  ["COMPLETED", "FAILED", "NOTFOUND","SUSPENDED"].includes(slurmState) || !['RUNNING', 'PENDING'].includes(slurmState)
+                    
 
                     if (isDone) {
                         clearInterval(this.pollInterval)
@@ -211,7 +213,8 @@
                                 //this.serie.thrs_cal_data = result
                                 Vue.set(this.serie, 'thrs_cal_data', result)
                                 Vue.set(this.serie, 'projectStatus', 'completed')
-                                const { reliable, total, stitchables, n_stacks } = this.updateThresholdContents(result, this.serie.thrs_reliabilitythres)
+                                //const { reliable, total, stitchables, n_stacks } = this.updateThresholdContents(result, this.serie.thrs_reliabilitythres)
+                                const { reliable, total, stitchables, n_stacks } = updateThresholdContents(result, this.serie.thrs_reliabilitythres)
 
                                 let reliable_displacements = reliable +"/"+ total
                                 let stitchable_stacks = stitchables +"/"+ n_stacks
@@ -247,7 +250,7 @@
                     }
                 }, 5000)  // poll every 5s
             },
-            updateThresholdContents(result, threshold) {
+          /*   updateThresholdContents(result, threshold) {
                 let total = 0
                 let reliable = 0
                 for (const adj of result.adjacencies) {
@@ -269,7 +272,7 @@
 
             
         
-            },
+            }, */
             
         },
          beforeDestroy() {

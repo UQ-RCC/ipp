@@ -150,7 +150,7 @@
             <v-col cols="12" sm="12" md="8" lg="8" xl="8" style="height:1400px">
                     <v-row class="d-flex" v-bind:style="{height: '70%',margin:'10px'}" v-on:keyup.right="nextStep">
                        
-                            <v-stepper non-linear outlined v-model="currentStep"  v-bind:style="{width: '100%'}"  @change="stepChanged" >
+                            <v-stepper non-linear outlined v-model="currentStep"   :key="isFolder" v-bind:style="{width: '100%'}"  @change="stepChanged" >
                             <v-stepper-header>
                                 
                                     <v-stepper-step v-for="(step, n) in steps" :key="n" :complete="stepComplete(n + 1)" :step="n + 1"
@@ -162,8 +162,8 @@
 
                             <v-stepper-items>
 
-                                <v-stepper-content v-if="isFolder" :step="stepNumber('format')">
-                                    <terastitcher-format ref="teraformat"/>
+                                <v-stepper-content v-if="isFolder" :step="stepNumber('setup')">
+                                    <terastitcher-setup ref="terasetup"/>
                                 </v-stepper-content>
 
                             
@@ -239,7 +239,7 @@
     import Vue from 'vue'
     // import * as api from '@/api'
     import FileBrowserDialog from '@/components/FileBrowserDialog.vue'
-    import TerastitcherFormat from '@/components/terastitcher/Format.vue'
+    import TerastitcherSetup from '@/components/terastitcher/Setup.vue'
     //import TerastitcherReview from '@/components/terastitcher/Review.vue'
     //import TemplateDialog from '@/components/TemplateDialog.vue'
     //import MetadataDialog from '@/components/MetadataDialog.vue'
@@ -249,6 +249,7 @@
     import TerastitcherThreshold from '../components/terastitcher/Threshold.vue'
     import TerastitcherPlace from '../components/terastitcher/Place.vue'
     import TerastitcherMerge from '../components/terastitcher/Merge.vue'
+    import { updateThresholdContents } from '@/utils/terastitcher';
     
     // api
     
@@ -276,7 +277,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
             TerastitcherThreshold,
             TerastitcherPlace,
             TerastitcherMerge,
-            TerastitcherFormat
+            TerastitcherSetup
             
         },
        
@@ -317,8 +318,8 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
 
                 rules: {
                     // TODO: some how simplify this
-                    formatstepvalid: () => {
-                        return this.checkStepValidity(1, this.$refs.teraformat)
+                    setupstepvalid: () => {
+                        return this.checkStepValidity(1, this.$refs.terasetup)
                     },
                     importstepvalid: () => {
                         return this.checkStepValidity(2, this.$refs.teraimport)
@@ -351,24 +352,13 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 selected: [],
                 // loadedItems
                 loaded: [],
-                /* steps: [
-                { name: "Format", valid: true },
-                { name: "Import" , rules: [v => !!v || "Input file details"], valid: true},
-                { name: "Align", valid: true },
-                { name: "Project", valid: true },
-                { name: "Threshold", valid: true },
-                { name: "Place", valid: true },
-                { name: "Merge",  valid: true }
-               
-                ], */
+                
             }
         },
         computed: {
             isFolder() {
-                return !!(
-                    this.workingItem.isfolder ||
-                    (this.workingItem.setting && this.workingItem.setting.isfolder)
-                )
+                return !!(this.workingItem.setting && this.workingItem.setting.isfolder)
+                
             },
 
             steps() {
@@ -382,12 +372,24 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 ]
 
                 if (this.isFolder) {
-                    steps.unshift({ name: 'Format', key: 'format' })
+                    steps.unshift({ name: 'Setup', key: 'setup' })
                 }
 
                 return steps
             }
         },
+        /* watch: {
+    isFolder(newVal, oldVal) {
+        console.log("isFolder changed:", oldVal, "->", newVal)
+        console.trace()
+    },
+    steps: {
+        handler(newVal) {
+            console.log("steps recalculated:", newVal.map(s => s.name))
+        },
+        immediate: true
+    }
+}, */
         
         mounted: async function() {
             let today = new Date();
@@ -429,6 +431,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 
 
                 console.log(this.currentStep)
+                await this.$nextTick()
 
                 let _component = this.getStepComponent(this.currentStep)
                 if (_component) {
@@ -461,9 +464,32 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
         },
         methods: {
 
+            resetSessionState() {
+                this.currentStep = 1
+                this.visitedSteps = []
+                this.completedStep = null
+                this.message = ""
+
+                const statuses = [
+                    'setupStatus',
+                    'importStatus',
+                    'alignStatus',
+                    'projectStatus',
+                    'thrsStatus',
+                    'placeStatus',
+                ]
+
+                statuses.forEach(status => {
+                    Vue.set(this.workingItem.setting, status, null)
+                })
+
+                Vue.set(this.workingItem.setting, 'step', 1)
+                Vue.set(this.workingItem.setting, 'visitedSteps', [])
+            },
+
             stepNumber(stepName) {
                 const numbers = {
-                    format: 1,
+                    setup: 1,
                     import: this.isFolder ? 2 : 1,
                     align: this.isFolder ? 3 : 2,
                     project: this.isFolder ? 4 : 3,
@@ -576,6 +602,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 let outputPath = this.outputBasePath +"/" + this.outputFolderName
                 console.log("outputPath")
                 this.saveSettings()
+                 this.loading =true
                 let response = await TerastitcherAPI.get_step_xmls(outputPath)
                 if(response && response.commandResult.length > 0 ) {
                     let output = response.commandResult
@@ -589,6 +616,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                     console.log("selected_path", this.selected[0].path)
                     console.log("input_path", input_path)
                     if (input_path == this.selected[0].path ) {
+                         this.loading =false
                         console.log("input path matches selected path")
                         this.message = ""
                         if (current_step != 'merge'){
@@ -603,7 +631,9 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                                 if (current_step == 'import'){
                                     Vue.set(mdata, 'importStatus', 'completed')
                                     let import_json = json_output.steps.import.result
-                                    TerastitcherImport.updateinfo(import_json)
+                                    await this.$refs.teraimport.updateinfo(import_json)
+                                    Object.assign(mdata, this.$refs.teraimport.get_serie())
+                                    //TerastitcherImport.updateinfo(import_json)
                                     console.log("import_json", import_json)
                                 }else if (current_step == 'align'){
                                     Vue.set(mdata, 'alignStatus', 'completed')
@@ -616,6 +646,15 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                                     Vue.set(mdata, 'projectStatus', 'completed')
                                     let project_json = json_output.steps.project.result
                                     console.log("project_json", project_json)
+                                    
+                                    Vue.set(mdata, 'thrs_cal_data', project_json)
+
+                                    const reliabilitythres = mdata.thrs_reliabilitythres || 0.75
+                                    const { reliable, total, stitchables, n_stacks } = updateThresholdContents(project_json, reliabilitythres)
+
+                                    Vue.set(mdata, 'thrs_rlbdisplacements', `${reliable}/${total}`)
+                                    Vue.set(mdata, 'thrs_stitchstacks', `${stitchables}/${n_stacks}`)
+                                    Vue.set(mdata, 'thrs_ppdisplacement', mdata.project_ppdisplacements)
                                 }else if (current_step == 'threshold'){
                                     Vue.set(mdata, 'thrsStatus', 'completed')
                                     let threshold_json = json_output.steps.threshold.result
@@ -827,6 +866,14 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                     this.workingItem.setting = this.selected[0].setting || {}
                     this.workingItem.outputPath = this.outputBasePath + "/"+ this.outputFolderName
                     this.workingItem.setting.outputPath = this.workingItem.outputPath
+
+                    if (!this.workingItem.setting) this.workingItem.setting = {}
+                   /*  Vue.set(this.workingItem, 'isfolder', isfolder)
+                    Vue.set(this.workingItem.setting, 'isfolder', isfolder)
+                    
+                    */
+                    Vue.set(this.workingItem.setting, 'isfolder', isfolder)
+
                     console.log("inside folder load")
                     console.log(this.currentStep)
                     console.log(this.workingItem.step)
@@ -837,6 +884,9 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                          this.workingItem.step = this.currentStep
                     }
                     if(this.currentStep == 1) {
+                        await this.$nextTick()
+                        console.log("isFolder", this.isFolder)
+                        console.log("tera ref", this.$refs.terasetup)
 
                         let _component = this.getStepComponent(this.currentStep)
                         if (_component) {
@@ -862,14 +912,14 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
              */
             async selectFiles(){
                 await this.selectFilesOrFolders(false)
-                this.workingItem.isfolder=false
+                //this.workingItem.isfolder=false
             },
             /**
              * select series
              */
             async selectFilesInFolder(){
                 await this.selectFilesOrFolders(true)
-                this.workingItem.isfolder=true
+               // this.workingItem.isfolder=true
                 
             },
 
@@ -899,160 +949,6 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 this.outputBasePath = ""
             },
 
-
-            /**
-             * delete all series
-             */
-        /*     removeAll(){
-                // delete all decons
-                for(let i = 0; i < this.loaded.length; i++){
-                    PreferenceAPI.delete_decon(this.loaded[i].id)
-                    
-                }
-                this.loaded = []
-                this.selected = []
-                this.outputpath = []
-                this.workingItem = series.defaultDecon()
-                
-                this.display_decon(this.workingItem, false)
-                this.metedataResults = []
-                this.csvlocation = null
-                this.saveMetaToSession()
-                
-                
-            }, */
-            /* end part dealing with load */
-            /****************************************************************************** */
-
-
-
-            /****************************************************************************** */
-            /** submit job */
-            async submitSingleJob(item){
-
-                
-               /* let _numberOfJobs = parseInt(item.setting.instances)
-                let _jobs = await PreferenceAPI.create_decon_jobs(item.id, _numberOfJobs)
-                 let _jobIds = _jobs.map(_job => {
-                    return _job.id
-                }) */
-
-                console.log("workingItem")
-                console.log(this.workingItem)
-                console.log(item)
-                
-                
-               /*  try{
-                    if (_current_api &&  _current_api.apiname=="Microvolution") {
-                        await DeconvolutionAPI.execute_microvolution(item.setting.outputPath, _numberOfJobs, 
-                                        item.setting.mem, item.setting.gpus, item.setting.walltime, item, _jobIds, false, false, false)
-                    } else if(_current_api &&  _current_api.apiname=="CudaDecon") {
-                        await DeconvolutionAPI.execute_microvolution(item.setting.outputPath,_numberOfJobs, item.setting.mem, item.setting.gpus, item.setting.walltime, item, _jobIds, false, false, true)
-                    }
-                    Vue.notify({
-                        group: 'datanotif',
-                        type: 'success',
-                        title: 'Submission',
-                        text: item.series.path + ' :jobs sent',
-                        closeOnClick: true,
-                        duration: 5000,
-                    })
-                    
-                }
-                catch(err) {
-                    Vue.$log.error("-----error submittin-----------")
-                    Vue.$log.error(err)
-                    await PreferenceAPI.delete_decon_jobs(_jobs)
-                    Vue.notify({
-                        group: 'datanotif',
-                        type: 'error',
-                        title: 'Submission',
-                        text: item.series.path + ' :fail to send jobs, please try again',
-                        closeOnClick: true,
-                        duration: 10000,
-                    })
-                    
-                } */
-            },
-            /**
-             * submit all the series
-             * when this is called, it means all series are valid
-             */
-            async submitAll(){
-                /* for (let i=0; i< this.loaded.length; i++) {
-                    if (!this.loaded[i].setting.valid) {
-                        this.validityDialog = true
-                        return
-                    }
-                } */
-                for (let i = 0; i < this.loaded.length; i++) {
-                    await this.submitSingleJob(this.loaded[i])
-                }
-            },
-            /**
-             * submit selected
-             */
-            async submitSelected(){
-                if(this.selected.length === 0)
-                    return
-               /*  for (let i=0; i< this.selected.length; i++) {
-                    if (!this.selected[i].setting.valid) {
-                        this.validityDialog = true
-                        return
-                    }
-                } */
-                for (let i = 0; i < this.selected.length; i++) {
-                    await this.submitSingleJob(this.selected[i])
-                }
-            },
-
-            /****************************************************************************** */
-
-
-
-            /****************************************************************************** */
-            /**
-             * save template to databsae: save the working one
-             */
-            /* async saveTemplate(){
-                let options = await this.$refs.templatedialog.open(true, this.workingItem)
-                if (!options.cancelled) {
-                    if(options.success)
-                        Vue.notify({
-                            group: 'datanotif',
-                            type: 'info',
-                            title: 'Save Template',
-                            text: 'Successfully save template'
-                        })
-                    else 
-                        Vue.notify({
-                            group: 'datanotif',
-                            type: 'error',
-                            title: 'Save Template',
-                            text: 'Problem saving template. Please try again!'
-                        })
-                }   
-            }, */
-            /**
-             * load template from db
-             */
-            /* async loadTemplate(){
-                let options = await this.$refs.templatedialog.open(false, '')
-                
-                if (!options.cancelled) {
-                    Vue.$log.info("Template loaded")
-                    Vue.$log.info(options.settings)
-                    let outputpath = this.workingItem.setting.outputPath
-                    
-                    this.workingItem.setting = Object.assign({}, options.settings)
-                    this.workingItem.setting.outputPath = outputpath
-                    this.saveSettings()
-                    // update the current display
-                    this.display_decon(this.workingItem, false)
-                }
-            }, */
-            /****************************************************************************** */
-
             outputPathChanged(){
                 if(this.outputBasePath===''){
 
@@ -1075,6 +971,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
             },
 
             stepClicked() {
+                const lastStep = this.steps.length
                 console.log("at step clicked")
                 
                 this.workingItem.step = parseInt(this.currentStep)
@@ -1090,16 +987,12 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 console.log(this.workingItem.step)
                 // save from current step - review step is ignored
                 // if(this.selected && this.selected[0] && this.step !== 8){
-                if(this.workingItem.step !== 7){
+                if(this.workingItem.step !== lastStep){
                     let _component = this.getStepComponent(this.currentStep)
-                    console.log("_component")
-                    console.log(_component)
+                    const wasfolder = this.isFolder
+                    
                     this.workingItem.setting = _component.get_serie()
-                    console.log("this.workingItem.setting")
-                    console.log(this.workingItem.setting)
-                    console.log(this.workingItem)
-                   /*  if(!_component.is_valid())
-                        this.workingItem.setting.valid = _component.is_valid() */
+                    Vue.set(this.workingItem.setting, 'isfolder', wasfolder)
                     this.saveSettings()
                 
                 }
@@ -1123,16 +1016,57 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 }
             },
 
-            
-            async nextStep(){
+            async nextStep() {
                 const lastStep = this.steps.length
+                const currentStep = parseInt(this.currentStep)
+
+                if (currentStep === lastStep) {
+                    return
+                }
+
+                const component = this.getStepComponent(currentStep)
+
+                if (!component) {
+                    return
+                }
+
+                const serie = component.get_serie()
+                console.log("nextStep-serie", serie)
+                const statusProperty = this.isFolder
+                    ? ['setupStatus', 'importStatus', 'alignStatus', 'projectStatus', 'thrsStatus', 'placeStatus'][currentStep - 1]
+                    : ['importStatus', 'alignStatus', 'projectStatus', 'thrsStatus', 'placeStatus'][currentStep - 1]
+
+                if (serie.setup_volformat ==='structured'){
+                    serie.setupStatus = 'completed'
+                }
+                if (serie[statusProperty] !== 'completed') {
+                    Vue.notify({
+                        group: 'datanotif',
+                        type: 'warning',
+                        title: 'Step not complete',
+                        text: 'Please wait until the current process is complete.',
+                        duration: 4000,
+                    })
+                    return
+                }
+
+                const previousStep = currentStep
+                const nextStep = currentStep + 1
+
+                this.currentStep = nextStep
+                this.workingItem.step = nextStep
+
+                this.savePreviousAndLoadNextStep(previousStep, nextStep)
+            },
+
+            
+          /*   async nextStep(){
+                const lastStep = this.steps.length
+                
                 this.workingItem.step = parseInt(this.currentStep)
                 console.log("this.workingItem.step")
                 console.log(this.workingItem.step)
-                /*  if(this.currentStep == 3 ){
-                    console.log("next step")
-                    console.log(this.workingItem)
-                } */
+                
                 if(this.workingItem.step === lastStep)
                     return
                 let previousStep = this.workingItem.step
@@ -1149,7 +1083,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 console.log(this.workingItem.step)
                 this.savePreviousAndLoadNextStep(previousStep, nextStep)
                 
-            }, 
+            },  */
 
             previousStep(){
                 this.workingItem.step = parseInt(this.currentStep)
@@ -1174,6 +1108,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
              * to be used in next and previous buttons
              */
             savePreviousAndLoadNextStep(previousSt, nextSt){
+                 
                 if(this.visitedSteps.indexOf(previousSt) < 0)
                     this.visitedSteps.push(previousSt)
                 if(this.visitedSteps.indexOf(nextSt) < 0)
@@ -1184,10 +1119,10 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 if(previousSt !== 7){
                     let _component = this.getStepComponent(previousSt)
                     if (_component) {
-                        console.log(_component)
+                        const wasfolder = this.isFolder
                         this.workingItem.setting = _component.get_serie()
-                        console.log("this.workingItem.setting")
-                        console.log(this.workingItem)
+                       
+                        Vue.set(this.workingItem.setting, 'isfolder', wasfolder)
                        // this.workingItem.setting.valid = _component.is_valid()
                         this.saveSettings()
                     }
@@ -1195,8 +1130,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                 // and load
                 let _component = this.getStepComponent(nextSt)
                 if (_component) {
-                    console.log(_component)
-                    //this.workingItem.setting.filepath = this.selected[0].series.path
+                    
                     console.log(this.workingItem.setting)
                     _component.load_serie(this.workingItem.setting)
                 }
@@ -1227,6 +1161,8 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
                         this.selected = [anItem.item]
                         this.workingItem = { ...anItem.item }
                         this.workingItem.setting = anItem.item.setting
+
+                        console.log("selectedChange",this.workingItem.setting.isfolder)
 
                         // restore output path fields from the selected record
                         this.outputBasePath = anItem.item.setting?.outputBasePath || ""
@@ -1275,7 +1211,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
             getStepComponent(stepId) {
                 const components = this.isFolder
                     ? {
-                        1: this.$refs.teraformat,
+                        1: this.$refs.terasetup,
                         2: this.$refs.teraimport,
                         3: this.$refs.teraalign,
                         4: this.$refs.teraproject,
@@ -1294,35 +1230,7 @@ import TerastitcherAPI from '../api/TerastitcherAPI.js'
 
                 return components[parseInt(stepId)]
             }
-            /* getStepComponent(stepId) {
-                let _component = null
-                switch(parseInt(stepId)) {
-                    case 1:
-                        _component = this.$refs.teraformat
-                        break
-                    case 2:
-                        _component = this.$refs.teraimport
-                        break
-                    case 3:
-                        _component = this.$refs.teraalign
-                        break
-                    case 4:
-                        _component = this.$refs.teraproject
-                        break
-                    case 5:
-                        _component = this.$refs.terathreshold
-                        break
-                    case 6:
-                        _component = this.$refs.teraplace
-                        break
-                    case 7:
-                        _component = this.$refs.teramerge
-                        break
-                    
-                }
-                
-                return _component
-            } */
+            
 
         },
     }

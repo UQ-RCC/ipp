@@ -49,6 +49,7 @@ export default {
               devices: payload.instances,
               walltime: payload.walltime,
               gpus: payload.gpus,
+              qos: payload.qos
                 
             },
         })
@@ -56,7 +57,8 @@ export default {
           response = await request.get(_requestUrl, {
             params: {
               payload : btoa(JSON.stringify(payload)),
-              output : outputPath
+              output : outputPath,
+              qos: payload.qos
                 
             },
         })
@@ -64,6 +66,23 @@ export default {
 
       const { data } = response
         return data 
+    },
+
+    async submit_movefiles(payload, outputPath ) {
+      let _requestUrl = `${Vue.prototype.$Config.endpoints.bunya}/api/execute/teraMoveFiles`
+      const { data } = await request.get(_requestUrl, {
+        params: { 
+          output: outputPath,
+          qos: payload.qos,
+          inputpath: payload.volumePath,
+          types: payload.setup_arrangement_type,
+          x: payload.setup_x,
+          y: payload.setup_y
+
+        },
+      })
+      return data
+
     },
       
     async poll_step_status(jobId, outputPath) {

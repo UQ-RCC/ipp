@@ -1,7 +1,7 @@
 <template>
     <v-card :disabled="readonly" >
         <file-browser-dialog ref="filedialog" />
-        <v-row class="mt-2" v-if="serie.projectStatus!=='hidden'">
+        <!-- <v-row class="mt-2" v-if="serie.projectStatus!=='hidden'">
             <v-col cols="12">
                 <v-alert 
                     v-if="serie.projectStatus === 'pending'" 
@@ -19,7 +19,7 @@
                      Project complete
                 </v-alert>
             </v-col>
-        </v-row>
+        </v-row> -->
           <v-row class="mt-2" v-if="serie.thrsStatus!=='hidden'">
             <v-col cols="12">
                 <v-alert 
@@ -82,7 +82,7 @@
                     dense 
                     outlined  
                     label="Stitchable stacks" 
-                    v-model="serie.thrs_stichstacks"
+                    v-model="serie.thrs_stitchstacks"
                     readonly
                 >
                 </v-text-field>
@@ -126,6 +126,7 @@
     // import PreferenceAPI from "@/api/PreferenceAPI"
     import FileBrowserDialog from '@/components/FileBrowserDialog.vue'
     import TerastitcherAPI from '../../api/TerastitcherAPI';
+    import { updateThresholdContents } from '@/utils/terastitcher';
 
     export default {
         name: 'TerastitcherThreshold',
@@ -146,11 +147,11 @@
         watch: {
             'serie.thrs_reliabilitythres': function(newVal) {
                 if (!this.thrs_data) return 
-                const { reliable, total, stitchables, n_stacks } = this.updateThresholdContents( this.thrs_data, newVal)
+                const { reliable, total, stitchables, n_stacks } = updateThresholdContents( this.thrs_data, newVal)
                 let reliable_displacements = reliable +"/"+ total
                 let stitchable_stacks = stitchables +"/"+ n_stacks
                 this.serie.thrs_rlbdisplacements = reliable_displacements
-                this.serie.thrs_stichstacks = stitchable_stacks
+                this.serie.thrs_stitchstacks = stitchable_stacks
                 this.serie.thrs_ppdisplacement = this.serie.project_ppdisplacements
             }
         },
@@ -165,23 +166,24 @@
                 Vue.set(this.serie, 'thrs_reliabilitythres', 0.75)
                 if (this.serie.thrs_cal_data) {
                     this.thrs_data = this.serie.thrs_cal_data
-                    const { reliable, total, stitchables, n_stacks } = this.updateThresholdContents(
+                    /* const { reliable, total, stitchables, n_stacks } = this.updateThresholdContents(
                         this.thrs_data,
                         this.serie.thrs_reliabilitythres
-                    )
+                    ) */
+                    const { reliable, total, stitchables, n_stacks } = updateThresholdContents(this.thrs_data, this.serie.thrs_reliabilitythres)
                     let reliable_displacements = reliable +"/"+ total
                     let stitchable_stacks = stitchables +"/"+ n_stacks
                    /*  this.serie.thrs_rlbdisplacements = reliable_displacements
                     this.serie.thrs_stichstacks = stitchable_stacks
                     this.serie.thrs_ppdisplacement = this.serie.project_ppdisplacements */
                     Vue.set(this.serie, 'thrs_rlbdisplacements', reliable_displacements)
-                    Vue.set(this.serie, 'thrs_stichstacks', stitchable_stacks)
+                    Vue.set(this.serie, 'thrs_stitchstacks', stitchable_stacks)
                     Vue.set(this.serie, 'thrs_ppdisplacement', this.serie.project_ppdisplacements)
                 }
                 
             },
 
-            updateThresholdContents(result, threshold) {
+            /* updateThresholdContents(result, threshold) {
                 let total = 0
                 let reliable = 0
                 for (const adj of result.adjacencies) {
@@ -203,7 +205,7 @@
 
             
         
-            },
+            }, */
 
             async compute_threshold() {
                 let thresholdData = {...this.serie}
@@ -257,7 +259,7 @@
                     const slurmState = status.split('\n')[0].trim()  // PENDING, RUNNING, COMPLETED, FAILED, NOTFOUND
                     console.log("SLURM state:", slurmState)
 
-                    const isDone = !["RUNNING"].includes(slurmState)
+                    const isDone =  ["COMPLETED", "FAILED", "NOTFOUND","SUSPENDED"].includes(slurmState) || !['RUNNING', 'PENDING'].includes(slurmState)
                     //const isDone = slurmState.startsWith("PROGRESS:") || ["COMPLETED", "FAILED", "NOTFOUND"].includes(slurmState)
 
                     if (isDone) {

@@ -710,8 +710,11 @@
                         duration: 3000,
                     })
                 }
+                setTimeout(() => {
+                     window.location.reload()
+                }, 5000)
 
-                location.reload();
+                //location.reload();
 
             }
 
