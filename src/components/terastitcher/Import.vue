@@ -424,7 +424,7 @@ import TerastitcherAPI from '../../api/TerastitcherAPI';
                     console.log("SLURM state:", slurmState)
                     
 
-                    const isDone =  slurmState.startsWith("<FILENAME>") || ["COMPLETED", "FAILED", "NOTFOUND","SUSPENDED"].includes(slurmState) || !['RUNNING', 'PENDING'].includes(slurmState)
+                    const isDone =  slurmState.startsWith("<FILENAME>") || ["COMPLETED", "FAILED", "CANCELLED","TIMEOUT","NODE_FAIL", "OUT_OF_MEMORY"].includes(slurmState) 
                     //const isDone = slurmState.startsWith("PROGRESS:") || ["COMPLETED", "FAILED", "NOTFOUND"].includes(slurmState)
                     console.log("isDone check:", isDone)
                     if (isDone) {
