@@ -312,7 +312,7 @@
 <script>
     import Vue from 'vue';
     //import series from "@/utils/series.js"
-    // import PreferenceAPI from "@/api/PreferenceAPI"
+    import PreferenceAPI from "@/api/PreferenceAPI"
     import FileBrowserDialog from '@/components/FileBrowserDialog.vue'
     import TerastitcherAPI from '../../api/TerastitcherAPI';
     
