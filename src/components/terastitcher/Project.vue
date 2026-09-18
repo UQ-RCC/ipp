@@ -194,8 +194,7 @@
 
                     //const isDone = !["RUNNING","PENDING"].includes(slurmState)
                     //const isDone =  ["COMPLETED", "FAILED", "NOTFOUND","SUSPENDED"].includes(slurmState) || !['RUNNING', 'PENDING'].includes(slurmState)
-                    const isDone =  ["COMPLETED", "FAILED", "CANCELLED","TIMEOUT","NODE_FAIL", "OUT_OF_MEMORY"].includes(slurmState) 
-                    
+                    const isDone =  ["COMPLETED", "FAILED", "CANCELLED","TIMEOUT","NODE_FAIL", "OUT_OF_MEMORY"].includes(slurmState) || !['RUNNING', 'PENDING', 'CONFIGURING', 'RESIZING', 'COMPLETING'].includes(slurmState)
 
                     if (isDone) {
                         clearInterval(this.pollInterval)
