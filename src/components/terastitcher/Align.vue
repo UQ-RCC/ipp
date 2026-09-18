@@ -412,6 +412,10 @@
                 /* this.$set(this.serie, 'project_displacements', 100)
                         this.$set(this.serie, 'ppdisplacements', 100) */
 
+                let _job = await PreferenceAPI.create_tera_job(alignData.id, true)    
+                alignData.job_id = _job.id    
+                console.log("Submitting alignment step with data:", alignData.job_id)
+
                 Vue.notify({
                     group: 'datanotif',
                     type: 'info',
