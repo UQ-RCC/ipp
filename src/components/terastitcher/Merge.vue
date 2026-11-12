@@ -21,44 +21,6 @@
             </v-col>
         </v-row>
        
-        <!-- <v-row class="mb-2" style="margin-top: 5px;">
-            <v-col cols="12" class="d-flex align-center justify-center py-4">
-                <strong class="text-h6">Outputs</strong>
-            </v-col>
-            <v-col>
-
-                <v-table>
-                    <thead>
-                        <tr >
-                            <th></th>
-                            <th   style="padding-left: 20px;">Resolution (X × Y × Z)</th>
-                            <th  style="padding-left: 20px;">Size (GVoxels)</th>
-                            <th style="padding-left: 20px;" class="text-center">Save to disk</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(o, i) in outputs" :key="i">
-                            <td></td>
-                            <td  style="padding-left: 20px;">{{ o.resolution }}</td>
-                            <td  style="padding-left: 20px;">{{ o.size.toFixed(3) }}</td>
-                            <td class="text-center">
-                                
-
-                                    <v-checkbox
-                                        v-model="o.save"
-                                        density="compact"
-                                        hide-details
-                                        @change="updateMemUsage()"
-                                    />
-                                
-                            </td>
-                        </tr>
-    
-                    </tbody>
-                </v-table>
-            </v-col>
-
-        </v-row> -->
        
 <v-row class="mb-2" style="margin-top: 5px;" align="center">
     <v-col cols="2" class="d-flex align-center justify-center">
@@ -211,7 +173,7 @@
                                     dense 
                                     outlined
                                     type=number
-                                    label="X" 
+                                    label="X start" 
                                     v-model="serie.merge_x1"
                                 >
                                 </v-text-field>
@@ -221,7 +183,7 @@
                                     dense 
                                     outlined
                                     type=number
-                                    label="X" 
+                                    label="X end" 
                                     v-model="serie.merge_x2"
                                 >
                                 </v-text-field>
@@ -231,7 +193,7 @@
                                     dense 
                                     outlined
                                     type=number
-                                    label="Y" 
+                                    label="Y start" 
                                     v-model="serie.merge_y1"
                                 >
                                 </v-text-field>
@@ -241,7 +203,7 @@
                                     dense 
                                     outlined
                                     type=number
-                                    label="Y" 
+                                    label="Y end" 
                                     v-model="serie.merge_y2"
                                 >
                                 </v-text-field>
@@ -251,7 +213,7 @@
                                     dense 
                                     outlined
                                     type=number
-                                    label="Z" 
+                                    label="Z start" 
                                     v-model="serie.merge_z1"
                                 >
                                 </v-text-field>
@@ -261,7 +223,7 @@
                                     dense 
                                     outlined
                                     type=number
-                                    label="Z" 
+                                    label="Z end" 
                                     v-model="serie.merge_z2"
                                 >
                                 </v-text-field>
@@ -400,15 +362,9 @@
                     {label:'TIFF (series, 2D)', value:1},
                     {label:'TIFF (tiled, 2D)', value:2},
                     {label:'TIFF (tiled, 3D)', value:3},
-                   /*  {label:'TIFF (tiled, 4D)', value:4}, */
                     {label:'TIFF (3D)', value:5},
                     {label:'HDF5 (BigDataViewer)', value:6},
                     {label:'HDF5 (Imaris IMS)', value:7}
-                    /* {label:'Vaa3D raw (series, 2D)', value:8},
-                    {label:'Vaa3D raw (tiled, 2D)', value:9},
-                    {label:'Vaa3D raw (tiled, 3D)', value:10},
-                    {label:'Vaa3D raw (tiled, 4D)', value:11} */
-
                 ],
                 blend:[{label:'No Blending', value:'NOBLEND'}, {label:'Sinusoidal Blending', value:"SINBLEND"}, {label:'No Blending with emphasized stacks borders', value:"STACKMARGIN"}],
                 artifacts:[{label:'None', value:0}, {label:'Zebrated pattern (Y)', value:1}, {label:'Zebrated pattern (X)', value:2}, {label:'Zebrated pattern (Z)', value:3}],
@@ -426,6 +382,7 @@
                 isims:false,
                 imsfilepath:null,
                 merge_advanced: null,
+                merge_device:null,
                 userLimits:[],
                 nodeLimits:[],
             }
